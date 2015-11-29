@@ -7,7 +7,7 @@ alpha 1:
 		-- Test MIDI hardware
 		-- Write MIDI I/O code
 		-- Test MIDI I/O code
-		-- Write and test core sequencing functions
+		-- Look into EEPROM storage of seq-info variables
 		-- Build SD-card circuit
 		-- Write testing code for SD-card circuit
 		-- Test SD-card circuit
@@ -15,7 +15,7 @@ alpha 1:
 		-- Test SD-card-based virtual-memory code
 		-- Look into using interrupts for MIDI-catching
 		-- Look into using interrupts for incoming / outgoing tempo-ticks
-		-- Write core sequencing mechanisms
+		-- Write core sequencing functions
 		-- Upgrade MIDI I/O hardware
 		-- Test MIDI circuit with new components
 		-- Connect barrel-jack to power circuit
