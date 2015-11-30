@@ -21,6 +21,79 @@
     
 */
 
+
+/*
+
+  Map of EEPROM usage:
+
+    bytes 0-255:
+        16  MIDI channels
+      * 8   notes of polyphony per channel 
+      * 2   bytes per sustain-tracking value (pitch, remaining duration)
+      = 256 sustain bytes
+
+    bytes 256-509:
+      254 bytes of reserved space.
+
+    bytes 510-511:
+      2 bytes where (int(n1) << 8) + n2 = program's version number.
+
+    bytes 512-519:
+      8 bytes of 64 boolean values, representing each sequence's playing activity.
+
+    bytes 520-543:
+      24 bytes of reserved space.
+
+    bytes 544-607:
+      64 bytes of cue-and-swap data for every sequence.
+      Format: 00(cue) 000000(swap)
+
+    bytes 608-671:
+      64 bytes representing the portions of sequences to be skipped.
+      Format: 0(1) 0(2) 0(3) 0(4) 0(5) 0(6) 0(7) 0(8)
+
+    bytes 672-703:
+      32 bytes of 64 nibbles, representing each sequence's scale-quantize type.
+      Format: 0000(scale type)
+
+    bytes 704-767:
+      64 bytes representing each sequence's pitch offset.
+      Format: 0(negative or positive) 0000000(pitch distance)
+
+    bytes 768-831:
+      64 bytes representing each sequence's chance of directional wandering.
+      Format: 00000(chance) 0(up) 0(left) 0(down)
+
+    bytes 832-895:
+      64 bytes representing each sequence's chance of note-event scattering.
+      Format: 0000(chance) 00(left dist) 00(right dist)
+
+    bytes 896-959:
+      64 bytes representing each sequence's loop-resolution random seeds.
+      Format: 00000000(seed = int(n << 8))
+
+    bytes 960-1023:
+      64 bytes representing each sequence's note-resolution random values.
+      Format: 00000000(current rand value)
+
+    Summary:
+          0-255:  Note sustain-tracking data
+        256-509:  Reserved
+        510-511:  Program's version-number
+        512-519:  Sequence activity-tracking data
+        520-543:  Reserved
+        544-607:  Sequence cue-and-swap data
+        608-671:  Sequence section-skip data
+        672-703:  Sequence scale-quantize data
+        704-767:  Sequence pitch-offset data
+        768-831:  Sequence directional-wandering data
+        832-895:  Sequence note-scatter data
+        896-959:  Sequence loop-based random seeds
+        960-1023: Sequence note-based random values
+
+*/
+
+
 // MCP23017 keypad libraries
 #include <Wire.h>
 //#include <Key.h>
@@ -30,7 +103,10 @@
 // MAX72** library
 #include <LedControl.h>
 
-// SD-card library
+// EEPROM data-storage library
+#include <EEPROM.h>
+
+// SD-card data-storage library
 //#include <SdFat.h>
 
 
@@ -52,10 +128,6 @@ char keys[ROWS][COLS] = {
 byte rowpins[ROWS] = {0, 1, 2, 3, 4, 5};
 byte colpins[COLS] = {8, 9, 10, 11, 12, 13, 14, 15};
 Keypad_MC17 kpd(makeKeymap(keys), rowpins, colpins, ROWS, COLS, 0x27);
-
-// All note-ons in the active tick, to be stored as sustain-values via SDfat.
-// Format: noteOns[channel][index] = {pitch, duration}
-byte noteOns[16][4][2];
 
 // Scale types for the snap-to-scale feature.
 // Format: scales[index][note] = (distance from previous note)
@@ -81,47 +153,18 @@ const byte scales[15][7] PROGMEM = {
   {7, 5, 0, 0, 0, 0, 0}   // Power chord
 };
 
-// Activity values for 64 sequences, crammed into 8 bytes as binary 0/1 values.
-byte active[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-
-// Binary values per seq: active data for both CUE and SWAP commands.
-// Format: 00(cue) 000000(swap)
-byte cueSwap[64];
-
-// Binary values per seq: the portions of their loops to be skipped.
-// Format: 0(1) 0(2) 0(3) 0(4) 0(5) 0(6) 0(7) 0(8)
-byte skip[64];
-
-// Binary values per 2 seqs: scale-quantize type.
-// Format: 0000(scale type)
-byte scale[32];
-
-// Binary values per seq: pitch offset.
-// Format: 0(negative or positive) 0000000(pitch distance)
-byte pitch[64];
-
-// Binary values per seq: chance of directional wandering.
-// Format: 0000(chance) 0(up) 0(left) 0(right) 0(down)
-byte wander[64];
-
-// Binary values per seq: chance of note-event scattering.
-// Format: 0000(chance) 00(left dist) 00(right dist)
-byte scatter[64];
-
-// Binary values per seq: scatter loop-resolution random seeds.
-// Format: 00000000(seed = int(n << 8))
-byte scatterSeed[64];
-
-// Binary values per seq: scatter note-resolution random values.
-// Format: 00000000(current rand value)
-byte scatterRand[64];
-
 
 // Potentiometer values (TODO: keeping these values in memory may not be necessary)
 int potA = 0;
 int potB = 0;
 
+
 void setup() {
+
+  // Clear old variables from EEPROM storage
+  for (int i = 0; i < EEPROM.length(); i++) {
+    EEPROM.write(i, 0);
+  }
 
   Serial.begin(31250);
   
