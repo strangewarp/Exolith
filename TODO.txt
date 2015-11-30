@@ -1,8 +1,7 @@
 
 Serpentarium TODO File
 
-alpha 1:
-	TODO:
+alpha 1 TODO:
 		-- Write testing code for MIDI hardware
 		-- Test MIDI hardware
 		-- Write MIDI I/O code
@@ -20,6 +19,7 @@ alpha 1:
 		-- Test MIDI circuit with new components
 		-- Connect barrel-jack to power circuit
 		-- Test power circuit with power-cable
+		-- Clear out any remaining "TODO" notes from within the .ino files themselves
 		-- Remove "THIS CODE DOES NOTHING" line from copyright statement
 		-- Add "THIS CODE IS UNDER DEVELOPMENT AND HIGHLY UNSTABLE" line to copyright statement
 		-- Update version to "alpha 2" & figure out what to implement next

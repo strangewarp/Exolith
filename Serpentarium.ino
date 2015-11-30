@@ -32,11 +32,8 @@
       * 2   bytes per sustain-tracking value (pitch, remaining duration)
       = 256 sustain bytes
 
-    bytes 256-509:
-      254 bytes of reserved space.
-
-    bytes 510-511:
-      2 bytes where (int(n1) << 8) + n2 = program's version number.
+    bytes 256-511:
+      256 bytes of reserved space.
 
     bytes 512-519:
       8 bytes of 64 boolean values, representing each sequence's playing activity.
@@ -70,26 +67,25 @@
 
     bytes 896-959:
       64 bytes representing each sequence's loop-resolution random seeds.
-      Format: 00000000(seed = int(n << 8))
+      Format: 00000000(seed = int(n) << 8)
 
     bytes 960-1023:
       64 bytes representing each sequence's note-resolution random values.
       Format: 00000000(current rand value)
 
     Summary:
-          0-255:  Note sustain-tracking data
-        256-509:  Reserved
-        510-511:  Program's version-number
-        512-519:  Sequence activity-tracking data
-        520-543:  Reserved
-        544-607:  Sequence cue-and-swap data
-        608-671:  Sequence section-skip data
-        672-703:  Sequence scale-quantize data
-        704-767:  Sequence pitch-offset data
-        768-831:  Sequence directional-wandering data
-        832-895:  Sequence note-scatter data
-        896-959:  Sequence loop-based random seeds
-        960-1023: Sequence note-based random values
+          0-255: Note sustain-tracking data
+        256-511: Reserved
+        512-519: Sequence activity-tracking data
+        520-543: Reserved
+        544-607: Sequence cue-and-swap data
+        608-671: Sequence section-skip data
+        672-703: Sequence scale-quantize data
+        704-767: Sequence pitch-offset data
+        768-831: Sequence directional-wandering data
+        832-895: Sequence note-scatter data
+        896-959: Sequence loop-based random seeds
+       960-1023: Sequence note-based random values
 
 */
 
@@ -159,9 +155,15 @@ int potA = 0;
 int potB = 0;
 
 
+// Testing vars (TODO: remove these)
+const long interval = 500;
+long last = 0;
+byte onoff = 0;
+
+
 void setup() {
 
-  // Clear old variables from EEPROM storage
+  // Clear old temp-variables from EEPROM storage
   for (int i = 0; i < EEPROM.length(); i++) {
     EEPROM.write(i, 0);
   }
@@ -177,6 +179,16 @@ void setup() {
 }
 
 void loop() {
+
+  // MIDI testing code
+  unsigned long mill = millis();
+  if ((mill - last) >= interval) {
+    last = mill;
+    Serial.write((onoff == 1) ? 128 : 144);
+    Serial.write(32);
+    Serial.write(127);
+    onoff = 1 - onoff;
+  }
 
   // potentiometer testing code
   int oldA = potA;
