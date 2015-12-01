@@ -21,7 +21,7 @@ INDEX
 		II-6.. Utility functions
 		II-7.. EEPROM functions
 		II-8.. SD-card functions
-		II-9. LED functions
+		II-9.. LED functions
 		II-10. Button functions
 		II-11. MIDI functions
 		II-12. Sustain functions
