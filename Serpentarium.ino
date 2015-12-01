@@ -22,74 +22,6 @@
 */
 
 
-/*
-
-  Map of EEPROM usage:
-
-    bytes 0-255:
-        16  MIDI channels
-      * 8   notes of polyphony per channel 
-      * 2   bytes per sustain-tracking value (pitch, remaining duration)
-      = 256 sustain bytes
-
-    bytes 256-511:
-      256 bytes of reserved space.
-
-    bytes 512-519:
-      8 bytes of 64 boolean values, representing each sequence's playing activity.
-
-    bytes 520-543:
-      24 bytes of reserved space.
-
-    bytes 544-607:
-      64 bytes of cue-and-swap data for every sequence.
-      Format: 00(cue) 000000(swap)
-
-    bytes 608-671:
-      64 bytes representing the portions of sequences to be skipped.
-      Format: 0(1) 0(2) 0(3) 0(4) 0(5) 0(6) 0(7) 0(8)
-
-    bytes 672-703:
-      32 bytes of 64 nibbles, representing each sequence's scale-quantize type.
-      Format: 0000(scale type)
-
-    bytes 704-767:
-      64 bytes representing each sequence's pitch offset.
-      Format: 0(negative or positive) 0000000(pitch distance)
-
-    bytes 768-831:
-      64 bytes representing each sequence's chance of directional wandering.
-      Format: 00000(chance) 0(up) 0(left) 0(down)
-
-    bytes 832-895:
-      64 bytes representing each sequence's chance of note-event scattering.
-      Format: 0000(chance) 00(left dist) 00(right dist)
-
-    bytes 896-959:
-      64 bytes representing each sequence's loop-resolution random seeds.
-      Format: 00000000(seed = int(n) << 8)
-
-    bytes 960-1023:
-      64 bytes representing each sequence's note-resolution random values.
-      Format: 00000000(current rand value)
-
-    Summary:
-          0-255: Note sustain-tracking data
-        256-511: Reserved
-        512-519: Sequence activity-tracking data
-        520-543: Reserved
-        544-607: Sequence cue-and-swap data
-        608-671: Sequence section-skip data
-        672-703: Sequence scale-quantize data
-        704-767: Sequence pitch-offset data
-        768-831: Sequence directional-wandering data
-        832-895: Sequence note-scatter data
-        896-959: Sequence loop-based random seeds
-       960-1023: Sequence note-based random values
-
-*/
-
-
 // MCP23017 keypad libraries
 #include <Wire.h>
 //#include <Key.h>
@@ -111,9 +43,9 @@ LedControl lc = LedControl(2, 3, 4, 1);
 
 // Initialize the object that controls the MCP23017's digital pins,
 // in a manner that drives a button-grid identical to those used by the Keypad library.
-const byte ROWS = 6;
-const byte COLS = 8;
-char keys[ROWS][COLS] = {
+const byte ROWS PROGMEM = 6;
+const byte COLS PROGMEM = 8;
+const char KEYS[ROWS][COLS] PROGMEM = {
   {'0', '1', '2', '3', '4', '5', '6', '7'},
   {'8', '9', ':', ';', '<', '=', '>', '?'},
   {'@', 'A', 'B', 'C', 'D', 'E', 'F', 'G'},
@@ -123,12 +55,12 @@ char keys[ROWS][COLS] = {
 };
 byte rowpins[ROWS] = {0, 1, 2, 3, 4, 5};
 byte colpins[COLS] = {8, 9, 10, 11, 12, 13, 14, 15};
-Keypad_MC17 kpd(makeKeymap(keys), rowpins, colpins, ROWS, COLS, 0x27);
+Keypad_MC17 kpd(makeKeymap(KEYS), rowpins, colpins, ROWS, COLS, 0x27);
 
 // Scale types for the snap-to-scale feature.
-// Format: scales[index][note] = (distance from previous note)
-//     or: scales[index] = {1, 2, 3, 4, 5, 6, 7, 8}
-const byte scales[15][7] PROGMEM = {
+// Format: SCALES[index][note] = (distance from previous note)
+//     or: SCALES[index] = {1, 2, 3, 4, 5, 6, 7, 8}
+const byte SCALES[15][7] PROGMEM = {
   // Scales 1-3 can be rotated into any of the most-consonant 7-note 12-tone scales:
   {2, 2, 1, 2, 2, 2, 1},  // Major scale
   {2, 2, 1, 2, 1, 2, 2},  // Major-minor scale
@@ -156,8 +88,8 @@ int potB = 0;
 
 
 // Testing vars (TODO: remove these)
-const long interval = 500;
-long last = 0;
+const unsigned long INTERVAL PROGMEM = 500;
+unsigned long last = 0;
 byte onoff = 0;
 
 
@@ -182,7 +114,7 @@ void loop() {
 
   // MIDI testing code
   unsigned long mill = millis();
-  if ((mill - last) >= interval) {
+  if ((mill - last) >= INTERVAL) {
     last = mill;
     Serial.write((onoff == 1) ? 128 : 144);
     Serial.write(32);

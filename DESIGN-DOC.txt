@@ -1,0 +1,262 @@
+
+
+Serpentarium: Production Specifications Document
+
+
+INDEX
+	Section I: Hardware
+		I-1.. Circuit design
+		I-2.. Circuit components
+		I-3.. Physical interface & UI commands
+			I-3-a. Physical interface
+			I-3-b. Slice mode elements
+			I-3-c. Record mode elements
+		I-4.. Enclosure
+	Section II: Firmware
+		II-1.. Map of EEPROM usage
+		II-2.. Map of SD-card usage
+		II-3.. Libraries
+		II-4.. Global variables
+		II-5.. Main functions
+		II-6.. Utility functions
+		II-7.. EEPROM functions
+		II-8.. SD-card functions
+		II-9. LED functions
+		II-10. Button functions
+		II-11. MIDI functions
+		II-12. Sustain functions
+		II-13. Sequencing functions
+
+
+Section I-1: "Circuit design"
+
+TODO: write this
+
+
+Section I-2: "Circuit components"
+
+TODO: write this
+
+
+Section I-3: "Physical interface & UI commands"
+
+	This section details the Serpentarium as a physical unit: labels for hardware elements, and descriptions of key-commands.
+
+	Subsection I-3-a: "Physical interface"
+
+		The layout of the interface is as follows:
+
+		.------------------------.
+		| .  .                   |
+		| |  |   o o o o o o o o |
+		| |  |   o o o o o o o o |
+		| |  |   o o o o o o o o |
+		| Q  Q   l l l l l l l l |
+		| |  |   l l l l l l l l |
+		| |  | b l l l l l l l l |
+		| |  | b l l l l l l l l |
+		| '  ' b l l l l l l l l |
+		'------------------------'
+
+		Key:
+			Q -- Slide potentiometer
+			o -- Standalone LED
+			l -- Buttons (with LED)
+			b -- Buttons (without LED)
+
+	Subsection I-3-b: "Slice mode elements"
+
+		.------------------------.
+		| .  .                   |
+		| |  |   o o o o o o o o |
+		| |  |   O O O O O O O O |
+		| |  |   0 0 0 0 0 0 0 0 |
+		| X  Y   s s s s s s s s |
+		| |  |   s s s s s s s s |
+		| |  | p s s s s s s s s |
+		| |  | v s s s s s s s s |
+		| '  ' t a b c d e f g h |
+		'------------------------'
+
+		Key:
+			X - Slide potentiometer 1
+			Y - Slide potentiometer 2
+			p - PAGE button
+				-> Toggle between page 1 and 2.
+			v - VIEW button
+				-> Toggle between viewing single-button seqs and the slicing canvas.
+			t - THROW button
+				-> Same toggle effect as VIEW, but only when held down.
+				-> t+s+s: The seq represented by the first s-button will be thrown into the row of the slicing canvas represented by the second s-button.
+				-> t+p+v: MIDI PANIC: Send note-offs for every MIDI note on every MIDI channel.
+			s - SEQ/SLICE buttons
+				-> In seq view:
+					>> When seq is inactive: Start playing seq within its first subsection, aligned with global active subsection.
+					>> When seq is active: Transfer seq's activity to within its first subsection.
+				-> In slice view:
+					>> When seq is inactive: Start playing seq within the selected subsection, aligned with global active subsection.
+					>> When seq is active: Transfer seq's activity to within the selected subsection.
+			a - OFF button (OFF command)
+				-> a+s: Toggle the sequence off, and clear its temporary modifications.
+				-> a+n+s: Toggle the sequence off, but keep its temporary modifications.
+			b - CUE-1 button
+				-> When chorded with OFF or SEQ, delay said command until the next beat is reached.
+			c - CUE-8 button
+				-> When chorded with OFF or SEQ, delay said command until the next beat of value (beat % 8 = 1) is reached.
+			d - SKIP button
+				-> d+s: In slice view: Skip/enable various subsections of the seq. Skipped sections will not be played.
+			e - PITCH button
+				-> f+s: In slice view: Change sequence's pitch offset.
+					>> Format: 0(negative or positive) 0000000(pitch)
+			f - SNAP button
+				-> g+s: In slice view: Snap seq's notes to scale, on top of seq's PITCH modifications.
+					>> Format: 0000(scale rotation) 0000(scale type)
+			g - SCATTER button
+				-> g+s: In slice view: Scatter the timing of a sequence's notes, in a manner that varies on every loop.
+					>> Format: 0000(chance) 00(left dist) 00(right dist)
+			h - WANDER button
+				-> h+s: In slice view: Cause a sequece to have a chance of directional wandering when its activity enters a new subsection.
+					>> Format: 00000(chance) 0(up) 0(left) 0(down)
+			o - LEDs: show active beat as (floor(beat / (longest / 8)) + 1)
+			O - LEDs: show active beat as (beat % 8)
+			0 - LEDs: lit if corresponding column contains active sequences
+
+
+	Subsection I-3-c: "Record mode elements"
+
+		TODO: write this
+
+
+Section I-4: "Enclosure"
+
+	TODO: write this
+
+
+Section II: "Firmware"
+
+	In the following subsections of this document, descriptions of variables and memory-mapping are representative, while descriptions of functions are in pseudocode.
+
+
+	Subsection II-1: "Map of EEPROM usage"
+
+		bytes 0-255:
+				16  MIDI channels
+			* 8   notes of polyphony per channel 
+			* 2   bytes per sustain-tracking value (pitch, remaining duration)
+			= 256 sustain bytes
+
+		bytes 256-503:
+			248 bytes of reserved space.
+
+		bytes 504-511:
+			8 bytes of 64 boolean values, representing each sequence's playing activity.
+
+		bytes 512-527:
+			16 bytes of 64 two-bit cue-values for every sequence.
+			Format: 00(cue)
+
+		bytes 528-575:
+			48 bytes of reserved space.
+
+		bytes 576-639:
+			64 bytes representing the portions of sequences to be skipped.
+			Format: 0(1) 0(2) 0(3) 0(4) 0(5) 0(6) 0(7) 0(8)
+
+		bytes 640-703:
+			64 bytes, representing each sequence's scale-quantize type.
+			Format: 0000(scale rotation) 0000(scale type)
+
+		bytes 704-767:
+			64 bytes representing each sequence's pitch offset.
+			Format: 0(negative or positive) 0000000(pitch distance)
+
+		bytes 768-831:
+			64 bytes representing each sequence's chance of directional wandering.
+			Format: 00000(chance) 0(up) 0(left) 0(down)
+
+		bytes 832-895:
+			64 bytes representing each sequence's chance of note-event scattering.
+			Format: 0000(chance) 00(left dist) 00(right dist)
+
+		bytes 896-959:
+			64 bytes representing each sequence's loop-resolution random seeds.
+			Format: 00000000(seed = int(n) << 8)
+
+		bytes 960-1023:
+			64 bytes representing each sequence's note-resolution random values.
+			Format: 00000000(current rand value)
+
+		Summary:
+			0-255: Note sustain-tracking data
+			256-503: Reserved
+			504-511: Sequence activity-tracking data
+			512-527: Sequence cue data
+			528-575: Reserved
+			576-639: Sequence section-skip data
+			640-703: Sequence scale-quantize data
+			704-767: Sequence pitch-offset data
+			768-831: Sequence directional-wandering data
+			832-895: Sequence note-scatter data
+			896-959: Sequence loop-based random seeds
+			960-1023: Sequence note-based random values
+
+
+	Subsection II-2: "Map of SD-card usage"
+
+		TODO: write this
+
+
+	Subsection II-3: "Libraries"
+
+		TODO: write this
+
+
+	Subsection II-4: "Global variables"
+
+		TODO: write this
+
+
+	Subsection II-5: "Main functions"
+
+		TODO: write this
+
+
+	Subsection II-6: "Utility functions"
+
+		TODO: write this
+
+
+	Subsection II-7: "EEPROM functions"
+
+		TODO: write this
+
+
+	Subsection II-8: "SD-card functions"
+
+		TODO: write this
+
+
+	Subsection II-9: "LED functions"
+
+		TODO: write this
+
+
+	Subsection II-10: "Button functions"
+
+		TODO: write this
+
+
+	Subsection II-11: "MIDI functions"
+
+		TODO: write this
+
+
+	Subsection II-12: "Sustain functions"
+
+		TODO: write this
+
+
+	Subsection II-13: "Sequencing functions"
+
+		TODO: write this
+
