@@ -2,16 +2,16 @@
 Serpentarium TODO File
 
 alpha 1 TODO:
-	-- Write testing code for MIDI hardware
-	-- Test MIDI hardware
+	-- Test MIDI I/O hardware
+	-- Disable all interrupts except for Serial
+	-- Store MIDI MASTER/SLAVE status in EEPROM
+	-- Put a PLAY/STOP TOGGLE button into DESIGN-DOC.txt
 	-- Build SD-card circuit
 	-- Write testing code for SD-card circuit
 	-- Test SD-card circuit
-	-- Look into using interrupts for MIDI-catching
-	-- Look into using interrupts for incoming / outgoing tempo-ticks
-	-- Translate all interface elements into pseudocode functions in DESIGN-DOC.txt
-	-- Translate all pseudocode functions into concretely-written code
 	-- Upgrade MIDI I/O hardware
+	-- Finish writing all pseudocode in DESIGN-DOC.txt
+	-- Translate all pseudocode functions into concretely-written code
 	-- Test MIDI circuit with new components
 	-- Connect barrel-jack to power circuit
 	-- Test power circuit with power-cable
@@ -19,6 +19,18 @@ alpha 1 TODO:
 	-- Remove "THIS CODE DOES NOTHING" line from copyright statement
 	-- Add "THIS CODE IS UNDER DEVELOPMENT AND HIGHLY UNSTABLE" line to copyright statement
 	-- Update version to "alpha 2" & figure out what to implement next
+
+alpha 1 TO TEST:
+	-- Song Position Pointer commands
+	-- MIDI SLAVE commands
+	-- "Blackmidi"-style note densities:
+		. For THRU
+		. For RECORD
+		. For PLAY
+	-- All types of non-note MIDI commands
+		. For THRU
+		. For RECORD
+		. For PLAY
 
 more distant TODOs:
 	-- Finalize plans for the Serpentarium's production-grade physical hardware in the DESIGN-DOC

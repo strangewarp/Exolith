@@ -21,21 +21,22 @@ INDEX
 		II-6.. Utility functions
 		II-7.. EEPROM functions
 		II-8.. SD-card functions
-		II-9.. LED functions
+		II-9. LED functions
 		II-10. Button functions
-		II-11. MIDI functions
-		II-12. Sustain functions
-		II-13. Sequencing functions
+		II-11. Timing functions
+		II-12. MIDI functions
+		II-13. Sustain functions
+		II-14. Sequencing functions
 
 
 Section I-1: "Circuit design"
 
-TODO: write this
+	TODO: write this
 
 
 Section I-2: "Circuit components"
 
-TODO: write this
+	TODO: write this
 
 
 Section I-3: "Physical interface & UI commands"
@@ -79,6 +80,9 @@ Section I-3: "Physical interface & UI commands"
 		'------------------------'
 
 		Key:
+			o - LEDs: show active beat as (floor(beat / (longest / 8)) + 1)
+			O - LEDs: show active beat as (beat % 8)
+			0 - LEDs: lit if corresponding column in seq-view contains active sequences
 			X - Slide potentiometer 1
 			Y - Slide potentiometer 2
 			p - PAGE button
@@ -117,9 +121,6 @@ Section I-3: "Physical interface & UI commands"
 			h - WANDER button
 				-> h+s: In slice view: Cause a sequece to have a chance of directional wandering when its activity enters a new subsection.
 					>> Format: 00000(chance) 0(up) 0(left) 0(down)
-			o - LEDs: show active beat as (floor(beat / (longest / 8)) + 1)
-			O - LEDs: show active beat as (beat % 8)
-			0 - LEDs: lit if corresponding column contains active sequences
 
 
 	Subsection I-3-c: "Record mode elements"
@@ -208,17 +209,84 @@ Section II: "Firmware"
 
 	Subsection II-3: "Libraries"
 
-		TODO: write this
+		EEPROM.h: For storing and retrieving data in the ATMEGA's native EEPROM.
+
+		Keypad.h: For creating and managing a grid of keypad-buttons, using any matrix of digital I/O pins. (Requires: Wire.h)
+
+		Keypad_MC17.h: For using Keypad.h with the digital I/O pins on an MCP23017 chip. (Requires: Keypad.h, Wire.h)
+
+		LedControl.h: For driving matrices of up to 64 LEDs with any MAX72xx chip.
+
+		SdFat.h: For storing and retrieving data in any FAT32-formatted SD-card.
+
+		Wire.h: For communication with I2C devices.
+
+		TODO: Update this section if there are any library changes
 
 
 	Subsection II-4: "Global variables"
 
-		TODO: write this
+		Specifically library-based variables:
+
+			lc: An LedControl object, from the LedControl library, to control the MAX7221-based LED-matrix.
+
+			ROWS: Number of row-pins in the Keypad_MC17 matrix. Const.
+
+			COLS: Number of column-pins in the Keypad_MC17 matrix. Const.
+
+			KEYS: Unique ASCII characters corresponding to each button in the Keypad_MC17 matrix. Const.
+				Why ASCII chars? Keypad library requires it. Each char can be treated as a byte anyway, so it's not that bad.
+				For each ASCII value as n: (n - 48) % 8 = column, and (n - 48) >> 3 = row.
+
+			rowpins: Pins on the MCP23017 that correspond to rows of the button-matrix.
+
+			colpins: Pins on the MCP23017 that correspond to columns of the button-matrix.
+
+			kpd: A Keypad_MC17 object, which acts the same as a Keypad object, to receive keystrokes from the MCP23017-based keypad.
+
+		Other variables:
+
+			curtick: The current tick the sequence-iterator is sitting on.
+
+			dummytick: Tracks whether to expect a dummy MIDI CLOCK tick before starting to iterate through sequences.
+
+			lastmicros: Holds the value of the last microsecond at which a MIDI CLOCK tick occurred.
+				Note: This wraps back to 0 approximately every 70 minutes, which must be compensated for.
+
+			nexttick: The next tick to be played by the sequence-iterator.
+
+			playing: Tracks whether or not the sequence is currently playing.
+
+			SCALES: An array of 15 useful scales and chords for pitch-quantization. Const. Progmem.
+				Each scale is represented as an array of 7 bytes.
+				Each byte represents a distance, in ascending semitones, from the previous note.
+				A byte-value of 0 indicates that there are no further steps in the scale, and an octave has been traversed.
+
+
+		TODO: Update this section if there are any changes/additions to global variables
 
 
 	Subsection II-5: "Main functions"
 
-		TODO: write this
+		void setup():
+			TODO -> Clear out EEPROM data storage, except for settings that should persist across sessions.
+			-> Initialize Serial communications.
+			-> Initialize kpd object (Keypad_MC17 keypad).
+			-> Initialize lc object (LedControl LED-matrix).
+
+		void loop():
+			TODO -> Call checkPotentiometers().
+			TODO -> Call checkIncomingMIDI().
+			TODO -> If not in MIDI CLOCK SLAVE mode, call checkTickTime().
+			TODO -> If a clock-tick occurred, then:
+			TODO ----> Call updateLastMicros().
+			TODO ----> Call iterateSeqs().
+			TODO -> If in MIDI CLOCK MASTER mode:
+			TODO ----> Call sendClockTick().
+			TODO ----> Call sendSongPosition().
+
+
+		TODO: Update this section as the program changes
 
 
 	Subsection II-6: "Utility functions"
@@ -246,17 +314,78 @@ Section II: "Firmware"
 		TODO: write this
 
 
-	Subsection II-11: "MIDI functions"
+	Subsection II-11: "Timing functions"
+
+		TODO boolean checkTickTime():
+			TODO -> call micros() and put its value into curmicros.
+			TODO -> If curmicros is less than lastmicros: diffmicros = curmicros + ~lastmicros
+			TODO -> Else: diffmicros = curmicros - lastmicros
+			TODO -> If diffmicros is greater than tickmicros: Return true.
+			TODO -> Return false.
+
+		TODO void updateLastMicros():
+			TODO -> lastmicros += tickmicros
+
+		TODO void sendClockTick():
+			TODO: describe this
+
+		TODO void sendSongPosition():
+			TODO: describe this
+
+
+		TODO: Write the rest of this
+
+
+	Subsection II-12: "MIDI functions"
+
+		TODO void checkIncomingMIDI():
+			TODO -> While there are incoming serial bytes:
+			TODO ----> Put the frontmost byte into a 3-byte array
+			TODO ----> If the collection array contains a non-SYSEX, non-CLOCK command: Call receivedCommand()
+			TODO ----> If the collection array contains a CLOCK command: Call receivedClock()
+			TODO ----> If the collection array contains a SONG POSITION command: Call receivedSongPosition()
+
+		TODO void receivedCommand(byte b1, byte b2, byte b3):
+			TODO: -> If in Record Mode: Call insertCommand(b1, b2, b3)
+			TODO: -> Call sendCommand(b1, b2, b3)
+
+		TODO void receivedClock(byte c):
+			TODO: -> If not in MIDI CLOCK SLAVE mode: Return null
+			TODO: -> If CLOCK TICK:
+			TODO: ----> If dummytick then: dummytick = false
+			TODO: ----> Else: Call iterateSeqs()
+			TODO: -> If CLOCK START:
+			TODO: ----> dummytick = true
+			TODO: ----> globaltick = 1
+			TODO: ----> nexttick = 1
+			TODO: ----> playing = true
+			TODO: -> If CLOCK STOP:
+			TODO: ----> playing = false
+			TODO: -> If CLOCK RESUME:
+			TODO: ----> dummytick = true
+			TODO: ----> playing = true
+
+		TODO void receivedSongPosition(byte c1, byte c2):
+			TODO: -> Set nexttick to the song-pointer position, e.g. nexttick = ((int(c1) << 8) + c2) * 6
+
+		TODO void insertCommand(b1, b2, b3):
+			TODO: describe this
+
+		TODO void sendCommand(b1, b2, b3):
+			TODO: -> Use Serial functions to send the command's individual bytes
+
+		TODO: Write the rest of this
+
+
+	Subsection II-13: "Sustain functions"
 
 		TODO: write this
 
 
-	Subsection II-12: "Sustain functions"
+	Subsection II-14: "Sequencing functions"
 
-		TODO: write this
+		TODO void iterateSeqs()
+			TODO: describe this
 
-
-	Subsection II-13: "Sequencing functions"
-
-		TODO: write this
+		TODO: Write the rest of this
 

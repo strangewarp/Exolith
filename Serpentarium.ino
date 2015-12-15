@@ -82,6 +82,19 @@ const byte SCALES[15][7] PROGMEM = {
 };
 
 
+// Most recent microsecond at which a MIDI CLOCK tick occurred
+unsigned long lastmicros = 0;
+
+// Controls whether the sequences are iterating through their contents
+boolean playing = false;
+
+// Tracks whether to expect a dummy MIDI CLOCK tick before starting to iterate through sequences
+boolean dummytick = false;
+
+// Tracks the current global tick, and the next global tick, for sequence-playing
+unsigned int curtick = 1;
+unsigned int nexttick = 1;
+
 // Potentiometer values (TODO: keeping these values in memory may not be necessary)
 int potA = 0;
 int potB = 0;
@@ -89,7 +102,6 @@ int potB = 0;
 
 // Testing vars (TODO: remove these)
 const unsigned long INTERVAL PROGMEM = 500;
-unsigned long last = 0;
 byte onoff = 0;
 
 
@@ -144,7 +156,7 @@ void loop() {
         if (kpd.key[i].kstate == PRESSED) {
           byte kc = kpd.key[i].kchar - 48;
           lc.setRow(0, 0, 128 >> (kc % 8));
-          lc.setRow(0, 1, 128 >> byte(floor(kc / 8)));
+          lc.setRow(0, 1, 128 >> (kc >> 3));
         }
       }
     }
