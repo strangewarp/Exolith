@@ -4,388 +4,124 @@ Serpentarium: Production Specifications Document
 
 
 INDEX
-	Section I: Hardware
-		I-1.. Circuit design
-		I-2.. Circuit components
-		I-3.. Physical interface & UI commands
-			I-3-a. Physical interface
-			I-3-b. Slice mode elements
-			I-3-c. Record mode elements
-		I-4.. Enclosure
-	Section II: Firmware
-		II-1.. Map of EEPROM usage
-		II-2.. Map of SD-card usage
-		II-3.. Libraries
-		II-4.. Global variables
-		II-5.. Main functions
-		II-6.. Utility functions
-		II-7.. EEPROM functions
-		II-8.. SD-card functions
-		II-9. LED functions
-		II-10. Button functions
-		II-11. Timing functions
-		II-12. MIDI functions
-		II-13. Sustain functions
-		II-14. Sequencing functions
+	1.. Circuit design
+	2.. Circuit components
+	3.. Physical interface & UI commands
+	4.. Physical interface
+	5.. Slice Mode elements
+	6.. Record mode elements
+	7.. Enclosure
+	8.. Map of EEPROM usage
+	9.. Map of SD-card usage
 
 
-Section I-1: "Circuit design"
+Section 1: "Circuit design"
 
 	TODO: write this
 
 
-Section I-2: "Circuit components"
+Section 2: "Circuit components"
 
 	TODO: write this
 
 
-Section I-3: "Physical interface & UI commands"
+Section 3: "Physical interface"
 
-	This section details the Serpentarium as a physical unit: labels for hardware elements, and descriptions of key-commands.
+	The layout of the interface is as follows:
 
-	Subsection I-3-a: "Physical interface"
+	.------------------------.
+	| .  .                   |
+	| |  |   o o o o o o o o |
+	| |  |   o o o o o o o o |
+	| |  |   o o o o o o o o |
+	| Q  Q   l l l l l l l l |
+	| |  |   l l l l l l l l |
+	| |  | b l l l l l l l l |
+	| |  | b l l l l l l l l |
+	| '  ' b l l l l l l l l |
+	'------------------------'
 
-		The layout of the interface is as follows:
+	Key:
+		Q -- Slide potentiometer
+		o -- Standalone LED
+		l -- Buttons (with LED)
+		b -- Buttons (without LED)
 
-		.------------------------.
-		| .  .                   |
-		| |  |   o o o o o o o o |
-		| |  |   o o o o o o o o |
-		| |  |   o o o o o o o o |
-		| Q  Q   l l l l l l l l |
-		| |  |   l l l l l l l l |
-		| |  | b l l l l l l l l |
-		| |  | b l l l l l l l l |
-		| '  ' b l l l l l l l l |
-		'------------------------'
+Section 4: "Slice Mode elements"
 
-		Key:
-			Q -- Slide potentiometer
-			o -- Standalone LED
-			l -- Buttons (with LED)
-			b -- Buttons (without LED)
+	.------------------------.
+	| .  .                   |
+	| |  |   o o o o o o o o |
+	| |  |   O O O O O O O O |
+	| |  |   0 0 0 0 0 0 0 0 |
+	| X  Y   s s s s s s s s |
+	| |  |   s s s s s s s s |
+	| |  | p s s s s s s s s |
+	| |  | v s s s s s s s s |
+	| '  ' t a b c d e f g h |
+	'------------------------'
 
-	Subsection I-3-b: "Slice mode elements"
+	Key:
+		o - LEDs: show active beat as (floor(beat / (longest / 8)) + 1)
+		O - LEDs: show active beat as (beat % 8)
+		0 - LEDs: lit if corresponding column in seq-view contains active sequences
+		X - Slide potentiometer 1
+		Y - Slide potentiometer 2
+		p - PAGE button
+			-> Toggle between page 1 and 2.
+		v - VIEW button
+			-> Toggle between viewing single-button seqs and the slicing canvas.
+		t - THROW button
+			-> Same toggle effect as VIEW, but only when held down.
+			-> t+s+s: The seq represented by the first s-button will be thrown into the row of the slicing canvas represented by the second s-button.
+			-> t+p+v: MIDI PANIC: Send note-offs for every MIDI note on every MIDI channel.
+		s - SEQ/SLICE buttons
+			-> In seq view:
+				>> When seq is inactive: Start playing seq within its first subsection, aligned with global active subsection.
+				>> When seq is active: Transfer seq's activity to within its first subsection.
+			-> In slice view:
+				>> When seq is inactive: Start playing seq within the selected subsection, aligned with global active subsection.
+				>> When seq is active: Transfer seq's activity to within the selected subsection.
+		a - OFF button (OFF command)
+			-> a+s: Toggle the sequence off, and clear its temporary modifications.
+			-> a+n+s: Toggle the sequence off, but keep its temporary modifications.
+		b - CUE-1 button
+			-> When chorded with OFF or SEQ, delay said command until the next beat is reached.
+		c - CUE-8 button
+			-> When chorded with OFF or SEQ, delay said command until the next beat of value (beat % 8 = 1) is reached.
+		d - SKIP button
+			-> d+s: In slice view: Skip/enable various subsections of the seq. Skipped sections will not be played.
+		e - PITCH button
+			-> f+s: In slice view: Change sequence's pitch offset.
+				>> Format: 0(negative or positive) 0000000(pitch)
+		f - SNAP button
+			-> g+s: In slice view: Snap seq's notes to scale, on top of seq's PITCH modifications.
+				>> Format: 0000(scale rotation) 0000(scale type)
+		g - SCATTER button
+			-> g+s: In slice view: Scatter the timing of a sequence's notes, in a manner that varies on every loop.
+				>> Format: 0000(chance) 00(left dist) 00(right dist)
+		h - WANDER button
+			-> h+s: In slice view: Cause a sequece to have a chance of directional wandering when its activity enters a new subsection.
+				>> Format: 00000(chance) 0(up) 0(left) 0(down)
 
-		.------------------------.
-		| .  .                   |
-		| |  |   o o o o o o o o |
-		| |  |   O O O O O O O O |
-		| |  |   0 0 0 0 0 0 0 0 |
-		| X  Y   s s s s s s s s |
-		| |  |   s s s s s s s s |
-		| |  | p s s s s s s s s |
-		| |  | v s s s s s s s s |
-		| '  ' t a b c d e f g h |
-		'------------------------'
-
-		Key:
-			o - LEDs: show active beat as (floor(beat / (longest / 8)) + 1)
-			O - LEDs: show active beat as (beat % 8)
-			0 - LEDs: lit if corresponding column in seq-view contains active sequences
-			X - Slide potentiometer 1
-			Y - Slide potentiometer 2
-			p - PAGE button
-				-> Toggle between page 1 and 2.
-			v - VIEW button
-				-> Toggle between viewing single-button seqs and the slicing canvas.
-			t - THROW button
-				-> Same toggle effect as VIEW, but only when held down.
-				-> t+s+s: The seq represented by the first s-button will be thrown into the row of the slicing canvas represented by the second s-button.
-				-> t+p+v: MIDI PANIC: Send note-offs for every MIDI note on every MIDI channel.
-			s - SEQ/SLICE buttons
-				-> In seq view:
-					>> When seq is inactive: Start playing seq within its first subsection, aligned with global active subsection.
-					>> When seq is active: Transfer seq's activity to within its first subsection.
-				-> In slice view:
-					>> When seq is inactive: Start playing seq within the selected subsection, aligned with global active subsection.
-					>> When seq is active: Transfer seq's activity to within the selected subsection.
-			a - OFF button (OFF command)
-				-> a+s: Toggle the sequence off, and clear its temporary modifications.
-				-> a+n+s: Toggle the sequence off, but keep its temporary modifications.
-			b - CUE-1 button
-				-> When chorded with OFF or SEQ, delay said command until the next beat is reached.
-			c - CUE-8 button
-				-> When chorded with OFF or SEQ, delay said command until the next beat of value (beat % 8 = 1) is reached.
-			d - SKIP button
-				-> d+s: In slice view: Skip/enable various subsections of the seq. Skipped sections will not be played.
-			e - PITCH button
-				-> f+s: In slice view: Change sequence's pitch offset.
-					>> Format: 0(negative or positive) 0000000(pitch)
-			f - SNAP button
-				-> g+s: In slice view: Snap seq's notes to scale, on top of seq's PITCH modifications.
-					>> Format: 0000(scale rotation) 0000(scale type)
-			g - SCATTER button
-				-> g+s: In slice view: Scatter the timing of a sequence's notes, in a manner that varies on every loop.
-					>> Format: 0000(chance) 00(left dist) 00(right dist)
-			h - WANDER button
-				-> h+s: In slice view: Cause a sequece to have a chance of directional wandering when its activity enters a new subsection.
-					>> Format: 00000(chance) 0(up) 0(left) 0(down)
+	TODO: update this if the program's design changes
 
 
-	Subsection I-3-c: "Record mode elements"
-
-		TODO: write this
-
-
-Section I-4: "Enclosure"
+Section 5: "Record Mode elements"
 
 	TODO: write this
 
 
-Section II: "Firmware"
+Section 6: "Enclosure"
 
-	In the following subsections of this document, descriptions of variables and memory-mapping are representative, while descriptions of functions are in pseudocode.
+	TODO: write this
 
 
-	Subsection II-1: "Map of EEPROM usage"
+Section 7: "Map of EEPROM usage"
 
-		bytes 0-255:
-				16  MIDI channels
-			* 8   notes of polyphony per channel 
-			* 2   bytes per sustain-tracking value (pitch, remaining duration)
-			= 256 sustain bytes
+	TODO: write this
 
-		bytes 256-503:
-			248 bytes of reserved space.
 
-		bytes 504-511:
-			8 bytes of 64 boolean values, representing each sequence's playing activity.
+Section 8: "Map of SD-card usage"
 
-		bytes 512-527:
-			16 bytes of 64 two-bit cue-values for every sequence.
-			Format: 00(cue)
-
-		bytes 528-575:
-			48 bytes of reserved space.
-
-		bytes 576-639:
-			64 bytes representing the portions of sequences to be skipped.
-			Format: 0(1) 0(2) 0(3) 0(4) 0(5) 0(6) 0(7) 0(8)
-
-		bytes 640-703:
-			64 bytes, representing each sequence's scale-quantize type.
-			Format: 0000(scale rotation) 0000(scale type)
-
-		bytes 704-767:
-			64 bytes representing each sequence's pitch offset.
-			Format: 0(negative or positive) 0000000(pitch distance)
-
-		bytes 768-831:
-			64 bytes representing each sequence's chance of directional wandering.
-			Format: 00000(chance) 0(up) 0(left) 0(down)
-
-		bytes 832-895:
-			64 bytes representing each sequence's chance of note-event scattering.
-			Format: 0000(chance) 00(left dist) 00(right dist)
-
-		bytes 896-959:
-			64 bytes representing each sequence's loop-resolution random seeds.
-			Format: 00000000(seed = int(n) << 8)
-
-		bytes 960-1023:
-			64 bytes representing each sequence's note-resolution random values.
-			Format: 00000000(current rand value)
-
-		Summary:
-			0-255: Note sustain-tracking data
-			256-503: Reserved
-			504-511: Sequence activity-tracking data
-			512-527: Sequence cue data
-			528-575: Reserved
-			576-639: Sequence section-skip data
-			640-703: Sequence scale-quantize data
-			704-767: Sequence pitch-offset data
-			768-831: Sequence directional-wandering data
-			832-895: Sequence note-scatter data
-			896-959: Sequence loop-based random seeds
-			960-1023: Sequence note-based random values
-
-
-	Subsection II-2: "Map of SD-card usage"
-
-		TODO: write this
-
-
-	Subsection II-3: "Libraries"
-
-		EEPROM.h: For storing and retrieving data in the ATMEGA's native EEPROM.
-
-		Keypad.h: For creating and managing a grid of keypad-buttons, using any matrix of digital I/O pins. (Requires: Wire.h)
-
-		Keypad_MC17.h: For using Keypad.h with the digital I/O pins on an MCP23017 chip. (Requires: Keypad.h, Wire.h)
-
-		LedControl.h: For driving matrices of up to 64 LEDs with any MAX72xx chip.
-
-		SdFat.h: For storing and retrieving data in any FAT32-formatted SD-card.
-
-		Wire.h: For communication with I2C devices.
-
-		TODO: Update this section if there are any library changes
-
-
-	Subsection II-4: "Global variables"
-
-		Specifically library-based variables:
-
-			lc: An LedControl object, from the LedControl library, to control the MAX7221-based LED-matrix.
-
-			ROWS: Number of row-pins in the Keypad_MC17 matrix. Const.
-
-			COLS: Number of column-pins in the Keypad_MC17 matrix. Const.
-
-			KEYS: Unique ASCII characters corresponding to each button in the Keypad_MC17 matrix. Const.
-				Why ASCII chars? Keypad library requires it. Each char can be treated as a byte anyway, so it's not that bad.
-				For each ASCII value as n: (n - 48) % 8 = column, and (n - 48) >> 3 = row.
-
-			rowpins: Pins on the MCP23017 that correspond to rows of the button-matrix.
-
-			colpins: Pins on the MCP23017 that correspond to columns of the button-matrix.
-
-			kpd: A Keypad_MC17 object, which acts the same as a Keypad object, to receive keystrokes from the MCP23017-based keypad.
-
-		Other variables:
-
-			curtick: The current tick the sequence-iterator is sitting on.
-
-			dummytick: Tracks whether to expect a dummy MIDI CLOCK tick before starting to iterate through sequences.
-
-			lastmicros: Holds the value of the last microsecond at which a MIDI CLOCK tick occurred.
-				Note: This wraps back to 0 approximately every 70 minutes, which must be compensated for.
-
-			nexttick: The next tick to be played by the sequence-iterator.
-
-			playing: Tracks whether or not the sequence is currently playing.
-
-			SCALES: An array of 15 useful scales and chords for pitch-quantization. Const. Progmem.
-				Each scale is represented as an array of 7 bytes.
-				Each byte represents a distance, in ascending semitones, from the previous note.
-				A byte-value of 0 indicates that there are no further steps in the scale, and an octave has been traversed.
-
-
-		TODO: Update this section if there are any changes/additions to global variables
-
-
-	Subsection II-5: "Main functions"
-
-		void setup():
-			TODO -> Clear out EEPROM data storage, except for settings that should persist across sessions.
-			-> Initialize Serial communications.
-			-> Initialize kpd object (Keypad_MC17 keypad).
-			-> Initialize lc object (LedControl LED-matrix).
-
-		void loop():
-			TODO -> Call checkPotentiometers().
-			TODO -> Call checkIncomingMIDI().
-			TODO -> If not in MIDI CLOCK SLAVE mode, call checkTickTime().
-			TODO -> If a clock-tick occurred, then:
-			TODO ----> Call updateLastMicros().
-			TODO ----> Call iterateSeqs().
-			TODO -> If in MIDI CLOCK MASTER mode:
-			TODO ----> Call sendClockTick().
-			TODO ----> Call sendSongPosition().
-
-
-		TODO: Update this section as the program changes
-
-
-	Subsection II-6: "Utility functions"
-
-		TODO: write this
-
-
-	Subsection II-7: "EEPROM functions"
-
-		TODO: write this
-
-
-	Subsection II-8: "SD-card functions"
-
-		TODO: write this
-
-
-	Subsection II-9: "LED functions"
-
-		TODO: write this
-
-
-	Subsection II-10: "Button functions"
-
-		TODO: write this
-
-
-	Subsection II-11: "Timing functions"
-
-		TODO boolean checkTickTime():
-			TODO -> call micros() and put its value into curmicros.
-			TODO -> If curmicros is less than lastmicros: diffmicros = curmicros + ~lastmicros
-			TODO -> Else: diffmicros = curmicros - lastmicros
-			TODO -> If diffmicros is greater than tickmicros: Return true.
-			TODO -> Return false.
-
-		TODO void updateLastMicros():
-			TODO -> lastmicros += tickmicros
-
-		TODO void sendClockTick():
-			TODO: describe this
-
-		TODO void sendSongPosition():
-			TODO: describe this
-
-
-		TODO: Write the rest of this
-
-
-	Subsection II-12: "MIDI functions"
-
-		TODO void checkIncomingMIDI():
-			TODO -> While there are incoming serial bytes:
-			TODO ----> Put the frontmost byte into a 3-byte array
-			TODO ----> If the collection array contains a non-SYSEX, non-CLOCK command: Call receivedCommand()
-			TODO ----> If the collection array contains a CLOCK command: Call receivedClock()
-			TODO ----> If the collection array contains a SONG POSITION command: Call receivedSongPosition()
-
-		TODO void receivedCommand(byte b1, byte b2, byte b3):
-			TODO: -> If in Record Mode: Call insertCommand(b1, b2, b3)
-			TODO: -> Call sendCommand(b1, b2, b3)
-
-		TODO void receivedClock(byte c):
-			TODO: -> If not in MIDI CLOCK SLAVE mode: Return null
-			TODO: -> If CLOCK TICK:
-			TODO: ----> If dummytick then: dummytick = false
-			TODO: ----> Else: Call iterateSeqs()
-			TODO: -> If CLOCK START:
-			TODO: ----> dummytick = true
-			TODO: ----> globaltick = 1
-			TODO: ----> nexttick = 1
-			TODO: ----> playing = true
-			TODO: -> If CLOCK STOP:
-			TODO: ----> playing = false
-			TODO: -> If CLOCK RESUME:
-			TODO: ----> dummytick = true
-			TODO: ----> playing = true
-
-		TODO void receivedSongPosition(byte c1, byte c2):
-			TODO: -> Set nexttick to the song-pointer position, e.g. nexttick = ((int(c1) << 8) + c2) * 6
-
-		TODO void insertCommand(b1, b2, b3):
-			TODO: describe this
-
-		TODO void sendCommand(b1, b2, b3):
-			TODO: -> Use Serial functions to send the command's individual bytes
-
-		TODO: Write the rest of this
-
-
-	Subsection II-13: "Sustain functions"
-
-		TODO: write this
-
-
-	Subsection II-14: "Sequencing functions"
-
-		TODO void iterateSeqs()
-			TODO: describe this
-
-		TODO: Write the rest of this
-
+	TODO: write this

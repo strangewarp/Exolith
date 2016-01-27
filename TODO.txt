@@ -10,11 +10,7 @@ alpha 1 TODO:
 	-- Write testing code for SD-card circuit
 	-- Test SD-card circuit
 	-- Upgrade MIDI I/O hardware
-	-- Finish writing all pseudocode in DESIGN-DOC.txt
-	-- Translate all pseudocode functions into concretely-written code
-	-- Test MIDI circuit with new components
-	-- Connect barrel-jack to power circuit
-	-- Test power circuit with power-cable
+	-- Write core functions
 	-- Clear out any remaining "TODO" notes from within the .ino files and specification documents
 	-- Remove "THIS CODE DOES NOTHING" line from copyright statement
 	-- Add "THIS CODE IS UNDER DEVELOPMENT AND HIGHLY UNSTABLE" line to copyright statement
@@ -22,7 +18,10 @@ alpha 1 TODO:
 
 alpha 1 TO TEST:
 	-- Song Position Pointer commands
-	-- MIDI SLAVE commands
+	-- MIDI SLAVE clock response
+	-- MIDI SLAVE song position response
+	-- MIDI MASTER clock timing
+	-- MIDI MASTER song position commands
 	-- "Blackmidi"-style note densities:
 		. For THRU
 		. For RECORD
@@ -33,4 +32,4 @@ alpha 1 TO TEST:
 		. For PLAY
 
 more distant TODOs:
-	-- Finalize plans for the Serpentarium's production-grade physical hardware in the DESIGN-DOC
+	-- Finalize plans for the Serpentarium's production-grade physical hardware in DESIGN-DOC.txt
