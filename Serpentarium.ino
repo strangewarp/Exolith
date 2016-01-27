@@ -4,7 +4,7 @@
 
     The Serpentarium is a MIDI sequencer for ATMEGA1280/2560-based platforms.
     THIS CODE IS UNDER DEVELOPMENT AND DOESN'T DO ANYTHING!
-    Copyright (C) 2015 Christian D. Madsen (sevenplagues@gmail.com).
+    Copyright (C) 2016-onward, Christian D. Madsen (sevenplagues@gmail.com).
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
