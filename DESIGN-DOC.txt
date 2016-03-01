@@ -6,13 +6,11 @@ Serpentarium: Production Specifications Document
 INDEX
 	1.. Circuit design
 	2.. Circuit components
-	3.. Physical interface & UI commands
-	4.. Physical interface
-	5.. Slice Mode elements
-	6.. Record mode elements
-	7.. Enclosure
-	8.. Map of EEPROM usage
-	9.. Map of SD-card usage
+	3.. Physical interface
+	4.. Slice Mode elements
+	5.. Edit Mode elements
+	6.. Map of EEPROM usage
+	7.. Map of SD-card usage
 
 
 Section 1: "Circuit design"
@@ -29,52 +27,64 @@ Section 3: "Physical interface"
 
 	The layout of the interface is as follows:
 
-	.------------------------.
-	| .  .                   |
-	| |  |   o o o o o o o o |
-	| |  |   o o o o o o o o |
-	| |  |   o o o o o o o o |
-	| Q  Q   l l l l l l l l |
-	| |  |   l l l l l l l l |
-	| |  | b l l l l l l l l |
-	| |  | b l l l l l l l l |
-	| '  ' b l l l l l l l l |
-	'------------------------'
+	.--------------------.
+	|    o o o o o o o o |
+	| P  o o o o o o o o |
+	|    o o o o o o o o |
+	| P  o o o o o o o o |
+	|    l l l l l l l l |
+	| b  l l l l l l l l |
+	| b  l l l l l l l l |
+	| b  l l l l l l l l |
+	| b  b b b b b b b b |
+	'--------------------'
 
 	Key:
-		Q -- Slide potentiometer
+		P -- Potentiometer
 		o -- Standalone LED
 		l -- Buttons (with LED)
 		b -- Buttons (without LED)
 
 Section 4: "Slice Mode elements"
 
-	.------------------------.
-	| .  .                   |
-	| |  |   o o o o o o o o |
-	| |  |   O O O O O O O O |
-	| |  |   0 0 0 0 0 0 0 0 |
-	| X  Y   s s s s s s s s |
-	| |  |   s s s s s s s s |
-	| |  | p s s s s s s s s |
-	| |  | v s s s s s s s s |
-	| '  ' t a b c d e f g h |
-	'------------------------'
+	.--------------------.
+	|    o o o o o o o o |
+	| X  O O O O O O O O |
+	|    0 0 0 0 0 0 0 0 |
+	| Y  Q Q Q Q Q Q Q Q |
+	|    s s s s s s s s |
+	| k  s s s s s s s s |
+	| v  s s s s s s s s |
+	| p  s s s s s s s s |
+	| t  a b c d e f g h |
+	'--------------------'
 
 	Key:
-		o - LEDs: show active beat as (floor(beat / (longest / 8)) + 1)
-		O - LEDs: show active beat as (beat % 8)
-		0 - LEDs: lit if corresponding column in seq-view contains active sequences
-		X - Slide potentiometer 1
-		Y - Slide potentiometer 2
-		p - PAGE button
-			-> Toggle between page 1 and 2.
+		o - LEDs: show active beat as (floor(beat / (longest / 8)) + 1), and leave all smaller LED-values lit.
+		O - LEDs: show active beat as (beat % 8).
+		0 - LEDs: lit if corresponding column in seq-view contains active sequences.
+		Q - LEDs: lit if corresponding page contains active sequences.
+		X - Potentiometer 1
+			-> BPM
+		Y - Potentiometer 2
+			-> Swing
+		k - PLAY button
+			-> In MIDI HEAD mode:
+				>> Send all relevant MIDI SONG-POSITION and CLOCK commands to MIDI-OUT.
+				>> k: If stopped, begin playing global clock; if playing, stop.
+				>> k+t: If playing, pause; if paused, resume from pause point.
+			-> In MIDI TAIL mode:
+				>> Send all incoming MIDI SONG-POSITION and CLOCK commands to MIDI-OUT, as soft-THRU.
+				>> k: If stopped, resume playing at master device's SONG-POSITION; if playing, stop.
 		v - VIEW button
-			-> Toggle between viewing single-button seqs and the slicing canvas.
+			-> v: Toggle between viewing single-button seqs and the slicing canvas.
+		p - PAGE button
+			-> p+s: Toggle to the page that corresponds to column "s".
 		t - THROW button
 			-> Same toggle effect as VIEW, but only when held down.
 			-> t+s+s: The seq represented by the first s-button will be thrown into the row of the slicing canvas represented by the second s-button.
-			-> t+p+v: MIDI PANIC: Send note-offs for every MIDI note on every MIDI channel.
+			-> t+p+s: Toggle to EDIT MODE for the sequence corresponding to the s-button.
+			-> t+p+a+h: MIDI PANIC: Send note-offs for every MIDI note on every MIDI channel.
 		s - SEQ/SLICE buttons
 			-> In seq view:
 				>> When seq is inactive: Start playing seq within its first subsection, aligned with global active subsection.
@@ -84,18 +94,38 @@ Section 4: "Slice Mode elements"
 				>> When seq is active: Transfer seq's activity to within the selected subsection.
 		a - OFF button (OFF command)
 			-> a+s: Toggle the sequence off, and clear its temporary modifications.
-			-> a+n+s: Toggle the sequence off, but keep its temporary modifications.
+			-> a+t+s: Toggle the sequence off, but keep its temporary modifications.
+			-> a+p+s: Toggle all sequences on the page off, and clear their temporary modifications.
+			-> a+t+p+s: Toggle all sequences on the page off, but keep their temporary modifications.
 		b - CUE-1 button
-			-> When chorded with OFF or SEQ, delay said command until the next beat is reached.
+			-> Always replaces "c" with "b" in any sequence it is applied onto.
+			-> Always OVERWRITES any currently-cued "b" or "c" command for any sequence it is applied onto:
+				>> b+s, b+p, b+a+s, b+a+p
+			-> Always ADDS ONTO any currently-cued "b" or "c" command for any sequence it is applied onto, while CHANGING "c" to "b":
+				>> b+e+s, b+e+p, b+f+s, b+f+p, b+g+s, b+h+s
+			-> b+s: Activate "s" command, when the next beat is reached.
+			-> b+p: Activate "s" command for all sequences on the active page, when the next beat is reached.
+			-> b+a+s: Activate "a" command for sequence "s", when the next beat is reached.
+			-> b+a+p: Activate "a" command for all sequences on the active page, when the next beat is reached.
+			-> b+e+s: Activate "e" command for sequence "s", when the next beat is reached.
+			-> b+e+p: Activate "e" command for all sequences on the active page, when the next beat is reached.
+			-> b+f+s: Activate "f" command for sequence "s", when the next beat is reached.
+			-> b+f+p: Activate "f" command for all sequences on the active page, when the next beat is reached.
+			-> b+g+s: Activate "g" command for sequence "s", when the next beat is reached.
+			-> b+g+p: Activate "g" command for all sequences on the active page, when the next beat is reached.
+			-> b+h+s: Activate "h" command for sequence "s", when the next beat is reached.
+			-> b+h+p: Activate "h" command for all sequences on the active page, when the next beat is reached.
 		c - CUE-8 button
-			-> When chorded with OFF or SEQ, delay said command until the next beat of value (beat % 8 = 1) is reached.
+			-> Identical to "b" in every way, except:
+				>> Always replaces "b" with "c" in any sequence it is applied onto.
+				>> Only ceases to be cued on beats of the value (beat % 8 = 1).
 		d - SKIP button
 			-> d+s: In slice view: Skip/enable various subsections of the seq. Skipped sections will not be played.
 		e - PITCH button
-			-> f+s: In slice view: Change sequence's pitch offset.
+			-> e+s: In slice view: Change sequence's pitch offset.
 				>> Format: 0(negative or positive) 0000000(pitch)
 		f - SNAP button
-			-> g+s: In slice view: Snap seq's notes to scale, on top of seq's PITCH modifications.
+			-> f+s: In slice view: Snap seq's notes to scale, on top of seq's PITCH modifications.
 				>> Format: 0000(scale rotation) 0000(scale type)
 		g - SCATTER button
 			-> g+s: In slice view: Scatter the timing of a sequence's notes, in a manner that varies on every loop.
@@ -107,21 +137,83 @@ Section 4: "Slice Mode elements"
 	TODO: update this if the program's design changes
 
 
-Section 5: "Record Mode elements"
+Section 5: "Edit Mode elements"
+
+	.--------------------.
+	|    o o o o o o o o |
+	| X  o o o o o o o o |
+	|    o o o o o o o o |
+	| Y  o o o o o o o o |
+	|    n n n n n n n n |
+	| k  n n n n n n n n |
+	| v  n n n n n n n n |
+	| p  n n n n n n n n |
+	| t  a b c d e f g h |
+	'--------------------'
+
+	Key:
+		o - LEDs: general display
+		X - Potentiometer 1
+			-> Base octave.
+		Y - Potentiometer 2
+			-> Note velocity.
+		k - PLAY button
+			-> In MIDI HEAD mode:
+				>> Send all relevant MIDI SONG-POSITION and CLOCK commands to MIDI-OUT.
+				>> k: If stopped, begin playing global clock; if playing, stop.
+				>> k+t: If playing, pause; if paused, resume from pause point.
+			-> In MIDI TAIL mode:
+				>> Send all incoming MIDI SONG-POSITION and CLOCK commands to MIDI-OUT, as soft-THRU.
+				>> k: If stopped, resume playing at master device's SONG-POSITION; if playing, stop.
+		v - VIEW button
+			-> v+X: X-axis note interval for "n" grid
+			-> v+Y: Y-axis note interval for "n" grid
+		p - PAGE button
+			-> p+n: Toggle to the page that corresponds to column "n".
+		t - THROW button
+			-> t+n: Toggle to editing sequence "n".
+			-> t+p+n: Toggle out of EDIT MODE.
+			-> t+p+a+h: MIDI PANIC: Send note-offs for every MIDI note on every MIDI channel.
+		n - PLAYNOTE button
+			-> If recording:
+				>> Record the note into the active sequence, rounding to the closest quantize value if one is set.
+				>> If the note was inserted at or before the pointer position, play the note.
+			-> If not recording:
+				>> Play the note.
+		a - RECORD
+			-> a: Toggle/untoggle recording.
+		b - MIDI/LENGTH panel
+			-> b+X: MIDI channel.
+			-> b+Y: Sequence length, in beats. (2^2 ... 2^8)
+			-> b+t+X: MIDI HEAD/TAIL mode toggle.
+		c - DUR/QUANTIZE panel
+			-> c+X: Note duration.
+			-> c+Y: Note quantize, in ticks.
+		d - STUTTER
+			-> d+n: Repeat note at a rate equal to the "quantize" value.
+		e - FOLD
+			-> e+X: Fold start. (Always set to "1" when "e" is initially pressed. Cannot be greater than "fold-end".)
+			-> e+Y: Fold end. (Always set to "seq-length" when "e" is initially pressed. Cannot be smaller than "fold-start".)
+		f - ERASE
+			-> f: Hold to erase notes on the active MIDI channel, in the active sequence, while the global clock is running.
+			-> f+t: Hold to erase notes on all MIDI channels, in the active sequence, while the global clock is running.
+		g - LOAD panel
+			-> g+X: Loadfile page.
+			-> g+Y: Loadfile slot.
+			-> g+t: Load the file in the selected slot of the selected page.
+		h - SAVE panel
+			-> h+X: Savefile page.
+			-> h+Y: Savefile slot.
+			-> h+t: Save the current song to the selected slot of the selected page.
+
+	TODO: update this if the program's design changes
+
+
+Section 6: "Map of EEPROM usage"
 
 	TODO: write this
 
 
-Section 6: "Enclosure"
-
-	TODO: write this
-
-
-Section 7: "Map of EEPROM usage"
-
-	TODO: write this
-
-
-Section 8: "Map of SD-card usage"
+Section 7: "Map of SD-card usage"
 
 	TODO: write this
