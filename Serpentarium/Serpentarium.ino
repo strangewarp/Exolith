@@ -2,7 +2,8 @@
 
 /*
 
-    The Serpentarium is a MIDI sequencer for the ATMEGA328-based "Swamp" hardware.
+    The Serpentarium is a MIDI sequencer for the "Snekbox" hardware.
+    It runs on the device's primary ATMEGA328 microcontroller.
     To function fully, it must be connected to an upstream "Ophiuchus" unit.
     THIS CODE IS UNDER DEVELOPMENT AND DOESN'T DO ANYTHING!
     Copyright (C) 2016-onward, Christian D. Madsen (sevenplagues@gmail.com).
@@ -129,6 +130,7 @@ byte SUSTAIN[8][3] = {
 void parseSysex() {
 
   // testing code TODO remove
+  /*
   lc.setRow(0, 0, 128 >> min(128, SYSBYTES[0]));
   lc.setRow(0, 1, 128 >> min(128, SYSBYTES[1]));
   lc.setRow(0, 2, 128 >> min(128, SYSBYTES[2]));
@@ -137,7 +139,7 @@ void parseSysex() {
   lc.setRow(0, 5, 128 >> min(128, SYSBYTES[5]));
   lc.setRow(0, 6, 128 >> min(128, SYSBYTES[6]));
   lc.setRow(0, 7, 128 >> min(128, SYSBYTES[7]));
-
+  */
 
 
   // Send SYSEX command to MIDI-OUT, acting as a SOFT THRU;
@@ -149,14 +151,19 @@ void parseSysex() {
 
 }
 
+
+//testing code TODO remove
+byte TESTTICK = 95;
+byte TESTCOUNT = 1;
+
 void parseMidi() {
 
   // testing code TODO remove
-  lc.setRow(0, 2, 128 >> (SYSBYTES[0] >> 7));
-  lc.setRow(0, 3, 128 >> (SYSBYTES[0] % 128));
-  lc.setRow(0, 5, 128 >> SYSBYTES[1]);
-  lc.setRow(0, 7, 128 >> SYSBYTES[2]);
-
+  //lc.setRow(0, 2, INBYTES[0] >> 7);
+  //lc.setRow(0, 3, INBYTES[0] % 128);
+  lc.setRow(0, TESTCOUNT, INBYTES[1]);
+  TESTCOUNT = max(1, (TESTCOUNT % 8) + 1);
+  //lc.setRow(0, 7, INBYTES[2]);
 
 
   // TODO: write the actual version of this function:
@@ -227,13 +234,6 @@ void loop() {
 
 
 
-  // MIDI testing code
-  /*
-  Serial.write((onoff == 1) ? 128 : 144);
-  Serial.write(32);
-  Serial.write(127);
-  onoff = 1 - onoff;
-  */
 
   // Get keypad keys and launch commands accordingly
   if (kpd.getKeys()) {
@@ -243,6 +243,15 @@ void loop() {
           int kc = int(kpd.key[i].kchar) - 48;
           lc.setRow(0, 2, 128 >> (kc % 8));
           lc.setRow(0, 3, 128 >> (kc >> 3));
+
+          //testing code TODO remove
+          Serial.write(144);
+          Serial.write(byte((floor(kc / 8)) * 8) + (kc >> 3));
+          Serial.write(127);
+          Serial.write(128);
+          Serial.write(byte((floor(kc / 8) * 8)) + (kc >> 3));
+          Serial.write(127);
+
         } else if (kpd.key[i].kstate == RELEASED) {
           lc.setRow(0, 2, 0);
           lc.setRow(0, 3, 0);
@@ -257,7 +266,7 @@ void loop() {
     // Get the frontmost incoming byte
     byte b = Serial.read();
 
-    // TODO: Stress-test SYSEX processing with a Pd script & a USB-MIDI cable
+    // TODO: Stress-test SYSEX processing with a Pd send-receive script & a USB-MIDI cable
 
     if (SYSIGNORE) { // If this is an ignoreable SYSEX command, send its bytes onward
       Serial.write(b);
@@ -294,9 +303,18 @@ void loop() {
         Serial.write(b);
         resetSeqs();
         PLAYING = true;
+
+        //testing code TODO remove
+        TESTTICK = 95;
+        
       } else if (b == 248) { // TIMING CLOCK command
         Serial.write(b);
         iterateSeqs();
+
+        //testing code TODO remove
+        TESTTICK = (TESTTICK + 1) % 96;
+        lc.setRow(0, 0, TESTTICK);
+        
       } else if (b == 247) { // END SYSEX MESSAGE command
         // If you're dealing with an END-SYSEX command while SYSIGNORE and SYSLATCH are inactive,
         // then that implies you've received either an incomplete or corrupt SYSEX message,

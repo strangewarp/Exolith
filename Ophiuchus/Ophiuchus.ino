@@ -2,7 +2,8 @@
 
 /*
 
-    The Ophiuchus is a MIDI control program for the ATMEGA328-based "Swamp" hardware.
+    The Ophiuchus is a MIDI control program for the "Snekbox" hardware.
+    It runs on the device's primary ATMEGA328 microcontroller.
     It is a controller for every downstream "Serpentarium" unit.
     THIS CODE IS UNDER DEVELOPMENT AND DOESN'T DO ANYTHING!
     Copyright (C) 2016-onward, Christian D. Madsen (sevenplagues@gmail.com).
