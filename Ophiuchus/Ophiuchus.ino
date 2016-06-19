@@ -3,7 +3,6 @@
 /*
 
     The Ophiuchus is a MIDI control program for the "Snekbox" hardware.
-    It runs on the device's primary ATMEGA328 microcontroller.
     It is a controller for every downstream "Serpentarium" unit.
     THIS CODE IS UNDER DEVELOPMENT AND DOESN'T DO ANYTHING!
     Copyright (C) 2016-onward, Christian D. Madsen (sevenplagues@gmail.com).
@@ -82,23 +81,20 @@ void setup() {
 
 void loop() {
 
-  // Get the current time in microseconds;
-  // then calculate the time that's elapsed since the last tick (while compensating for overflows on the timer's unsigned long data);
-  // then set the absolute-time to the current time.
-  unsigned long micr = micros();
-  if (micr < ABSOLUTETIME) {
-    ELAPSED += micr + (4294967295 - ABSOLUTETIME);
-  } else {
-    ELAPSED += micr - ABSOLUTETIME;
+  unsigned long micr = micros(); // Get the current time in microseconds
+  if (micr < ABSOLUTETIME) { // If the microsecond-counter has overflowed its finite storage space and wrapped around to a small value...
+    ELAPSED += micr + (4294967295 - ABSOLUTETIME); // Increase elapsed-ticks by said value, plus the amount between the previous tick and the overflow point
+  } else { // Else, if the microsecond-counter hasn't overflowed...
+    ELAPSED += micr - ABSOLUTETIME; // Increase the elapsed-ticks by the time since the previous tick
   }
-  ABSOLUTETIME = micr;
+  ABSOLUTETIME = micr; // Set the absolute-time to the current time, for use in the next main-loop cycle as a "previous tick" value
 
   // On every MIDI tick...
   if (ELAPSED >= TICKSIZE) {
 
-    // Subtract the tick-size from the time elapsed since last tick, to compensate for overdraft
-    ELAPSED -= TICKSIZE;
+    ELAPSED -= TICKSIZE; // Subtract the tick-size from the time elapsed since last tick, to compensate for overdraft
 
+    
 
 
   }

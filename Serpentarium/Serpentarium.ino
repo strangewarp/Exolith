@@ -3,7 +3,6 @@
 /*
 
     The Serpentarium is a MIDI sequencer for the "Snekbox" hardware.
-    It runs on the device's primary ATMEGA328 microcontroller.
     To function fully, it must be connected to an upstream "Ophiuchus" unit.
     THIS CODE IS UNDER DEVELOPMENT AND DOESN'T DO ANYTHING!
     Copyright (C) 2016-onward, Christian D. Madsen (sevenplagues@gmail.com).
