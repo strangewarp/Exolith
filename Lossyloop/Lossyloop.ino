@@ -126,25 +126,25 @@ byte LANEMETA[3][8] = {
 byte LANETICK[3] = {0, 0, 0};
 
 
-void updateRowLEDs(byte row) {
-  if (row == 6) { // If this is the global beat-tracking row, 
-    lc.setRow(0, 6, 1 << (7 - byte(floor(CURTICK / 24))));
-  } else if (row == 7) {
-    lc.setRow(0, 7, 1 << (((8 - CMDMODE) % 8) - 1));
-  } else {
-    byte rs = row >> 1;
-    if (CMDMODE == 0) {
-      lc.setRow(0, row, DISPLAY[row] | (((row & 1) == 0) ? BLINKVISIBLE[rs] : 0));
-    } else {
-      lc.setRow(0, row, LANEMETA[rs][CMDMODE - 1]);
+void updateRowLEDs(byte row) { // TODO: comments that explain what these lines do
+  if (row == 6) { // If this is the global beat-tracking row...
+    lc.setRow(0, 6, 1 << (7 - byte(floor(CURTICK / 96)))); // Set the row to display the current global beat
+  } else if (row == 7) { // Else, if this is the control-button keypress row...
+    lc.setRow(0, 7, 1 << (((8 - CMDMODE) % 8) - 1)); // Light up an LED representing the active command-mode, which is controlled by the bottom row of buttons
+  } else { // Else, if this is some other row...
+    byte rs = row >> 1; // Get a shifted value that yields indices combining 0,1, 2,3, and 4,5
+    if (CMDMODE == 0) { // If this is the default command-mode...
+      lc.setRow(0, row, DISPLAY[row] | (((row & 1) == 0) ? BLINKVISIBLE[rs] : 0)); // Combine the note-row with the blink-values of latent-notes
+    } else { // Else, if this is any other command-mode...
+      lc.setRow(0, row, LANEMETA[rs][CMDMODE - 1]); // Display the lanes' meta-values that correspond to various command-modes
     }
   }
 }
 
-
+// Update every LED in the ledControl grid
 void updateAllLEDs() {
-  for (byte i = 0; i < 8; i++) {
-    updateRowLEDs(i);
+  for (byte i = 0; i < 8; i++) { // For every LED row...
+    updateRowLEDs(i); // Update that row of LEDs
   }
 }
 
@@ -254,23 +254,24 @@ void shiftLaneNotes(byte col, byte row) {
   }
 }
 
-
-void incrementTicks() { // TODO write comments that explain what these lines do
-  CURTICK = (CURTICK + 1) % 768;
-  for (byte i = 0; i <= 3; i++) {
-    if (((LANEMETA[i][0] >> 7) % 2) == 1) {
-      byte beatdiv = max(1, 8 - (LANEMETA[i][7] & 15));
-      beatdiv += min(1, beatdiv & 3);
-      word persect = (96 * max(1, 8 - (LANEMETA[i][6] >> 4))) / beatdiv;
-      word ticktotal = persect * beatdiv;
-      LANETICK[i]++;
-      if ((LANETICK[i] + 1) >= persect) {
-        byte p = word(floor((LANETICK[i] + 1) / persect)) % ticktotal;
-        if (LANE[i][p][0] < 16) {
-          playNote(LANE[i][p][0], LANE[i][p][1], LANE[i][p][2], LANE[i][p][3]);
+// Increment the global tick, each lane's local tick (if applicable), and trigger notes if any lanes lapse into their next section
+void incrementTicks() {
+  CURTICK = (CURTICK + 1) % 768; // Increment the global tick, wrapping it to an 8-beat window
+  for (byte i = 0; i <= 3; i++) { // For each lane...
+    if (((LANEMETA[i][0] >> 7) % 2) == 1) { // If the lane is set to clock-trigger mode, not note-trigger mode...
+      byte beatdiv = max(1, 8 - (LANEMETA[i][7] & 15)); // Get the lane's beat-division value as it's stored - 1, 2, 4, or 8
+      beatdiv += min(1, beatdiv & 3); // Modify the beat-division value to reflect the state its stored value represents - 2, 3, 4, or 8
+      byte looplen = max(1, 8 - (LANEMETA[i][6] >> 4)); // Get the loop's total length, in beats
+      word persect = (96 * looplen) / beatdiv; // Get the number of ticks per note-section
+      word ticktotal = persect * looplen; // Get the total number of ticks in the lane
+      word nexttick = (LANETICK[i] % persect) + 1; // Get a dummy-value that simulates the next tick's unwrapped position
+      LANETICK[i] = (LANETICK + 1) % ticktotal; // Increment the lane's local tick value, wrapping to its local tick-total
+      if (nexttick >= persect) { // If the next tick's unwrapped position is greater than the number of ticks per local note-slot...
+        byte p = word(floor(LANETICK[i] / persect)); // Get the section that the lane's updated tick now resides in
+        if (LANE[i][p][0] < 16) { // If the lane-note within the new section is an active note...
+          playNote(LANE[i][p][0], LANE[i][p][1], LANE[i][p][2], LANE[i][p][3]); // Play that note
         }
       }
-      LANETICK[i] %= ticktotal;
     }
   }
 }
@@ -294,6 +295,13 @@ void haltAllSustains() {
 }
 
 
+void playNote(byte chan, byte pitch, byte velo, byte dur) {
+
+
+
+}
+
+
 void parseMidi() {
 
   // testing code TODO remove
@@ -304,24 +312,6 @@ void parseMidi() {
   //lc.setRow(0, 7, CATCHBYTES[2]);
 
 
-  // TODO: write the actual version of this function:
-  //        * Record commands when in Record Mode
-  //        * Change internal state based on Ophiuchus SYSEX commands - each containing a checksum byte tacked onto its command byte
-
-  // TODO: adapt this
-  /*
-  if (b == 252) { // STOP command
-    PLAYING = false;
-  } else if (b == 251) { // CONTINUE command
-    PLAYING = true;
-  } else if (b == 250) { // START command
-    PLAYING = true;
-    CURTICK = 0;
-    //iterateTick();
-  } else if (b == 248) { // TIMING CLOCK command
-    CURTICK = (CURTICK + 1) % 768;
-    //iterateTick();
-  */
 
 
 }
