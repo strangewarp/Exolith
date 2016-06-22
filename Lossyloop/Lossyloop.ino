@@ -130,6 +130,12 @@ byte LANEMETA[3][8] = {
 
 word LANETICK[3] = {0, 0, 0}; // Each lane's current tick position
 
+// Each lane's currently-held note-position-chording buttons, for the default command-mode's "note-playing" behavior
+// Format:
+//   Bits 0-3 (reserved): (reserved)
+//   Bits 4-7 (CHORDING): 1, 2, 3, 4 (sections of the corresponding lane)
+byte LANECHORD[3] = {0, 0, 0};
+
 
 // Update and set each row's LEDs, depending on which command-mode is active, global tick position, and the contents of the lanes
 void updateRowLEDs(byte row) {
@@ -154,7 +160,7 @@ void updateAllLEDs() {
   }
 }
 
-
+// Parse an incoming keystroke in the Keypad grid. This function is called automatically, as set up by kpd.addEventListener() in the setup() function
 void parseKeystroke(KeypadEvent key) {
 
   KeyState statetype = getState(key); // Get the type of event occurring on the key that has changed state
@@ -167,9 +173,12 @@ void parseKeystroke(KeypadEvent key) {
       assignCommandAction(kcol, krow); // Interpret the keystroke under whichever command-mode is active
     } else { // Else, if the button is in the bottom row...
       CMDMODE = keynum - 23; // Set the command-mode to 1 through 8, one ahead of the raw button column (0 is default)
+      memcpy(LANECHORD, {0, 0, 0}, 3); // Empty out all buttons that might be chorded in the default mode
     }
   } else if (statetype == RELEASED) { // Else, if the button is released...
-    if (keynum >= 24) { // If the released key was on the bottom row...
+    if (keynum < 24) { // If the released key was in any of the top three rows...
+      unassignCommandAction(kcol, krow); // Interpret the key-release, when applicable
+    } else { // If the released key was on the bottom row...
       CMDMODE = 0; // Set the display-mode to the main screen
       for (byte i = 31; i >= 24; i--) { // Check whether any other keys on the bottom row are held, from right to left
         if (getState(char(i + 48)) == HOLD) { // If another key on the bottom row is still held...
@@ -197,7 +206,11 @@ void assignCommandAction(byte col, byte row) {
   // Note: "row" represents the row of the button pressed, not the row of LEDs it represents
 
   if (CMDMODE == 0) { // If we are in the default mode...
-    playStoredNote(col, row); // Play the note that was last present in the button's corresponding loop-slot
+    if (col <= 3) { // If this keystroke was in the left half of the button-grid...
+      LANECHORD[row] |= 1 << col; // Insert the key's bit into the lane's chord-tracking byte, if it isn't there already
+    } else { // Else, if this keystroke is in the right half of the button-grid...
+      playStoredNote(col, row); // Play the notes that were last present in the chorded buttons' corresponding loop-slots
+    }
   } else if (CMDMODE == 1) { // If we are in the lane-activity-toggle mode...
     if (col == 0) { // If this is the leftmost column...
       LANEMETA[row][0] ^= 128; // Toggle the lane's activity status on or off (this is effectively a mute)
@@ -222,10 +235,24 @@ void assignCommandAction(byte col, byte row) {
 
 }
 
-// Play the note that was last present in the button's corresponding loop-slot
+// Interpret a key-release according to whatever command-mode is active
+void unassignCommandAction(byte col, byte row) {
+  if (CMDMODE == 0) { // If we are in the default mode...
+    if (col <= 3) { // If this key-release was in the left half of the button-grid...
+      LANECHORD[row] ^= 1 << col; // Remove the key's bit from the lane's chord-tracking byte
+    }
+  }
+}
+
+// Play the notes that were last present in the chorded buttons' corresponding loop-slots
 void playStoredNote(byte col, byte row) {
-  if (LANE[row][col][0] < 255) { // If the note is either active or latent, and not empty...
-    playNote(LANE[row][col][0] % 16, LANE[row][col][1], LANE[row][col][2], LANE[row][col][3]); // Play the note, with a corrected MIDI CHANNEL byte
+  for (byte i = 0; i < 4; i++) { // For each 4-long subsection of the 16-note-long lane...
+    if (((LANECHORD[row] >> i) & 1) == 1) { // If this subsection's chord-key is being held...
+      byte note = (i * 4) + (col - 4) // Get the note that the regular (non-chorded) keypress corresponds with
+      if (LANE[row][note][0] < 255) { // If the note is either active or latent, and not empty...
+        playNote(LANE[row][note][0] % 16, LANE[row][note][1], LANE[row][note][2], LANE[row][note][3]); // Play the note, with a corrected MIDI CHANNEL byte
+      }
+    }
   }
 }
 
@@ -313,12 +340,12 @@ void haltAllSustains() {
   }
 }
 
-
+// Play a given MIDI NOTE and send its data to the MIDI-OUT TX line
 void playNote(byte chan, byte pitch, byte velo, byte dur) {
-  addSustain(chan, pitch, dur);
-  Serial.write(144 + chan);
-  Serial.write(pitch);
-  Serial.write(velo);
+  addSustain(chan, pitch, dur); // Add a sustain for the note
+  Serial.write(144 + chan); // Send the command-byte
+  Serial.write(pitch); // Send the pitch-byte
+  Serial.write(velo); // Send the velocity-byte
 }
 
 
