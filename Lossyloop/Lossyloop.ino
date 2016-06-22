@@ -50,11 +50,14 @@ unsigned long ABSOLUTETIME = 0;
 unsigned long ELAPSED = 0;
 unsigned long TICKSIZE = 100000; // Size of the current tick, in microseconds; tick = 60000000 / (bpm * 96)
 
+// LED vars
+byte ROWUPDATE = 0; // Track which rows of LEDs to update on a given iteration of the main loop. 1 = row 0; 2 = row 1; 4 = row 2; ... 128 = row 7
+
 // LED pseudo-PWM vars
 const byte BLINKLENGTH PROGMEM = 64; // Length, in main-loop cycles, of each pseudo-PWM blink-cycle
 byte BLINKELAPSED = 0; // Amount of time elapsed within the current blink-cycle
-byte BLINKVAL[3] = {0, 0, 0}; // All persistent visibility states for dimmed LEDs. 0 = off; 1 = dimmed
-byte BLINKVISIBLE[3] = {0, 0, 0}; // All current PWM states for all LEDs in rows 0, 2, and 4, stored as individual bits. 0 = PWM low; 1 = PWM high
+byte BLINKVAL[6] = {0, 0, 0, 0, 0, 0}; // All persistent visibility states for LEDs on their 6 applicable rows. 0 = off; 1 = 50% dim
+byte BLINKVISIBLE[6] = {0, 0, 0, 0, 0, 0}; // All current PWM states for all LEDs in rows 0-5, stored as individual bits. 0 = PWM low; 1 = PWM high
 
 // Sequencing vars
 boolean PLAYING = false; // Controls whether the sequences are iterating through their contents
@@ -87,15 +90,17 @@ byte INSUSTAIN[3][3] = { {255, 255, 0}, {255, 255, 0}, {255, 255, 0} };
 // Format: LANE[n] = {channel, pitch, velocity, duration}
 // Note: "255" in bytes 0 and 1 means "empty slot"
 // Note: If byte 0 is between 128 and 255, that means "latent note"
-byte LANE[3][8][4];
+byte LANE[3][16][4];
 
 // Contains all metadata for each lane
 // Format: LANEMETA[n] = {ACTIVE, PITCH, VELO, DUR, VANISH, BLEED, LEN, CHAN}
 // Key:
-//   [0] ACTIVE: Toggles whether the lane is currently recording and playing notes, and whether it is incremented by note-ins or the global clock
-//                 Bit 0 (ACTIVITY):    off/on
-//                 Bit 1 (CLOCK TRIG):  note/clock
-//                 Bits 2-7 (reserved): (reserved)
+//   [0] ACTIVE: Toggles whether the lane is currently recording and playing notes, whether it is incremented by note-ins or the global clock,
+//               and whether a note should be played when it is initially received.
+//                 Bit 0 (ACTIVITY):       off/on
+//                 Bit 1 (CLOCK TRIG):     note/clock
+//                 Bit 2 (PLAY INITIALLY): no/yes
+//                 Bits 3-7 (reserved):    (reserved)
 //   [1] PITCH:  Toggles possible pitch-modulation distances.
 //                 Bits 0-3: -5, -4, -3, -2
 //                 Bits 4-7: 2, 3, 4, 5
@@ -123,18 +128,19 @@ byte LANEMETA[3][8] = {
   {0, 0, 0, 0, 8, 0, 8, 0}
 };
 
-byte LANETICK[3] = {0, 0, 0};
+word LANETICK[3] = {0, 0, 0}; // Each lane's current tick position
 
 
-void updateRowLEDs(byte row) { // TODO: comments that explain what these lines do
+// Update and set each row's LEDs, depending on which command-mode is active, global tick position, and the contents of the lanes
+void updateRowLEDs(byte row) {
   if (row == 6) { // If this is the global beat-tracking row...
-    lc.setRow(0, 6, 1 << (7 - byte(floor(CURTICK / 96)))); // Set the row to display the current global beat
+    lc.setRow(0, 6, 1 << (7 - byte(floor(CURTICK / 192)))); // Set the row to display the current global beat, divided by 2
   } else if (row == 7) { // Else, if this is the control-button keypress row...
     lc.setRow(0, 7, 1 << (((8 - CMDMODE) % 8) - 1)); // Light up an LED representing the active command-mode, which is controlled by the bottom row of buttons
   } else { // Else, if this is some other row...
     byte rs = row >> 1; // Get a shifted value that yields indices combining 0,1, 2,3, and 4,5
     if (CMDMODE == 0) { // If this is the default command-mode...
-      lc.setRow(0, row, DISPLAY[row] | (((row & 1) == 0) ? BLINKVISIBLE[rs] : 0)); // Combine the note-row with the blink-values of latent-notes
+      lc.setRow(0, row, DISPLAY[row] | BLINKVISIBLE[row]); // Combine the note-row with the blink-values of active-notes and latent-notes
     } else { // Else, if this is any other command-mode...
       lc.setRow(0, row, LANEMETA[rs][CMDMODE - 1]); // Display the lanes' meta-values that correspond to various command-modes
     }
@@ -256,13 +262,17 @@ void shiftLaneNotes(byte col, byte row) {
 
 // Increment the global tick, each lane's local tick (if applicable), and trigger notes if any lanes lapse into their next section
 void incrementTicks() {
+  word prevg = CURTICK; // Save the previous global tick
   CURTICK = (CURTICK + 1) % 768; // Increment the global tick, wrapping it to an 8-beat window
+  if (floor(prevg / 96) != floor(CURTICK / 96)) { // If the previous global tick and the current global tick are in different beats... 
+    ROWUPDATE |= 64; // Flag the global-beat-row for updating
+  }
   for (byte i = 0; i <= 3; i++) { // For each lane...
     if (((LANEMETA[i][0] >> 7) % 2) == 1) { // If the lane is set to clock-trigger mode, not note-trigger mode...
       byte beatdiv = max(1, 8 - (LANEMETA[i][7] & 15)); // Get the lane's beat-division value as it's stored - 1, 2, 4, or 8
       beatdiv += min(1, beatdiv & 3); // Modify the beat-division value to reflect the state its stored value represents - 2, 3, 4, or 8
-      byte looplen = max(1, 8 - (LANEMETA[i][6] >> 4)); // Get the loop's total length, in beats
-      word persect = (96 * looplen) / beatdiv; // Get the number of ticks per note-section
+      byte looplen = 16 - (LANEMETA[i][6] >> 4); // Get the loop's total length, in beats
+      word persect = (48 * looplen) / beatdiv; // Get the number of ticks per note-section
       word ticktotal = persect * looplen; // Get the total number of ticks in the lane
       word nexttick = (LANETICK[i] % persect) + 1; // Get a dummy-value that simulates the next tick's unwrapped position
       LANETICK[i] = (LANETICK + 1) % ticktotal; // Increment the lane's local tick value, wrapping to its local tick-total
@@ -271,6 +281,7 @@ void incrementTicks() {
         if (LANE[i][p][0] < 16) { // If the lane-note within the new section is an active note...
           playNote(LANE[i][p][0], LANE[i][p][1], LANE[i][p][2], LANE[i][p][3]); // Play that note
         }
+        ROWUPDATE |= (1 << (i * 2)) * 3; // Flag both of the lane's LED-rows for updating
       }
     }
   }
@@ -281,6 +292,14 @@ void resetTickPointers() {
   CURTICK = 0; // Reset global tick-pointer
   memcpy(LANETICK, {0, 0, 0}, 3); // Reset all lanes' local tick-pointers
 }
+
+
+void addSustain(byte chan, byte pitch, byte dur) {
+
+
+
+}
+
 
 // Send NOTE-OFFs for all currently-sustained notes, and remove them from the SUSTAIN array
 void haltAllSustains() {
@@ -296,21 +315,14 @@ void haltAllSustains() {
 
 
 void playNote(byte chan, byte pitch, byte velo, byte dur) {
-
-
-
+  addSustain(chan, pitch, dur);
+  Serial.write(144 + chan);
+  Serial.write(pitch);
+  Serial.write(velo);
 }
 
 
 void parseMidi() {
-
-  // testing code TODO remove
-  //lc.setRow(0, 2, CATCHBYTES[0] >> 7);
-  //lc.setRow(0, 3, CATCHBYTES[0] % 128);
-  lc.setRow(0, TESTCOUNT, CATCHBYTES[1]);
-  TESTCOUNT = max(1, (TESTCOUNT % 8) + 1);
-  //lc.setRow(0, 7, CATCHBYTES[2]);
-
 
 
 
@@ -328,7 +340,7 @@ void setup() {
 
   // Populate the LANE array with dummy-values, which will be treated as empty
   for (byte a = 0; a <= 3; a++) {
-    for (byte b = 0; b <= 8; b++) {
+    for (byte b = 0; b <= 16; b++) {
       memcpy(LANE[a][b], {255, 255, 0, 0}, 4);
     }
   }
@@ -342,9 +354,11 @@ void loop() {
   BLINKELAPSED++; // Increase the blink-time-counting variable
   if (BLINKELAPSED >= BLINKLENGTH) { // If the elapsed blink-time has reached the blink-length limit...
     BLINKELAPSED == 0; // Reset the blink-time-counting variable
-    memcpy(BLINKVISIBLE, BLINKVAL, 3); // Copy the lit-LED values from the absolute-blink-value array to the visible-blink array
+    memcpy(BLINKVISIBLE, BLINKVAL, 6); // Copy the lit-LED values from the absolute-blink-value array to the visible-blink array
+    ROWUPDATE |= 63; // Flag the first 6 LED rows for a GUI update
   } else if (BLINKELAPSED == (BLINKLENGTH >> 1)) { // Else, if the elapsed blink-time has reached the middle of the blink-cycle...
-    memcpy(BLINKVISIBLE, {0, 0, 0}, 3); // Place all unlit values into the visible-blink array
+    memcpy(BLINKVISIBLE, {0, 0, 0}, 6); // Place all unlit values into the visible-blink array
+    ROWUPDATE |= 63; // Flag the first 6 LED rows for a GUI update
   }
 
   while (Serial.available() > 0) { // While new MIDI bytes are available to read from the MIDI-IN port...
@@ -416,6 +430,15 @@ void loop() {
       }
     }
 
+  }
+
+  if (ROWUPDATE > 0) { // If any of the LED-rows have been flagged for an update on this iteration of the main loop...
+    for (byte i = 0; i < 8; i++) { // For each row...
+      if ((ROWUPDATE & (1 << (7 - i))) > 0) { // If the current row's update-flag is present...
+        updateRowLEDs(i); // Update that row's LEDs
+      }
+    }
+    ROWUPDATE = 0; // Reset all row-update flags
   }
 
 }
