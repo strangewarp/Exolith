@@ -80,11 +80,10 @@ byte SUSTAIN[8][3] = {
 };
 
 // MIDI-IN SUSTAIN vars
-// Format: INSUSTAIN[n] = {channel, pitch, elapsed duration in ticks}
+// Format: INSUSTAIN[n] = {channel, pitch, elapsed duration in ticks, target lane, target column}
 // Note: "255" in bytes 1 and 2 means "empty slot"
-// Note: these are not cleared in haltAllSustains, as proper behavior of upstream devices is assumed;
-//       however, individual INSUSTAIN entries are concluded and recorded after a beat's worth of ticks have elapsed.
-byte INSUSTAIN[3][3] = { {255, 255, 0}, {255, 255, 0}, {255, 255, 0} };
+// Note: these are not cleared in haltAllSustains, as proper behavior of upstream devices is assumed
+byte INSUSTAIN[8][5];
 
 // Contains all currently-existing notes in each lane
 // Format: LANE[n] = {channel, pitch, velocity, duration}
@@ -250,7 +249,7 @@ void playStoredNote(byte col, byte row) {
     if (((LANECHORD[row] >> i) & 1) == 1) { // If this subsection's chord-key is being held...
       byte note = (i * 4) + (col - 4) // Get the note that the regular (non-chorded) keypress corresponds with
       if (LANE[row][note][0] < 255) { // If the note is either active or latent, and not empty...
-        playNote(LANE[row][note][0] % 16, LANE[row][note][1], LANE[row][note][2], LANE[row][note][3]); // Play the note, with a corrected MIDI CHANNEL byte
+        sendNoteOn(LANE[row][note][0] % 16, LANE[row][note][1], LANE[row][note][2], LANE[row][note][3]); // Play the note, with a corrected MIDI CHANNEL byte
       }
     }
   }
@@ -306,7 +305,7 @@ void incrementTicks() {
       if (nexttick >= persect) { // If the next tick's unwrapped position is greater than the number of ticks per local note-slot...
         byte p = word(floor(LANETICK[i] / persect)); // Get the section that the lane's updated tick now resides in
         if (LANE[i][p][0] < 16) { // If the lane-note within the new section is an active note...
-          playNote(LANE[i][p][0], LANE[i][p][1], LANE[i][p][2], LANE[i][p][3]); // Play that note
+          sendNoteOn(LANE[i][p][0], LANE[i][p][1], LANE[i][p][2], LANE[i][p][3]); // Play that note
         }
         ROWUPDATE |= (1 << (i * 2)) * 3; // Flag both of the lane's LED-rows for updating
       }
@@ -320,10 +319,29 @@ void resetTickPointers() {
   memcpy(LANETICK, {0, 0, 0}, 3); // Reset all lanes' local tick-pointers
 }
 
-
+// Add a note to the sustain-tracking system
 void addSustain(byte chan, byte pitch, byte dur) {
+  if (SUSTAIN[7][0] < 16) {
+    sendNoteOff(SUSTAIN[7][0], SUSTAIN[7][1], 127);
+  }
+  for (byte i = 7; i > 0; i--) {
+    memcpy(SUSTAIN[i], SUSTAIN[i - 1], 3);
+  }
+  memcpy(SUSTAIN[0], {chan, pitch, dur}, 3);
+}
 
 
+// Increment all currently-sustained notes in the sustain-tracking system, and send their corresponding note-offs if any reach their end
+void incrementSustains() {
+
+  for (byte i = 0; i < 8; i++) {
+    if (SUSTAIN[i][0] == 255) {
+      return;
+    }
+
+    
+
+  }
 
 }
 
@@ -340,19 +358,66 @@ void haltAllSustains() {
   }
 }
 
-// Play a given MIDI NOTE and send its data to the MIDI-OUT TX line
-void playNote(byte chan, byte pitch, byte velo, byte dur) {
-  addSustain(chan, pitch, dur); // Add a sustain for the note
-  Serial.write(144 + chan); // Send the command-byte
-  Serial.write(pitch); // Send the pitch-byte
-  Serial.write(velo); // Send the velocity-byte
+
+void addInSustain(byte chan, byte pitch, byte velo, byte lane, byte col) {
+
+
+
 }
 
 
+void removeInSustain(byte chan, byte pitch) {
+
+
+
+}
+
+
+void incrementInSustains() {
+
+
+
+}
+
+// Play a given MIDI NOTE-ON, start tracking its sustain status, and send its data to the MIDI-OUT TX line
+void sendNoteOn(byte chan, byte pitch, byte velo, byte dur) {
+  addSustain(chan, pitch, dur); // Add a sustain for the note
+  sendMidi(144 + chan, pitch, dur); // Send the NOTE-ON command onward to the TX MIDI-OUT line
+}
+
+// Play a given NOTE-OFF, remove its corresponding sustain-command (if applicable), and send its data to the MIDI-OUT TX line
+void sendNoteOff(byte chan, byte pitch) {
+  removeSustain(chan, pitch); // Remove the note's corresponding sustain-array entry, if one exists
+  sendMidi(128 + chan, pitch, 127); // Send the NOTE-OFF command onward to the TX MIDI-OUT line
+}
+
+// Send a 3-byte MIDI command on the TX MIDI-OUT line
+void sendMidi(byte b1, byte b2, byte b3) {
+  Serial.write(b1); // Send the command-byte
+  Serial.write(b2); // Send the pitch-byte / second data-byte
+  if (b3 != 255) { // If the third byte isn't flagged as empty...
+    Serial.write(b3); // Send the velocity-byte / third data-byte
+  }
+}
+
+// Parse an incoming MIDI command
 void parseMidi() {
-
-
-
+  byte chan = CATCHBYTES[0] & 15;
+  byte cmd = CATCHBYTES[0] & 240;
+  if (cmd == 128) {
+    removeInSustain(chan, CATCHBYTES[1]);
+  } else if (cmd == 144) {
+    for (byte i = 0; i < 3; i++) {
+      if ((15 - (LANEMETA[i][7] >> 4)) == chan) {
+        addInSustain(chan, CATCHBYTES[1], CATCHBYTES[2], i, floor(LANETICK[i] / ((LANEMETA[6] >> 4) * 192)));
+      }
+    }
+  }
+  sendMidi(
+    CATCHBYTES[0],
+    CATCHBYTES[1],
+    ((CATCHBYTES[0] == 243) || (CATCHBYTES[0] == 241) || (cmd == 208) || (cmd == 192)) ? 255 : CATCHBYTES[2]
+  );
 }
 
 // Setup function: runs once when the program starts
@@ -412,6 +477,8 @@ void loop() {
         resetTickPointers(); // Reset the global tick, and all lanes' local ticks
       } else if (b == 248) { // If this is a TIMING CLOCK command...
         Serial.write(b); // Send it onward to MIDI-OUT
+        incrementInSustains(); // Increment all currently-externally-sustained notes
+        incrementSustains(); // Increment all currently-internally-sustained notes
         incrementTicks(); // Increment global and lane-based ticks, and launch related functions when appropriate
       } else if (b == 247) { // If this is an END SYSEX MESSAGE command...
         // If you're dealing with an END-SYSEX command while SYSIGNORE is inactive,
@@ -452,6 +519,9 @@ void loop() {
           CATCHCOUNT++; // Increase the index at which the next body-byte would be stored
           if (CATCHCOUNT == CATCHTARGET) { // If all the command's bytes have been received...
             parseMidi(); // Parse the fully-received command
+            memcpy(CATCHBYTES, {0, 0, 0}, 3); // Empty out the byte-catching array
+            CATCHCOUNT = 0; // Empty out the byte-counting value
+            CATCHTARGET = 0; // Empty out the target-bytes-to-catch value
           }
         }
       }
