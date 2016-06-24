@@ -80,7 +80,7 @@ byte SUSTAIN[8][3] = {
 };
 
 // MIDI-IN SUSTAIN vars
-// Format: INSUSTAIN[n] = {channel, pitch, elapsed duration in ticks, target lane, target column}
+// Format: INSUSTAIN[n] = {channel, pitch, velocity, elapsed duration in ticks, (target lane << 6) + target column}
 // Note: "255" in bytes 1 and 2 means "empty slot"
 // Note: these are not cleared in haltAllSustains, as proper behavior of upstream devices is assumed
 byte INSUSTAIN[8][5];
@@ -322,7 +322,7 @@ void resetTickPointers() {
 // Add a note to the sustain-tracking system
 void addSustain(byte chan, byte pitch, byte dur) {
   if (SUSTAIN[7][0] < 16) {
-    sendNoteOff(SUSTAIN[7][0], SUSTAIN[7][1], 127);
+    sendNoteOff(SUSTAIN[7][0], SUSTAIN[7][1]);
   }
   for (byte i = 7; i > 0; i--) {
     memcpy(SUSTAIN[i], SUSTAIN[i - 1], 3);
@@ -331,18 +331,32 @@ void addSustain(byte chan, byte pitch, byte dur) {
 }
 
 
+void removeSustain(byte chan, byte pitch) {
+  for (byte i = 0; i < 8; i++) {
+    if ((SUSTAIN[i][0] == chan) && (SUSTAIN[i][1] == pitch)) {
+      for (byte j = i + 1; j < 8; j++) {
+        if (SUSTAIN[j][0] == 255) {
+          break;
+        }
+        memcpy(SUSTAIN[j - 1], SUSTAIN[j], 3);
+      }
+    }
+  }
+}
+
 // Increment all currently-sustained notes in the sustain-tracking system, and send their corresponding note-offs if any reach their end
 void incrementSustains() {
-
   for (byte i = 0; i < 8; i++) {
     if (SUSTAIN[i][0] == 255) {
       return;
     }
-
-    
-
+    if (SUSTAIN[i][2] <= 0) {
+      sendNoteOff(SUSTAIN[i][0], SUSTAIN[i][1]);
+      i--;
+    } else {
+      SUSTAIN[i][2]--;
+    }
   }
-
 }
 
 
@@ -358,18 +372,31 @@ void haltAllSustains() {
   }
 }
 
-
+// Add an incoming note to the INSUSTAIN system
 void addInSustain(byte chan, byte pitch, byte velo, byte lane, byte col) {
-
-
-
+  //removeInSustain(chan, pitch); // Remove any in-sustain notes with identical channel and pitch, if they exist
+  if (INSUSTAIN[7][0] != 255) { // If all INSUSTAIN slots are full...
+    removeInSustain(INSUSTAIN[7][0], INSUSTAIN[7][1]); // Remove the bottommost INSUSTAIN note, and put it into its corresponding LANE
+  }
+  for (byte i = 6; i >= 0; i--) { // For each INSUSTAIN slot except for the bottommost one...
+    memcpy(INSUSTAIN[i + 1], INSUSTAIN[i], 5); // Shift the slot's contents into the next slot below it
+  }
+  memcpy(INSUSTAIN[0], {chan, pitch, velo, 0, (lane << 6) + col}); // Create a new INSUSTAIN entry for the given note, in the topmost INSUSTAIN slot
 }
 
-
+// Remove an incoming note from the INSUSTAIN system, and add it to the lane and note-slot to which its original NOTE-ON corresponded
 void removeInSustain(byte chan, byte pitch) {
-
-
-
+  for (byte i = 0; i < 8; i++) {
+    if ((INSUSTAIN[i][0] == chan) && (INSUSTAIN[i][1] == pitch)) {
+      byte ln = INSUSTAIN[i][4] >> 6;
+      byte slot = INSUSTAIN[i][4] & 63;
+      memcpy(LANE[ln][slot], {INSUSTAIN[i][0], INSUSTAIN[i][1], INSUSTAIN[i][2], INSUSTAIN[i][3]}, 4);
+      for (byte j = i; j < 7; j++) {
+        memcpy(INSUSTAIN[j], INSUSTAIN[j + 1], 5);
+      }
+      break;
+    }
+  }
 }
 
 
