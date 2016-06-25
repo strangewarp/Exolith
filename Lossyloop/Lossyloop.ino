@@ -386,24 +386,29 @@ void addInSustain(byte chan, byte pitch, byte velo, byte lane, byte col) {
 
 // Remove an incoming note from the INSUSTAIN system, and add it to the lane and note-slot to which its original NOTE-ON corresponded
 void removeInSustain(byte chan, byte pitch) {
-  for (byte i = 0; i < 8; i++) {
-    if ((INSUSTAIN[i][0] == chan) && (INSUSTAIN[i][1] == pitch)) {
-      byte ln = INSUSTAIN[i][4] >> 6;
-      byte slot = INSUSTAIN[i][4] & 63;
-      memcpy(LANE[ln][slot], {INSUSTAIN[i][0], INSUSTAIN[i][1], INSUSTAIN[i][2], INSUSTAIN[i][3]}, 4);
-      for (byte j = i; j < 7; j++) {
-        memcpy(INSUSTAIN[j], INSUSTAIN[j + 1], 5);
+  for (byte i = 0; i < 8; i++) { // For every INSUSTAIN slot...
+    if ((INSUSTAIN[i][0] == chan) && (INSUSTAIN[i][1] == pitch)) { // If the slot's contents match the given channel and pitch values...
+      byte ln = INSUSTAIN[i][4] >> 6; // Get the INSUSTAIN item's target lane
+      byte slot = INSUSTAIN[i][4] & 63; // Get the INSUSTAIN item's target note-slot within the lane
+      memcpy(LANE[ln][slot], {INSUSTAIN[i][0], INSUSTAIN[i][1], INSUSTAIN[i][2], INSUSTAIN[i][3]}, 4); // Put the INSUSTAIN entry's note into its target lane
+      for (byte j = i; j < 7; j++) { // For every INSUSTAIN slot below this one...
+        memcpy(INSUSTAIN[j], INSUSTAIN[j + 1], 5); // Shift the INSUSTAIN slot upward by one slot
       }
-      break;
+      return; // As we've found the matching INSUSTAIN entry by this point, just exit the function rather than continuing to loop
     }
   }
 }
 
-
+// Increment every duration-value within every currently-filled INSUSTAIN slot
 void incrementInSustains() {
-
-
-
+  for (byte i = 0; i < 8; i++) { // For every INSUSTAIN slot...
+    if (INSUSTAIN[i][0] == 255) { // If that slot is labeled as empty...
+      return; // Exit the function, as all remaining slots will be empty anyway
+    }
+    if (INSUSTAIN[i][3] < 192) { // If the INSUSTAIN note is less than 2 beats long...
+      INSUSTAIN[i][3]++; // Increase the INSUSTAIN note's duration-byte by 1
+    }
+  }
 }
 
 // Play a given MIDI NOTE-ON, start tracking its sustain status, and send its data to the MIDI-OUT TX line
@@ -429,28 +434,28 @@ void sendMidi(byte b1, byte b2, byte b3) {
 
 // Parse an incoming MIDI command
 void parseMidi() {
-  byte chan = CATCHBYTES[0] & 15;
-  byte cmd = CATCHBYTES[0] & 240;
-  if (cmd == 128) {
-    removeInSustain(chan, CATCHBYTES[1]);
-  } else if (cmd == 144) {
-    for (byte i = 0; i < 3; i++) {
-      if ((15 - (LANEMETA[i][7] >> 4)) == chan) {
-        addInSustain(chan, CATCHBYTES[1], CATCHBYTES[2], i, floor(LANETICK[i] / ((LANEMETA[6] >> 4) * 192)));
+  byte chan = CATCHBYTES[0] & 15; // Get the MIDI command-byte's channel
+  byte cmd = CATCHBYTES[0] & 240; // Get the MIDI command-byte's command type
+  if (cmd == 128) { // If the command is NOTE-OFF...
+    removeInSustain(chan, CATCHBYTES[1]); // Remove an INSUSTAIN entry for the corresponding note, if any exist
+  } else if (cmd == 144) { // Else, if the command is a NOTE-ON...
+    for (byte i = 0; i < 3; i++) { // For every lane...
+      if ((LANEMETA[i][7] >> 4) == chan) { // If the lane's channel matches the note's channel...
+        addInSustain(chan, CATCHBYTES[1], CATCHBYTES[2], i, floor(LANETICK[i] / ((LANEMETA[6] >> 4) * 192))); // Add an INSUSTAIN entry for the note
       }
     }
   }
-  sendMidi(
-    CATCHBYTES[0],
-    CATCHBYTES[1],
-    ((CATCHBYTES[0] == 243) || (CATCHBYTES[0] == 241) || (cmd == 208) || (cmd == 192)) ? 255 : CATCHBYTES[2]
+  sendMidi( // Send the MIDI command onward to the MIDI-OUT apparatus:
+    CATCHBYTES[0], // Command byte
+    CATCHBYTES[1], // First data-byte (pitch byte on NOTE commands)
+    ((CATCHBYTES[0] == 243) || (CATCHBYTES[0] == 241) || (cmd == 208) || (cmd == 192)) ? 255 : CATCHBYTES[2] // Second data-byte, if applicable
   );
 }
 
 // Setup function: runs once when the program starts
 void setup() {
 
-  Serial.begin(31250);
+  Serial.begin(31250); // Run the sketch at a bitrate of 31250, which is what MIDI-over-TX/RX requires
   
   kpd.setDebounceTime(1); // Set an extremely minimal keypad-debounce time, since we're using clicky buttons
 
