@@ -185,8 +185,9 @@ void parseKeystroke(KeypadEvent key) {
       unassignCommandAction(kcol, krow); // Interpret the key-release, when applicable
     } else { // If the released key was on the bottom row...
       CMDMODE = 0; // Set the display-mode to the main screen
-      for (byte i = 31; i >= 24; i--) { // Check whether any other keys on the bottom row are held, from right to left
-        if (kpd.key[i].kstate == HOLD) { // If another key on the bottom row is still held...
+      kpd.getKeys(); // Fill kpd.key[] array with any currently-active keys
+      for (byte i = 0; i < 10; i++) { // For all key-slots in the currently-active-keys array... 
+        if ((kpd.key[i].kstate == HOLD) && ((byte(kpd.key[i].kchar) - 48) >= 24)) { // If that key is being held, and is on the bottommost row...
           CMDMODE = i - 23; // Set that key's corresponding display-mode to be displayed
           break; // ...And exit the loop that checks for held keys on the bottom-row
         }
@@ -385,10 +386,10 @@ void addInSustain(byte chan, byte pitch, byte velo, byte lane, byte col) {
   if (INSUSTAIN[7][0] != 255) { // If all INSUSTAIN slots are full...
     removeInSustain(INSUSTAIN[7][0], INSUSTAIN[7][1]); // Remove the bottommost INSUSTAIN note, and put it into its corresponding LANE
   }
-  for (byte i = 6; i >= 0; i--) { // For each INSUSTAIN slot except for the bottommost one...
-    memcpy(INSUSTAIN[i + 1], INSUSTAIN[i], 5); // Shift the slot's contents into the next slot below it
+  for (byte i = 7; i >= 1; i--) { // For each INSUSTAIN slot except for the topmost one...
+    memcpy(INSUSTAIN[i], INSUSTAIN[i - 1], 5); // Shift the next-highest slot's contents into the current slot
   }
-  byte newsust[5] = {chan, pitch, velo, 0, (lane << 6) + col}; // Create a new INSUSTAIN entry from the given note data
+  byte newsust[5] = {chan, pitch, velo, 0, byte((lane << 6) + col)}; // Create a new INSUSTAIN entry from the given note data
   memcpy(INSUSTAIN[0], newsust, 5); // Create a new INSUSTAIN entry for the given note, in the topmost INSUSTAIN slot
 }
 
@@ -423,7 +424,7 @@ void incrementInSustains() {
 // Play a given MIDI NOTE-ON, start tracking its sustain status, and send its data to the MIDI-OUT TX line
 void sendNoteOn(byte chan, byte pitch, byte velo, byte dur) {
   addSustain(chan, pitch, dur); // Add a sustain for the note
-  sendMidi(144 + chan, pitch, dur); // Send the NOTE-ON command onward to the TX MIDI-OUT line
+  sendMidi(144 + chan, pitch, velo); // Send the NOTE-ON command onward to the TX MIDI-OUT line
 }
 
 // Play a given NOTE-OFF, remove its corresponding sustain-command (if applicable), and send its data to the MIDI-OUT TX line
@@ -486,7 +487,7 @@ void loop() {
 
   BLINKELAPSED++; // Increase the blink-time-counting variable
   if (BLINKELAPSED >= BLINKLENGTH) { // If the elapsed blink-time has reached the blink-length limit...
-    BLINKELAPSED == 0; // Reset the blink-time-counting variable
+    BLINKELAPSED = 0; // Reset the blink-time-counting variable
     memcpy(BLINKVISIBLE, BLINKVAL, 6); // Copy the lit-LED values from the absolute-blink-value array to the visible-blink array
     ROWUPDATE |= 63; // Flag the first 6 LED rows for a GUI update
   } else if (BLINKELAPSED == (BLINKLENGTH >> 1)) { // Else, if the elapsed blink-time has reached the middle of the blink-cycle...
