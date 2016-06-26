@@ -186,11 +186,15 @@ void parseKeystroke(KeypadEvent key) {
     } else { // If the released key was on the bottom row...
       CMDMODE = 0; // Set the display-mode to the main screen
       kpd.getKeys(); // Fill kpd.key[] array with any currently-active keys
+      byte biggest = 0; // Start tracking what the largest held-key value is
       for (byte i = 0; i < 10; i++) { // For all key-slots in the currently-active-keys array... 
-        if ((kpd.key[i].kstate == HOLD) && ((byte(kpd.key[i].kchar) - 48) >= 24)) { // If that key is being held, and is on the bottommost row...
-          CMDMODE = i - 23; // Set that key's corresponding display-mode to be displayed
-          break; // ...And exit the loop that checks for held keys on the bottom-row
+        byte kc = byte(kpd.key[i].kchar) - 48; // Get a given active-key's corresponding number
+        if ((kpd.key[i].kstate == HOLD) && (kc >= 24) && (kc > biggest)) { // If that key is being held, is on the bottommost row, and is larger than the biggest held-key found...
+          biggest = kc; // Set the largest-key value to this key's number
         }
+      }
+      if (biggest > 0) { // If another held-key was found...
+        CMDMODE = biggest - 23; // Set that key's corresponding display-mode to be displayed
       }
     }
   }
