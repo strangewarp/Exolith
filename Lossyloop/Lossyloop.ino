@@ -165,36 +165,42 @@ void updateAllLEDs() {
   }
 }
 
-// Parse an incoming keystroke in the Keypad grid. This function is called automatically, as set up by kpd.addEventListener() in the setup() function
-void parseKeystroke(KeypadEvent key) {
+// Parse any incoming keystrokes in the Keypad grid
+void parseKeystrokes() {
 
-  KeyState statetype = kpd.getState(); // Get the type of event occurring on the key that has changed state
-  byte keynum = byte(key) - 48; // Convert the key's unique ASCII character into a number that reflects its position
-  byte kcol = keynum % 8; // Get the key's column
-  byte krow = keynum >> 4; // Get the key's row
-
-  if (statetype == PRESSED) { // If the button is pressed...
-    if (krow < 3) { // If the button is in one of the three upper rows...
-      assignCommandAction(kcol, krow); // Interpret the keystroke under whichever command-mode is active
-    } else { // Else, if the button is in the bottom row...
-      CMDMODE = keynum - 23; // Set the command-mode to 1 through 8, one ahead of the raw button column (0 is default)
-      memcpy(LANECHORD, cpy1, 3); // Empty out all buttons that might be chorded in the default mode
-    }
-  } else if (statetype == RELEASED) { // Else, if the button is released...
-    if (keynum < 24) { // If the released key was in any of the top three rows...
-      unassignCommandAction(kcol, krow); // Interpret the key-release, when applicable
-    } else { // If the released key was on the bottom row...
-      CMDMODE = 0; // Set the display-mode to the main screen
-      kpd.getKeys(); // Fill kpd.key[] array with any currently-active keys
-      byte biggest = 0; // Start tracking what the largest held-key value is
-      for (byte i = 0; i < 10; i++) { // For all key-slots in the currently-active-keys array... 
-        byte kc = byte(kpd.key[i].kchar) - 48; // Get a given active-key's corresponding number
-        if ((kpd.key[i].kstate == HOLD) && (kc >= 24) && (kc > biggest)) { // If that key is being held, is on the bottommost row, and is larger than the biggest held-key found...
-          biggest = kc; // Set the largest-key value to this key's number
+  if (kpd.getKeys()) { // If any keys are pressed...
+    for (byte i = 0; i < 10; i++) { // For every keypress slot...
+      if (kpd.key[i].stateChanged) { // If the key's state has just changed...
+        lc.setRow(0, 0, 127);//testing todo remove
+        byte keynum = byte(kpd.key[i].kchar) - 48; // Convert the key's unique ASCII character into a number that reflects its position
+        byte kcol = keynum % 8; // Get the key's column
+        byte krow = keynum >> 4; // Get the key's row
+        if (kpd.key[i].kstate == PRESSED) { // If the button is pressed...
+          if (krow < 3) { // If the button is in one of the three upper rows...
+            assignCommandAction(kcol, krow); // Interpret the keystroke under whichever command-mode is active
+          } else { // Else, if the button is in the bottom row...
+            CMDMODE = keynum - 23; // Set the command-mode to 1 through 8, one ahead of the raw button column (0 is default)
+            memcpy(LANECHORD, cpy1, 3); // Empty out all buttons that might be chorded in the default mode
+          }
+        } else if (kpd.key[i].kstate == RELEASED) { // Else, if the button is released...
+          if (keynum < 24) { // If the released key was in any of the top three rows...
+            unassignCommandAction(kcol, krow); // Interpret the key-release, when applicable
+          } else { // If the released key was on the bottom row...
+            CMDMODE = 0; // Set the display-mode to the main screen
+            kpd.getKeys(); // Fill kpd.key[] array with any currently-active keys
+            byte biggest = 0; // Start tracking what the largest held-key value is
+            for (byte i = 0; i < 10; i++) { // For all key-slots in the currently-active-keys array... 
+              byte kc = byte(kpd.key[i].kchar) - 48; // Get a given active-key's corresponding number
+              if ((kpd.key[i].kstate == HOLD) && (kc >= 24) && (kc > biggest)) { // If that key is being held, is on the bottommost row, and is larger than the biggest held-key found...
+                biggest = kc; // Set the largest-key value to this key's number
+              }
+            }
+            if (biggest > 0) { // If another held-key was found...
+              CMDMODE = biggest - 23; // Set that key's corresponding display-mode to be displayed
+              //updateAllLEDs(); // Update all rows of LEDs, as a command-mode has been changed
+            }
+          }
         }
-      }
-      if (biggest > 0) { // If another held-key was found...
-        CMDMODE = biggest - 23; // Set that key's corresponding display-mode to be displayed
       }
     }
   }
@@ -483,7 +489,6 @@ void setup() {
     }
   }
 
-  kpd.addEventListener(parseKeystroke); // Whenever a keypad event occurs, launch the parseKeystroke function
 }
 
 // Loop function: runs continuously for as long as the device is powered on
@@ -498,6 +503,8 @@ void loop() {
     memcpy(BLINKVISIBLE, cpy1, 6); // Place all unlit values into the visible-blink array
     ROWUPDATE |= 63; // Flag the first 6 LED rows for a GUI update
   }
+
+  parseKeystrokes(); // Check for any incoming keystrokes
 
   while (Serial.available() > 0) { // While new MIDI bytes are available to read from the MIDI-IN port...
 
