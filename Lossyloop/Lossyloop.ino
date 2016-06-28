@@ -44,22 +44,17 @@ byte rowpins[ROWS] = {5, 6, 7, 8};
 byte colpins[COLS] = {9, 10, 14, 15, 16, 17, 18, 19};
 Keypad kpd(makeKeymap(KEYS), rowpins, colpins, ROWS, COLS);
 
-
-// Timing vars
-unsigned long ABSOLUTETIME = 0;
-unsigned long ELAPSED = 0;
-unsigned long TICKSIZE = 100000; // Size of the current tick, in microseconds; tick = 60000000 / (bpm * 96)
-
 // LED vars
 byte ROWUPDATE = 0; // Track which rows of LEDs to update on a given iteration of the main loop. 1 = row 0; 2 = row 1; 4 = row 2; ... 128 = row 7
 
 // GUI vars
 byte CMDMODE = 0; // Tracks which command-mode the GUI presently occupies
 byte BINARYLEDS[8] = {0, 0, 0, 0, 0, 0, 0, 0}; // Stores each LED-row's full-on and full-off LED values
-const byte BLINKLENGTH PROGMEM = 64; // Length, in main-loop cycles, of each pseudo-PWM blink-cycle
+const byte BLINKLENGTH PROGMEM = 20; // Length, in main-loop cycles, of each pseudo-PWM blink-cycle
 byte BLINKELAPSED = 0; // Amount of time elapsed within the current blink-cycle
 byte BLINKVAL[6] = {0, 0, 0, 0, 0, 0}; // All persistent visibility states for LEDs on their 6 applicable rows. 0 = off; 1 = 50% dim
 byte BLINKVISIBLE[6] = {0, 0, 0, 0, 0, 0}; // All current PWM states for all LEDs in rows 0-5, stored as individual bits. 0 = PWM low; 1 = PWM high
+unsigned long ABSOLUTETIME = 0; // Absolute-time value, for comparing against calls to millis() in the main loop
 
 // Sequencing vars
 boolean PLAYING = false; // Controls whether the sequences are iterating through their contents
@@ -141,6 +136,7 @@ byte LANECHORD[3] = {0, 0, 0};
 const byte cpy1[3] PROGMEM = {0, 0, 0};
 const byte cpy2[3] PROGMEM = {255, 255, 0};
 const byte cpy3[4] PROGMEM = {255, 255, 0, 0};
+const byte cpy4[6] PROGMEM = {0, 0, 0, 0, 0, 0};
 
 
 // Update and set each row's LEDs, depending on which command-mode is active, global tick position, and the contents of the lanes
@@ -174,14 +170,13 @@ void parseKeystrokes() {
         byte keynum = byte(kpd.key[i].kchar) - 48; // Convert the key's unique ASCII character into a number that reflects its position
         byte kcol = keynum & 7; // Get the key's column
         byte krow = keynum >> 3; // Get the key's row
-        lc.setRow(0, 0, kcol);//testing todo remove
-        lc.setRow(0, 1, krow);//testing todo remove
         if (kpd.key[i].kstate == PRESSED) { // If the button is pressed...
           if (krow < 3) { // If the button is in one of the three upper rows...
             assignCommandAction(kcol, krow); // Interpret the keystroke under whichever command-mode is active
           } else { // Else, if the button is in the bottom row...
             CMDMODE = keynum - 23; // Set the command-mode to 1 through 8, one ahead of the raw button column (0 is default)
             memcpy(LANECHORD, cpy1, 3); // Empty out all buttons that might be chorded in the default mode
+            ROWUPDATE |= 191; // Flag all LED rows, except for the global beat row, for updating
           }
         } else if (kpd.key[i].kstate == RELEASED) { // Else, if the button is released...
           if (keynum < 24) { // If the released key was in any of the top three rows...
@@ -198,8 +193,9 @@ void parseKeystrokes() {
             }
             if (biggest > 0) { // If another held-key was found...
               CMDMODE = biggest - 23; // Set that key's corresponding display-mode to be displayed
-              //updateAllLEDs(); // Update all rows of LEDs, as a command-mode has been changed
+              ROWUPDATE |= 63; // Flag the top 6 LED rows for updating
             }
+            ROWUPDATE |= 128; // Flag the bottom LED row for updating
           }
         }
       }
@@ -378,7 +374,6 @@ void incrementSustains() {
   }
 }
 
-
 // Send NOTE-OFFs for all currently-sustained notes, and remove them from the SUSTAIN array
 void haltAllSustains() {
   for (byte i = 0; i < 8; i++) { // For every item in the SUSTAIN array...
@@ -479,6 +474,7 @@ void setup() {
   Serial.begin(31250); // Run the sketch at a bitrate of 31250, which is what MIDI-over-TX/RX requires
   
   kpd.setDebounceTime(1); // Set an extremely minimal keypad-debounce time, since we're using clicky buttons
+  kpd.setHoldTime(0); // Set no gap between a keypress' PRESS and HOLD states
 
   lc.shutdown(0, false); // Turn on the ledControl object, using an inverse shutdown command (weird!)
   lc.setIntensity(0, 15); // Set the ledControl brightness to maximum intensity
@@ -495,14 +491,25 @@ void setup() {
 // Loop function: runs continuously for as long as the device is powered on
 void loop() {
 
-  BLINKELAPSED++; // Increase the blink-time-counting variable
+  unsigned long mill = millis();
+  if (mill < ABSOLUTETIME) {
+    BLINKELAPSED = (4294967295 - ABSOLUTETIME) + mill;
+  }
+  if (mill > ABSOLUTETIME) {
+    BLINKELAPSED += mill - ABSOLUTETIME;
+  }
+  ABSOLUTETIME = mill;
   if (BLINKELAPSED >= BLINKLENGTH) { // If the elapsed blink-time has reached the blink-length limit...
     BLINKELAPSED = 0; // Reset the blink-time-counting variable
     memcpy(BLINKVISIBLE, BLINKVAL, 6); // Copy the lit-LED values from the absolute-blink-value array to the visible-blink array
-    ROWUPDATE |= 63; // Flag the first 6 LED rows for a GUI update
-  } else if (BLINKELAPSED == (BLINKLENGTH >> 1)) { // Else, if the elapsed blink-time has reached the middle of the blink-cycle...
-    memcpy(BLINKVISIBLE, cpy1, 6); // Place all unlit values into the visible-blink array
-    ROWUPDATE |= 63; // Flag the first 6 LED rows for a GUI update
+    if (CMDMODE == 0) {
+      ROWUPDATE |= 63; // Flag the first 6 LED rows for a GUI update
+    }
+  } else if (BLINKELAPSED > 0) { // Else, if the elapsed blink-time has reached the middle of the blink-cycle...
+    memcpy(BLINKVISIBLE, cpy4, 6); // Place all unlit values into the visible-blink array
+    if (CMDMODE == 0) {
+      ROWUPDATE |= 63; // Flag the first 6 LED rows for a GUI update
+    }
   }
 
   parseKeystrokes(); // Check for any incoming keystrokes
@@ -585,7 +592,7 @@ void loop() {
 
   if (ROWUPDATE > 0) { // If any of the LED-rows have been flagged for an update on this iteration of the main loop...
     for (byte i = 0; i < 8; i++) { // For each row...
-      if ((ROWUPDATE & (1 << (7 - i))) > 0) { // If the current row's update-flag is present...
+      if ((ROWUPDATE & (1 << i)) > 0) { // If the current row's update-flag is present...
         updateRowLEDs(i); // Update that row's LEDs
       }
     }
