@@ -44,15 +44,13 @@ byte rowpins[ROWS] = {5, 6, 7, 8};
 byte colpins[COLS] = {9, 10, 14, 15, 16, 17, 18, 19};
 Keypad kpd(makeKeymap(KEYS), rowpins, colpins, ROWS, COLS);
 
-// LED vars
-byte ROWUPDATE = 0; // Track which rows of LEDs to update on a given iteration of the main loop. 1 = row 0; 2 = row 1; 4 = row 2; ... 128 = row 7
-
 // GUI vars
+byte ROWUPDATE = 0; // Track which rows of LEDs to update on a given iteration of the main loop. 1 = row 0; 2 = row 1; 4 = row 2; ... 128 = row 7
 byte CMDMODE = 0; // Tracks which command-mode the GUI presently occupies
 byte BINARYLEDS[8] = {0, 0, 0, 0, 0, 0, 0, 0}; // Stores each LED-row's full-on and full-off LED values
 const byte BLINKLENGTH PROGMEM = 20; // Length, in main-loop cycles, of each pseudo-PWM blink-cycle
 byte BLINKELAPSED = 0; // Amount of time elapsed within the current blink-cycle
-byte BLINKVAL[6] = {0, 0, 0, 0, 0, 0}; // All persistent visibility states for LEDs on their 6 applicable rows. 0 = off; 1 = 50% dim
+byte BLINKVAL[6] = {0, 0, 0, 4, 0, 0}; // All persistent visibility states for LEDs on their 6 applicable rows. 0 = off; 1 = 50% dim
 byte BLINKVISIBLE[6] = {0, 0, 0, 0, 0, 0}; // All current PWM states for all LEDs in rows 0-5, stored as individual bits. 0 = PWM low; 1 = PWM high
 unsigned long ABSOLUTETIME = 0; // Absolute-time value, for comparing against calls to millis() in the main loop
 
@@ -147,7 +145,7 @@ void updateRowLEDs(byte row) {
     lc.setRow(0, 7, (1 << (8 - CMDMODE)) % 256); // Light up an LED representing the active command-mode, which is controlled by the bottom row of buttons
   } else { // Else, if this is some other row...
     if (CMDMODE == 0) { // If this is the default command-mode...
-      lc.setRow(0, row, BINARYLEDS[row] | BLINKVISIBLE[row]); // Combine the note-row with the blink-values of active-notes and latent-notes
+      lc.setRow(0, row, BINARYLEDS[row] | BLINKVISIBLE[row]); // Display a note-row
     } else { // Else, if this is any other command-mode...
       lc.setRow(0, row, LANEMETA[row >> 1][CMDMODE - 1]); // Display the lanes' meta-values that correspond to various command-modes
     }
@@ -175,7 +173,10 @@ void parseKeystrokes() {
             assignCommandAction(kcol, krow); // Interpret the keystroke under whichever command-mode is active
           } else { // Else, if the button is in the bottom row...
             CMDMODE = keynum - 23; // Set the command-mode to 1 through 8, one ahead of the raw button column (0 is default)
-            memcpy(LANECHORD, cpy1, 3); // Empty out all buttons that might be chorded in the default mode
+            LANECHORD[0] = 0;
+            LANECHORD[1] = 0;
+            LANECHORD[2] = 0;
+            //memcpy(LANECHORD, cpy1, 3); // Empty out all buttons that might be chorded in the default mode
             ROWUPDATE |= 191; // Flag all LED rows, except for the global beat row, for updating
           }
         } else if (kpd.key[i].kstate == RELEASED) { // Else, if the button is released...
@@ -183,11 +184,10 @@ void parseKeystrokes() {
             unassignCommandAction(kcol, krow); // Interpret the key-release, when applicable
           } else { // If the released key was on the bottom row...
             CMDMODE = 0; // Set the display-mode to the main screen
-            kpd.getKeys(); // Fill kpd.key[] array with any currently-active keys
             byte biggest = 0; // Start tracking what the largest held-key value is
-            for (byte i = 0; i < 10; i++) { // For all key-slots in the currently-active-keys array... 
-              byte kc = byte(kpd.key[i].kchar) - 48; // Get a given active-key's corresponding number
-              if ((kpd.key[i].kstate == HOLD) && (kc >= 24) && (kc > biggest)) { // If that key is being held, is on the bottommost row, and is larger than the biggest held-key found...
+            for (byte j = 0; j < 10; j++) { // For all key-slots in the currently-active-keys array... 
+              byte kc = byte(kpd.key[j].kchar) - 48; // Get a given active-key's corresponding number
+              if ((kpd.key[j].kstate == HOLD) && (kc >= 24) && (kc > biggest)) { // If that key is being held, is on the bottommost row, and is larger than the biggest held-key found...
                 biggest = kc; // Set the largest-key value to this key's number
               }
             }
@@ -281,7 +281,7 @@ void latentLane(byte row) {
 // Clear all notes from a given lane
 void clearLane(byte row) {
   for (byte i = 0; i < 8; i++) { // For each note-slot...
-    memcpy(LANE[row][i], cpy3, 4); // Copy an empty dummy-note into the note-slot
+    //memcpy(LANE[row][i], cpy3, 4); // Copy an empty dummy-note into the note-slot
   }
 }
 
@@ -293,9 +293,9 @@ void shiftLaneNotes(byte col, byte row) {
   for (byte i = 0; i < abs(amt); i++) { // For every required rotation of the lane...
     for (byte j = 0; j < 8; j++) { // For every note within the lane...
       byte j2 = (j - dir) % 8; // Get the next-indexed note in the inverse of the direction of rotation, wrapping around the array boundaries
-      memcpy(temp, LANE[row][j], 4); // Copy the current note into temporary storage
-      memcpy(LANE[row][j], LANE[row][j2], 4); // Copy the next-indexed note into the current note's slot
-      memcpy(LANE[row][j2], temp, 4); // Copy the temporarily-stored note into the next-indexed note's slot
+      //memcpy(temp, LANE[row][j], 4); // Copy the current note into temporary storage
+      //memcpy(LANE[row][j], LANE[row][j2], 4); // Copy the next-indexed note into the current note's slot
+      //memcpy(LANE[row][j2], temp, 4); // Copy the temporarily-stored note into the next-indexed note's slot
     }
   }
 }
@@ -330,7 +330,10 @@ void incrementTicks() {
 // Reset the global tick-pointer, and all lanes' local tick-pointers
 void resetTickPointers() {
   CURTICK = 0; // Reset global tick-pointer
-  memcpy(LANETICK, cpy1, 3); // Reset all lanes' local tick-pointers
+  LANETICK[0] = 0;
+  LANETICK[1] = 0;
+  LANETICK[2] = 0;
+  //memcpy(LANETICK, cpy1, 3); // Reset all lanes' local tick-pointers
 }
 
 // Add a note to the sustain-tracking system
@@ -339,10 +342,10 @@ void addSustain(byte chan, byte pitch, byte dur) {
     sendNoteOff(SUSTAIN[7][0], SUSTAIN[7][1]);
   }
   for (byte i = 7; i > 0; i--) {
-    memcpy(SUSTAIN[i], SUSTAIN[i - 1], 3);
+    //memcpy(SUSTAIN[i], SUSTAIN[i - 1], 3);
   }
   byte newsust[3] = {chan, pitch, dur}; // Create a new sustain-entry from the given note
-  memcpy(SUSTAIN[0], newsust, 3);
+  //memcpy(SUSTAIN[0], newsust, 3);
 }
 
 
@@ -353,7 +356,7 @@ void removeSustain(byte chan, byte pitch) {
         if (SUSTAIN[j][0] == 255) {
           break;
         }
-        memcpy(SUSTAIN[j - 1], SUSTAIN[j], 3);
+        //memcpy(SUSTAIN[j - 1], SUSTAIN[j], 3);
       }
     }
   }
@@ -381,7 +384,10 @@ void haltAllSustains() {
       Serial.write(128 + SUSTAIN[i][0]); // Send a corresponding NOTE-OFF's command-byte
       Serial.write(SUSTAIN[i][1]); // Send a corresponding NOTE-OFF's pitch-byte
       Serial.write(127); // Send a corresponding NOTE-OFF's velocity-byte
-      memcpy(SUSTAIN[i], cpy2, 3); // Empty out the SUSTAIN-slot
+      SUSTAIN[i][0] = 255;
+      SUSTAIN[i][1] = 255;
+      SUSTAIN[i][2] = 0;
+      //memcpy(SUSTAIN[i], cpy2, 3); // Empty out the SUSTAIN-slot
     }
   }
 }
@@ -393,10 +399,10 @@ void addInSustain(byte chan, byte pitch, byte velo, byte lane, byte col) {
     removeInSustain(INSUSTAIN[7][0], INSUSTAIN[7][1]); // Remove the bottommost INSUSTAIN note, and put it into its corresponding LANE
   }
   for (byte i = 7; i >= 1; i--) { // For each INSUSTAIN slot except for the topmost one...
-    memcpy(INSUSTAIN[i], INSUSTAIN[i - 1], 5); // Shift the next-highest slot's contents into the current slot
+    //memcpy(INSUSTAIN[i], INSUSTAIN[i - 1], 5); // Shift the next-highest slot's contents into the current slot
   }
   byte newsust[5] = {chan, pitch, velo, 0, byte((lane << 6) + col)}; // Create a new INSUSTAIN entry from the given note data
-  memcpy(INSUSTAIN[0], newsust, 5); // Create a new INSUSTAIN entry for the given note, in the topmost INSUSTAIN slot
+  //memcpy(INSUSTAIN[0], newsust, 5); // Create a new INSUSTAIN entry for the given note, in the topmost INSUSTAIN slot
 }
 
 // Remove an incoming note from the INSUSTAIN system, and add it to the lane and note-slot to which its original NOTE-ON corresponded
@@ -406,9 +412,9 @@ void removeInSustain(byte chan, byte pitch) {
       byte ln = INSUSTAIN[i][4] >> 6; // Get the INSUSTAIN item's target lane
       byte slot = INSUSTAIN[i][4] & 63; // Get the INSUSTAIN item's target note-slot within the lane
       byte newnote[4] = {INSUSTAIN[i][0], INSUSTAIN[i][1], INSUSTAIN[i][2], INSUSTAIN[i][3]}; // Create a new note from the sustain's contents
-      memcpy(LANE[ln][slot], newnote, 4); // Put the INSUSTAIN entry's note into its target lane
+      //memcpy(LANE[ln][slot], newnote, 4); // Put the INSUSTAIN entry's note into its target lane
       for (byte j = i; j < 7; j++) { // For every INSUSTAIN slot below this one...
-        memcpy(INSUSTAIN[j], INSUSTAIN[j + 1], 5); // Shift the INSUSTAIN slot upward by one slot
+        //memcpy(INSUSTAIN[j], INSUSTAIN[j + 1], 5); // Shift the INSUSTAIN slot upward by one slot
       }
       return; // As we've found the matching INSUSTAIN entry by this point, just exit the function rather than continuing to loop
     }
@@ -482,9 +488,17 @@ void setup() {
   // Populate the LANE array with dummy-values, which will be treated as empty
   for (byte a = 0; a <= 3; a++) {
     for (byte b = 0; b <= 16; b++) {
-      memcpy(LANE[a][b], cpy3, 4);
+      LANE[a][b][0] = 255;
+      LANE[a][b][1] = 255;
+      LANE[a][b][2] = 0;
+      LANE[a][b][3] = 0;
+      //memcpy(LANE[a][b], cpy3, 4);
     }
   }
+
+  
+
+  //delay(1000); // todo: note: this proves that there's a reset-loop bug. what the hell?
 
 }
 
@@ -501,17 +515,23 @@ void loop() {
   ABSOLUTETIME = mill;
   if (BLINKELAPSED >= BLINKLENGTH) { // If the elapsed blink-time has reached the blink-length limit...
     BLINKELAPSED = 0; // Reset the blink-time-counting variable
-    memcpy(BLINKVISIBLE, BLINKVAL, 6); // Copy the lit-LED values from the absolute-blink-value array to the visible-blink array
+    for (byte i = 0; i < 6; i++) {
+      BLINKVISIBLE[i] = BLINKVAL[i];
+    }
+    //memcpy(BLINKVISIBLE, BLINKVAL, 6); // Copy the lit-LED values from the absolute-blink-value array to the visible-blink array
     if (CMDMODE == 0) {
       ROWUPDATE |= 63; // Flag the first 6 LED rows for a GUI update
     }
   } else if (BLINKELAPSED > 0) { // Else, if the elapsed blink-time has reached the middle of the blink-cycle...
-    memcpy(BLINKVISIBLE, cpy4, 6); // Place all unlit values into the visible-blink array
+    for (byte i = 0; i < 6; i++) {
+      BLINKVISIBLE[i] = 0;
+    }
+    //memcpy(BLINKVISIBLE, cpy4, 6); // Place all unlit values into the visible-blink array
     if (CMDMODE == 0) {
       ROWUPDATE |= 63; // Flag the first 6 LED rows for a GUI update
     }
   }
-
+  
   parseKeystrokes(); // Check for any incoming keystrokes
 
   while (Serial.available() > 0) { // While new MIDI bytes are available to read from the MIDI-IN port...
@@ -600,5 +620,6 @@ void loop() {
   }
 
 }
+
 
 
