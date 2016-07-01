@@ -130,12 +130,6 @@ word LANETICK[3] = {0, 0, 0}; // Each lane's current tick position
 //   Bits 4-7 (CHORDING): 1, 2, 3, 4 (sections of the corresponding lane)
 byte LANECHORD[3] = {0, 0, 0};
 
-// Const dummy arrays for various memcpy() operations
-const byte cpy1[3] PROGMEM = {0, 0, 0};
-const byte cpy2[3] PROGMEM = {255, 255, 0};
-const byte cpy3[4] PROGMEM = {255, 255, 0, 0};
-const byte cpy4[6] PROGMEM = {0, 0, 0, 0, 0, 0};
-
 
 // Update and set each row's LEDs, depending on which command-mode is active, global tick position, and the contents of the lanes
 void updateRowLEDs(byte row) {
@@ -173,10 +167,9 @@ void parseKeystrokes() {
             assignCommandAction(kcol, krow); // Interpret the keystroke under whichever command-mode is active
           } else { // Else, if the button is in the bottom row...
             CMDMODE = keynum - 23; // Set the command-mode to 1 through 8, one ahead of the raw button column (0 is default)
-            LANECHORD[0] = 0;
+            LANECHORD[0] = 0; // Empty out all buttons that might be chorded in the default mode
             LANECHORD[1] = 0;
             LANECHORD[2] = 0;
-            //memcpy(LANECHORD, cpy1, 3); // Empty out all buttons that might be chorded in the default mode
             ROWUPDATE |= 191; // Flag all LED rows, except for the global beat row, for updating
           }
         } else if (kpd.key[i].kstate == RELEASED) { // Else, if the button is released...
@@ -281,7 +274,10 @@ void latentLane(byte row) {
 // Clear all notes from a given lane
 void clearLane(byte row) {
   for (byte i = 0; i < 8; i++) { // For each note-slot...
-    //memcpy(LANE[row][i], cpy3, 4); // Copy an empty dummy-note into the note-slot
+    LANE[row][i][0] = 255; // Put an empty dummy-note into the note-slot
+    LANE[row][i][1] = 255;
+    LANE[row][i][2] = 0;
+    LANE[row][i][3] = 0;
   }
 }
 
@@ -289,13 +285,14 @@ void clearLane(byte row) {
 void shiftLaneNotes(byte col, byte row) {
   byte amt = (col - 4) + ((col + 1) >> 3); // Get a binary value that fans out from the center line and increases with distance
   int dir = (col <= 3) ? -1 : 1; // Get the direction in which to rotate the lane
-  byte temp[4]; // Create an array that will hold displaced note-values temporarily
   for (byte i = 0; i < abs(amt); i++) { // For every required rotation of the lane...
     for (byte j = 0; j < 8; j++) { // For every note within the lane...
       byte j2 = (j - dir) % 8; // Get the next-indexed note in the inverse of the direction of rotation, wrapping around the array boundaries
-      //memcpy(temp, LANE[row][j], 4); // Copy the current note into temporary storage
-      //memcpy(LANE[row][j], LANE[row][j2], 4); // Copy the next-indexed note into the current note's slot
-      //memcpy(LANE[row][j2], temp, 4); // Copy the temporarily-stored note into the next-indexed note's slot
+      for (byte k = 0; k < 4; k++) { // For every byte in the lane's note-slot...
+        byte temp = LANE[row][j][k]; // Put the current note's current byte into a temporary variable
+        LANE[row][j][k] = LANE[row][j2][k]; // Put the next note's byte into the same position in the current note
+        LANE[row][j2][k] = temp; // Put the temporarily-stored byte into the next note's position
+      }
     }
   }
 }
@@ -330,10 +327,9 @@ void incrementTicks() {
 // Reset the global tick-pointer, and all lanes' local tick-pointers
 void resetTickPointers() {
   CURTICK = 0; // Reset global tick-pointer
-  LANETICK[0] = 0;
+  LANETICK[0] = 0; // Reset all lanes' local tick-pointers
   LANETICK[1] = 0;
   LANETICK[2] = 0;
-  //memcpy(LANETICK, cpy1, 3); // Reset all lanes' local tick-pointers
 }
 
 // Add a note to the sustain-tracking system
@@ -342,10 +338,13 @@ void addSustain(byte chan, byte pitch, byte dur) {
     sendNoteOff(SUSTAIN[7][0], SUSTAIN[7][1]);
   }
   for (byte i = 7; i > 0; i--) {
-    //memcpy(SUSTAIN[i], SUSTAIN[i - 1], 3);
+    SUSTAIN[i][0] = SUSTAIN[i - 1][0];
+    SUSTAIN[i][1] = SUSTAIN[i - 1][1];
+    SUSTAIN[i][2] = SUSTAIN[i - 1][2];
   }
-  byte newsust[3] = {chan, pitch, dur}; // Create a new sustain-entry from the given note
-  //memcpy(SUSTAIN[0], newsust, 3);
+  SUSTAIN[0][0] = chan; // Create a new sustain-entry from the given note
+  SUSTAIN[0][1] = pitch;
+  SUSTAIN[0][2] = dur;
 }
 
 
@@ -356,7 +355,9 @@ void removeSustain(byte chan, byte pitch) {
         if (SUSTAIN[j][0] == 255) {
           break;
         }
-        //memcpy(SUSTAIN[j - 1], SUSTAIN[j], 3);
+        SUSTAIN[j - 1][0] = SUSTAIN[j][0];
+        SUSTAIN[j - 1][1] = SUSTAIN[j][1];
+        SUSTAIN[j - 1][2] = SUSTAIN[j][2];
       }
     }
   }
@@ -384,10 +385,9 @@ void haltAllSustains() {
       Serial.write(128 + SUSTAIN[i][0]); // Send a corresponding NOTE-OFF's command-byte
       Serial.write(SUSTAIN[i][1]); // Send a corresponding NOTE-OFF's pitch-byte
       Serial.write(127); // Send a corresponding NOTE-OFF's velocity-byte
-      SUSTAIN[i][0] = 255;
+      SUSTAIN[i][0] = 255; // Empty out the SUSTAIN-slot
       SUSTAIN[i][1] = 255;
       SUSTAIN[i][2] = 0;
-      //memcpy(SUSTAIN[i], cpy2, 3); // Empty out the SUSTAIN-slot
     }
   }
 }
@@ -399,10 +399,15 @@ void addInSustain(byte chan, byte pitch, byte velo, byte lane, byte col) {
     removeInSustain(INSUSTAIN[7][0], INSUSTAIN[7][1]); // Remove the bottommost INSUSTAIN note, and put it into its corresponding LANE
   }
   for (byte i = 7; i >= 1; i--) { // For each INSUSTAIN slot except for the topmost one...
-    //memcpy(INSUSTAIN[i], INSUSTAIN[i - 1], 5); // Shift the next-highest slot's contents into the current slot
+    for (byte j = 0; j < 5; j++) { // For each byte within the INSUSTAIN slot...
+      INSUSTAIN[i][j] = INSUSTAIN[i - 1][j]; // Shift the next-highest slot's contents into the current slot
+    }
   }
-  byte newsust[5] = {chan, pitch, velo, 0, byte((lane << 6) + col)}; // Create a new INSUSTAIN entry from the given note data
-  //memcpy(INSUSTAIN[0], newsust, 5); // Create a new INSUSTAIN entry for the given note, in the topmost INSUSTAIN slot
+  INSUSTAIN[0][0] = chan; // Create a new INSUSTAIN entry from the given note data, in the topmost INSUSTAIN slot
+  INSUSTAIN[0][1] = pitch;
+  INSUSTAIN[0][2] = velo;
+  INSUSTAIN[0][3] = 0;
+  INSUSTAIN[0][4] = byte((lane << 6) + col);
 }
 
 // Remove an incoming note from the INSUSTAIN system, and add it to the lane and note-slot to which its original NOTE-ON corresponded
@@ -411,10 +416,14 @@ void removeInSustain(byte chan, byte pitch) {
     if ((INSUSTAIN[i][0] == chan) && (INSUSTAIN[i][1] == pitch)) { // If the slot's contents match the given channel and pitch values...
       byte ln = INSUSTAIN[i][4] >> 6; // Get the INSUSTAIN item's target lane
       byte slot = INSUSTAIN[i][4] & 63; // Get the INSUSTAIN item's target note-slot within the lane
-      byte newnote[4] = {INSUSTAIN[i][0], INSUSTAIN[i][1], INSUSTAIN[i][2], INSUSTAIN[i][3]}; // Create a new note from the sustain's contents
-      //memcpy(LANE[ln][slot], newnote, 4); // Put the INSUSTAIN entry's note into its target lane
+      LANE[ln][slot][0] = INSUSTAIN[i][0]; // Put the INSUSTAIN entry's note into its target lane
+      LANE[ln][slot][1] = INSUSTAIN[i][1];
+      LANE[ln][slot][2] = INSUSTAIN[i][2];
+      LANE[ln][slot][3] = INSUSTAIN[i][3];
       for (byte j = i; j < 7; j++) { // For every INSUSTAIN slot below this one...
-        //memcpy(INSUSTAIN[j], INSUSTAIN[j + 1], 5); // Shift the INSUSTAIN slot upward by one slot
+        for (byte k = 0; k < 5; k++) { // For every byte in the INSUSTAIN entry...
+          INSUSTAIN[j][k] = INSUSTAIN[j + 1][k]; // Shift the INSUSTAIN slot upward by one slot
+        }
       }
       return; // As we've found the matching INSUSTAIN entry by this point, just exit the function rather than continuing to loop
     }
@@ -492,7 +501,6 @@ void setup() {
       LANE[a][b][1] = 255;
       LANE[a][b][2] = 0;
       LANE[a][b][3] = 0;
-      //memcpy(LANE[a][b], cpy3, 4);
     }
   }
 
@@ -515,18 +523,16 @@ void loop() {
   ABSOLUTETIME = mill;
   if (BLINKELAPSED >= BLINKLENGTH) { // If the elapsed blink-time has reached the blink-length limit...
     BLINKELAPSED = 0; // Reset the blink-time-counting variable
-    for (byte i = 0; i < 6; i++) {
-      BLINKVISIBLE[i] = BLINKVAL[i];
+    for (byte i = 0; i < 6; i++) { // For every blinking-LED-tracking byte...
+      BLINKVISIBLE[i] = BLINKVAL[i]; // Copy the lit-LED values from the absolute-blink-value array to the visible-blink array
     }
-    //memcpy(BLINKVISIBLE, BLINKVAL, 6); // Copy the lit-LED values from the absolute-blink-value array to the visible-blink array
     if (CMDMODE == 0) {
       ROWUPDATE |= 63; // Flag the first 6 LED rows for a GUI update
     }
   } else if (BLINKELAPSED > 0) { // Else, if the elapsed blink-time has reached the middle of the blink-cycle...
-    for (byte i = 0; i < 6; i++) {
-      BLINKVISIBLE[i] = 0;
+    for (byte i = 0; i < 6; i++) { // For every blinking-LED-visibility byte...
+      BLINKVISIBLE[i] = 0; // Clear all blink-visibility values
     }
-    //memcpy(BLINKVISIBLE, cpy4, 6); // Place all unlit values into the visible-blink array
     if (CMDMODE == 0) {
       ROWUPDATE |= 63; // Flag the first 6 LED rows for a GUI update
     }
@@ -600,7 +606,9 @@ void loop() {
           CATCHCOUNT++; // Increase the index at which the next body-byte would be stored
           if (CATCHCOUNT == CATCHTARGET) { // If all the command's bytes have been received...
             parseMidi(); // Parse the fully-received command
-            memcpy(CATCHBYTES, cpy1, 3); // Empty out the byte-catching array
+            CATCHBYTES[0] = 0; // Empty out the byte-catching array
+            CATCHBYTES[1] = 0;
+            CATCHBYTES[2] = 0;
             CATCHCOUNT = 0; // Empty out the byte-counting value
             CATCHTARGET = 0; // Empty out the target-bytes-to-catch value
           }
