@@ -48,9 +48,9 @@ Keypad kpd(makeKeymap(KEYS), rowpins, colpins, ROWS, COLS);
 byte ROWUPDATE = 0; // Track which rows of LEDs to update on a given iteration of the main loop. 1 = row 0; 2 = row 1; 4 = row 2; ... 128 = row 7
 byte CMDMODE = 0; // Tracks which command-mode the GUI presently occupies
 byte BINARYLEDS[8] = {0, 0, 0, 0, 0, 0, 0, 0}; // Stores each LED-row's full-on and full-off LED values
-const byte BLINKLENGTH PROGMEM = 20; // Length, in main-loop cycles, of each pseudo-PWM blink-cycle
+const byte BLINKLENGTH PROGMEM = 30; // Length, in main-loop cycles, of each pseudo-PWM blink-cycle
 byte BLINKELAPSED = 0; // Amount of time elapsed within the current blink-cycle
-byte BLINKVAL[6] = {0, 0, 0, 4, 0, 0}; // All persistent visibility states for LEDs on their 6 applicable rows. 0 = off; 1 = 50% dim
+byte BLINKVAL[6] = {0, 0, 0, 0, 0, 0}; // All persistent visibility states for LEDs on their 6 applicable rows. 0 = off; 1 = 50% dim
 byte BLINKVISIBLE[6] = {0, 0, 0, 0, 0, 0}; // All current PWM states for all LEDs in rows 0-5, stored as individual bits. 0 = PWM low; 1 = PWM high
 unsigned long ABSOLUTETIME = 0; // Absolute-time value, for comparing against calls to millis() in the main loop
 
@@ -127,7 +127,7 @@ word LANETICK[3] = {0, 0, 0}; // Each lane's current tick position
 // Each lane's currently-held note-position-chording buttons, for the default command-mode's "note-playing" behavior
 // Format:
 //   Bits 0-3 (reserved): (reserved)
-//   Bits 4-7 (CHORDING): 1, 2, 3, 4 (sections of the corresponding lane)
+//   Bits 4-7 (CHORDING): 4, 3, 2, 1 (sections of the corresponding lane)
 byte LANECHORD[3] = {0, 0, 0};
 
 
@@ -139,7 +139,17 @@ void updateRowLEDs(byte row) {
     lc.setRow(0, 7, (1 << (8 - CMDMODE)) % 256); // Light up an LED representing the active command-mode, which is controlled by the bottom row of buttons
   } else { // Else, if this is some other row...
     if (CMDMODE == 0) { // If this is the default command-mode...
-      lc.setRow(0, row, BINARYLEDS[row] | BLINKVISIBLE[row]); // Display a note-row
+      byte lnchrd = 0; // Create an empty variable to hold the lane-chord LED changes
+      byte lr = row >> 1; // Get the lane-row that corresponds to the LED-row
+      if (LANECHORD[lr] > 0) { // If the row's corresponding lane has any active LANECHORD values...
+        boolean leven = (row & 1) == 0; // Check whether the lane is even or odd-numbered
+        boolean ln1 = ((LANECHORD[lr] & 1) == 1) && leven; // Check chord for notes 1-4
+        boolean ln2 = ((LANECHORD[lr] & 2) == 2) && leven; // Check chord for notes 5-8
+        boolean ln3 = ((LANECHORD[lr] & 4) == 4) && !leven; // Check chord for notes 9-12
+        boolean ln4 = ((LANECHORD[lr] & 8) == 8) && !leven; // Check chord for notes 13-16
+        lnchrd = ((ln1 || ln3) ? 240 : 0) | ((ln2 || ln4) ? 15 : 0); // Toggle LEDs in the row, based on which LANECHORD sections are active
+      }
+      lc.setRow(0, row, BINARYLEDS[row] | BLINKVISIBLE[row] | lnchrd); // Display a composite LED-row that corresponds to a LANE
     } else { // Else, if this is any other command-mode...
       lc.setRow(0, row, LANEMETA[row >> 1][CMDMODE - 1]); // Display the lanes' meta-values that correspond to various command-modes
     }
@@ -151,6 +161,38 @@ void updateAllLEDs() {
   for (byte i = 0; i < 8; i++) { // For every LED row...
     updateRowLEDs(i); // Update that row of LEDs
   }
+}
+
+// Increment the timer that's used for blinking LEDs
+void incrementTimer() {
+
+  unsigned long mill = millis(); // Get the current millisecond-timer value
+  
+  if (mill < ABSOLUTETIME) { // If the millis-value has wrapped around its finite counting-space to be less than last loop's absolute-time position...
+    BLINKELAPSED = (4294967295 - ABSOLUTETIME) + mill; // Put the wrapped-around milliseconds into the elapsed-blink-time value
+  } else if (mill > ABSOLUTETIME) { // Else, if the millis-value is greater than last loop's absolute-time position...
+    BLINKELAPSED += mill - ABSOLUTETIME; // Add the difference between the current time and the previous time to the elapsed-blink-time value
+  }
+  
+  ABSOLUTETIME = mill; // Set the absolute-time to the current time-value
+
+  if (BLINKELAPSED >= BLINKLENGTH) { // If the elapsed blink-time has reached the blink-length limit...
+    BLINKELAPSED = 0; // Reset the blink-time-counting variable
+    for (byte i = 0; i < 6; i++) { // For every blinking-LED-tracking byte...
+      BLINKVISIBLE[i] = BLINKVAL[i]; // Copy the lit-LED values from the absolute-blink-value array to the visible-blink array
+    }
+    if (CMDMODE == 0) {
+      ROWUPDATE |= 63; // Flag the first 6 LED rows for a GUI update
+    }
+  } else if (BLINKELAPSED > 0) { // Else, if the elapsed blink-time has reached the middle of the blink-cycle...
+    for (byte i = 0; i < 6; i++) { // For every blinking-LED-visibility byte...
+      BLINKVISIBLE[i] = 0; // Clear all blink-visibility values
+    }
+    if (CMDMODE == 0) {
+      ROWUPDATE |= 63; // Flag the first 6 LED rows for a GUI update
+    }
+  }
+
 }
 
 // Parse any incoming keystrokes in the Keypad grid
@@ -239,6 +281,8 @@ void assignCommandAction(byte col, byte row) {
     LANEMETA[row][CMDMODE - 1] ^= 1 << (7 - col); // Toggle the lane-metadata bit that corresponds to the row and column, under the present command-mode
   }
 
+  ROWUPDATE |= 3 << (row * 2); // Toggle the keypress' corresponding rows for a GUI update
+
 }
 
 // Interpret a key-release according to whatever command-mode is active
@@ -248,6 +292,7 @@ void unassignCommandAction(byte col, byte row) {
       LANECHORD[row] ^= 1 << col; // Remove the key's bit from the lane's chord-tracking byte
     }
   }
+  ROWUPDATE |= 3 << (row * 2); // Toggle the keypress' corresponding rows for a GUI update
 }
 
 // Play the notes that were last present in the chorded buttons' corresponding loop-slots
@@ -422,7 +467,7 @@ void removeInSustain(byte chan, byte pitch) {
       LANE[ln][slot][3] = INSUSTAIN[i][3];
       for (byte j = i; j < 7; j++) { // For every INSUSTAIN slot below this one...
         for (byte k = 0; k < 5; k++) { // For every byte in the INSUSTAIN entry...
-          INSUSTAIN[j][k] = INSUSTAIN[j + 1][k]; // Shift the INSUSTAIN slot upward by one slot
+          INSUSTAIN[j][k] = INSUSTAIN[j + 1][k]; // Shift the INSUSTAIN byte upward by one slot
         }
       }
       return; // As we've found the matching INSUSTAIN entry by this point, just exit the function rather than continuing to loop
@@ -504,39 +549,12 @@ void setup() {
     }
   }
 
-  
-
-  //delay(1000); // todo: note: this proves that there's a reset-loop bug. what the hell?
-
 }
 
 // Loop function: runs continuously for as long as the device is powered on
 void loop() {
 
-  unsigned long mill = millis();
-  if (mill < ABSOLUTETIME) {
-    BLINKELAPSED = (4294967295 - ABSOLUTETIME) + mill;
-  }
-  if (mill > ABSOLUTETIME) {
-    BLINKELAPSED += mill - ABSOLUTETIME;
-  }
-  ABSOLUTETIME = mill;
-  if (BLINKELAPSED >= BLINKLENGTH) { // If the elapsed blink-time has reached the blink-length limit...
-    BLINKELAPSED = 0; // Reset the blink-time-counting variable
-    for (byte i = 0; i < 6; i++) { // For every blinking-LED-tracking byte...
-      BLINKVISIBLE[i] = BLINKVAL[i]; // Copy the lit-LED values from the absolute-blink-value array to the visible-blink array
-    }
-    if (CMDMODE == 0) {
-      ROWUPDATE |= 63; // Flag the first 6 LED rows for a GUI update
-    }
-  } else if (BLINKELAPSED > 0) { // Else, if the elapsed blink-time has reached the middle of the blink-cycle...
-    for (byte i = 0; i < 6; i++) { // For every blinking-LED-visibility byte...
-      BLINKVISIBLE[i] = 0; // Clear all blink-visibility values
-    }
-    if (CMDMODE == 0) {
-      ROWUPDATE |= 63; // Flag the first 6 LED rows for a GUI update
-    }
-  }
+  incrementTimer(); // Increment the timer that's used for LED-blinking
   
   parseKeystrokes(); // Check for any incoming keystrokes
 
@@ -550,7 +568,7 @@ void loop() {
         SYSIGNORE = false; // Stop ignoring incoming bytes
       }
     } else { // Else, if we aren't currently ignoring a SYSEX command...
-      byte cmd = b - (b % 16); // Get the command-type of any given non-SYSEX command
+      byte cmd = b & 240; // Get the command-type of any given non-SYSEX command
       if (b == 252) { // If this is a STOP command...
         Serial.write(b); // Send it onward to MIDI-OUT
         PLAYING = false; // Set the PLAYING var to false, to stop acting on any MIDI CLOCKs that might still be received
