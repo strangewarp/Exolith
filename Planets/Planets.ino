@@ -182,7 +182,10 @@ void updatePhysics() {
 		byte nextrow = currow;
 		byte nextcol = curcol;
 
-		float pull[16][2]; // Will contain each ATTRACTOR's combined x,y gravity values for the current PLANET
+		float pull[16][2] = { // Will contain each ATTRACTOR's combined x,y gravity values for the current PLANET
+			{0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0},
+			{0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}
+		};
 		byte pullcount = 0; // Will contain the number of active ATTRACTORS, to be used for later averaging-division of summed x,y gravity values
 		float pulltotal[2]; // Will contain the composite x,y gravity value to modulate the current PLANET
 
@@ -195,37 +198,39 @@ void updatePhysics() {
 					float atty = 8 / ((2 * y) + 1);
 					float distx = PLANETFLOAT[i][1] - attx; // Get the planet's x,y distances from the attractor, in -1.0 to 1.0
 					float disty = PLANETFLOAT[i][2] - atty;
-
 					float maxdist = max(abs(distx), abs(disty));
-
 					float accelx = (distx / maxdist) * PLANETFLOAT[i][0] * PLANETFLOAT[i][3];
 					float accely = (disty / maxdist) * PLANETFLOAT[i][0] * PLANETFLOAT[i][4];
-
-					PLANETFLOAT[i][3] = min(1, max(-1, PLANETFLOAT[i][3] - accelx));
-					PLANETFLOAT[i][4] = min(1, max(-1, PLANETFLOAT[i][4] - accely));
-
-
-					//pull[pindex][0] = 
-					//pull[pindex][1] = 
-
+					pull[pullcount][0] = min(1, max(-1, PLANETFLOAT[i][3] - accelx));
+					pull[pullcount][1] = min(1, max(-1, PLANETFLOAT[i][4] - accely));
 					pullcount++;
-				} else {
-					pull[pindex][0] = 0.0;
-					pull[pindex][1] = 0.0;
 				}
 			}
 		}
 
-		//for (byte)
+		float compositex = 0.0;
+		float compositey = 0.0;
+		for (byte j = 0; j < pullcount; j++) {
+			compositex += pull[j][0];
+			compositey += pull[j][1];
+		}
+
+		PLANETFLOAT[i][1] = compositex / pullcount;
+		PLANETFLOAT[i][2] = compositey / pullcount;
 
 
-
-		//PLANETFLOAT[i][1] =
-		//PLANETFLOAT[i][2] =
-
-		//ROWUPDATE |= 
 
 	}
+
+
+
+	// Check for collisions
+
+
+	//ROWUPDATE |= 
+
+
+
 }
 
 // Setup function: called exactly once on launch, after the initial global variable declarations but before the main loop.
