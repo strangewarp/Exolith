@@ -216,7 +216,7 @@ void updatePhysics() {
 			}
 		}
 
-		for (byte)
+		//for (byte)
 
 
 
@@ -224,7 +224,7 @@ void updatePhysics() {
 		//PLANETFLOAT[i][2] =
 
 		//ROWUPDATE |= 
-		
+
 	}
 }
 
