@@ -147,7 +147,13 @@ void updateRowLEDs(byte row) {
         boolean ln2 = ((LANECHORD[lr] & 2) == 2) && leven; // Check chord for notes 5-8
         boolean ln3 = ((LANECHORD[lr] & 4) == 4) && !leven; // Check chord for notes 9-12
         boolean ln4 = ((LANECHORD[lr] & 8) == 8) && !leven; // Check chord for notes 13-16
-        lnchrd = ((ln1 || ln3) ? 240 : 0) | ((ln2 || ln4) ? 15 : 0); // Toggle LEDs in the row, based on which LANECHORD sections are active
+        if (ln1 || ln3) { // Toggle first- and third-section LEDs
+          lnchrd |= 240;
+        }
+        if (ln2 || ln4) { // Toggle second- and fourth-section LEDs
+          lnchrd |= 15;
+        }
+        //lnchrd = ((ln1 || ln3) ? 240 : 0) | ((ln2 || ln4) ? 15 : 0); // Toggle LEDs in the row, based on which LANECHORD sections are active
       }
       lc.setRow(0, row, BINARYLEDS[row] | BLINKVISIBLE[row] | lnchrd); // Display a composite LED-row that corresponds to a LANE
     } else { // Else, if this is any other command-mode...
