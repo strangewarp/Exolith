@@ -91,10 +91,9 @@ byte PLANETBYTE[16][4];
 // Note: "-3.0" in float n[0] means "empty slot"
 float PLANETFLOAT[16][5];
 
-// ATTRACTOR ENTITY byte-vars
-// These hold the presence-values of attractors, which correspond to the right 4x4 group of buttons, and affect every planet's gravity
-// Format: ATTRACTORS[n] = B00001111 (position values: bits 0-3 are unused; bits 4-7 are 0 for empty, or 1 for filled)
-byte ATTRACTORS[4] = {0, 0, 0, 0};
+// ATTRACTOR ENTITY word (16 bits)
+// This holds the presence-values of attractors, 1 per bit, which correspond to the right 4x4 group of buttons, and affect every planet's gravity
+word ATTRACTORS = 0;
 
 
 // Update every ledControl LED-row flagged for an update
@@ -154,8 +153,24 @@ void assignCommandAction(byte col, byte row) {
 		EEPROM.write(16 + row, CHANS[row]); // Write the new channel value to EEPROM memory, for storage across shutdowns
 		ROWUPDATE |= 15; // Flag the MIDI-CHANNEL-panel rows for a GUI update
 	} else { // Else, if the keystroke was in the right half of the button-grid...
-		PANELTIMER = 0; // Make the MIDI-CHANNEL panel invisible
-		ATTRACTORS[row] |= 1 << col; // Activate an ATTRACTOR object in the physics system, whose position corresponds to the button pressed
+		byte rcol = col - 4; // Get an offset column-value for the right side of the grid
+		if (((rcol & 3) == 0) || ((row & 3) == 0)) { // If this button occupies the outer rim of the right 4x4 grid...
+			PANELTIMER = 0; // Make the MIDI-CHANNEL panel invisible
+			ATTRACTORS |= 1 << ((4 * rcol) + row); // Activate an ATTRACTOR object in the physics system, whose position corresponds to the button pressed
+		} else { // Else, if this is one of the 4 buttons on the interior of the right 4x4 grid...
+			byte pcount = 255; // Will hold the number of planet-slots that are filled (initial value of 255 will wrap around to 0 on first loop)
+			while (pcount < 16) { // While the planet-slot counter is below the max planet total, count the number of currently-active planets
+				pcount++; // Increase the planet-slot counter
+				if (PLANETBYTE[pcount][0] == 255) { break; } // If this planet-slot is empty, break the loop, as all subsequent planet-slots will also be empty
+			}
+			if (pcount == 0) { return; } // If there are no active planets, exit the function
+			pcount = (rcol == 1) ? 1 : pcount; // If this is one of the leftmost inner buttons, set pcount to 1, otherwise leave it the same
+			if (row == 1) { // If this is one of the topmost inner buttons...
+				simulateBitRot(pcount); // Run bit-rot-simulation a number of times equal to pcount
+			} else { // Else, if this is one of the bottommost inner buttons...
+				shatterPlanets(pcount); // Run a planet-shattering function a number of times equal to pcount
+			}
+		}
 	}
 }
 
@@ -164,8 +179,33 @@ void unassignCommandAction(byte col, byte row) {
 	if (col <= 3) { // If this key-release was in the left half of the button-grid...
 		PANELTIMER = 250; // Set the panel-view timer to 250
 	} else { // Else, if this key-release was in the right half of the button-grid...
-		ATTRACTORS[row] ^= 1 << col; // Remove an ATTRACTOR object in the physics system, whose position corresponds to the button pressed
+		byte rcol = col - 4; // Get an offset column-value for the right side of the grid
+		if (((rcol & 3) == 0) || ((row & 3) == 0)) { // If this button occupies the outer rim of the right 4x4 grid...
+			ATTRACTORS ^= 1 << ((4 * rcol) + row); // Remove an ATTRACTOR object in the physics system, whose position corresponds to the button pressed
+		}
 	}
+}
+
+// Simulate random bit-rot on the MIDI data of randomly-chosen active planets, for a number of rotten bits equal to "iters"
+void simulateBitRot(byte iters) {
+
+
+
+}
+
+// Shatter a number of planets equal to "iters", slate their MIDI data for sending, and clear their data from the PLANETBYTE/PLANETFLOAT arrays
+void shatterPlanets(byte iters) {
+
+
+
+}
+
+
+// Compute a collision between two planets, slate their MIDI data for sending, and change their internal physics values accordingly
+void computeCollision(byte o1, byte o2) {
+
+
+
 }
 
 // Update the physics system by a single frame
@@ -182,54 +222,89 @@ void updatePhysics() {
 		byte nextrow = currow;
 		byte nextcol = curcol;
 
-		float pull[16][2] = { // Will contain each ATTRACTOR's combined x,y gravity values for the current PLANET
-			{0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0},
-			{0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}
+		float pull[13][2] = { // Will contain each ATTRACTOR's combined x,y gravity values for the current PLANET
+			{0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0},
+			{0.0, 0.0}, {0.0, 0.0},
+			{0.0, 0.0}, {0.0, 0.0},
+			{0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0}, {0.0, 0.0},
+			{0.0, 0.0}
 		};
 		byte pullcount = 0; // Will contain the number of active ATTRACTORS, to be used for later averaging-division of summed x,y gravity values
+		byte pindex = 0; // Tracks which ATTRACTOR index is active at any given time
 		float pulltotal[2]; // Will contain the composite x,y gravity value to modulate the current PLANET
 
 		// Get the composite ATTRACTOR modifiers for the current planet's position
-		for (byte y = 0; y < 4; y++) {
-			for (byte x = 0; x < 4; x++) {
-				byte pindex = x + (y * 4); // Get an index for the pull-array that corresponds to this ATTRACTOR slot's x,y coordinates
-				if ((ATTRACTORS[y] & (1 << x)) > 0) { // If this x,y position's ATTRACTOR slot is filled...
-					float attx = 8 / ((2 * x) + 1); // Get the attractor's x,y positions, expressed in a 0.0-to-1.0 range
-					float atty = 8 / ((2 * y) + 1);
-					float distx = PLANETFLOAT[i][1] - attx; // Get the planet's x,y distances from the attractor, in -1.0 to 1.0
-					float disty = PLANETFLOAT[i][2] - atty;
-					float maxdist = max(abs(distx), abs(disty));
-					float accelx = (distx / maxdist) * PLANETFLOAT[i][0] * PLANETFLOAT[i][3];
-					float accely = (disty / maxdist) * PLANETFLOAT[i][0] * PLANETFLOAT[i][4];
-					pull[pullcount][0] = min(1, max(-1, PLANETFLOAT[i][3] - accelx));
-					pull[pullcount][1] = min(1, max(-1, PLANETFLOAT[i][4] - accely));
-					pullcount++;
+		for (byte x = 0; x < 4; x++) { // For every attractor column...
+			for (byte y = 0; y < 4; y++) { // For every attractor row...
+				if (((x & 3) > 0) && ((y & 3) > 0)) { // If this attractor would be in one of the unused central slots...
+					continue; // Skip to the next iteration of this loop
 				}
+				if ((ATTRACTORS & (1 << pindex)) > 0) { // If this ATTRACTOR slot is filled...
+					float distx = PLANETFLOAT[i][1] - (8 / ((2 * x) + 1)); // Get the planet's x,y distances from the attractor, in -1.0 to 1.0
+					float disty = PLANETFLOAT[i][2] - (8 / ((2 * y) + 1));
+					float maxdist = max(abs(distx), abs(disty)); // Get the maximum of the two x,y distance values
+					pull[pullcount][0] = ((distx / maxdist) * PLANETFLOAT[i][0] * PLANETFLOAT[i][3]) / 5.33; // Make x,y accel-values for the PLANET-ATTRACTOR interaction
+					pull[pullcount][1] = ((disty / maxdist) * PLANETFLOAT[i][0] * PLANETFLOAT[i][4]) / 5.33;
+					pullcount++; // Get an index for the next slot in the pull-array
+				}
+				pindex++; // Get an index for the pull-array that corresponds to the next ATTRACTOR's index in the ATTRACTORS array
 			}
 		}
 
+		// Compute ATTRACTOR values one more time, for the always-present central attractor
+		float distx = PLANETFLOAT[i][1] - 0.5; // Get the planet's x,y distances from the central attractor, in -1.0 to 1.0
+		float disty = PLANETFLOAT[i][2] - 0.5;
+		float maxdist = max(abs(distx), abs(disty)); // Get the maximum of the two x,y distance values
+		pull[pullcount][0] = ((distx / maxdist) * PLANETFLOAT[i][0] * PLANETFLOAT[i][3]) / 5.33; // Make x,y accel-values for the PLANET-ATTRACTOR interaction
+		pull[pullcount][1] = ((disty / maxdist) * PLANETFLOAT[i][0] * PLANETFLOAT[i][4]) / 5.33;
+
 		float compositex = 0.0;
 		float compositey = 0.0;
-		for (byte j = 0; j < pullcount; j++) {
+		for (byte j = 1; j <= pullcount; j++) {
 			compositex += pull[j][0];
 			compositey += pull[j][1];
 		}
+		compositex /= pullcount + 1;
+		compositey /= pullcount + 1;
 
-		PLANETFLOAT[i][1] = compositex / pullcount;
-		PLANETFLOAT[i][2] = compositey / pullcount;
+		PLANETFLOAT[i][3] = min(0.5, max(-0.5, PLANETFLOAT[i][3] - compositex));
+		PLANETFLOAT[i][4] = min(0.5, max(-0.5, PLANETFLOAT[i][4] - compositey));
 
-
+		// Accelerate the planet, bounded to the edges of the arena, and check for display-changes
+		byte oldx = round(PLANETFLOAT[i][1] * 7);
+		byte oldy = round(PLANETFLOAT[i][2] * 7);
+		PLANETFLOAT[i][1] = min(1, max(0, PLANETFLOAT[i][1] + PLANETFLOAT[i][3]));
+		PLANETFLOAT[i][2] = min(1, max(0, PLANETFLOAT[i][2] + PLANETFLOAT[i][4]));
+		byte newx = round(PLANETFLOAT[i][1] * 7);
+		byte newy = round(PLANETFLOAT[i][2] * 7);
+		if (oldy != newy) {
+			ROWUPDATE |= (1 << oldy) + (1 << newy);
+		} else if (oldx != newx) {
+			ROWUPDATE |= 1 < newy;
+		}
 
 	}
 
-
-
 	// Check for collisions
-
-
-	//ROWUPDATE |= 
-
-
+	for (byte i = 0; i < 15; i++) {
+		if (PLANETBYTE[i] == 255) {
+			break;
+		}
+		byte xa = round(PLANETFLOAT[i][1] * 7);
+		byte ya = round(PLANETFLOAT[i][2] * 7);
+		for (byte j = i + 1; j < 16; j++) {
+			if (PLANETBYTE[j] == 255) {
+				break;
+			}
+			byte xb = round(PLANETFLOAT[j][1] * 7);
+			byte yb = round(PLANETFLOAT[j][2] * 7);
+			if ((xa == xb) && (ya == yb)) {
+				computeCollision(i, j);
+				ROWUPDATE |= 1 << ya;
+				j = i;
+			}
+		}
+	}
 
 }
 
