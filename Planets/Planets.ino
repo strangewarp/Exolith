@@ -77,7 +77,7 @@ byte SUSTAIN[8][3];
 byte INSUSTAIN[8][5];
 
 // PLANET ENTITY byte-vars
-// Format: PLANETBYTE[n] = {channel, pitch, velocoity, remaining duration}
+// Format: PLANETBYTE[n] = {channel, pitch, velocoity, duration}
 // Note: "255" in byte n[0] means "empty slot"
 byte PLANETBYTE[16][4];
 
@@ -90,6 +90,9 @@ byte PLANETBYTE[16][4];
 //   -- byte 4: y acceleration: -1.0 to 1.0: as above, for y
 // Note: "-3.0" in float n[0] means "empty slot"
 float PLANETFLOAT[16][5];
+
+// PLANETS FILLED variable: tracks the number of planets that are currently active, to prevent the need for having to check every time
+byte PLANETSFILLED = 0;
 
 // ATTRACTOR ENTITY word (16 bits)
 // This holds the presence-values of attractors, 1 per bit, which correspond to the right 4x4 group of buttons, and affect every planet's gravity
@@ -158,13 +161,8 @@ void assignCommandAction(byte col, byte row) {
 			PANELTIMER = 0; // Make the MIDI-CHANNEL panel invisible
 			ATTRACTORS |= 1 << ((4 * rcol) + row); // Activate an ATTRACTOR object in the physics system, whose position corresponds to the button pressed
 		} else { // Else, if this is one of the 4 buttons on the interior of the right 4x4 grid...
-			byte pcount = 255; // Will hold the number of planet-slots that are filled (initial value of 255 will wrap around to 0 on first loop)
-			while (pcount < 16) { // While the planet-slot counter is below the max planet total, count the number of currently-active planets
-				pcount++; // Increase the planet-slot counter
-				if (PLANETBYTE[pcount][0] == 255) { break; } // If this planet-slot is empty, break the loop, as all subsequent planet-slots will also be empty
-			}
-			if (pcount == 0) { return; } // If there are no active planets, exit the function
-			pcount = (rcol == 1) ? 1 : pcount; // If this is one of the leftmost inner buttons, set pcount to 1, otherwise leave it the same
+			if (PLANETSFILLED == 0) { return; } // If there are no active planets, exit the function
+			byte pcount = (rcol == 1) ? 1 : PLANETSFILLED; // If this is one of the leftmost inner buttons, set pcount to 1, otherwise set it to the number of active planets
 			if (row == 1) { // If this is one of the topmost inner buttons...
 				simulateBitRot(pcount); // Run bit-rot-simulation a number of times equal to pcount
 			} else { // Else, if this is one of the bottommost inner buttons...
@@ -186,20 +184,98 @@ void unassignCommandAction(byte col, byte row) {
 	}
 }
 
-// Simulate random bit-rot on the MIDI data of randomly-chosen active planets, for a number of rotten bits equal to "iters"
-void simulateBitRot(byte iters) {
+// Simulate random bit-rot on the MIDI data of randomly-chosen active planets, for a number of rotten bits equal to "cycles"
+void simulateBitRot(byte cycles) {
+	for (byte i = 0; i < cycles; i++) { // For every cycle of bit-rot simulation that's been requested...
+		byte rindex = random(i, PLANETSFILLED - 1); // Get a random active planet's index
+		PLANETBYTE[rindex][1] ^= random(1, random(1, random(1, 127))); // Randomize the pitch-byte, biased toward small values
+		PLANETBYTE[rindex][2] ^= random(2, 127); // Randomize some amount of decay to the velocity-byte
+		PLANETBYTE[rindex][2] |= 1; // Ensure the velocity-byte is at least 1
+		PLANETBYTE[rindex][3] ^= random(1, 92); // Randomize the duration-byte
+	}
+}
 
+// Shatter a number of planets equal to "cycles", slate their MIDI data for sending, and clear their data from the PLANETBYTE/PLANETFLOAT arrays
+void shatterPlanets(byte cycles) {
+	while ((cycles > 0) && (PLANETSFILLED > 0)) { // While there are remaining shatter-cycles, and there are still filled planet-slots...
+		removePlanet(random(0, PLANETSFILLED - 1)); // Remove a random currently-active planet
+		cycles--; // Decrease the cycles-counter
+	}
+}
 
+// Add a planet to the PLANETS arrays, and increase the PLANETSFILLED tracking-var
+void addPlanet(byte chan, byte pitch, byte velo) {
+
+	if (PLANETSFILLED == 16) {
+		removePlanet(15);
+	}
+
+	byte tempbyte[5];
+	float tempfloat[6];
+	for (byte i = max(0, PLANETSFILLED - 1); i > 0; i--) {
+		byte i2 = i - 1;
+		memcpy(tempbyte, PLANETBYTE[i], 4);
+		memcpy(tempfloat, PLANETFLOAT[i], 20);
+		memcpy(PLANETBYTE[i], PLANETBYTE[i2], 4);
+		memcpy(PLANETFLOAT[i], PLANETBYTE[i2], 20);
+		memcpy(PLANETBYTE[i2], tempbyte, 4);
+		memcpy(PLANETFLOAT[i2], tempfloat, 20);
+	}
+
+	PLANETBYTE[0][0] = chan;
+	PLANETBYTE[0][1] = pitch;
+	PLANETBYTE[0][2] = velo;
+
+	PLANETFLOAT[0][0] = velo / 127;
+
+	do {
+		boolean overlap = false;
+		PLANETFLOAT[0][1] = random(0, 255) / 255;
+		PLANETFLOAT[0][2] = random(0, 255) / 255;
+		for (byte i = 1; i < PLANETSFILLED; i++) {
+			if (
+				(abs(PLANETFLOAT[0][1] - PLANETFLOAT[i][1]) < 0.125)
+				&& (abs(PLANETFLOAT[0][2] - PLANETFLOAT[i][2]) < 0.125)
+			) {
+				overlap = true;
+				break;
+			}
+		}
+	} while (overlap);
+
+	PLANETFLOAT[0][3] = (random(0, 1) / 2) - 0.25;
+	PLANETFLOAT[0][4] = (random(0, 1) / 2) - 0.25;
+
+	PLANETSFILLED++;
 
 }
 
-// Shatter a number of planets equal to "iters", slate their MIDI data for sending, and clear their data from the PLANETBYTE/PLANETFLOAT arrays
-void shatterPlanets(byte iters) {
-
-
-
+// Remove a planet from the PLANETS arrays, and decrease the PLANETSFILLED tracking-var
+void removePlanet(byte index) {
+	byte tempbyte[5];
+	float tempfloat[6];
+	ROWUPDATE |= 1 << round(PLANETFLOAT[index][2] * 7);
+	for (byte i = index; i < max(0, PLANETSFILLED - 1); i++) {
+		byte i2 = i + 1;
+		if (PLANETBYTE[i2][0] == 255) { break; }
+		memcpy(tempbyte, PLANETBYTE[i], 4);
+		memcpy(tempfloat, PLANETFLOAT[i], 20);
+		memcpy(PLANETBYTE[i], PLANETBYTE[i2], 4);
+		memcpy(PLANETFLOAT[i], PLANETBYTE[i2], 20);
+		memcpy(PLANETBYTE[i2], tempbyte, 4);
+		memcpy(PLANETFLOAT[i2], tempfloat, 20);
+	}
+	PLANETSFILLED--;
+	PLANETBYTE[PLANETSFILLED][0] = 255;
+	PLANETBYTE[PLANETSFILLED][1] = 0;
+	PLANETBYTE[PLANETSFILLED][2] = 0;
+	PLANETBYTE[PLANETSFILLED][3] = 0;
+	PLANETFLOAT[PLANETSFILLED][0] = -3.0;
+	PLANETFLOAT[PLANETSFILLED][1] = 0.0;
+	PLANETFLOAT[PLANETSFILLED][2] = 0.0;
+	PLANETFLOAT[PLANETSFILLED][3] = 0.0;
+	PLANETFLOAT[PLANETSFILLED][4] = 0.0;
 }
-
 
 // Compute a collision between two planets, slate their MIDI data for sending, and change their internal physics values accordingly
 void computeCollision(byte o1, byte o2) {

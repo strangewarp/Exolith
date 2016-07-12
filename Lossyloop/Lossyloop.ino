@@ -32,8 +32,8 @@
 LedControl lc = LedControl(2, 3, 4, 1);
 
 // Initialize the object that controls the Keypad buttons.
-const byte ROWS PROGMEM = 4;
-const byte COLS PROGMEM = 8;
+const byte ROWS PROGMEM = 5;
+const byte COLS PROGMEM = 9;
 char KEYS[ROWS][COLS] = {
   {'0', '1', '2', '3', '4', '5', '6', '7'},
   {'8', '9', ':', ';', '<', '=', '>', '?'},
@@ -47,11 +47,11 @@ Keypad kpd(makeKeymap(KEYS), rowpins, colpins, ROWS, COLS);
 // GUI vars
 byte ROWUPDATE = 0; // Track which rows of LEDs to update on a given iteration of the main loop. 1 = row 0; 2 = row 1; 4 = row 2; ... 128 = row 7
 byte CMDMODE = 0; // Tracks which command-mode the GUI presently occupies
-byte BINARYLEDS[8] = {0, 0, 0, 0, 0, 0, 0, 0}; // Stores each LED-row's full-on and full-off LED values
+byte BINARYLEDS[9] = {0, 0, 0, 0, 0, 0, 0, 0}; // Stores each LED-row's full-on and full-off LED values
 const byte BLINKLENGTH PROGMEM = 30; // Length, in main-loop cycles, of each pseudo-PWM blink-cycle
 byte BLINKELAPSED = 0; // Amount of time elapsed within the current blink-cycle
-byte BLINKVAL[6] = {0, 0, 0, 0, 0, 0}; // All persistent visibility states for LEDs on their 6 applicable rows. 0 = off; 1 = 50% dim
-byte BLINKVISIBLE[6] = {0, 0, 0, 0, 0, 0}; // All current PWM states for all LEDs in rows 0-5, stored as individual bits. 0 = PWM low; 1 = PWM high
+byte BLINKVAL[7] = {0, 0, 0, 0, 0, 0}; // All persistent visibility states for LEDs on their 6 applicable rows. 0 = off; 1 = 50% dim
+byte BLINKVISIBLE[7] = {0, 0, 0, 0, 0, 0}; // All current PWM states for all LEDs in rows 0-5, stored as individual bits. 0 = PWM low; 1 = PWM high
 unsigned long ABSOLUTETIME = 0; // Absolute-time value, for comparing against calls to millis() in the main loop
 
 // Sequencing vars
@@ -59,7 +59,7 @@ boolean PLAYING = false; // Controls whether the sequences are iterating through
 word CURTICK = 1; // Current global sequencing tick
 
 // MIDI-CATCH vars
-byte CATCHBYTES[3] = {0, 0, 0};
+byte CATCHBYTES[4] = {0, 0, 0};
 byte CATCHCOUNT = 0;
 byte CATCHTARGET = 0;
 boolean SYSIGNORE = false;
@@ -67,7 +67,7 @@ boolean SYSIGNORE = false;
 // MIDI-OUT SUSTAIN vars
 // Format: SUSTAIN[n] = {channel, pitch, remaining duration in ticks}
 // Note: "255" in bytes 1 and 2 means "empty slot"
-byte SUSTAIN[8][3] = {
+byte SUSTAIN[9][4] = {
   {255, 255, 0}, {255, 255, 0},
   {255, 255, 0}, {255, 255, 0},
   {255, 255, 0}, {255, 255, 0},
@@ -78,13 +78,13 @@ byte SUSTAIN[8][3] = {
 // Format: INSUSTAIN[n] = {channel, pitch, velocity, elapsed duration in ticks, (target lane << 6) + target column}
 // Note: "255" in bytes 1 and 2 means "empty slot"
 // Note: these are not cleared in haltAllSustains, as proper behavior of upstream devices is assumed
-byte INSUSTAIN[8][5];
+byte INSUSTAIN[9][6];
 
 // Contains all currently-existing notes in each lane
 // Format: LANE[n] = {channel, pitch, velocity, duration}
 // Note: "255" in bytes 0 and 1 means "empty slot"
 // Note: If byte 0 is between 128 and 255, that means "latent note"
-byte LANE[3][16][4];
+byte LANE[4][17][5];
 
 // Contains all metadata for each lane
 // Format: LANEMETA[n] = {ACTIVE, PITCH, VELO, DUR, VANISH, BLEED, LEN, CHAN}
@@ -116,19 +116,19 @@ byte LANE[3][16][4];
 //   [7] CHAN:   Toggles lane's MIDI channel, and division of main beat-length
 //                 Bits 0-3 (MIDI CHAN A):   1, 2, 4, 8
 //                 Bits 4-7 (BEAT DIVISION): 2, 3, 4, 8
-byte LANEMETA[3][8] = {
+byte LANEMETA[4][9] = {
   {0, 0, 0, 0, 8, 0, 8, 0},
   {0, 0, 0, 0, 8, 0, 8, 0},
   {0, 0, 0, 0, 8, 0, 8, 0}
 };
 
-word LANETICK[3] = {0, 0, 0}; // Each lane's current tick position
+word LANETICK[4] = {0, 0, 0}; // Each lane's current tick position
 
 // Each lane's currently-held note-position-chording buttons, for the default command-mode's "note-playing" behavior
 // Format:
 //   Bits 0-3 (reserved): (reserved)
 //   Bits 4-7 (CHORDING): 4, 3, 2, 1 (sections of the corresponding lane)
-byte LANECHORD[3] = {0, 0, 0};
+byte LANECHORD[4] = {0, 0, 0};
 
 
 // Update and set each row's LEDs, depending on which command-mode is active, global tick position, and the contents of the lanes
