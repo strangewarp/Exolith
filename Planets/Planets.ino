@@ -48,7 +48,7 @@ byte colpins[COLS] = {9, 10, 14, 15, 16, 17, 18, 19};
 Keypad kpd(makeKeymap(KEYS), rowpins, colpins, ROWS, COLS);
 
 // Versioning vars
-PROGMEM char FIRMWAREVERSION[17] = "BS_PLANETS_00001"; // Program name, plus version number, to be matched with the EEPROM contents
+const char FIRMWAREVERSION[17] PROGMEM = "BS_PLANETS_00001"; // Program name, plus version number, to be matched with the EEPROM contents
 
 // GUI vars
 byte ROWUPDATE = 0; // Track which rows of LEDs to update on a given iteration of the main loop. 1 = row 0; 2 = row 1; 4 = row 2; ... 128 = row 7
