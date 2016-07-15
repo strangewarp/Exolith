@@ -48,16 +48,16 @@ byte colpins[COLS] = {9, 10, 14, 15, 16, 17, 18, 19};
 Keypad kpd(makeKeymap(KEYS), rowpins, colpins, ROWS, COLS);
 
 // Versioning vars
-const char FIRMWAREVERSION[17] PROGMEM = "BS_BURSTCN_00001"; // Program name, plus version number, to be matched with the EEPROM contents
+const char FIRMWAREVERSION[17] PROGMEM = "BS_BURSTCN_00001"; // Program name, plus EEPROM variant number, to be matched with the EEPROM contents
 
 // GUI vars
-byte ROWUPDATE = 0; // Track which rows of LEDs to update on a given iteration of the main loop. 1 = row 0; 2 = row 1; 4 = row 2; ... 128 = row 7
+byte ROWUPDATE = 255; // Track which rows of LEDs to update on a given iteration of the main loop. 1 = row 0; 2 = row 1; 4 = row 2; ... 128 = row 7
 boolean BLINKING = false; // Track whether the rows that light up during a burst are lit
 
 // Burst vars
 byte CHAN = 0; // Channel on which burst-notes are sent
 byte PITCH = 40; // Base-pitch for burst-notes
-byte VELOCITY = 0; // Base burst-note velocity
+byte VELOCITY = 127; // Base burst-note velocity
 byte DENSITYINTERVAL[3] = {0, 0}; // Stores flags for density-interval intersection points that correspond to the right 4x4 button section
 
 // Sequencing vars
@@ -120,17 +120,17 @@ void assignCommandAction(byte col, byte row) {
 			CHAN ^= 1 << (3 - col); // Toggle the bit in the channel-value that corresponds to the column's bitwise value
 			EEPROM.write(16, CHAN); // Write the new channel value to EEPROM memory, for storage across shutdowns
 		} else if (row == 3) { // Else, if this keystroke was on the fourth row...
-      VELOCITY = ((VELOCITY & 7) > 0) ? 0 : VELOCITY; // If the velocity is at a special value of 127 or 1, set it to 0 in preparation for a left-shifted bit
+      VELOCITY &= 240; // Remove all extra sub-16 bits from the velocity value
 			VELOCITY ^= 8 << (3 - col); // Toggle the bit in the velocity-value that corresponds to the column's bitwise value, left-shifted by 3 to (64-32-16-8)
       VELOCITY |= (VELOCITY == 120) ? 7 : ((VELOCITY == 0) ? 1 : 0); // Set the velocity to 127 or 1 if it is filled or emptied
 		} else { // Else, if this keystroke was in one of the middle rows...
 			if ((row == 1) && (col == 0)) { // If this was the first button of the second row...
-				PITCH = max(0, min(127, PITCH + (((random(0, 1) * 2) - 1) * random(2, 5)))); // Change the global base-pitch by a random likely-to-be-consonant interval
+				PITCH = (PITCH + (random(2, 6) * ((random(1, 3) & 2) - 1))) & 127; // Change the global base-pitch by a random probably-consonant interval
 			} else { // Else, if this was any other button...
 				PITCH ^= max(1, (2 - row) << 4) << (3 - col); // Modify the PITCH value by a binary value corresponding to a button in the middle two rows
 			}
 		}
-		ROWUPDATE |= 1 << row; // Flag the button-row's corresponding LED-row for a GUI update
+		ROWUPDATE |= 1 << (row - (row >> 1)); // Flag the button-row's corresponding LED-row for a GUI update
 	} else { // Else, if the keystroke was in the right half of the button-grid...
 		DENSITYINTERVAL[row >> 1] |= 1 << ((col & 3) | ((row & 1) << 2)); // Flag the button's corresponding density-interval coordinates
 		ROWUPDATE |= B01110000; // Flag the burst-activity LED-rows for a GUI update
