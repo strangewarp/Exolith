@@ -75,7 +75,6 @@ byte SUSTAIN[4] = {255, 0, 0};
 
 // Update every ledControl LED-row that's flagged for an update
 void updateLEDs() {
-	randomSeed(i + CHAN + PITCH + VELOCITY); // Set a random-seed based on current internal values, in case of blink-row activity
 	for (byte i = 0; i < 8; i++) { // For every LED row...
 		byte bval = 1 << i; // Get the row's corresponding bitwise value
 		if ((ROWUPDATE & bval) > 0) { // If the row is flagged for a GUI update...
@@ -88,7 +87,8 @@ void updateLEDs() {
 			} else if (i == 7) { // If this is the eighth row...
 				lc.setRow(0, i, 1 << (7 - byte(floor(CURTICK / 12)))); // Display the position in the current beat
 			} else { // Else, if this is a blink-display row...
-				lc.setRow(0, i, (BLINKTIMER > 0) ? ((~CURTICK) & random(127, 255)) : 0); // If a blink is active, display a pseudorandom value generated from internal variables
+        randomSeed(i + CHAN + PITCH + VELOCITY); // Set a random-seed based on current internal values
+				lc.setRow(0, i, BLINKING ? ((~CURTICK) & random(127, 255)) : 0); // If a blink is active, display a pseudorandom value generated from internal variables
 			}
 			ROWUPDATE ^= bval; // Unset this row's ROWUPDATE flag
 		}
@@ -148,6 +148,7 @@ void unassignCommandAction(byte col, byte row) {
 // Play a note based on currently-active burst commands, if they correspond to the current global MIDI CLOCK tick
 void playBurst() {
 
+  /*
   byte mod[9]; // Density-values, arranged by their corresponding interval
   byte locs[9]; // List of interval-locations in the "mod" array with any current amount of burst-density
   byte pressed = 0; // Number of interval-types, represented by buttons, that are currently being held down
@@ -165,6 +166,13 @@ void playBurst() {
     }
   }
 
+  if (pressed == 0) { // If no bursts are active...
+    BLINKING = false; // Unset the flag that controls whether to illuminate burst-display LEDs
+    return; // Exit the function
+  } else { // Else, if one or more bursts are active...
+    BLINKING = true; // Set the flag that controls whether to illuminate burst-display LEDs
+  }
+
   byte combo = random(1, min(2, pressed)); // Number of intervals to apply to global PITCH for this burst press: either 1 or 2, based on keys currently held
   byte outpitch = PITCH; // The output-pitch, to be modified by intervals in the user's keystrokes
   byte interval = 0; // The current interval-type
@@ -180,6 +188,9 @@ void playBurst() {
   }
 
   sendNoteOn(CHAN, outpitch, VELOCITY, 1); // Send a note on the currently-active MIDI channel, with the outgoing pitch
+  */
+
+  sendNoteOn(CHAN, PITCH, VELOCITY, 1); //todo: test this, and then replace this with the commented-out block of code
 
   ROWUPDATE |= B01110000; // Flag the burst-activity LED-rows for a GUI update
 
@@ -215,6 +226,13 @@ void removeSustain(byte chan, byte pitch) {
   }
 }
 
+// Send a note-off for, and then clear, whatever note is currently being sustained
+void clearSustain() {
+  if (SUSTAIN[0] <= 15) { // If the sustain-array is tracking a sustain...
+    sendNoteOff(SUSTAIN[1], SUSTAIN[2]); // Send a note-off for that sustain, removing its sustain-entry in the process
+  }
+}
+
 // Play a given MIDI NOTE-ON, start tracking its sustain status, and send its data to the MIDI-OUT TX line
 void sendNoteOn(byte chan, byte pitch, byte velo, byte dur) {
   addSustain(chan, pitch, dur); // Add a sustain for the note
@@ -239,7 +257,7 @@ void setup() {
 
 	// Check EEPROM for a firmware match, and either overwrite it or set local variables to stored variables
 	boolean match = true; // Set the match-flag to true by default
-	for (byte i = 15; i >= 0; i--) { // For every byte of the program's name in EEPROM...
+	for (int i = 15; i >= 0; i--) { // For every byte of the program's name in EEPROM...
 		char nchar = char(EEPROM.read(i)); // Get that byte, translated into a char
 		if (nchar != FIRMWAREVERSION[i]) { // If the char from EEPROM doesn't match the corresponding char in the current firmware-name...
 			for (byte j = 0; j < 16; j++) { // For the 16-char-wide program-name space in the EEPROM...
@@ -284,11 +302,11 @@ void loop() {
 				SYSIGNORE = false; // Stop ignoring incoming bytes
 			}
 		} else { // Else, if we aren't currently ignoring a SYSEX command...
-			byte cmd = b & 240; // Get the command-type of any given non-SYSEX command
 			if (b == 252) { // If this is a STOP command...
 				Serial.write(b); // Send it onward to MIDI-OUT
 				PLAYING = false; // Set the PLAYING var to false, to stop acting on any MIDI CLOCKs that might still be received
-				haltSustain(); // Halt the currently-sustained MIDI NOTE
+        BLINKING = false; // Unset the flag that controls whether to illuminate burst-display LEDs
+				clearSustain(); // Halt the currently-sustained MIDI NOTE
 			} else if (b == 251) { // If this is a CONTINUE command...
 				Serial.write(b); // Send it onward to MIDI-OUT
 				PLAYING = true; // Set the PLAYING var to true, to begin acting on any incoming MIDI CLOCK commands
@@ -315,6 +333,7 @@ void loop() {
       } else { // Else, if this is any other byte...
         Serial.write(b); // Send it onward to MIDI-OUT
       }
+		}
 
 	}
 
