@@ -63,6 +63,9 @@ byte DENSITYINTERVAL[3] = {0, 0}; // Stores flags for density-interval intersect
 // Sequencing vars
 boolean PLAYING = false; // Controls whether the MIDI bursts must adhere to external MIDI CLOCK signals
 byte CURTICK = 1; // Current global tick
+unsigned long ABSOLUTETIME = 0; // Current absolute time, in microseconds; will wrap around after reaching the maximum unsigned-long value
+word ELAPSEDTIME = 0; // Currently elapsed time since the last time-check
+const word BURSTDELAY PROGMEM = 20000; // Delay between burst-notes when no MIDI CLOCK is being received
 
 // MIDI-CATCH vars
 boolean SYSIGNORE = false; // Flags whether an incoming SYSEX command is currently being ignored
@@ -196,6 +199,21 @@ void playBurst() {
 
 }
 
+// Increment the timer that's used for blinking LEDs
+void incrementTimer() {
+  unsigned long micr = micros(); // Get the current microsecond-timer value
+  if (micr < ABSOLUTETIME) { // If the micros-value has wrapped around its finite counting-space to be less than last loop's absolute-time position...
+    ELAPSEDTIME = (4294967295 - ABSOLUTETIME) + micr; // Put the wrapped-around microseconds into the elapsed-time value
+  } else if (micr > ABSOLUTETIME) { // Else, if the micros-value is greater than last loop's absolute-time position...
+    ELAPSEDTIME += micr - ABSOLUTETIME; // Add the difference between the current time and the previous time to the elapsed-time value
+  }
+  ABSOLUTETIME = micr; // Set the absolute-time to the current time-value
+  if (ELAPSEDTIME >= BURSTDELAY) { // If the elapsed-time has reached the burst-delay length...
+    ELAPSEDTIME -= BURSTDELAY; // Subtract the burst-delay length from the elapsed-time variable
+    playBurst(); // Play whatever burst-notes are currently being played
+  }
+}
+
 // Increment the internal sustain-value
 void incrementSustain() {
   if (SUSTAIN[0] == 255) { return; } // If the sustain is empty, do nothing
@@ -291,6 +309,10 @@ void loop() {
 
 	parseKeystrokes(); // Check for any incoming keystrokes
 
+  if (!PLAYING) { // If there is no master MIDI CLOCK currently playing...
+    incrementTimer(); // Increment the internal timer, playing burst-notes when appropriate
+  }
+
 	// Parse all incoming MIDI bytes
 	while (Serial.available() > 0) { // While new MIDI bytes are available to read from the MIDI-IN port...
 
@@ -307,6 +329,7 @@ void loop() {
 				PLAYING = false; // Set the PLAYING var to false, to stop acting on any MIDI CLOCKs that might still be received
         BLINKING = false; // Unset the flag that controls whether to illuminate burst-display LEDs
 				clearSustain(); // Halt the currently-sustained MIDI NOTE
+        ABSOLUTETIME = micros(); // Update the current absolute-time value, for MIDI CLOCK-less timing measurements
 			} else if (b == 251) { // If this is a CONTINUE command...
 				Serial.write(b); // Send it onward to MIDI-OUT
 				PLAYING = true; // Set the PLAYING var to true, to begin acting on any incoming MIDI CLOCK commands
