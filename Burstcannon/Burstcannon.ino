@@ -160,18 +160,20 @@ void unassignCommandAction(byte col, byte row) {
 // Play a note based on currently-active burst commands, if they correspond to the current global MIDI CLOCK tick
 void playBurst() {
 
-  /*
   byte mod[9]; // Density-values, arranged by their corresponding interval
   byte locs[9]; // List of interval-locations in the "mod" array with any current amount of burst-density
   byte pressed = 0; // Number of interval-types, represented by buttons, that are currently being held down
 
   for (byte i = 0; i < 8; i++) { // For every interval entry in the DENSITYINTERVAL array...
+    mod[i] = 0; // Initialize the array element as an empty byte
     byte ibin = 1 << i; // Get the bitwise position of this entry
-    mod[i] = min(1, DENSITYINTERVAL[0] & ibin) << 2) * (1 - min(1, CURTICK % 6)); // If 1/6-density key is pressed, and the global tick matches, store the value
-    mod[i] |= (min(1, DENSITYINTERVAL[1] & ibin) << 1) * (1 - min(1, CURTICK % 3)); // If 1/3-density key is pressed, and the global tick matches, store the value
-    if (mod[i] == 6) { // If both the 1/6-density and 1/3-density keys are pressed for a given interval...
+    byte pr6 = DENSITYINTERVAL[0] & ibin; // Check whether a 1/6-density button is pressed for this interval
+    byte pr3 = DENSITYINTERVAL[1] & ibin; // Check whether a 1/3-density button is pressed for this interval
+    if ((pr6 > 0) && (pr3 > 0)) { // If both the 1/6-density and 1/3-density keys are pressed for a given interval...
       mod[i] = 1; // Set the interval's density to 1, aka "every tick"
     }
+    mod[i] |= (min(1, pr6) * (1 - min(1, CURTICK % 6))) << 2; // If 1/6-density key is pressed, and the global tick matches, store the value
+    mod[i] |= (min(1, pr3) * (1 - min(1, CURTICK % 3))) << 1; // If 1/3-density key is pressed, and the global tick matches, store the value
     if (mod[i] > 0) { // If the current interval has any density from button-presses...
       locs[pressed] = i; // Store this interval in the "locations with any amount of density" array
       pressed++; // Increase the "pressed" value to track the number of interval-types that are pressed
@@ -185,14 +187,14 @@ void playBurst() {
     BLINKING = true; // Set the flag that controls whether to illuminate burst-display LEDs
   }
 
-  byte combo = random(1, min(2, pressed)); // Number of intervals to apply to global PITCH for this burst press: either 1 or 2, based on keys currently held
+  byte combo = random(1, min(2, pressed) + 1); // Number of intervals to apply to global PITCH for this burst press: either 1 or 2, based on keys currently held
   byte outpitch = PITCH; // The output-pitch, to be modified by intervals in the user's keystrokes
   byte interval = 0; // The current interval-type
   byte lastused = 255; // The previous interval-type, for checking other interval-types against
   byte applied = 0; // Number of intervals applied to the outgoing pitch
   while (applied < combo) { // While fewer buttons have been applied than the number required for the interval-combination...
     do { // Continually get an interval...
-      interval = mod[locs[random(1, pressed)]]; // ...From a random position among user-pressed interval types...
+      interval = mod[locs[random(1, pressed + 1)]]; // ...From a random position among user-pressed interval types...
     } while (interval == lastused); // ...Until that interval doesn't match the previous interval
     lastused = interval; // This interval will be treated as the "previous" interval, on the next loop
     outpitch = min(127, max(0, outpitch + interval)); // Apply the interval to the out-pitch, bounded to the minimum and maximum MIDI pitch values
@@ -200,14 +202,6 @@ void playBurst() {
   }
 
   sendNoteOn(CHAN, outpitch, VELOCITY, 1); // Send a note on the currently-active MIDI channel, with the outgoing pitch
-  */
-
-  if ((DENSITYINTERVAL[0] + DENSITYINTERVAL[1]) > 0) {//testing todo remove
-    BLINKING = true;
-    sendNoteOn(CHAN, PITCH, VELOCITY, 1); //todo: test this, and then replace this with the commented-out block of code
-  } else {
-    BLINKING = false;
-  }
 
   ROWUPDATE |= B11111000; // Flag the burst-activity LED-rows for a GUI update
 
@@ -225,7 +219,9 @@ void incrementTimer() {
   if (ELAPSEDTIME >= BURSTDELAY) { // If the elapsed-time has reached the burst-delay length...
     ELAPSEDTIME -= BURSTDELAY; // Subtract the burst-delay length from the elapsed-time variable
     if (!PLAYING) { // If burst timing is running off this internal timer, not an external MIDI CLOCK...
-      playBurst(); // Play whatever burst-notes are currently being played
+      CURTICK = (CURTICK + 1) % 96; // Increment the global tick var, bounded to the number of ticks in a beat
+      ROWUPDATE |= B00000001; // Flag the chan-and-tick LED-row for updating
+      playBurst(); // Play whatever burst-notes are currently active
     }
   }
 }
@@ -353,10 +349,12 @@ void loop() {
 			} else if (b == 250) { // If this is a START command...
 				Serial.write(b); // Send it onward to MIDI-OUT
 				PLAYING = true; // Set the PLAYING var to true, to begin acting on any incoming MIDI CLOCK commands
-        CURTICK = 0; // Set the current tick to the start-point
+        CURTICK = 95; // Set the current tick to just before the start-point
+        ROWUPDATE |= B00000001; // Flag the chan-and-tick LED-row for updating
 			} else if (b == 248) { // If this is a TIMING CLOCK command...
 				Serial.write(b); // Send it onward to MIDI-OUT
         CURTICK = (CURTICK + 1) % 96; // Increment the global tick-counter, bounded by the number of ticks in a beat
+        ROWUPDATE |= B00000001; // Flag the chan-and-tick LED-row for updating
         incrementSustain(); // Increment the currently-sustained note
         playBurst(); // Play notes based on whatever burst-keys are being held
 			} else if (b == 247) { // If this is an END SYSEX MESSAGE command...
