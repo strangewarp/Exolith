@@ -187,21 +187,36 @@ void playBurst() {
     BLINKING = true; // Set the flag that controls whether to illuminate burst-display LEDs
   }
 
-  byte combo = random(1, min(2, pressed) + 1); // Number of intervals to apply to global PITCH for this burst press: either 1 or 2, based on keys currently held
-  byte outpitch = PITCH; // The output-pitch, to be modified by intervals in the user's keystrokes
-  byte interval = 0; // The current interval-type
-  byte lastused = 255; // The previous interval-type, for checking other interval-types against
-  byte applied = 0; // Number of intervals applied to the outgoing pitch
-  while (applied < combo) { // While fewer buttons have been applied than the number required for the interval-combination...
-    do { // Continually get an interval...
-      interval = mod[locs[random(1, pressed + 1)]]; // ...From a random position among user-pressed interval types...
-    } while (interval == lastused); // ...Until that interval doesn't match the previous interval
-    lastused = interval; // This interval will be treated as the "previous" interval, on the next loop
-    outpitch = min(127, max(0, outpitch + interval)); // Apply the interval to the out-pitch, bounded to the minimum and maximum MIDI pitch values
-    applied++; // Increase the "applied" value to track the number of intervals that have been applied to the outgoing pitch
+  for (byte i = 0; i < pressed; i++) {
+    if (mod[locs[i]] > 0) {
+      byte outpitch = min(127, max(0, PITCH + locs[i])); // Create an output-pitch based on the semirandom offset-value, bounded to the minimum and maximum MIDI pitch values
+      sendNoteOn(CHAN, outpitch, VELOCITY, 1); // Send a note on the currently-active MIDI channel, with the outgoing pitch
+    }
   }
 
-  sendNoteOn(CHAN, outpitch, VELOCITY, 1); // Send a note on the currently-active MIDI channel, with the outgoing pitch
+  /*
+  byte apply = random(1, min(2, pressed + 1)); // Number of intervals to apply to global PITCH for this burst press: either 1 or 2, based on keys currently held
+  byte offset = 0;
+  byte intervals = 0;
+  byte applied = 0;
+  while (applied < apply) {
+    byte locval = random(0, pressed);
+    byte bitlocval = 1 << locval;
+    byte getval = mod[locs[locval]];
+    if ((intervals & bitlocval) == 0) {
+      intervals |= bitlocval;
+      offset += getval;
+    }
+    applied++;
+  }
+
+  for (byte i = 0; i < 8; i++) {
+    if ((intervals & (1 << i)) > 0) {
+      byte outpitch = min(127, max(0, outpitch + offset)); // Create an output-pitch based on the semirandom offset-value, bounded to the minimum and maximum MIDI pitch values
+      sendNoteOn(CHAN, outpitch, VELOCITY, 1); // Send a note on the currently-active MIDI channel, with the outgoing pitch
+    }
+  }
+  */
 
   ROWUPDATE |= B11111000; // Flag the burst-activity LED-rows for a GUI update
 
