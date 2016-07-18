@@ -158,11 +158,11 @@ void assignCommandAction(byte col, byte row) {
         INVERT = true; // Set the invert-interval-toggle to true (will be unset on key-up)
         ROWUPDATE |= B00000010; // Flag the LED pitch-row for a GUI update
       } else if (col == 6) { // Else, if this keystroke was on the monophonic/polyphonic mode toggle key...
-        MONOMODE != MONOMODE; // Toggle or untoggle monophonic-mode
+        MONOMODE = !MONOMODE; // Toggle or untoggle monophonic-mode
         EEPROM.write(19, MONOMODE ? 1 : 0); // Write the new monophonic-mode value to EEPROM memory, for storage across shutdowns
         ROWUPDATE |= B00000010; // Flag the LED pitch-row for a GUI update
       } else { // Else, if this keystroke was on the humanize-toggle key...
-        HUMANIZE != HUMANIZE; // Toggle or untoggle velocity-humanize mode
+        HUMANIZE = !HUMANIZE; // Toggle or untoggle velocity-humanize mode
         EEPROM.write(20, HUMANIZE ? 1 : 0); // Write the new humanize-toggle value to EEPROM memory, for storage across shutdowns
         ROWUPDATE |= B00000100; // Flag the LED velocity-row for a GUI update
       }
@@ -226,12 +226,12 @@ void playBurst() {
   if (MONOMODE) { // If we're in monophonic-output mode...
     byte outpitch = PITCH; // Get a pitch-value to modify
     byte outvelo = min(127, max(1, HUMANIZE ? VELOCITY + (random(0, 33) - 16) : 0)); // Get a velocity value, with a humanized value if HUMANIZE is enabled, bounded to the MIDI velocity limits
-    for (byte i = 0; i < pressed; i++) {
-      outpitch += interv[i] * (INVERT ? -1 : 1);
+    for (byte i = 0; i < pressed; i++) { // For every currently-pressed interval type...
+      outpitch += interv[i] * (INVERT ? -1 : 1); // Apply the interval to the outgoing pitch, with an inverted pitch-direction applied if INVERT is active
     }
-    outpitch += OCTAVE ? 12 : 0;
-    while ((outpitch > 127) || (outpitch < 0)) {
-      outpitch += 12 * ceil(abs(127 - outpitch)) * min(1, max(-1, outpitch * -1));
+    outpitch += OCTAVE ? 12 : 0; // Raise the outgoing pitch by an octave, if OCTAVE is active
+    while (((outpitch > 127) && (outpitch <= 191)) || (outpitch > 192)) { // While the pitch is outside of its correct MIDI-pitch-value boundaries...
+      outpitch += 12 * min(1, max(-1, 127 - outpitch)); // Reel the pitch back in toward the 0-127 range, in increments of 12 (as in: an octave)
     }
     sendNoteOn(CHAN, outpitch, outvelo, 1); // Send a note on the currently-active MIDI channel, with the outgoing pitch
   } else { // Else, if we're in polyphonic-output mode...
