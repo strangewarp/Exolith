@@ -136,11 +136,9 @@ void assignCommandAction(byte col, byte row) {
       EEPROM.write(18, VELOCITY); // Write the new velocity value to EEPROM memory, for storage across shutdowns
 		} else { // Else, if this keystroke was in one of the middle rows...
 			if ((row == 1) && (col == 0)) { // If this was the first button of the second row...
-        int offset; // This will hold an offset-interval
         int compare; // This will hold the interval plus the current PITCH value
         do { // Get an acceptable pitch-shift value...
-          offset = random(2, 6) * ((random(1, 3) & 2) - 1); // Get a random probably-consonant interval
-          compare = PITCH + offset; // Add that interval to an int-converted duplicate of the PITCH value
+          compare = PITCH + (random(2, 6) * (INVERT ? -1 : 1)); // Add a likely-consonant offset interval to an int-converted duplicate of the PITCH value
         } while ((compare > 127) || (compare < 0)); // ...Keep getting random values until one doesn't wrap around
         PITCH = compare; // Put the acceptable interval-plus-pitch value back into the global PITCH variable
 			} else { // Else, if this was any other button...
@@ -167,7 +165,7 @@ void assignCommandAction(byte col, byte row) {
         ROWUPDATE |= B00000100; // Flag the LED velocity-row for a GUI update
       }
     } else { // Else, if this keystroke was in the top three rows...
-      DINTERVAL |= (1 << ((2 * (2 - row)) | (col & 1))) << ((col & 2) << 1); // Flag the button's corresponding density-interval coordinates
+      DINTERVAL |= (1 << ((2 * (2 - row)) | (col & 1))) << ((col & 2) << 2); // Flag the button's corresponding density-interval coordinates
       ROWUPDATE |= B11111000; // Flag the burst-activity LED-rows for a GUI update
     }
 	}
@@ -186,7 +184,7 @@ void unassignCommandAction(byte col, byte row) {
         ROWUPDATE |= B00000010; // Flag the LED pitch-row for a GUI update
       }
     } else { // Else, if this key-release was in any of the three upper rows...
-      DINTERVAL ^= (1 << ((2 * (2 - row)) | (col & 1))) << ((col & 2) << 1); // Flag the button's corresponding density-interval coordinates
+      DINTERVAL ^= (1 << ((2 * (2 - row)) | (col & 1))) << ((col & 2) << 2); // Flag the button's corresponding density-interval coordinates
       ROWUPDATE |= B11111000; // Flag the burst-activity LED-rows for a GUI update
     }
 	}
@@ -223,21 +221,22 @@ void playBurst() {
     BLINKING = true; // Set the flag that controls whether to illuminate burst-display LEDs
   }
 
+  byte addoctave = OCTAVE ? 12 : 0; // Get a value to add to any outgoing pitch, based on whether an octave-value is active
+
   if (MONOMODE) { // If we're in monophonic-output mode...
-    byte outpitch = PITCH; // Get a pitch-value to modify
-    byte outvelo = min(127, max(1, HUMANIZE ? VELOCITY + (random(0, 33) - 16) : 0)); // Get a velocity value, with a humanized value if HUMANIZE is enabled, bounded to the MIDI velocity limits
+    byte outpitch = PITCH + addoctave; // Get a pitch-value to modify, optionally raised by an octave if OCTAVE is active
+    byte outvelo = min(127, max(1, VELOCITY - (HUMANIZE ? random(0, (VELOCITY >> 2) + 1) : 0))); // Get a velocity value, with a humanized value if HUMANIZE is enabled, bounded to the MIDI velocity limits
     for (byte i = 0; i < pressed; i++) { // For every currently-pressed interval type...
       outpitch += interv[i] * (INVERT ? -1 : 1); // Apply the interval to the outgoing pitch, with an inverted pitch-direction applied if INVERT is active
     }
-    outpitch += OCTAVE ? 12 : 0; // Raise the outgoing pitch by an octave, if OCTAVE is active
     while (((outpitch > 127) && (outpitch <= 191)) || (outpitch > 192)) { // While the pitch is outside of its correct MIDI-pitch-value boundaries...
       outpitch += 12 * min(1, max(-1, 127 - outpitch)); // Reel the pitch back in toward the 0-127 range, in increments of 12 (as in: an octave)
     }
     sendNoteOn(CHAN, outpitch, outvelo, 1); // Send a note on the currently-active MIDI channel, with the outgoing pitch
   } else { // Else, if we're in polyphonic-output mode...
     for (byte i = 0; i < pressed; i++) { // For every interval-type that has been pressed...
-      byte outpitch = min(127, max(0, PITCH + interv[i])); // Create an output-pitch based on the pitch-offset value, bounded to the minimum and maximum MIDI pitch values
-      byte outvelo = min(127, max(1, HUMANIZE ? VELOCITY + (random(0, 65) - 32) : 0)); // Get a velocity value, with a humanized value if HUMANIZE is enabled, bounded to the MIDI velocity limits
+      byte outpitch = min(127, max(0, PITCH + interv[i] + addoctave)); // Create an output-pitch based on all applicable pitch-offset values, bounded to the minimum and maximum MIDI pitch values
+      byte outvelo = min(127, max(1, VELOCITY - (HUMANIZE ? random(0, (VELOCITY >> 2) + 1) : 0))); // Get a velocity value, with a humanized value if HUMANIZE is enabled, bounded to the MIDI velocity limits
       sendNoteOn(CHAN, outpitch, outvelo, 1); // Send a note on the currently-active MIDI channel, with the outgoing pitch
     }
   }
@@ -351,7 +350,7 @@ void setup() {
 
 	// Tune the Keypad settings
 	kpd.setDebounceTime(1); // Set an extremely minimal keypad-debounce time, since we're using clicky buttons
-	kpd.setHoldTime(0); // Set no gap between a keypress' PRESS and HOLD states
+	kpd.setHoldTime(50); // Set no gap between a keypress' PRESS and HOLD states
 
 	// Initialize the ledControl system
 	lc.shutdown(0, false); // Turn on the ledControl object, using an inverse shutdown command (weird!)
