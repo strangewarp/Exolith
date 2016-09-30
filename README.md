@@ -1,3 +1,3 @@
 
-# Snekbox
-Various firmwares for the ATMEGA328-based Snekbox project (in development).
+# Exolith
+Various firmwares for the ATMEGA328-based Exolith project (in development).
