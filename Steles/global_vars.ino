@@ -14,36 +14,23 @@ byte LEFTCTRL = 0; // Tracks left-column control-buttons in bits 1 thru 5
 byte BOTCTRL = 0; // Tracks bottom-row control-buttons in bits 1 thru 5
 boolean RECORDING = false; // Tracks whether RECORD MODE is active
 
+// Sequencing vars
+word SEQ_POS[51]; // Holds the current tick-position for each sequence
+byte SEQ_SIZE[26]; // Holds 50 4-bit values describing each sequence's size
+byte SEQ_PLAYING[8]; // Holds 50 bits that describe whether a given sequence is currently playing
+byte SLICE_ROW[6]; // Holds the indexes of the sequences in each slice-row
+
 // Cued-command flags, one per sequence
 // Format:
-// bit 1 - CUE [8]
-// bit 2 - CUE [1]
-// bit 3 - SEQ COLUMN [4]
+// bit 1 - CUE [1]
+// bit 2 - CUE [8]
+// bit 3 - SEQ COLUMN [1]
 // bit 4 - SEQ COLUMN [2]
-// bit 5 - SEQ COLUMN [1]
+// bit 5 - SEQ COLUMN [4]
 // bit 6 - reserved
 // bit 7 - reserved
-// bit 8 - OFF
-byte CMD[51];
-
-// Sequence-status flags, one per sequence
-// Format:
-// byte 1 - misc data
-//    bit 1-2: play speed (2 1) [0 = off; 1 = 1; 2 = 1/2; 3 = 1/4]
-//    bit 3-4: play-speed tick delay counter (2 1)
-//    bit 5-7: wander chance (4 2 1) [0 = none; 1 = 14.5%; ... 7 = 100%]
-//    bit 8: location by tick (512)
-// byte 2 - location by tick (256 128 64 32 16 8 4 2 1)
-// byte 3 - wander permissions
-//    bit 1: up-left allowed
-//    bit 2: up allowed
-//    bit 3: up-right allowed
-//    bit 4: left allowed
-//    bit 5: right allowed
-//    bit 6: down-left allowed
-//    bit 7: down allowed
-//    bit 8: down-right allowed
-byte SEQ[51][4];
+// bit 8 - ON/OFF (1/0)
+byte SEQ_CMD[51];
 
 // MIDI-IN vars
 byte INBYTES[4] = {0, 0, 0};
