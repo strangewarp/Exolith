@@ -15,10 +15,15 @@ byte BOTCTRL = 0; // Tracks bottom-row control-buttons in bits 1 thru 5
 boolean RECORDING = false; // Tracks whether RECORD MODE is active
 
 // Sequencing vars
-word SEQ_POS[51]; // Holds the current tick-position for each sequence
-byte SEQ_SIZE[26]; // Holds 50 4-bit values describing each sequence's size
-byte SEQ_PLAYING[8]; // Holds 50 bits that describe whether a given sequence is currently playing
-byte SLICE_ROW[6]; // Holds the indexes of the sequences in each slice-row
+byte BPM = 120; // Beats-per-minute value: one beat is 96 tempo-ticks
+byte SEQ_EXCLUDE[33]; // Holds a seq's EXCLUDE values: each bit corresponds to a slice. 1 = include; 0 = skip
+byte SEQ_OFFSET[17]; // Holds 32 4-bit values for SCATTER-based tick-position offset: 0 = neg/pos; 1-3 = eighth/quarter/half note
+byte SEQ_PLAYING[5]; // Holds 32 bits that describe whether a given sequence is currently playing
+word SEQ_POS[33]; // Holds the current tick-position for each sequence
+byte SEQ_RAND[33]; // Holds randomize-slice and randomize-velocity values: (0 to 3) = binary rand-slice chance; (4 to 7) = binary rand-velocity variance
+byte SEQ_SCATTER[33]; // Holds a seq's SCATTER values: bits 0-3 are "intervals", bits 4-7 are "chance"
+byte SEQ_SIZE[17]; // Holds 32 4-bit values for each sequence's size: (1 to 15; 0 = 16) * 2 = beats in seq
+byte SLICE_ROW[6]; // Holds the indexes of the sequences currently on the slicing-page
 
 // Cued-command flags, one per sequence
 // Format:
@@ -30,7 +35,7 @@ byte SLICE_ROW[6]; // Holds the indexes of the sequences in each slice-row
 // bit 6 - reserved
 // bit 7 - reserved
 // bit 8 - ON/OFF (1/0)
-byte SEQ_CMD[51];
+byte SEQ_CMD[33];
 
 // MIDI-IN vars
 byte INBYTES[4] = {0, 0, 0};

@@ -1,15 +1,31 @@
 
 // Toggle whether the MIDI CLOCK is playing, provided that this unit is in CLOCK MASTER mode
-void toggleMidiClock() {
+void toggleMidiClock(boolean usercmd) {
+	PLAYING = !PLAYING; // Toggle/untoggle the var that tracks whether the MIDI CLOCK is playing
 	if (CLOCKMASTER) { // If in CLOCK MASTER mode...
-		PLAYING = !PLAYING; // Toggle/untoggle the var that tracks whether the MIDI CLOCK is playing
 		if (PLAYING) { // If playing has just been enabled...
 			Serial.write(250); // Send a MIDI CLOCK START command
 			Serial.write(248); // Send a MIDI CLOCK TICK (dummy-tick immediately following START command, as per MIDI spec)
 		} else { // Else, if playing has just been disabled...
 			haltAllSustains(); // Halt all currently-broadcasting MIDI sustains
 			Serial.write(252); // Send a MIDI CLOCK STOP command
-			resetSeqs(); // Reset the internal pointers of all sequences
+			if (usercmd) { // If this toggle was sent by a user-command...
+				resetSeqsInSlice(); // Reset each sequence to the start of its currently-active slice
+			} else { // Else, if this toggle was sent by an external device...
+				resetSeqs(); // Reset the internal pointers of all sequences
+			}
+		}
+	} else { // If in CLOCK FOLLOW mode...
+		if (PLAYING) { // If PLAYING has just been enabled...
+			CURTICK = 1; // Set the global sequencing tick to 1
+			if (!usercmd) { // If this toggle was sent by an external device...
+				DUMMYTICK = true; // Flag the sequencer to wait for an incoming dummy-tick, as per MIDI spec
+			}
+		} else { // Else, if playing has just been disabled...
+			haltAllSustains(); // Halt all currently-broadcasting MIDI sustains
+			if (!usercmd) {
+				resetSeqs(); // Reset the internal pointers of all sequences
+			}
 		}
 	}
 }

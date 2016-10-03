@@ -4,15 +4,20 @@ void slicePress(byte col, byte row) {
 
     byte seq = 0; // Will hold the seq-index of whatever seq is being modified by the given command
     byte slice = 0; // Will hold the position of the slice that corresponds to the button that's been pressed
-    if ((BOTCTRL & B00000001) > 0) { // If the OVERVIEW-button is being held...
-        seq = col + (5 * row); // Get the seq-index of the button's corresponding OVERVIEW-seq
-        seq += 25 * (LEFTCTRL & B00000001); // If the RIGHT-SIDE key is held, add 25 to the seq value
+    if (BOTCTRL & B00000001) { // If the OVERVIEW-button is being held...
+        seq = col + (4 * row); // Get the seq-index of the button's corresponding OVERVIEW-seq
+        seq += 16 * (LEFTCTRL & B00000001); // If the RIGHT-SIDE key is held, add 16 to the seq value
     } else { // Else, if OVERVIEW isn't being held...
-        slice = (col - 1) + (4 * (LEFTCTRL & B00000001)); // Get the slice that corresponds to this column, plus 4 if RIGHT-SIDE is held
+        slice = col + (4 * (LEFTCTRL & B00000001)); // Get the slice that corresponds to this column, plus 4 if RIGHT-SIDE is held
         seq = SLICE_ROW[row]; // Get the index of the seq in the given slice-row
     }
 
-    if (LEFTCTRL == B00000001) { // If the FLING button is held...
+    if ((!BOTCTRL) && !(LEFTCTRL & B00011110)) { // If no control-buttons are being held (aside from, optionally, the RIGHT-SIDE button)...
+        byte size = SEQ_SIZE[seq >> 1] >> (4 * (seq & 1)); // Get the size-value of the sequence
+        size = size ? size : 16; // If the sequence's stored size-value is 0, treat it as 16
+        SEQ_POS[seq] = 24 * size * slice; // Set the seq's position to correspond with the given slice-point
+        SEQ_PLAYING[seq >> 3] |= 1 << (seq & 7); // Set the seq's PLAYING-bit to 1
+    } else if (LEFTCTRL == B00000001) { // If the FLING button is held...
         if (FLINGSEQ == 255) { // If the FLINGSEQ slot hasn't been filled by a FLING keypress yet...
             FLINGSEQ = seq; // Put the given sequence into the FLINGSEQ slot
         } else { // Else, if the FLINGSEQ slot is filled...
@@ -58,28 +63,28 @@ void slicePress(byte col, byte row) {
         SEQ_POS[seq] = 0; // Reset the seq's tick-position
         SEQ_PLAYING[seq >> 3] &= ~(1 << (seq & 7)); // Set the seq's PLAYING-bit to 0
     } else if (BOTCTRL == B00000100) { // If the SCATTER button is held...
-
-    } else if (BOTCTRL == B00001010) { // If the OFF-CUE-1 chord is held...
-
-    } else if (BOTCTRL == B00010010) { // If the OFF-CUE-8 chord is held...
-
+        SEQ_SCATTER[seq] ^= 1 << slice; // Toggle the SCATTER-bit that corresponds to the given slice-button
     } else if (BOTCTRL == B00001100) { // If the BPM chord is held...
-
-    } else if (BOTCTRL == B00010101) { // If the GLOBAL PLAY/STOP chord is held...
-
-    } else if (BOTCTRL == B00011110) { // If the TOGGLE-RECORD-MODE chord is held...
-
-    } else if (LEFTCTRL == B00000010) {
-
-
-
-
-    } else if ((BOTCTRL == 0) && ((LEFTCTRL & 30) == 0)) { // If no control-buttons are being held (aside from, optionally, the RIGHT-SIDE button)...
-        SEQ_POS[seq] = (96 * SEQ_LEN[seq]) * ((slice - 1) / 8); // Set the seq's position to correspond with the given slice-point
-        SEQ_PLAYING[seq >> 3] |= 1 << (seq & 7); // Set the seq's PLAYING-bit to 1
+        BPM = max(20, BPM ^ (1 << slice)); // Set the BPM to a binary value corresponding to the keystroke, with a minimum of 20
+    } else if (LEFTCTRL == B00000010) { // If the EXCLUDE button is held...
+        byte sbin = 1 << slice; // Get this slice-press's binary value
+        if (SEQ_EXCLUDE[seq] ^ sbin) { // If any open slices would remain after an EXCLUDE operation...
+            SEQ_EXCLUDE[seq] ^= sbin; // Set the sequence's excluded slices to a binary value corresponding to the keystroke
+            word slicewidth = 24 * (SEQ_SIZE[seq >> 1] >> (4 * (seq & 1))); // Get the number of ticks in a single slice within this seq
+            word seqwidth = slicewidth * 8; // Get the total number of ticks within the seq
+            while (true) { // Loop until reaching a break point...
+                byte spos = byte(floor(SEQ_POS[seq] / (24 * SEQ_SIZE[seq]))); // Get the seq's tick-position's corresponding slice
+                if (SEQ_EXCLUDE[seq] & (1 << spos)) { // If the slice holding the seq's tick-position isn't excluded...
+                    break; // Break from the loop, as everything is fine
+                } // Otherwise, do the following things:
+                SEQ_POS[seq] = (SEQ_POS[seq] + slicewidth) % seqwidth; // Increase the tick-position by 1 slice worth of ticks, wrapped to the seq's size
+            }
+        }
+    } else if (LEFTCTRL == B00000100) { // If the RANDOMIZE-SLICE button is held...
+        SEQ_RAND[seq] = 1 << col; // Toggle the RANDOMIZE-SLICE bit that corresponds to the given column
+    } else if (LEFTCTRL == B00001000) { // If the RANDOMIZE-VELOCITY button is held...
+        SEQ_RAND[seq] = 1 << (4 + col); // Toggle the RANDOMIZE-VELOCITY bit that corresponds to the given column
     }
-
-
 
 }
 
@@ -99,23 +104,16 @@ void assignCommandAction(byte col, byte row) {
 		} else { // If keystroke is right of column 1...
 			if (RECORDING) { // If RECORDING mode is active...
                 recPress(col - 1, row); // Parse the RECORDING-mode button-press
-			} else {
-                slicePress(col, row);
+			} else { // Else, if SLICE or OVERVIEW mode is active...
+                slicePress(col - 1, row); // Parse the SLICE/OVERVIEW-mode button-press
             }
-
-            /*if ((BOTCTRL & B00000001) > 0) { // Else, if OVERVIEW MODE is active...
-                slicePress(col - (1 + ((col - 1) >> 4)), row)
-				slicePress(col, row, (5 * row) + col, 1); // Send a keypress for slice 1 of the sequence that corresponds to this overview-button
-			} else { // Else, if SLICE MODE is active...
-				slicePress(col, row, SLICE_ROW[row], (col + (4 * SLICE_SIDE[row])) - 1); // Send a slice-keypress for the seq's selected column
-			}*/
 		}
 	} else { // Else, if keystroke is in the bottom row...
         BOTCTRL |= 1 << col; // Add the button-column's corresponding bit to the BOTCTRL byte
-        if (BOTCTRL == B00001111) { // If a RECORD-MODE-toggling command has been activated...
+        if (BOTCTRL == B00001111) { // If the TOGGLE-RECORD-MODE chord has just been pressed...
             RECORDING = !RECORDING; // Toggle/untoggle RECORD MODE
-        } else if (BOTCTRL == B00010101) { // If a GLOBAL PLAY/STOP command has been activated...
-            toggleMidiClock(); // Toggle the MIDI clock, if applicable
+        } else if (BOTCTRL == B00010101) { // If the GLOBAL PLAY/STOP chord has just been pressed...
+            toggleMidiClock(true); // Toggle the MIDI clock, with "true" for "the user did this, not a device"
         }
 	}
 }
