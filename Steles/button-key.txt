@@ -29,6 +29,14 @@ Button combinations (SLICE MODE & OVERVIEW MODE):
 	10101 -> 10101 -> 21: GLOBAL PLAY/STOP
 	01111 -> 11110 -> 30: TOGGLE-RECORD-MODE
 
+Left-column button combinations (RECORD MODE):
+	10000 -> 00001 ->  1: OCTAVE UP 2
+	01000 -> 00010 ->  2: OCTAVE UP 1
+	00100 -> 00100 ->  4: INTERVAL UP 5
+	00010 -> 01000 ->  8: INTERVAL UP 3
+	00001 -> 10000 -> 16: INTERVAL UP 2
+	(all chords stack effects)
+
 Button combinations (RECORD MODE):
 	10000 -> 00001 ->  1: RECORD-NOTES
 	01000 -> 00010 ->  2: CHANNEL

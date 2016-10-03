@@ -91,7 +91,20 @@ void slicePress(byte col, byte row) {
 // Parse a note-keypress that was generated while in RECORDING mode
 void recPress(byte col, byte row) {
 
+    if (row == 5) { // If the keystroke was in the bottom row...
 
+
+
+    } else if (col == 0) { // Else, if the keystroke was in the left column...
+        RECPITCH = (LEFTCTRL & 3) * 12; // Shift record-pitch by octaves from octave-keys
+        RECPITCH += (LEFTCTRL & 4) ? 5 : 0; // Shift record-pitch by interval 5, if pressed
+        RECPITCH += (LEFTCTRL & 8) ? 3 : 0; // Interval 3, if pressed
+        RECPITCH += (LEFTCTRL & 16) ? 2 : 0; // Interval 2, if pressed
+    else { // Else, if the keystroke was in neither the bottom row nor the left column...
+
+
+
+    }
 
 }
 
