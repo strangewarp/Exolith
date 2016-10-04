@@ -23,57 +23,6 @@
 */
 
 
-// Digital-pin keypad library
-#include <Key.h>
-#include <Keypad.h>
-
-// MAX7219/MAX7221 LED-matrix library
-#include <LedControl.h>
-
-// Serial Peripheral Interface library
-#include <SPI.h>
-
-// SD-card data-storage library (requires SPI.h)
-#include <SdFat.h>
-
-
-
-void haltAllSustains() {
-	for (byte i = 0; i < 8; i++) {
-		if (SUSTAIN[i][2] > 0) {
-			Serial.write(128 + SUSTAIN[i][0]);
-			Serial.write(SUSTAIN[i][1]);
-			Serial.write(127);
-			SUSTAIN[i][0] = 0;
-			SUSTAIN[i][1] = 0;
-			SUSTAIN[i][2] = 0;
-		}
-	}
-}
-
-
-void resetSeqs() {
-	for (byte i = 0; i < 50; i++) {
-		CMD[i] = 0;
-	}
-}
-
-void resetSeqFlags() {
-	for (byte i = 0; i < 50; i++) {
-		SEQ[i][0] = 0;
-		SEQ[i][1] = 0;
-		SEQ[i][2] = 0;
-	}
-}
-
-
-void iterateSeqs() {
-
-	// TODO write this part
-
-}
-
-
 void setup() {
 
 	resetSeqs();

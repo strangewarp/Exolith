@@ -56,23 +56,14 @@ void parseSysex() {
 }
 
 
-//testing code TODO remove
-byte TESTTICK = 95;
-byte TESTCOUNT = 1;
-
 void parseMidi() {
 
 	// testing code TODO remove
 	//lc.setRow(0, 2, INBYTES[0] >> 7);
 	//lc.setRow(0, 3, INBYTES[0] % 128);
-	lc.setRow(0, TESTCOUNT, INBYTES[1]);
-	TESTCOUNT = max(1, (TESTCOUNT % 8) + 1);
 	//lc.setRow(0, 7, INBYTES[2]);
 
 
-	// TODO: write the actual version of this function:
-	//				* Record commands when in Record Mode
-	//				* Change internal state based on Ophiuchus SYSEX commands - each containing a checksum byte tacked onto its command byte
 
 	// TODO: adapt this
 	/*

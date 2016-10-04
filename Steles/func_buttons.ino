@@ -63,7 +63,7 @@ void slicePress(byte col, byte row) {
         SEQ_POS[seq] = 0; // Reset the seq's tick-position
         SEQ_PLAYING[seq >> 3] &= ~(1 << (seq & 7)); // Set the seq's PLAYING-bit to 0
     } else if (BOTCTRL == B00000100) { // If the SCATTER button is held...
-        SEQ_SCATTER[seq] ^= 1 << slice; // Toggle the SCATTER-bit that corresponds to the given slice-button
+        SEQ_SCATTER[seq] ^= 1 << slice; // Toggle this slice-button's SCATTER-bit
     } else if (BOTCTRL == B00001100) { // If the BPM chord is held...
         BPM = max(20, BPM ^ (1 << slice)); // Set the BPM to a binary value corresponding to the keystroke, with a minimum of 20
     } else if (LEFTCTRL == B00000010) { // If the EXCLUDE button is held...
@@ -81,15 +81,17 @@ void slicePress(byte col, byte row) {
             }
         }
     } else if (LEFTCTRL == B00000100) { // If the RANDOMIZE-SLICE button is held...
-        SEQ_RAND[seq] = 1 << col; // Toggle the RANDOMIZE-SLICE bit that corresponds to the given column
+        SEQ_RAND[seq] = 1 << col; // Toggle this column's RANDOMIZE-SLICE bit
     } else if (LEFTCTRL == B00001000) { // If the RANDOMIZE-VELOCITY button is held...
-        SEQ_RAND[seq] = 1 << (4 + col); // Toggle the RANDOMIZE-VELOCITY bit that corresponds to the given column
+        SEQ_RAND[seq] = 1 << (4 + col); // Toggle this column's RANDOMIZE-VELOCITY bit
     }
 
 }
 
 // Parse a note-keypress that was generated while in RECORDMODE mode
 void recPress(byte col, byte row) {
+
+    byte slice = col + (4 * (LEFTCTRL & B00000001)); // Get the slice that corresponds to this column, plus 4 if RIGHT-SIDE is held
 
     if (col == 0) { // Else, if the keystroke was in the left column...
         PITCHOFFSET = (LEFTCTRL & 3) * 12; // Shift pitch-offset by octaves from octave-keys
@@ -120,15 +122,25 @@ void recPress(byte col, byte row) {
         } else if (BOTCTRL == B00001000) { // If the VELOCITY button is held...
             VELOCITY = max(1, min(127, VELOCITY + pow(((col + (col >> 1)) - 2), 4))); // Shift the VELOCITY value by -16, -1, 1, or 16, depending on keystroke's column
         } else if (BOTCTRL == B00010000) { // If the HUMANIZE button is held...
-            
+            HUMANIZE ^= 1 << slice; // Toggle this slice-button's HUMANIZE-bit
         } else if (BOTCTRL == B00000011) { // If the TIME-QUANTIZE chord is held...
-
+            QUANTIZE ^= 1 << slice; // Toggle this slice-button's QUANTIZE-bit
         } else if (BOTCTRL == B00000101) { // If the SEQ-SIZE chord is held...
-
+            SEQ_SIZE[SLICE_SLOT[0]] ^= 1 << slice; // Toggle this slice-button's SEQ_SIZE bit, for whichever sequence is in the topmost slicing row
         } else if (BOTCTRL == B00001001) { // If the NOTE-DURATION chord is held...
-
+            DURATION ^= 1 << slice; // Toggle this slice-button's DURATION-bit
         } else if (BOTCTRL == B00010001) { // If the CLOCK MASTER/FOLLOW chord is held...
-
+            if (CLOCKMASTER && PLAYING) { // If this was previously in MASTER mode, and currently PLAYING...
+                toggleMidiClock(); // Toggle the MIDI CLOCK off
+            }
+            CLOCKMASTER != CLOCKMASTER; // Only toggle the MIDI-CLOCK-MASTER boolean when chording its command with a regular key, to prevent chord collisions
+            if (CLOCKMASTER && (!PLAYING)) { // If this is now in MASTER mode, and not PLAYING...
+                toggleMidiClock(); // Toggle the MIDI CLOCK on
+            }
+        } else if (BOTCTRL == B00000111) { // If the SAVE chord is held...
+            saveData(slice + (row * 8)); // Save this song to a save-slot corresponding to the slice keypress
+        } else if (BOTCTRL == B00011100) { // If the LOAD chord is held...
+            loadData(slice + (row * 8)); // Load a song from the save-slot corresponding to the slice keypress
         }
     }
 
@@ -149,8 +161,12 @@ void assignCommandAction(byte col, byte row) {
 		}
 	} else { // Else, if keystroke is in the bottom row...
         BOTCTRL |= 1 << col; // Add the button-column's corresponding bit to the BOTCTRL byte
+        if (RECORDMODE && (BOTCTRL == B00000001)) { // If in RECORD mode, and the RECORD-NOTES command was pressed...
+            RECORDNOTES != RECORDNOTES; // Toggle whether to record played notes into the top slice-sequence
+        }
         if (BOTCTRL == B00001111) { // If the TOGGLE-RECORD-MODE chord has just been pressed...
             RECORDMODE = !RECORDMODE; // Toggle/untoggle RECORD MODE
+            RECORDNOTES = false; // Disable note-recording, to avoid recording new notes automatically on a future toggle cycle
         } else if (BOTCTRL == B00010101) { // If the GLOBAL PLAY/STOP chord has just been pressed...
             toggleMidiClock(true); // Toggle the MIDI clock, with "true" for "the user did this, not a device"
         }

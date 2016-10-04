@@ -10,7 +10,7 @@ const byte TEXT_M[6] PROGMEM = {
 };
 
 // Partial-screen letter F, for the CLOCK MASTER/FOLLOW screen
-const byte TEXT_F[9] PROGMEM = {
+const byte TEXT_F[6] PROGMEM = {
 	B01111110,
 	B01000000,
 	B01111100,
@@ -18,6 +18,28 @@ const byte TEXT_F[9] PROGMEM = {
 	B01000000,
 	B01000000
 };
+
+
+
+// Full-screen picture of a quarter-note
+const byte PICTURE_NOTE24[9] PROGMEM = {
+	B00010000,
+	B00010000,
+	B00010000,
+	B00010000,
+	B00010000,
+	B01110000,
+	B01110000,
+	B01110000
+};
+
+// Partial-screen picture of a plus-sign, for notes with intervals that are neither plain nor dotted
+const byte PICTURE_NOTEPLUS[3] PROGMEM = {
+	B00000010,
+	B00000111,
+	B00000010
+}
+
 
 // Partial-screen number 0
 const byte NUM_0[7] PROGMEM = {
