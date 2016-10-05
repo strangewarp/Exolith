@@ -25,6 +25,8 @@
 
 void setup() {
 
+    // TODO: initialize empty arrays here
+
 	resetSeqs();
 	resetSeqFlags();
 
