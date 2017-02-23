@@ -30,55 +30,98 @@ void toggleMidiClock(boolean usercmd) {
 	}
 }
 
+// Parse a given MIDI command
+void parseMidi() {
 
-void parseSysex() {
+	// If RECORDING-mode is active, and notes are currently being recorded...
+	if (RECORDMODE && RECORDNOTES) {
+		recordToTopSlice(INBYTES[0], INBYTES[1], INBYTES[2]); // Record the incoming MIDI command to the seq in top slice-position
+	}
 
-	// testing code TODO remove
-	/*
-	lc.setRow(0, 0, 128 >> min(128, SYSBYTES[0]));
-	lc.setRow(0, 1, 128 >> min(128, SYSBYTES[1]));
-	lc.setRow(0, 2, 128 >> min(128, SYSBYTES[2]));
-	lc.setRow(0, 3, 128 >> min(128, SYSBYTES[3]));
-	lc.setRow(0, 4, 128 >> min(128, SYSBYTES[4]));
-	lc.setRow(0, 5, 128 >> min(128, SYSBYTES[5]));
-	lc.setRow(0, 6, 128 >> min(128, SYSBYTES[6]));
-	lc.setRow(0, 7, 128 >> min(128, SYSBYTES[7]));
-	*/
-
-
-	// Send SYSEX command to MIDI-OUT, acting as a SOFT THRU;
-	// and also clear the SYSBYTES array
-	for (byte i = 0; i < 11; i++) {
-		Serial.write(SYSBYTES[i]);
-		SYSBYTES[i] = 0;
+	// Having parsed the command, send its bytes onward to MIDI-OUT
+	for (byte i = 0; i < INTARGET; i++) {
+		Serial.write(INBYTES[i]);
 	}
 
 }
 
+// Parse all incoming raw MIDI bytes
+void parseRawMidi() {
 
-void parseMidi() {
+	// While new MIDI bytes are available to read from the MIDI-IN port...
+	while (Serial.available() > 0) {
 
-	// testing code TODO remove
-	//lc.setRow(0, 2, INBYTES[0] >> 7);
-	//lc.setRow(0, 3, INBYTES[0] % 128);
-	//lc.setRow(0, 7, INBYTES[2]);
+		// Get the frontmost incoming byte
+		byte b = Serial.read();
 
+		if (SYSIGNORE) { // If this is an ignoreable SYSEX command...
+			if (b == 247) { // If this was an END SYSEX byte, clear SYSIGNORE and stop ignoring new bytes
+				SYSIGNORE = false;
+			}
+		} else { // Else, accumulate arbitrary commands...
 
+			if (INCOUNT >= 1) { // If a command's first byte has already been received...
+				INBYTES[INCOUNT] = b;
+				INCOUNT++;
+				if (INCOUNT == INTARGET) { // If all the command's bytes have been received...
+					parseMidi(); // Parse the command
+					INBYTES[0] = 0; // Reset incoming-command-tracking vars
+					INBYTES[1] = 0;
+					INBYTES[2] = 0;
+					INCOUNT = 0;
+				}
+			} else { // Else, if this is either a single-byte command, or a multi-byte command's first byte...
 
-	// TODO: adapt this
-	/*
-	if (b == 252) { // STOP command
-		PLAYING = false;
-	} else if (b == 251) { // CONTINUE command
-		PLAYING = true;
-	} else if (b == 250) { // START command
-		PLAYING = true;
-		CURTICK = 0;
-		//iterateTick();
-	} else if (b == 248) { // TIMING CLOCK command
-		CURTICK = (CURTICK + 1) % 768;
-		//iterateTick();
-	*/
+				byte cmd = b - (b % 16); // Get the command-type of any given non-SYSEX command
 
+				if (b == 248) { // TIMING CLOCK command
+					Serial.write(b);
+					iterateSeqs();
+				} else if (b == 250) { // START command
+					Serial.write(b);
+					resetSeqs();
+					PLAYING = true;
+				} else if (b == 251) { // CONTINUE command
+					Serial.write(b);
+					PLAYING = true;
+				} else if (b == 252) { // STOP command
+					Serial.write(b);
+					PLAYING = false;
+					haltAllSustains();
+				} else if (b == 247) { // END SYSEX MESSAGE command
+					// If you're dealing with an END-SYSEX command while SYSIGNORE is inactive,
+					// then that implies you've received either an incomplete or corrupt SYSEX message,
+					// and so nothing should be done here.
+				} else if (
+					(b == 244) // MISC SYSEX command
+					|| (b == 240) // START SYSEX MESSAGE command
+				) { // Anticipate an incoming SYSEX message
+					SYSIGNORE = true;
+				} else if (
+					(b == 242) // SONG POSITION POINTER command
+					|| (cmd == 224) // PITCH BEND command
+					|| (cmd == 176) // CONTROL CHANGE command
+					|| (cmd == 160) // POLY-KEY PRESSURE command
+					|| (cmd == 144) // NOTE-ON command
+					|| (cmd == 128) // NOTE-OFF command
+				) { // Anticipate an incoming 3-byte message
+					INBYTES[0] = b;
+					INCOUNT = 1;
+					INTARGET = 3;
+				} else if (
+					(b == 243) // SONG SELECT command
+					|| (b == 241) // MIDI TIME CODE QUARTER FRAME command
+					|| (cmd == 208) // CHANNEL PRESSURE (AFTERTOUCH) command
+					|| (cmd == 192) // PROGRAM CHANGE command
+				) { // Anticipate an incoming 2-byte message
+					INBYTES[0] = b;
+					INCOUNT = 1;
+					INTARGET = 2;
+				}
+
+			}
+		}
+
+	}
 
 }

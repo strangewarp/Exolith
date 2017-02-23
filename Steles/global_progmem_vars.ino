@@ -20,16 +20,15 @@ const byte TEXT_F[6] PROGMEM = {
 };
 
 
-
-// Full-screen picture of a quarter-note
-const byte PICTURE_NOTE24[9] PROGMEM = {
+// Full-screen picture of a half-note
+const byte PICTURE_NOTE[9] PROGMEM = {
 	B00010000,
 	B00010000,
 	B00010000,
 	B00010000,
 	B00010000,
 	B01110000,
-	B01110000,
+	B01010000,
 	B01110000
 };
 
@@ -38,7 +37,7 @@ const byte PICTURE_NOTEPLUS[3] PROGMEM = {
 	B00000010,
 	B00000111,
 	B00000010
-}
+};
 
 
 // Partial-screen number 0

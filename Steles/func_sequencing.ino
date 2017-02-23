@@ -1,4 +1,5 @@
 
+// Send MIDI-OFF commands for all currently-sustained notes
 void haltAllSustains() {
 	for (byte i = 0; i < 8; i++) {
 		if (SUSTAIN[i][2] > 0) {
@@ -9,21 +10,6 @@ void haltAllSustains() {
 			SUSTAIN[i][1] = 0;
 			SUSTAIN[i][2] = 0;
 		}
-	}
-}
-
-
-void resetSeqs() {
-	for (byte i = 0; i < 50; i++) {
-		CMD[i] = 0;
-	}
-}
-
-void resetSeqFlags() {
-	for (byte i = 0; i < 50; i++) {
-		SEQ[i][0] = 0;
-		SEQ[i][1] = 0;
-		SEQ[i][2] = 0;
 	}
 }
 

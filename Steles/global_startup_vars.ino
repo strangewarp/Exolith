@@ -12,7 +12,6 @@
 // SD-card data-storage library (requires SPI.h)
 #include <SdFat.h>
 
-
 // Initialize the object that controls the Keypad buttons
 const byte ROWS PROGMEM = 6;
 const byte COLS PROGMEM = 5;
