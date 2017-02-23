@@ -5,17 +5,12 @@ void loadSong(byte song) {
 	// Display an "L" while loading data
 	displayLetter("L");
 
-	// Check whether song-slot's folder exists; if not, then create it
-
-
-
 	// Get the names of this sequence's savefile and tempfile
 	string name = string(SONG) + ".dat";
 	string name2 = string(SONG) + ".tmp";
 
-	// Open a data-file with the given song's number, and if it is newly-created, fill it with default data
-	file.open(name, O_CREAT | O_APPEND | O_RDWR);
-	if (file.size == 0) { // If the file is newly-created...
+	if (!file.exists(name)) { // If the savefile doesn't exist...
+		file.open(name, O_CREAT | O_APPEND | O_RDWR); // Open a data-file with the given song's number
 		// Fill it with dummy-bytes totalling:
 		// (32 (exclude) + 16 (offset) + 32 (random) + 32 (scatter) + 16 (size) + 5 (active slice-seqs) + 1 (bpm))
 		// + (3 (bytes) * 96 (ticks) * 4 (beats) * 16 (measures) * 32 (seqs))
