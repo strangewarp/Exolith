@@ -20,6 +20,7 @@ byte QUANTIZE = B00000100; // Time-quantize value for RECORD-mode notes: bits 0-
 byte DURATION = B00001000; // Duration value for RECORD-mode notes: bits 0-7: 1, 3, 6, 12, 24, 48, 96, 192 (ticks)
 
 // Sequencing vars
+byte SONG = 0; // Current song-slot whose data-files are being played
 boolean PLAYING = false; // Controls whether the sequences are iterating through their contents
 unsigned int CURTICK = 1; // Current global sequencing tick
 boolean DUMMYTICK = false; // Tracks whether to expect a dummy MIDI CLOCK tick before starting to iterate through sequences

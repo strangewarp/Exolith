@@ -32,7 +32,7 @@ void setup() {
     for (byte i = 0; i < 16; i++) {
         SEQ_OFFSET[i] = 0;
         SEQ_POS[i] = 0;
-        SEQ_SIZE[i] = 4;
+        SEQ_SIZE[i] = B01000100;
     }
     for (byte i = 0; i < 32; i++) {
         SEQ_CMD[i] = 0;
@@ -41,8 +41,13 @@ void setup() {
         SEQ_SCATTER[i] = 0;
     }
 
+    // Initialize the SD-card at full speed
+    if (!sd.begin(10, SPI_FULL_SPEED)) {
+        sd.initErrorHalt();
+    }
+
     // Load the default song, or create its folder and files if they don't exist
-    loadSong(0);
+    loadSong(SONG);
 
     // Set an extremely minimal debounce time, since the device uses clicky buttons
 	kpd.setDebounceTime(1);
