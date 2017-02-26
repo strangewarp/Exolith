@@ -1,4 +1,7 @@
 
+// Default seq-positions and BPM value, used during creation of blank savefiles
+const byte DEFAULT_POS_BPM[7] PROGMEM = {0, 1, 2, 3, 4, 120};
+
 // Partial-screen letter M, for the CLOCK MASTER/FOLLOW screen
 const byte TEXT_M[6] PROGMEM = {
 	B10000001,
@@ -17,6 +20,26 @@ const byte TEXT_F[6] PROGMEM = {
 	B01000000,
 	B01000000,
 	B01000000
+};
+
+// Partial-screen letter S, displayed during data-save functions
+const byte TEXT_S[6] PROGMEM = {
+	B00111110;
+	B01000000;
+	B00111100;
+	B00000010;
+	B00000010;
+	B01111100;
+};
+
+// Partial-screen letter L, displayed during data-load functions
+const byte TEXT_L[6] PROGMEM = {
+	B01000000;
+	B01000000;
+	B01000000;
+	B01000000;
+	B01000000;
+	B01111110;
 };
 
 

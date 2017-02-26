@@ -46,15 +46,15 @@ void setup() {
         sd.initErrorHalt();
     }
 
-    // Load the default song, or create its folder and files if they don't exist
-    loadSong(SONG);
-
     // Set an extremely minimal debounce time, since the device uses clicky buttons
 	kpd.setDebounceTime(1);
 
     // Power up ledControl to full brightness
 	lc.shutdown(0, false);
 	lc.setIntensity(0, 15);
+
+    // Load the default song, or create its folder and files if they don't exist
+    loadSong(SONG);
 
     // Start serial comms at the MIDI baud rate
 	Serial.begin(31250);
