@@ -31,14 +31,13 @@ void setup() {
     }
     for (byte i = 0; i < 16; i++) {
         SEQ_OFFSET[i] = 0;
-        SEQ_POS[i] = 0;
-        SEQ_SIZE[i] = B01000100;
     }
     for (byte i = 0; i < 32; i++) {
         SEQ_CMD[i] = 0;
         SEQ_EXCLUDE[i] = 0;
         SEQ_RAND[i] = 0;
         SEQ_SCATTER[i] = 0;
+        SEQ_SPOS[i] = 0;
     }
 
     // Initialize the SD-card at full speed

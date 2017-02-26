@@ -31,7 +31,7 @@ void toggleMidiClock(boolean usercmd) {
 }
 
 // Parse a given MIDI command
-void parseMidi() {
+void parseMidiCommand() {
 
 	// If RECORDING-mode is active, and notes are currently being recorded...
 	if (RECORDMODE && RECORDNOTES) {
@@ -64,7 +64,7 @@ void parseRawMidi() {
 				INBYTES[INCOUNT] = b;
 				INCOUNT++;
 				if (INCOUNT == INTARGET) { // If all the command's bytes have been received...
-					parseMidi(); // Parse the command
+					parseMidiCommand(); // Parse the command
 					INBYTES[0] = 0; // Reset incoming-command-tracking vars
 					INBYTES[1] = 0;
 					INBYTES[2] = 0;
@@ -76,6 +76,7 @@ void parseRawMidi() {
 
 				if (b == 248) { // TIMING CLOCK command
 					Serial.write(b);
+					advanceGlobalTick();
 					iterateSeqs();
 				} else if (b == 250) { // START command
 					Serial.write(b);
