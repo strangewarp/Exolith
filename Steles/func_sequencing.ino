@@ -49,11 +49,16 @@ void iterateAll() {
 				SEQ_POS[i] = (SEQ_POS[i] + csize) % size; // Skip directly to the next slice-chunk
 				chunk = (chunk + 1) % 8; // Change the chunk var to reflect that the active slice-chunk has shifted
 			}
-			file.seekSet((i * 49152) + (SEQ_POS[i] * 16)); // Prepare to start reading from the tick's location in the tempfile
-			for (byte p = 0; p < 4; p++) { // For each of the 4 potential notes on this tick...
-				file.read(note, 4); // Read the note's data
-				note[0] ? playNote(note) : break; // If the note exists, play it, else break from this read-loop
+			file.seekSet((i * 55296) + SEQ_POS[i]); // Prepare to start reading from the tick's location in the tempfile
+			file.read(note, 3); // Read the data of the tick's first note
+			if (note[0]) { // If the first note exists...
+				playNote(note); // Play the note
+				file.read(note, 3); // Read the data of the tick's second note
+				if (note[0]) { // If the second note exists...
+					playNote(note); // Play the note
+				}
 			}
+			note[0] ? playNote(note) : break; // If the note exists, play it, else break from this read-loop
 			if (oldchunk != chunk) { // If the slice-chunk-position has visibly changed...
 				TO_UPDATE |= 248; // Queue a GUI update for all slicing-canvas rows
 			}

@@ -19,12 +19,12 @@ void loadSong(byte song) {
 
 	if ( // If...
 		(!file.exists(name)) // The savefile doesn't exist...
-		|| (file.fileSize() != 884736) // Or the file isn't the expected size...
+		|| (file.fileSize() != 1769472) // Or the file isn't the expected size...
 	) { // Then recreate a blank datafile...
 		file.open(name, O_CREAT | O_TRUNC | O_APPEND | O_WRITE); // Open a data-file with the given song's number
 		// Fill file with body dummy-bytes totalling:
-		// 3 (bytes) * 24 (ticks) * 128 (chunks) * 32 (seqs) * 3 (bytes per note) = 884736
-		for (long i = 0; i < 884736; i += 32) {
+		// 3 (bytes) * 24 (ticks) * 128 (chunks) * 32 (seqs) * 2 (notes per tick) * 3 (bytes per note) = 1769472
+		for (long i = 0; i < 1769472; i += 32) {
 			file.write(buf, 32); // Empty dummy-bytes for all sequence contents
 		}
 		// Fill remainder of file with footer dummy-bytes totalling:
@@ -44,7 +44,7 @@ void loadSong(byte song) {
 	file.close();
 
 	// Copy the savefile's body-bytes into the tempfile
-	for (long b = 0; b < 884736; b += 32) {
+	for (long b = 0; b < 1769472; b += 32) {
 		file.open(name, O_READ);
 		file.seekSet(b);
 		file.read(buf, 32);
@@ -56,7 +56,7 @@ void loadSong(byte song) {
 
 	// Get the seq-parameters from the file's footer, and copy them into both the tempfile and program-vars
 	file.open(name, O_READ);
-	file.seekSet(884736);
+	file.seekSet(1769472);
 	file.read(SEQ_PSIZE, 32);
 	file.read(SEQ_EXCLUDE, 32);
 	file.read(SEQ_RAND, 32);
@@ -98,7 +98,7 @@ void saveSong(byte slot) {
 	file.close();
 
 	// Copy the current tempfile's body-bytes into the given savefile slot
-	for (long b = 0; b < 884736; b += 32) {
+	for (long b = 0; b < 1769472; b += 32) {
 		file.open(name2, O_READ);
 		file.seekSet(b);
 		file.read(buf, 32);
