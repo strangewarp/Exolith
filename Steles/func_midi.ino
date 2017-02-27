@@ -76,8 +76,7 @@ void parseRawMidi() {
 
 				if (b == 248) { // TIMING CLOCK command
 					Serial.write(b);
-					advanceGlobalTick();
-					iterateSeqs();
+					iterateAll();
 				} else if (b == 250) { // START command
 					Serial.write(b);
 					resetSeqs();

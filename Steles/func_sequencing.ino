@@ -13,6 +13,13 @@ void haltAllSustains() {
 	}
 }
 
+// Reset the position-values of all sequences
+void resetSeqs() {
+	for (byte i = 0; i < 32; i++) { // For every sequence...
+		SEQ_POS[i] = (24 * ((SEQ_PSIZE[i] & 127) + 1)) - 1; // Set its tick to the position immediately before its first tick
+	}
+}
+
 // Advance global tick, and iterate through all currently-active sequences
 void iterateAll() {
 
@@ -33,7 +40,6 @@ void iterateAll() {
 		) { // Then apply the commands that are cued
 			if (!(SEQ_CMD[i] & 128)) { // If an OFF command is cued...
 				SEQ_PSIZE[i] &= 127; // Unset the seq's PLAYING bit
-				SEQ_POS[i] = 0; // Set the seq's tick-position to 0
 				SEQ_CMD[i] = 0; // Unset the seq's command-flags
 				break; // Since the seq has been turned off, don't run the rest of this function for it
 			} else { // Else, if an ON command is cued...
