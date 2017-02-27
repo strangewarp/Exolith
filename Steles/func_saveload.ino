@@ -10,22 +10,30 @@ void loadSong(byte song) {
 	string name2 = string(song) + ".tmp";
 
 	// Create a small buffer for data-transfer between the savefile and tempfile
-	byte buf[33];
+	byte buf[33] = {
+		0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0
+	};
 
-	if (!file.exists(name)) { // If the savefile doesn't exist...
-		file.open(name, O_CREAT | O_APPEND | O_WRITE); // Open a data-file with the given song's number
+	if ( // If...
+		(!file.exists(name)) // The savefile doesn't exist...
+		|| (file.fileSize() != 884736) // Or the file isn't the expected size...
+	) { // Then recreate a blank datafile...
+		file.open(name, O_CREAT | O_TRUNC | O_APPEND | O_WRITE); // Open a data-file with the given song's number
 		// Fill file with body dummy-bytes totalling:
-		// 3 (bytes) * 96 (ticks) * 4 (beats) * 16 (measures) * 32 (seqs) = 589824
-		for (long i = 0; i < 589824; i++) {
-			file.write(0); // Empty dummy-bytes for all sequence contents
+		// 3 (bytes) * 24 (ticks) * 128 (chunks) * 32 (seqs) * 3 (bytes per note) = 884736
+		for (long i = 0; i < 884736; i += 32) {
+			file.write(buf, 32); // Empty dummy-bytes for all sequence contents
 		}
 		// Fill remainder of file with footer dummy-bytes totalling:
-		// (32 (exclude) + 32 (random) + 32 (scatter) + 32 (size) + 5 (active slice-seqs) + 1 (bpm))
-		for (byte i = 0; i < 96; i++) {
-			file.write(0); // Misc seq-parameter bytes
-		}
+		// (32 (size) + 32 (exclude) + 32 (rand) + 32 (scatter) + 5 (active slice-seqs) + 1 (bpm))
 		for (byte i = 0; i < 32; i++) {
 			file.write(B01000000); // Seq-size bytes
+		}
+		for (byte i = 0; i < 96; i += 32) {
+			file.write(buf, 32); // Misc seq-parameter bytes
 		}
 		file.write(DEFAULT_POS_BPM, 6); // Write the active-slice-seq bytes and the BPM byte
 	}
@@ -36,7 +44,7 @@ void loadSong(byte song) {
 	file.close();
 
 	// Copy the savefile's body-bytes into the tempfile
-	for (long b = 0; b < 589824; b += 32) {
+	for (long b = 0; b < 884736; b += 32) {
 		file.open(name, O_READ);
 		file.seekSet(b);
 		file.read(buf, 32);
@@ -48,19 +56,19 @@ void loadSong(byte song) {
 
 	// Get the seq-parameters from the file's footer, and copy them into both the tempfile and program-vars
 	file.open(name, O_READ);
-	file.seekSet(589824);
+	file.seekSet(884736);
+	file.read(SEQ_PSIZE, 32);
 	file.read(SEQ_EXCLUDE, 32);
 	file.read(SEQ_RAND, 32);
 	file.read(SEQ_SCATTER, 32);
-	file.read(SEQ_SPOS, 32);
 	file.read(SLICE_ROW, 5);
 	file.read(BPM);
 	file.close();
 	file.open(name2, O_WRITE | O_APPEND);
+	file.write(SEQ_PSIZE, 32);
 	file.write(SEQ_EXCLUDE, 32);
 	file.write(SEQ_RAND, 32);
 	file.write(SEQ_SCATTER, 32);
-	file.write(SEQ_SPOS, 32);
 	file.write(SLICE_ROW, 5);
 	file.write(BPM);
 	file.close();
@@ -90,7 +98,7 @@ void saveSong(byte slot) {
 	file.close();
 
 	// Copy the current tempfile's body-bytes into the given savefile slot
-	for (long b = 0; b < 589824; b += 32) {
+	for (long b = 0; b < 884736; b += 32) {
 		file.open(name2, O_READ);
 		file.seekSet(b);
 		file.read(buf, 32);
@@ -102,10 +110,10 @@ void saveSong(byte slot) {
 
 	// Create a new footer based on current sequence-variables
 	file.open(name, O_WRITE | O_APPEND);
+	file.write(SEQ_PSIZE, 32);
 	file.write(SEQ_EXCLUDE, 32);
 	file.write(SEQ_RAND, 32);
 	file.write(SEQ_SCATTER, 32);
-	file.write(SEQ_SPOS, 32);
 	file.write(SLICE_ROW, 5);
 	file.write(BPM);
 	file.close();
@@ -114,5 +122,3 @@ void saveSong(byte slot) {
 	SONG = slot;
 
 }
-
-// TODO change size of savefiles to compensate for 4-part polyphony per sequence, plus 4-byte note values

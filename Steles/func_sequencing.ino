@@ -13,18 +13,13 @@ void haltAllSustains() {
 	}
 }
 
-// Advance the global sequencing-tick, and toggle over the activity-windows of every active sequence along with it
-void advanceGlobalTick() {
+// Advance global tick, and iterate through all currently-active sequences
+void iterateAll() {
 
+	if (!PLAYING) { return; } // If the sequencer isn't currently toggled to PLAYING mode, ignore this iteration
 
-
-}
-
-// Iterate through all currently-active sequences by one tick
-void iterateSeqs() {
-
-	// If the sequencer isn't currently toggled to PLAYING mode, ignore this iteration-command
-	if (!PLAYING) { return; }
+	CURTICK = (CURTICK + 1) % 384; // Advance the global current-tick, bounded to the global slice-size
+	TO_UPDATE |= 1 >> (CURTICK % 96); // If the global cue-timer advanced by a chunk, cue the global-tick-row for a GUI update
 
 	byte note[4]; // Var to hold incoming 4-byte note values from the tempfile: dur, chan, pitch, velo
 
@@ -32,16 +27,36 @@ void iterateSeqs() {
 
 	for (byte i = 0; i < 32; i++) { // For every currently-loaded sequence...
 
-		if (SEQ_SPOS[i] & 1) { // If the sequence's "currently playing" bit is filled...
-			word tick = ((SEQ_SPOS & 14) * 96) + (CURTICK % 96); // Get the sequence's current active tick
-			file.seekSet((i * 98304) + (tick * 16)); // Prepare to start reading from the tick's location in the tempfile
+		if ( // If...
+			SEQ_CMD[i] // The seq has cued commands...
+			&& (!(CURTICK % (pow(SEQ_CMD[i] & 3, 3) * 96))) // And the new global tick corresponds to the seq's CUE command, or lack thereof...
+		) { // Then apply the commands that are cued
+
+
+
+
+
+		}
+
+		if (SEQ_PSIZE[i] & 128) { // If the seq's "currently playing" bit is filled...
+			byte smask = (SEQ_PSIZE[i] & 127) + 1; // Get the seq's size modifier, without its playing-bit
+			word size = 24 * smask; // Get the seq's absolute size, in ticks
+			word csize = word(size / 8); // Get the number of ticks within each of the seq's slices
+			byte oldchunk = byte(SEQ_POS[i] / csize); // Get the slice-chunk that the sequence's old tick occupied
+			SEQ_POS[i] = (SEQ_POS[i] + 1) % size; // Increase the seq's position by 1, wrapping at its upper size boundary
+			byte chunk = byte(SEQ_POS[i] / csize); // Get the slice-chunk that the sequence's active tick occupies
+			while ((1 << chunk) & SEQ_EXCLUDE[i]) { // While the current slice-chunk is excluded...
+				SEQ_POS[i] = (SEQ_POS[i] + csize) % size; // Skip directly to the next slice-chunk
+				chunk = (chunk + 1) % 8; // Change the chunk var to reflect that the active slice-chunk has shifted
+			}
+			file.seekSet((i * 49152) + (SEQ_POS[i] * 16)); // Prepare to start reading from the tick's location in the tempfile
 			for (byte p = 0; p < 4; p++) { // For each of the 4 potential notes on this tick...
 				file.read(note, 4); // Read the note's data
 				note[0] ? playNote(note) : break; // If the note exists, play it, else break from this read-loop
 			}
-
-
-
+			if (oldchunk != chunk) { // If the slice-chunk-position has visibly changed...
+				TO_UPDATE |= 248; // Queue a GUI update for all slicing-canvas rows
+			}
 		}
 
 	}
