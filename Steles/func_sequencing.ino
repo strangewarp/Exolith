@@ -58,7 +58,6 @@ void iterateAll() {
 					playNote(note); // Play the note
 				}
 			}
-			note[0] ? playNote(note) : break; // If the note exists, play it, else break from this read-loop
 			if (oldchunk != chunk) { // If the slice-chunk-position has visibly changed...
 				TO_UPDATE |= 248; // Queue a GUI update for all slicing-canvas rows
 			}
