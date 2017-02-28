@@ -82,18 +82,18 @@ void parseRawMidi() {
 					Serial.write(b); // Send the byte to MIDI-OUT
 					if (!CLOCKMASTER) { // If the clock is in MIDI FOLLOW mode...
 						resetSeqs(); // Reset sequences to their initial positions
-						PLAYING = true; // Set the playing-flag
+						toggleMidiClock(false); // Toggle the MIDI clock, with an "external command" flag
 					}
 				} else if (b == 251) { // CONTINUE command
 					Serial.write(b); // Send the byte to MIDI-OUT
 					if (!CLOCKMASTER) { // If the clock is in MIDI FOLLOW mode...
-						PLAYING = true; // Set the playing-flag
+						toggleMidiClock(false); // Toggle the MIDI clock, with an "external command" flag
 					}
 				} else if (b == 252) { // STOP command
 					Serial.write(b); // Send the byte to MIDI-OUT
 					if (!CLOCKMASTER) { // If the clock is in MIDI FOLLOW mode...
 						haltAllSustains(); // Halt all currently-sustained notes
-						PLAYING = false; // Unset the playing-flag
+						toggleMidiClock(false); // Toggle the MIDI clock, with an "external command" flag
 					}
 				} else if (b == 247) { // END SYSEX MESSAGE command
 					// If you're dealing with an END-SYSEX command while SYSIGNORE is inactive,

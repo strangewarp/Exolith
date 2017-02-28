@@ -70,7 +70,7 @@ void loop() {
         updateTimer();
     }
 
-
+    updateGUI();
 
 }
 

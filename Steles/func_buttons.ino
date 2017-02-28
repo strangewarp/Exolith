@@ -109,11 +109,11 @@ void recPress(byte col, byte row) {
         DURATION ^= 1 << slice; // Toggle this slice-button's DURATION-bit
     } else if (BOTCTRL == B00010001) { // If the CLOCK MASTER/FOLLOW chord is held...
         if (CLOCKMASTER && PLAYING) { // If this was previously in MASTER mode, and currently PLAYING...
-            toggleMidiClock(); // Toggle the MIDI CLOCK off
+            toggleMidiClock(true); // Toggle the MIDI CLOCK off
         }
         CLOCKMASTER != CLOCKMASTER; // Only toggle the MIDI-CLOCK-MASTER boolean when chording its command with a regular key, to prevent chord collisions
         if (CLOCKMASTER && (!PLAYING)) { // If this is now in MASTER mode, and not PLAYING...
-            toggleMidiClock(); // Toggle the MIDI CLOCK on
+            toggleMidiClock(true); // Toggle the MIDI CLOCK on
         }
     } else if (BOTCTRL == B00000111) { // If the SAVE chord is held...
         saveData(slice + (row * 8)); // Save this song to a save-slot corresponding to the slice keypress

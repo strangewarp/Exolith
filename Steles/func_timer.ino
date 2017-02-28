@@ -1,5 +1,5 @@
 
-// Update the internal timer system, and if Exolith is in MIDI MASTER mode, trigger various events
+// Update the internal timer system, and trigger various events
 void updateTimer() {
 	unsigned long micr = micros(); // Get the current microsecond-timer value
 	if (micr < ABSOLUTETIME) { // If the micros-value has wrapped around its finite counting-space to be less than the last absolute-time position...
