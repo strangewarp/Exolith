@@ -24,7 +24,7 @@ void loadSong(byte song) {
 		file.open(name, O_CREAT | O_TRUNC | O_APPEND | O_WRITE); // Open a data-file with the given song's number
 		// Fill file with body dummy-bytes totalling:
 		// 3 (bytes) * 24 (ticks) * 128 (chunks) * 32 (seqs) * 2 (notes per tick) * 3 (bytes per note) = 1769472
-		for (long i = 0; i < 1769472; i += 32) {
+		for (unsigned long i = 0; i < 1769472; i += 32) {
 			file.write(buf, 32); // Empty dummy-bytes for all sequence contents
 		}
 		// Fill remainder of file with footer dummy-bytes totalling:

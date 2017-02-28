@@ -145,7 +145,7 @@ void recPress(byte col, byte row) {
 
 
 // Interpret an incoming keystroke, using a given button's row and column
-void assignCommandAction(byte col, byte row) {
+void assignKey(byte col, byte row) {
 	if (row <= 4) { // If keystroke is in the top 5 rows...
 		if (col == 0) { // If keystroke is in column 1...
             LEFTCTRL |= 1 << row; // Add the button-row's corresponding bit to the LEFTCTRL byte
@@ -171,7 +171,7 @@ void assignCommandAction(byte col, byte row) {
 }
 
 // Interpret a key-release according to whatever command-mode is active
-void unassignCommandAction(byte col, byte row) {
+void unassignKey(byte col, byte row) {
     if (row == 5) { // If this up-keystroke was in the bottommost row...
         if (col == 0) { // If this is the leftmost button in said row...
             FLINGSEQ = 255; // Put an empty dummy-value into the FLINGSEQ slot, to prevent old partially-complete FLINGs from affecting later behavior
@@ -193,9 +193,9 @@ void parseKeystrokes() {
 				byte kcol = keynum % 5; // Get the key's column
 				byte krow = byte((keynum - kcol) / 5); // Get the key's row
 				if (kpd.key[i].kstate == PRESSED) { // If the button is pressed...
-					assignCommandAction(kcol, krow); // Interpret the keystroke
+					assignKey(kcol, krow); // Interpret the keystroke
 				} else if (kpd.key[i].kstate == RELEASED) { // Else, if the button is released...
-					unassignCommandAction(kcol, krow); // Interpret the key-release
+					unassignKey(kcol, krow); // Interpret the key-release
 				}
 			}
 		}

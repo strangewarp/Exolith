@@ -66,6 +66,10 @@ void loop() {
 
     parseKeystrokes();
 
+    if (CLOCKMASTER) {
+        updateTimer();
+    }
+
 
 
 }

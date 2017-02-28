@@ -51,8 +51,7 @@ void parseRawMidi() {
 	// While new MIDI bytes are available to read from the MIDI-IN port...
 	while (Serial.available() > 0) {
 
-		// Get the frontmost incoming byte
-		byte b = Serial.read();
+		byte b = Serial.read(); // Get the frontmost incoming byte
 
 		if (SYSIGNORE) { // If this is an ignoreable SYSEX command...
 			if (b == 247) { // If this was an END SYSEX byte, clear SYSIGNORE and stop ignoring new bytes
@@ -75,19 +74,27 @@ void parseRawMidi() {
 				byte cmd = b - (b % 16); // Get the command-type of any given non-SYSEX command
 
 				if (b == 248) { // TIMING CLOCK command
-					Serial.write(b);
-					iterateAll();
+					Serial.write(b); // Send the byte to MIDI-OUT
+					if (!CLOCKMASTER) { // If the clock is in MIDI FOLLOW mode...
+						iterateAll(); // Iterate through one step of all sequencing processes
+					}
 				} else if (b == 250) { // START command
-					Serial.write(b);
-					resetSeqs();
-					PLAYING = true;
+					Serial.write(b); // Send the byte to MIDI-OUT
+					if (!CLOCKMASTER) { // If the clock is in MIDI FOLLOW mode...
+						resetSeqs(); // Reset sequences to their initial positions
+						PLAYING = true; // Set the playing-flag
+					}
 				} else if (b == 251) { // CONTINUE command
-					Serial.write(b);
-					PLAYING = true;
+					Serial.write(b); // Send the byte to MIDI-OUT
+					if (!CLOCKMASTER) { // If the clock is in MIDI FOLLOW mode...
+						PLAYING = true; // Set the playing-flag
+					}
 				} else if (b == 252) { // STOP command
-					Serial.write(b);
-					PLAYING = false;
-					haltAllSustains();
+					Serial.write(b); // Send the byte to MIDI-OUT
+					if (!CLOCKMASTER) { // If the clock is in MIDI FOLLOW mode...
+						haltAllSustains(); // Halt all currently-sustained notes
+						PLAYING = false; // Unset the playing-flag
+					}
 				} else if (b == 247) { // END SYSEX MESSAGE command
 					// If you're dealing with an END-SYSEX command while SYSIGNORE is inactive,
 					// then that implies you've received either an incomplete or corrupt SYSEX message,
