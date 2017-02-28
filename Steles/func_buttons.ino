@@ -104,7 +104,7 @@ void recPress(byte col, byte row) {
     } else if (BOTCTRL == B00000011) { // If the TIME-QUANTIZE chord is held...
         QUANTIZE ^= 1 << slice; // Toggle this slice-button's QUANTIZE-bit
     } else if (BOTCTRL == B00000101) { // If the SEQ-SIZE chord is held...
-        SEQ_SIZE[SLICE_SLOT[0]] ^= 1 << slice; // Toggle this slice-button's SEQ_SIZE bit, for whichever sequence is in the topmost slicing row
+        resizeSeq(SLICE_SLOT[0]); // Resize the sequence in edit-position, using the given row modifier
     } else if (BOTCTRL == B00001001) { // If the NOTE-DURATION chord is held...
         DURATION ^= 1 << slice; // Toggle this slice-button's DURATION-bit
     } else if (BOTCTRL == B00010001) { // If the CLOCK MASTER/FOLLOW chord is held...
@@ -133,12 +133,15 @@ void recPress(byte col, byte row) {
                     - byte(floor(HUMANIZE / 2)) // Minus half of the HUMANIZE range, to create an even negative-to-positive spread
                 )
             ));
+        byte note[4] = { // Create a composite note-array
+            (DURATION << 4) | CHANNEL, // Merge duration and channel values into a composite byte
+            (OCTAVE * 12) + PITCHOFFSET + pitch, // Offset the pitch by various interval and octave modifiers
+            velo // And then also velocity
+        };
         if (RECORDNOTES) { // If RECORD-NOTES is active, and notes are being recorded...
-
-            // TODO: put SD-card memory-write here
-
+            recordToTopSlice(note[0], note[1], note[2]); // Record the note into the sequence in edit-position
         }
-        sendNote(CHANNEL, (OCTAVE * 12) + PITCHOFFSET + pitch, velo, DURATION); // Send the note, with the constructed pitch and velocity values
+        playNote(note); // Play the note, with the constructed pitch and velocity values
     }
 
 }
@@ -149,9 +152,9 @@ void assignKey(byte col, byte row) {
 	if (row <= 4) { // If keystroke is in the top 5 rows...
 		if (col == 0) { // If keystroke is in column 1...
             LEFTCTRL |= 1 << row; // Add the button-row's corresponding bit to the LEFTCTRL byte
-		} else { // If keystroke is right of column 1...
+		} else { // Else, if keystroke is right of column 1...
 			if (RECORDMODE) { // If RECORDMODE mode is active...
-                recPress(col - 1, row); // Parse the RECORDMODE-mode button-press
+                recPress(col - 1, row); // Parse the RECORD-mode button-press
 			} else { // Else, if SLICE or OVERVIEW mode is active...
                 slicePress(col - 1, row); // Parse the SLICE/OVERVIEW-mode button-press
             }
@@ -177,10 +180,10 @@ void unassignKey(byte col, byte row) {
             FLINGSEQ = 255; // Put an empty dummy-value into the FLINGSEQ slot, to prevent old partially-complete FLINGs from affecting later behavior
         }
         BOTCTRL &= ~(1 << col); // Remove keystroke's corresponding bit from the BOTCTRL byte
-        updateGUI(); // Update the entire GUI
+        TO_UPDATE = 255; // Flag every GUI row for an update
     } else if (col == 0) { // Else, if this up-keystroke was in the leftmost column...
         LEFTCTRL &= ~(1 << row); // Remove keystroke's corresponding bit from the LEFTCTRL byte
-        updateGUI(); // Update the entire GUI
+        TO_UPDATE = 255; // Flag every GUI row for an update
     }
 }
 
