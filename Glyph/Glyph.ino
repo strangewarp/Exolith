@@ -176,6 +176,19 @@ void playChromaticNote(byte n) {
 	Serial.write(note[2]); // ^
 }
 
+// Play the given filled note in the currently-active scale
+void playScaleNote(byte n) {
+	byte count = 0; // Holds the number of scale-notes that have been passed while searching for the correct location
+	for (byte i = 0; i < 12; i++) { // For each chromatic note...
+		if (!(SCALEBIN & (1 << (11 - i)))) { continue; } // If the note is inactive in the current scale, then go to the next iteration
+		if (count == n) { // If the given scale-note matches the number of scale-notes that have been passed...
+			playChromaticNote(i); // Play the chromatic note corresponding to the scale-note
+			break; // Since the search for the scale-note is over, break from the search-loop
+		}
+		count++; // Add to the count of scale-notes that have been passed
+	}
+}
+
 // Play whatever note leads to the most efficient step toward the glyph's origin
 void stepToOrigin() {
 
@@ -217,12 +230,53 @@ void changeSpinType(byte kind) {
 }
 
 
+void ctrlSubCmd(byte x, byte y) {
+
+}
+
 void ctrlCmd(byte c) {
 
 }
 
-void parseKeystrokes() {
+// Convert a keystroke to its corresponding command and variable
+void keyToCmd(byte x, byte y) {
 
+	byte cmd = CMD_COORDS[y][x][0]; // Get the keystroke's command
+	byte arg = CMD_COORDS[y][x][1]; // Get the keystroke's arg
+
+	if (CTRL_CMD && (cmd != 3)) { // If a control-command is being pressed, and the current keystroke isn't a control-button...
+		ctrlSubCmd(x, y); // Parse the control-mode's subcommand
+		return; // End the function, as the remainder of its contents are irrelevant here
+	}
+
+	if (cmd == 0) { // If this is a SPIN command...
+		changeSpinType(arg); // Change the spin type in the given way
+	} else if (cmd == 1) { // If this is a CHROMATIC NOTE command...
+		playChromaticNote(arg); // Play the given note
+	} else if (cmd == 2) { // If this is a SCALE NOTE command...
+		playScaleNote(arg); // Play the given scale-note
+	} else if (cmd == 3) { // If this is a CONTROL command...
+		parseCtrlCmd(arg); // Parse that control-key
+	} else { // Else, if this is the ORIGIN button...
+		stepToOrigin(); // Take a step toward the glyph's origin
+	}
+
+}
+
+// Parse any incoming keystrokes in the Keypad grid
+void parseKeystrokes() {
+	if (kpd.getKeys()) { // If any keys are pressed...
+		for (byte i = 0; i < 10; i++) { // For every keypress slot...
+			if (kpd.key[i].stateChanged) { // If the key's state has just changed...
+				if (kpd.key[i].kstate == PRESSED) { // If the button is pressed...
+					byte keynum = byte(kpd.key[i].kchar) - 48; // Convert the key's unique ASCII character into a number that reflects its position
+					byte kcol = keynum % 5; // Get the key's column
+					byte krow = byte((keynum - kcol) / 5); // Get the key's row
+					keyToCmd(kcol, krow); // Interpret the keystroke
+				}
+			}
+		}
+	}
 }
 
 // Parse a given MIDI command
@@ -314,31 +368,6 @@ void parseRawMidi() {
 
 
 void updateGUI() {
-
-}
-
-// Convert a keystroke to its corresponding command and variable
-void keyToCmd(byte x, byte y) {
-
-	byte cmd = CMD_COORDS[y][x][0]; // Get the keystroke's command
-	byte arg = CMD_COORDS[y][x][1]; // Get the keystroke's arg
-
-	if (CTRL_CMD && (cmd != 3)) { // If a control-command is being pressed, and the current keystroke isn't a control-button...
-		parseCtrlSubCmd(x, y); // Parse the control-mode's subcommand
-		return; // End the function, as the remainder of its contents are irrelevant here
-	}
-
-	if (cmd == 0) { // If this is a SPIN command...
-		changeSpinType(arg); // Change the spin type in the given way
-	} else if (cmd == 1) { // If this is a CHROMATIC NOTE command...
-		playChromaticNote(arg); // Play the given note
-	} else if (cmd == 2) { // If this is a SCALE NOTE command...
-		playScaleNote(arg); // Play the given scale-note
-	} else if (cmd == 3) { // If this is a CONTROL command...
-		parseCtrlCmd(arg); // Parse that control-key
-	} else { // Else, if this is the ORIGIN button...
-		stepToOrigin(); // Take a step toward the glyph's origin
-	}
 
 }
 
