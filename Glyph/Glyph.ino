@@ -29,13 +29,21 @@ const word SCALE[10] PROGMEM = {
 };
 
 // Commands and args that correspond to each button's position
+// 0: Change SPIN type
+// 1: Play chromatic notes
+// 2: Play scale notes
+// 3: Octave shift
+// 4: Step toward origin
+// 5: Scale permute
+// 6: "Set base-pitch"
+// 7: 0 = CHAN panel; 1 = DUR/VELO/HUM/BPM panel
 const byte CMD_COORDS[7][6][3] PROGMEM = {
-	{{0, 1}, {1, 11}, {1, 0}, {1, 1}, {0, 3}},
+	{{0, 0}, {1, 11}, {1, 0}, {1, 1}, {0, 1}},
 	{{1, 10}, {2, 7}, {2, 0}, {2, 1}, {1, 2}},
 	{{1, 9}, {2, 6}, {4, 0}, {2, 2}, {1, 3}},
 	{{1, 8}, {2, 5}, {2, 4}, {2, 3}, {1, 4}},
-	{{0, 0}, {1, 7}, {1, 6}, {1, 5}, {0, 2}},
-	{{3, 0}, {3, 1}, {3, 2}, {3, 3}, {3, 4}}
+	{{3, 0}, {1, 7}, {1, 6}, {1, 5}, {3, 1}},
+	{{7, 0}, {5, 0}, {6, 0}, {5, 1}, {7, 1}}
 };
 
 // Directions of pitch-vectors in n=12 space, plotted onto the smallest possible granular grid
@@ -74,7 +82,7 @@ byte VELO = 127; // Current default velocity
 byte HUMANIZE = 24; // Current humanization of velocity values
 
 // Channels to store tonal data from
-unsigned int CHAN_LISTEN = B0000000010001000;
+unsigned int LISTEN = B0000000010001000;
 
 // Time-ordered incoming and glyph-based pitch-bytes, for use in GUI-drawing & predictive harmony
 byte LATEST_IN[17];
@@ -230,11 +238,40 @@ void changeSpinType(byte kind) {
 
 }
 
+// Parse a button-press that has occurred while a CONTROL-button is held
+void ctrlSubButton(byte x, byte y) {
+	if (CTRL == 1) {
+		if (y <= 3) {
+			if (x == 0) {
+				LISTEN ^= 15 << (4 * y);
+			} else {
+				LISTEN ^= 1 << ((4 * y) + (5 - x));
+			}
+		} else if (y == 4) {
+			CHAN ^= 1 << (5 - x);
+		}
+	} else if (CTRL == 2) {
 
-void ctrlCmd(byte c) {
+
+
+	} else if (CTRL == 3) {
 
 
 
+	} else {
+
+
+
+	}
+}
+
+// Parse a CONTROL-row keystroke's effects
+void ctrlCmd(byte x, byte y) {
+	if (!(x % 4)) { // If this button is in column 0 or 4...
+		OCTAVE = (OCTAVE + ((CTRL >> 1) - 1)) % 12; // Toggle the octave either up or down, wrapped to 12 octaves
+	} else { // Else, if this button is in column 1, 2, or 3...
+		CTRL = arg; // Activate the control-command
+	}
 }
 
 // Convert a keystroke to its corresponding command and variable
@@ -244,7 +281,7 @@ void keyToCmd(byte x, byte y) {
 	byte arg = CMD_COORDS[y][x][1]; // Get the keystroke's arg
 
 	if ((CTRL != 255) && (cmd != 3)) { // If a control-command is being pressed, and the current keystroke isn't a control-button...
-		ctrlCmd(x, y); // Parse the control-mode's subcommand
+		ctrlSubButton(x, y); // Parse a keystroke within the context of the active control-mode
 		return; // End the function, as the remainder of its contents are irrelevant here
 	}
 
@@ -255,7 +292,7 @@ void keyToCmd(byte x, byte y) {
 	} else if (cmd == 2) { // If this is a SCALE NOTE command...
 		playScaleNote(arg); // Play the given scale-note
 	} else if (cmd == 3) { // If this is a CONTROL command...
-		CTRL = arg; // Activate the control-command
+		ctrlCmd(x, y); // Parse a CONTROL-row keystroke
 	} else { // Else, if this is the ORIGIN button...
 		stepToOrigin(); // Take a step toward the glyph's origin
 	}
@@ -290,7 +327,7 @@ void parseKeystrokes() {
 // Parse a given MIDI command
 void parseMidiCommand() {
 	if (
-		(CHAN_LISTEN & (1 << (INBYTES[0] % 16))) // If the command's channel is among the listened-to channels...
+		(LISTEN & (1 << (INBYTES[0] % 16))) // If the command's channel is among the listened-to channels...
 		&& ((INBYTES[0] & 240) == 144) // And this command is a NOTE-ON...
 	) { // Then...
 		for (int i = 15; i > 0; i--) { // Shift all LATEST_IN note entries downward by 1 slot
