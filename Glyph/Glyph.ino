@@ -63,6 +63,7 @@ byte SUSEMPTY[5] PROGMEM = {255, 255, 255, 255}; // Dummy-byte for easy memcpy o
 // 3 = random
 byte DIRECTION = 2;
 
+byte CTRL = 255; // Currently-active CTRL-command (255 for "none")
 word SCALEBIN = B0000110110110110; // Binary representation of the current rotation of the currently-active scale
 byte CURSCALE = 0; // Currently-active 8-note scale
 byte ROTSCALE = 0; // Current rotation of the active 8-note scale
@@ -183,7 +184,7 @@ void playScaleNote(byte n) {
 		if (!(SCALEBIN & (1 << (11 - i)))) { continue; } // If the note is inactive in the current scale, then go to the next iteration
 		if (count == n) { // If the given scale-note matches the number of scale-notes that have been passed...
 			playChromaticNote(i); // Play the chromatic note corresponding to the scale-note
-			break; // Since the search for the scale-note is over, break from the search-loop
+			return; // Since the search for the scale-note is over, end the function
 		}
 		count++; // Add to the count of scale-notes that have been passed
 	}
@@ -230,11 +231,9 @@ void changeSpinType(byte kind) {
 }
 
 
-void ctrlSubCmd(byte x, byte y) {
-
-}
-
 void ctrlCmd(byte c) {
+
+
 
 }
 
@@ -244,8 +243,8 @@ void keyToCmd(byte x, byte y) {
 	byte cmd = CMD_COORDS[y][x][0]; // Get the keystroke's command
 	byte arg = CMD_COORDS[y][x][1]; // Get the keystroke's arg
 
-	if (CTRL_CMD && (cmd != 3)) { // If a control-command is being pressed, and the current keystroke isn't a control-button...
-		ctrlSubCmd(x, y); // Parse the control-mode's subcommand
+	if ((CTRL != 255) && (cmd != 3)) { // If a control-command is being pressed, and the current keystroke isn't a control-button...
+		ctrlCmd(x, y); // Parse the control-mode's subcommand
 		return; // End the function, as the remainder of its contents are irrelevant here
 	}
 
@@ -256,11 +255,18 @@ void keyToCmd(byte x, byte y) {
 	} else if (cmd == 2) { // If this is a SCALE NOTE command...
 		playScaleNote(arg); // Play the given scale-note
 	} else if (cmd == 3) { // If this is a CONTROL command...
-		parseCtrlCmd(arg); // Parse that control-key
+		CTRL = arg; // Activate the control-command
 	} else { // Else, if this is the ORIGIN button...
 		stepToOrigin(); // Take a step toward the glyph's origin
 	}
 
+}
+
+// Unassign any given unassignable keypress, on key-up
+void unassignKey(byte x, byte y) {
+	if (CMD_COORDS[y][x][0] == 3) { // If a CONTROL key was released...
+		CTRL = 255; // Deactivate the control-command
+	}
 }
 
 // Parse any incoming keystrokes in the Keypad grid
@@ -268,11 +274,13 @@ void parseKeystrokes() {
 	if (kpd.getKeys()) { // If any keys are pressed...
 		for (byte i = 0; i < 10; i++) { // For every keypress slot...
 			if (kpd.key[i].stateChanged) { // If the key's state has just changed...
+				byte keynum = byte(kpd.key[i].kchar) - 48; // Convert the key's unique ASCII character into a number that reflects its position
+				byte kcol = keynum % 5; // Get the key's column
+				byte krow = byte((keynum - kcol) / 5); // Get the key's row
 				if (kpd.key[i].kstate == PRESSED) { // If the button is pressed...
-					byte keynum = byte(kpd.key[i].kchar) - 48; // Convert the key's unique ASCII character into a number that reflects its position
-					byte kcol = keynum % 5; // Get the key's column
-					byte krow = byte((keynum - kcol) / 5); // Get the key's row
 					keyToCmd(kcol, krow); // Interpret the keystroke
+				} else if (kpd.key[i].kstate == RELEASED) { // Else, if the button is released...
+					unassignKey(kcol, krow); // Interpret the key-release
 				}
 			}
 		}
@@ -366,11 +374,12 @@ void parseRawMidi() {
 
 }
 
-
+// Update Exolith's GUI based on the program's internal state
 void updateGUI() {
 
-}
 
+
+}
 
 void setup() {
 
@@ -395,7 +404,6 @@ void setup() {
 	
 }
 
-
 void loop() {
 
     parseRawMidi();
@@ -405,6 +413,3 @@ void loop() {
     updateGUI();
 
 }
-
-
-
