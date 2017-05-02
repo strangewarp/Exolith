@@ -1,6 +1,7 @@
 
-// Default seq-positions and BPM value, used during creation of blank savefiles
-const byte DEFAULT_POS_BPM[7] PROGMEM = {0, 1, 2, 3, 4, 120};
+
+// Number of bytes in a savefile
+const unsigned long FILE_BYTES PROGMEM = 7077961;
 
 // Partial-screen letter M, for the CLOCK MASTER/FOLLOW screen
 const byte TEXT_M[6] PROGMEM = {

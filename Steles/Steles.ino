@@ -26,18 +26,10 @@
 void setup() {
 
     // Initialize empty arrays
-    for (byte i = 0; i < 6; i++) {
-        SLICE_ROW[i] = 0;
-    }
-    for (byte i = 0; i < 16; i++) {
-        SEQ_OFFSET[i] = 0;
-    }
-    for (byte i = 0; i < 32; i++) {
+    for (byte i = 0; i < 72; i++) {
         SEQ_CMD[i] = 0;
-        SEQ_EXCLUDE[i] = 0;
-        SEQ_RAND[i] = 0;
-        SEQ_SCATTER[i] = 0;
-        SEQ_SPOS[i] = 0;
+        SEQ_PSIZE[i] = 0;
+        SEQ_POS[i] = 0;
     }
 
     // Initialize the SD-card at full speed

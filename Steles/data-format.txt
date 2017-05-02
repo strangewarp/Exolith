@@ -1,0 +1,31 @@
+
+
+Steles data-file spec
+
+	File locations:
+		/n.dat: datafile with song's number
+
+	File contents:
+		(7077961 total bytes [~6.75 megabytes])
+		Header bytes:
+			(73 total bytes)
+			0: BPM value
+			1-72:
+				Each sequence's size, in beats
+				(* 24 * 4 = size in ticks)
+		Body bytes:
+			72 sequences (7077888 total bytes)
+			Per sequence (for 72 sequences):
+				6144 tick-slots (98304 total bytes)
+				Per tick-slot:
+					4 notes (16 total bytes)
+					Per note:
+						(4 total bytes)
+						0: steles-unique data
+							0: DURATION value
+						1-3: Reformed MIDI note
+							1: CHANNEL
+							2: PITCH
+							3: VELOCITY
+
+

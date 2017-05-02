@@ -31,5 +31,5 @@ Keypad kpd(makeKeymap(KEYS), rowpins, colpins, ROWS, COLS);
 SdFat sd;
 SdFile file;
 
-// Initialize the object that controls the MAX7221's LED-grid
+// Initialize the object that controls the MAX7219's LED-grid
 LedControl lc = LedControl(2, 3, 4, 1);

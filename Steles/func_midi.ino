@@ -32,17 +32,12 @@ void toggleMidiClock(boolean usercmd) {
 
 // Parse a given MIDI command
 void parseMidiCommand() {
-
-	// If RECORDING-mode is active, and notes are currently being recorded...
-	if (RECORDMODE && RECORDNOTES) {
+	if (RECORDMODE && RECORDNOTES) { // If RECORDING-mode is active, and notes are currently being recorded...
 		recordToTopSlice(INBYTES[0], INBYTES[1], INBYTES[2]); // Record the incoming MIDI command to the seq in top slice-position
 	}
-
-	// Having parsed the command, send its bytes onward to MIDI-OUT
-	for (byte i = 0; i < INTARGET; i++) {
+	for (byte i = 0; i < INTARGET; i++) { // Having parsed the command, send its bytes onward to MIDI-OUT
 		Serial.write(INBYTES[i]);
 	}
-
 }
 
 // Parse all incoming raw MIDI bytes
