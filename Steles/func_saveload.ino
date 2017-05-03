@@ -75,7 +75,7 @@ void saveSong(byte slot) {
 
 	string name = string(slot) + ".dat";
 	string name2 = string(SONG) + ".tmp";
-	byte buf[17];
+	byte buf[33];
 
 	// Create a new savefile, with a new header based on current sequence-variables
 	file.open(name, O_CREAT | O_WRITE | O_APPEND);
@@ -84,13 +84,13 @@ void saveSong(byte slot) {
 	file.close();
 
 	// Copy the current tempfile's body-bytes into the given savefile slot
-	for (unsigned long b = 73; b < 7077961; b += 16) {
+	for (unsigned long b = 73; b < 7077961; b += 32) {
 		file.open(name2, O_READ);
 		file.seekSet(b);
-		file.read(buf, 16);
+		file.read(buf, 32);
 		file.close();
 		file.open(name, O_WRITE | O_AT_END);
-		file.write(buf, 16);
+		file.write(buf, 32);
 		file.close();
 	}
 
