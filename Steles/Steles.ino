@@ -28,7 +28,7 @@ void setup() {
     // Initialize empty arrays
     for (byte i = 0; i < 72; i++) {
         SEQ_CMD[i] = 0;
-        SEQ_PSIZE[i] = 0;
+        SEQ_SIZE[i] = 0;
         SEQ_POS[i] = 0;
     }
 

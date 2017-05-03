@@ -71,12 +71,11 @@ byte SEQ_CMD[73];
 
 // Holds 72 seqs' sizes
 // bits 0-6: 1, 2, 4, 8, 16, 32, 64 (* 24 * 4 = size, in ticks)
-byte SEQ_PSIZE[73];
+byte SEQ_SIZE[73];
 
-// Holds 72 seqs' internal tick-positions, slice-positions, and playing-statuses
+// Holds 72 seqs' internal tick-positions and playing-statuses
 // bit 0: playing
-// bits 1-3: current slice (0-7 in binary)
-// bits 4-15: current tick within active slice
+// bits 1-15: current tick
 word SEQ_POS[73];
 
 

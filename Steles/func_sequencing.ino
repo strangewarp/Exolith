@@ -13,10 +13,11 @@ void haltAllSustains() {
 	}
 }
 
-// Reset the position-values of all sequences
+// Empty out any pending cued commands, and reset every sequence-slot's playing-byte and tick-position
 void resetSeqs() {
-	for (byte i = 0; i < 32; i++) { // For every sequence...
-		SEQ_POS[i] = (24 * ((SEQ_PSIZE[i] & 127) + 1)) - 1; // Set its tick to the position immediately before its first tick
+	for (byte i = 0; i < 72; i++) {
+		SEQ_CMD[i] = 0;
+		SEQ_POS[i] = (SEQ_SIZE[i] * 96) - 1;
 	}
 }
 
@@ -39,19 +40,19 @@ void iterateAll() {
 			&& (!(CURTICK % (pow(SEQ_CMD[i] & 3, 3) * 96))) // And the new global tick corresponds to the seq's CUE command, or lack thereof...
 		) { // Then apply the commands that are cued
 			if (!(SEQ_CMD[i] & 128)) { // If an OFF command is cued...
-				SEQ_PSIZE[i] &= 127; // Unset the seq's PLAYING bit
+				SEQ_SIZE[i] &= 127; // Unset the seq's PLAYING bit
 				SEQ_CMD[i] = 0; // Unset the seq's command-flags
 				break; // Since the seq has been turned off, don't run the rest of this function for it
 			} else { // Else, if an ON command is cued...
 				byte slice = (SEQ_CMD & 28) >> 2; // Get the slice that's been chosen
-				word size = 24 * ((SEQ_PSIZE[i] & 127) + 1); // Get the seq's absolute size, in ticks
+				word size = 24 * ((SEQ_SIZE[i] & 127) + 1); // Get the seq's absolute size, in ticks
 				word csize = word(size / 8); // Get the number of ticks within each of the seq's slices
 				SEQ_POS[i] = (csize * ((int(slice) - 1) % 8)) + (csize - 1); // Set the seq's position to the tick immediately before the given slice
 			}
 		}
 
-		if (SEQ_PSIZE[i] & 128) { // If the seq's "currently playing" bit is filled...
-			word size = 24 * ((SEQ_PSIZE[i] & 127) + 1); // Get the seq's absolute size, in ticks
+		if (SEQ_SIZE[i] & 128) { // If the seq's "currently playing" bit is filled...
+			word size = 24 * ((SEQ_SIZE[i] & 127) + 1); // Get the seq's absolute size, in ticks
 			word csize = word(size / 8); // Get the number of ticks within each of the seq's slices
 			byte oldchunk = byte(SEQ_POS[i] / csize); // Get the slice-chunk that the sequence's old tick occupied
 			SEQ_POS[i] = (SEQ_POS[i] + 1) % size; // Increase the seq's position by 1, wrapping at its upper size boundary

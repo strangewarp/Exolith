@@ -5,6 +5,9 @@ void loadSong(byte song) {
 	// Display an "L" while loading data
 	displayLetter("L");
 
+	// Clear all currently-sustained notes
+	haltAllSustains();
+
 	// Get the names of the target song-slot's savefile and tempfile
 	string name = string(song) + ".dat";
 	string name2 = string(song) + ".tmp";
@@ -30,7 +33,7 @@ void loadSong(byte song) {
 	file.close();
 
 	// Copy the savefile's body-bytes into the tempfile
-	for (unsigned long b = 72; b < FILE_BYTES; b += 16) {
+	for (unsigned long b = 73; b < FILE_BYTES; b += 16) {
 		file.open(name, O_READ);
 		file.seekSet(b);
 		file.read(buf, 16);
@@ -43,15 +46,21 @@ void loadSong(byte song) {
 	// Get the seq-parameters from the file's header, and copy them into both the tempfile and program-vars
 	file.open(name, O_READ);
 	file.read(BPM);
-	file.read(SEQ_PSIZE, 72);
+	file.read(SEQ_SIZE, 72);
 	file.close();
 	file.open(name2, O_WRITE | O_APPEND);
 	file.write(BPM);
-	file.write(SEQ_PSIZE, 72);
+	file.write(SEQ_SIZE, 72);
 	file.close();
 
 	// Set the currently-active SONG-position to the given save-slot
 	SONG = slot;
+
+	// Clear all metadata from the currently-loaded seqs
+	resetSeqs();
+
+	// Adjust the absolute-time, to prevent backlogs of tempo-ticks from the saveload-lag
+	ABSOLUTETIME = micros();
 
 }
 
@@ -61,41 +70,34 @@ void saveSong(byte slot) {
 	// Display an "S" while saving data
 	displayLetter("S");
 
+	// Clear all currently-sustained notes
+	haltAllSustains();
+
 	string name = string(slot) + ".dat";
 	string name2 = string(SONG) + ".tmp";
-	byte buf[33];
+	byte buf[17];
 
-	// Mask out the playing-and-position bits from each sequence's SIZE-AND-POS byte
-	for (byte i = 0; i < 32; i++) {
-		SEQ_SPOS[i] &= B11110000;
-	}
-
-	// Wipe the old savefile in the slot
-	file.open(name, O_CREAT | O_WRITE | O_TRUNC);
+	// Create a new savefile, with a new header based on current sequence-variables
+	file.open(name, O_CREAT | O_WRITE | O_APPEND);
+	file.write(BPM);
+	file.write(SEQ_SIZE, 72);
 	file.close();
 
 	// Copy the current tempfile's body-bytes into the given savefile slot
-	for (long b = 0; b < 1769472; b += 32) {
+	for (unsigned long b = 73; b < 7077961; b += 16) {
 		file.open(name2, O_READ);
 		file.seekSet(b);
-		file.read(buf, 32);
+		file.read(buf, 16);
 		file.close();
 		file.open(name, O_WRITE | O_AT_END);
-		file.write(buf, 32);
+		file.write(buf, 16);
 		file.close();
 	}
 
-	// Create a new footer based on current sequence-variables
-	file.open(name, O_WRITE | O_APPEND);
-	file.write(SEQ_PSIZE, 32);
-	file.write(SEQ_EXCLUDE, 32);
-	file.write(SEQ_RAND, 32);
-	file.write(SEQ_SCATTER, 32);
-	file.write(SLICE_ROW, 5);
-	file.write(BPM);
-	file.close();
-
 	// Set the currently-active SONG-position to the given save-slot
 	SONG = slot;
+
+	// Adjust the absolute-time, to prevent backlogs of tempo-ticks from the saveload-lag
+	ABSOLUTETIME = micros();
 
 }
