@@ -22,11 +22,8 @@ Steles data-file spec
 					4 notes (16 total bytes)
 					Per note:
 						(4 total bytes)
-						0: steles-unique data
+						0: Steles-unique data
 							0: DURATION value
-						1-3: Reformed MIDI note
-							1: CHANNEL
-							2: PITCH
-							3: VELOCITY
+						1-3: Reformed MIDI command
 
 

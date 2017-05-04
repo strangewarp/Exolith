@@ -32,8 +32,14 @@ void toggleMidiClock(boolean usercmd) {
 
 // Parse a given MIDI command
 void parseMidiCommand() {
-	if (RECORDMODE && RECORDNOTES) { // If RECORDING-mode is active, and notes are currently being recorded...
-		recordToTopSlice(INBYTES[0], INBYTES[1], INBYTES[2]); // Record the incoming MIDI command to the seq in top slice-position
+	if (RECORDMODE) { // If RECORDING-mode is active...
+		byte cmd = INBYTES[0] & 240; // Get the command-type
+		if (cmd == 144) { // If this is a NOTE-ON command...
+			RECPITCHES = (RECPITCHES << 4) | (INBYTES[1] % 12); // Shift the RECENT-PITCHES leftward, and add the note's pitch
+		}
+		if (RECORDNOTES) { // If notes are currently being recorded...
+			recordToSeq(false, cmd, INBYTES[0] & 15, INBYTES[1], INBYTES[2]); // Record the incoming MIDI command to the seq in top slice-position
+		}
 	}
 	for (byte i = 0; i < INTARGET; i++) { // Having parsed the command, send its bytes onward to MIDI-OUT
 		Serial.write(INBYTES[i]);
@@ -66,7 +72,7 @@ void parseRawMidi() {
 				}
 			} else { // Else, if this is either a single-byte command, or a multi-byte command's first byte...
 
-				byte cmd = b - (b % 16); // Get the command-type of any given non-SYSEX command
+				byte cmd = b & 240; // Get the command-type of any given non-SYSEX command
 
 				if (b == 248) { // TIMING CLOCK command
 					Serial.write(b); // Send the byte to MIDI-OUT

@@ -79,8 +79,15 @@ void saveSong(byte slot) {
 
 	// Create a new savefile, with a new header based on current sequence-variables
 	file.open(name, O_CREAT | O_WRITE | O_APPEND);
+
+	// Write the header bytes
 	file.write(BPM);
 	file.write(SEQ_SIZE, 72);
+
+	// Do some time magic
+	file.timestamp(T_CREATE, 1987, 5, 12, 4, 20, 7);
+
+	// Close the new savefile
 	file.close();
 
 	// Copy the current tempfile's body-bytes into the given savefile slot
