@@ -34,14 +34,15 @@ boolean CLOCKMASTER = true; // Toggles whether to generate MIDI CLOCK ticks, or 
 byte BPM = 120; // Beats-per-minute value: one beat is 96 tempo-ticks
 
 // Cued-command flags, one per seq.
-// bits 0-1: cue 1, cue 8;
-// bits 2-4: slice 1, 2, 4;
-// bits 5-6: reserved;
-// bit 7: on/off (1/0)
+// bits 0-2: cue 4, 2, 1;
+// bits 3-5: slice 4, 2, 1;
+// bit 6: TURN ON
+// bit 7: TURN OFF
 byte SEQ_CMD[73];
 
 // Holds 72 seqs' sizes
-// bits 0-6: 1, 2, 4, 8, 16, 32, 64 (* 24 * 4 = size, in ticks)
+// bit 0: reserved
+// bits 1-7: 1, 2, 4, 8, 16, 32, 64 (* 24 * 4 = size, in ticks)
 byte SEQ_SIZE[73];
 
 // Holds 72 seqs' internal tick-positions and playing-statuses
