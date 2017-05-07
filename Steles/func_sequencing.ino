@@ -105,7 +105,7 @@ void iterateAll() {
 
 	byte note[5]; // Var to hold incoming 4-byte note values from the tempfile: dur, chan, pitch, velo
 
-	file.open(string(SONG) + ".tmp", O_READ); // Open the tempfile, for reading note data
+	file.open(string(SONG) + ".tmp", O_RDRW); // Open the tempfile, for reading and writing
 
 	for (byte i = 0; i < 72; i++) { // For every currently-loaded sequence...
 
@@ -135,6 +135,14 @@ void iterateAll() {
 		// along with an active playing-bit.
 		word maskpos = ((SEQ_POS[i] & 32767) + 1) % size;
 		SEQ_POS[i] = 32768 | maskpos;
+
+		// If RECORD MODE is active, and the ERASE-NOTES command is being held,
+		// and notes are being recorded into this seq...
+		if (RECORDMODE && ERASENOTES && (RECORDNOTES == i)) {
+			file.seekSet(73 + maskpos + (i * 98304)); // Set position to start of tick's first note
+			file.write(EMPTY_TICK, 16) // Write in an entire empty tick's worth of bytes
+			continue; // Skip the remaining read-and-play routines for this sequence
+		}
 
 		for (byte n = 0; n < 4; n++) { // For every note-slot in the tick...
 			file.seekSet(73 + maskpos + (n * 4) + (i * 98304)); // Read the note from its file-position

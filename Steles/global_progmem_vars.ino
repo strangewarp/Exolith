@@ -3,6 +3,12 @@
 // Number of bytes in a savefile
 const unsigned long FILE_BYTES PROGMEM = 7077961;
 
+// Buffer of empty bytes, for writing into a newly-emptied tick en masse
+const byte EMPTY_TICK[17] PROGMEM = {
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0
+};
+
 // Partial-screen letter M, for the CLOCK MASTER/FOLLOW screen
 const byte TEXT_M[6] PROGMEM = {
 	B10000001,
