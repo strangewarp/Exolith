@@ -59,8 +59,8 @@ boolean SYSIGNORE = false;
 // MIDI SUSTAIN vars
 // Format: SUSTAIN[n] = {channel, pitch, remaining duration in ticks}
 byte SUSTAIN[9][4] = {
-	{0, 0, 0}, {0, 0, 0},
-	{0, 0, 0}, {0, 0, 0},
-	{0, 0, 0}, {0, 0, 0},
-	{0, 0, 0}, {0, 0, 0}
+	{255, 255, 255}, {255, 255, 255},
+	{255, 255, 255}, {255, 255, 255},
+	{255, 255, 255}, {255, 255, 255},
+	{255, 255, 255}, {255, 255, 255}
 };

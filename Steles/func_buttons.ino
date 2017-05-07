@@ -141,7 +141,7 @@ void recPress(byte col, byte row) {
         if (RECORDNOTES) { // If RECORD-NOTES is active, and notes are being recorded...
             recordToTopSlice(note[0], note[1], note[2]); // Record the note into the sequence in edit-position
         }
-        playNote(note); // Play the note, with the constructed pitch and velocity values
+        //playNote(DURATION, 3, note[0], note[1], note[2]); // Play the note, with the constructed pitch and velocity values
     }
 
 }
