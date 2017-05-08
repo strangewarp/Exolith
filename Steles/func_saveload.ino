@@ -57,7 +57,7 @@ void loadSong(byte song) {
 	SONG = slot;
 
 	// Clear all metadata from the currently-loaded seqs
-	resetSeqs();
+	resetAllSeqs();
 
 	// Adjust the absolute-time, to prevent backlogs of tempo-ticks from the saveload-lag
 	ABSOLUTETIME = micros();
@@ -104,7 +104,10 @@ void saveSong(byte slot) {
 	// Set the currently-active SONG-position to the given save-slot
 	SONG = slot;
 
+	// Load the tempfile from the newly-saved save-slot, to overwrite the save-slot's old tempfile
+	loadSong(SONG);
+
 	// Adjust the absolute-time, to prevent backlogs of tempo-ticks from the saveload-lag
-	ABSOLUTETIME = micros();
+	//ABSOLUTETIME = micros();
 
 }

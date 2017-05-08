@@ -1,6 +1,6 @@
 
 // Reset every sequence
-void resetSeqs() {
+void resetAllSeqs() {
 	for (byte i = 0; i < 72; i++) {
 		resetSeq(i);
 	}

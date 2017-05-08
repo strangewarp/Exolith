@@ -10,9 +10,9 @@ void toggleMidiClock(boolean usercmd) {
 			haltAllSustains(); // Halt all currently-broadcasting MIDI sustains
 			Serial.write(252); // Send a MIDI CLOCK STOP command
 			if (usercmd) { // If this toggle was sent by a user-command...
-				resetSeqsInSlice(); // Reset each sequence to the start of its currently-active slice
+				resetAllSeqsInSlice(); // Reset each sequence to the start of its currently-active slice
 			} else { // Else, if this toggle was sent by an external device...
-				resetSeqs(); // Reset the internal pointers of all sequences
+				resetAllSeqs(); // Reset the internal pointers of all sequences
 			}
 		}
 	} else { // If in CLOCK FOLLOW mode...
@@ -24,7 +24,7 @@ void toggleMidiClock(boolean usercmd) {
 		} else { // Else, if playing has just been disabled...
 			haltAllSustains(); // Halt all currently-broadcasting MIDI sustains
 			if (!usercmd) {
-				resetSeqs(); // Reset the internal pointers of all sequences
+				resetAllSeqs(); // Reset the internal pointers of all sequences
 			}
 		}
 	}
@@ -82,7 +82,7 @@ void parseRawMidi() {
 				} else if (b == 250) { // START command
 					Serial.write(b); // Send the byte to MIDI-OUT
 					if (!CLOCKMASTER) { // If the clock is in MIDI FOLLOW mode...
-						resetSeqs(); // Reset sequences to their initial positions
+						resetAllSeqs(); // Reset sequences to their initial positions
 						toggleMidiClock(false); // Toggle the MIDI clock, with an "external command" flag
 					}
 				} else if (b == 251) { // CONTINUE command
