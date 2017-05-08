@@ -1,13 +1,13 @@
 
 
-Button combinations (MAIN MODE):
+Button combinations (PLAY MODE):
 
 	1-keypress:
 	000001-> 1: OFF
 	000010-> 2: 1
 	000100-> 4: 2
 	001000-> 8: 4
-	010000->16: CUE (default 8)
+	010000->16: CUE (default 0)
 	100000->32: PAGE
 
 	2-keypress:
@@ -17,7 +17,7 @@ Button combinations (MAIN MODE):
 	001001-> 9: OFF CUE 4
 	001010->10: 5
 	001100->12: 6
-	010001->17: OFF CUE 8
+	010001->17: OFF CUE 0
 	010010->18: CUE 1
 	010100->20: CUE 2
 	011000->24: CUE 4
@@ -44,7 +44,7 @@ Button combinations (MAIN MODE):
 	101001->41: PAGE SEQS OFF, CUE 4
 	101010->42: reserved (type: "page-ac")
 	101100->44: reserved (type: "page-bc")
-	110001->49: PAGE SEQS OFF, CUE 8
+	110001->49: PAGE SEQS OFF, CUE 0
 	110010->50: reserved (type: "page-cue-1")
 	110100->52: reserved (type: "page-cue-2")
 	111000->56: reserved (type: "page-cue-4")

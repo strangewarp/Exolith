@@ -1,8 +1,7 @@
 
 // UI vars
-byte LEFTCTRL = 0; // Tracks left-column control-button presses in bits 1 thru 5
-byte BOTCTRL = 0; // Tracks bottom-row control-button presses in bits 1 thru 5
-byte TO_UPDATE = 0; // Tracks which rows of LEDs should be updated at the end of a given tick's computations
+byte CTRL = 0; // Tracks left-column control-button presses in bits 0 thru 5
+byte TO_UPDATE = 0; // Tracks which rows of LEDs should be updated at the end of a given tick
 
 // Timing vars
 unsigned long ABSOLUTETIME = 0; // Absolute time elapsed: wraps around after reaching its limit
