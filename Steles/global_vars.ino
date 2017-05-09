@@ -10,7 +10,7 @@ unsigned long TICKSIZE = 100000; // Size of the current tick, in microseconds; t
 
 // Recording vars
 boolean RECORDMODE = false; // Tracks whether RECORD MODE is active
-boolean RECORDNOTES = false; // Tracks whether notes are being recorded into the top slice-sequence or not
+boolean RECORDNOTES = false; // Tracks whether notes are being recorded into the RECORDSEQ-sequence or not
 byte RECORDSEQ = 0; // Sequence currently being recorded into
 byte BASENOTE = 0; // Baseline pitch-offset value for RECORD-mode notes
 byte OCTAVE = 3; // Octave-offset value for RECORD-mode notes

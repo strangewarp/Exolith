@@ -84,14 +84,32 @@ void parseRecPress(byte col, byte row) {
 		RECORDSEQ = (PAGE * 24) + (row * 4) + col; // Switch to the seq that corresponds to the key-position on the active page
 	} else { // Else, if no command is held...
 
+		// Get a note that corresponds to the key, organized from bottom-left to top-right, with all modifiers applied;
+		// And also get the note's velocity with a random humanize-offset
+		byte pitch = min(127, (OCTAVE * 12) + BASENOTE + ((23 - key) ^ 3));
+		byte velo = min(127, max(1, VELOCITY + (byte(HUMANIZE / 2) - rand(HUMANIZE))));
+
+		boolean play = true; // Track whether a note should be played in response to this keystroke
+
 		if (RECORDNOTES) { // If notes are being recorded...
 
-			
+			// Make a tick-offset for the RECORDSEQ's current tick, to adhere it to the time-quantize value;
+			// this will be fed to the recordToSeq command to achieve the correct insert-position
+			word qmod = max(1, (QUANTIZE >> 1) * 3);
+			word down = (SEQ_POS[RECORDSEQ] & B0111111111111111) % qmod;
+			word up = qmod - down;
+			int offset = (down <= up) ? -down : up;
 
-		} else { // Else, if notes aren't being recorded...
+			recordToSeq(offset, 144, CHAN, pitch, velo); // Record the note into the current RECORDSEQ slot
 
+			if (offset >= 1) { // If the tick was inserted at an offset after the current position...
+				play = false; // Don't play it right now, because the sequence will play the note itself soon
+			}
 
+		}
 
+		if (play) { // If the note from this keystroke is still slated to be played...
+			playNote(DURATION, 3, CHAN, pitch, velo); // Play a note with this keystroke's pitch and velocity values
 		}
 
 	}

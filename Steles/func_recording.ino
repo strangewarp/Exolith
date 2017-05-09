@@ -1,31 +1,9 @@
 
-// Record a given MIDI command into the tempdata-file of the seq in the topmost slice-row
-void recordToSeq(boolean usercmd, byte cmd, byte chan, byte b1, byte b2) {
+// Record a given MIDI command into the tempdata-file of the current RECORDSEQ sequence
+void recordToSeq(int offset, byte cmd, byte chan, byte b1, byte b2) {
 
-	// Create a virtual tick-position that may or may not be changed before the note-insert process
-	word tick = SEQ_POS[RECORDSEQ] & B0111111111111111;
-
-	if (usercmd) { // If this is a user-command (as opposed to a command from an external MIDI device)...
-
-		// Make the tick adhere to the time-quantize value;
-		// this will be the tick-position where the command gets placed in the sequence
-		word qmod = max(1, (QUANTIZE >> 1) * 3);
-		word down = tick % qmod;
-		word up = qmod - down;
-		tick += (down <= up) ? -down : up;
-
-		// If this is a NOTE-ON command, then apply basenote/octave/humanize modifiers
-		if (cmd == 144) {
-
-			// Apply base-note offset, and octave offset, to the note's pitch-byte
-			b1 = min(127, b1 + BASENOTE + (OCTAVE * 12));
-
-			// Apply a random humanize-offset to the note's velocity-byte
-			b2 = min(127, max(1, b2 + (byte(HUMANIZE / 2) - rand(HUMANIZE))));
-
-		}
-
-	}
+	// Create a virtual tick-position that compensates for any given tick-offset
+	word tick = ((SEQ_POS[RECORDSEQ] & B0111111111111111) + offset) % (SEQ_SIZE[RECORDSEQ] * 96);
 
 	byte buf[17]; // SD-card read/write buffer
 	byte toinsert = 255; // Tracks which empty slot to insert the note into

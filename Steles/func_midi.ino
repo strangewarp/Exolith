@@ -38,7 +38,7 @@ void parseMidiCommand() {
 			RECPITCHES = (RECPITCHES << 4) | (INBYTES[1] % 12); // Shift the RECENT-PITCHES leftward, and add the note's pitch
 		}
 		if (RECORDNOTES) { // If notes are currently being recorded...
-			recordToSeq(false, cmd, INBYTES[0] & 15, INBYTES[1], INBYTES[2]); // Record the incoming MIDI command to the seq in top slice-position
+			recordToSeq(0, cmd, INBYTES[0] & 15, INBYTES[1], INBYTES[2]); // Record the incoming MIDI command
 		}
 	}
 	for (byte i = 0; i < INTARGET; i++) { // Having parsed the command, send its bytes onward to MIDI-OUT
