@@ -13,10 +13,7 @@ void loadSong(byte song) {
 	string name2 = string(song) + ".tmp";
 
 	// Create a small buffer for data-transfer between the savefile and tempfile
-	byte buf[17] = {
-		0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0
-	};
+	byte buf[17];
 
 	if ( // If...
 		(!file.exists(name)) // The savefile doesn't exist...

@@ -26,11 +26,8 @@
 void setup() {
 
     // Initialize empty arrays
-    for (byte i = 0; i < 72; i++) {
-        SEQ_CMD[i] = 0;
-        SEQ_SIZE[i] = 0;
-        SEQ_POS[i] = 0;
-    }
+    resetAllSeqs();
+    memset(SEQ_SIZE, 0, sizeof(SEQ_SIZE));
 
     // Initialize the SD-card at full speed
     if (!sd.begin(10, SPI_FULL_SPEED)) {
@@ -51,6 +48,7 @@ void setup() {
 	Serial.begin(31250);
 	
 }
+
 
 void loop() {
 

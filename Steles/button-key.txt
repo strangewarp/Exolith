@@ -1,54 +1,132 @@
 
-Left-column button combinations (SLICE MODE ONLY):
-	10000 -> 00001 ->  1: RIGHT-HALF
-	01000 -> 00010 ->  2: EXCLUDE
-	00100 -> 00100 ->  4: RANDOMIZE-SLICE
-	00010 -> 01000 ->  8: RANDOMIZE-VELOCITY
-	00001 -> 10000 -> 16: FLING
-	11000 -> 00011 ->  3: EXCLUDE-RIGHT-HALF
-	10100 -> 00101 ->  5: RANDOMIZE-SLICE-RIGHT-HALF
-	10010 -> 01001 ->  9: RANDOMIZE-VELOCITY-RIGHT-HALF
-	10001 -> 10001 -> 17: FLING-RIGHT-HALF
 
-Button combinations (SLICE MODE & OVERVIEW MODE):
-	10000 -> 00001 ->  1: OVERVIEW
-	01000 -> 00010 ->  2: OFF
-	00100 -> 00100 ->  4: SCATTER
-	00010 -> 01000 ->  8: CUE-1
-	00001 -> 10000 -> 16: CUE-8
-	11000 -> 00011 ->  3: OVERVIEW-OFF
-	10010 -> 01001 ->  9: OVERVIEW-CUE-1
-	10001 -> 10001 -> 17: OVERVIEW-CUE-8
-	11100 -> 00111 ->  7: OVERVIEW-OFF-SCATTER
-	11010 -> 01011 -> 11: OVERVIEW-OFF-CUE-1
-	11001 -> 10011 -> 19: OVERVIEW-OFF-CUE-8
-	01100 -> 00110 ->  6: OFF-SCATTER
-	01010 -> 01010 -> 10: OFF-CUE-1
-	01001 -> 10010 -> 18: OFF-CUE-8
-	00110 -> 01100 -> 12: BPM
-	10101 -> 10101 -> 21: GLOBAL PLAY/STOP
-	01111 -> 11110 -> 30: TOGGLE-RECORD-MODE
+Button combinations (PLAY MODE):
 
-Left-column button combinations (RECORD MODE):
-	10000 -> 00001 ->  1: OCTAVE UP 2
-	01000 -> 00010 ->  2: OCTAVE UP 1
-	00100 -> 00100 ->  4: INTERVAL UP 5
-	00010 -> 01000 ->  8: INTERVAL UP 3
-	00001 -> 10000 -> 16: INTERVAL UP 2
-	(all chords stack effects)
+	1-keypress:
+	000001-> 1: OFF
+	000010-> 2: 1
+	000100-> 4: 2
+	001000-> 8: 4
+	010000->16: CUE (default 0)
+	100000->32: PAGE
+
+	2-keypress:
+	000011-> 3: OFF CUE 1
+	000101-> 5: OFF CUE 2
+	000110-> 6: 3
+	001001-> 9: OFF CUE 4
+	001010->10: 5
+	001100->12: 6
+	010001->17: OFF CUE 0
+	010010->18: CUE 1
+	010100->20: CUE 2
+	011000->24: CUE 4
+	100001->33: PAGE SEQS OFF
+	100010->34: PAGE A
+	100100->36: PAGE B
+	101000->40: PAGE C
+	110000->48: reserved (type: "page-cue")
+
+	3-keypress:
+	000111-> 7: OFF CUE 3
+	001011->11: OFF CUE 5
+	001101->13: OFF CUE 6
+	001110->14: 7
+	010011->19: OFF CUE 1 (duplicate)
+	010101->21: OFF CUE 2 (duplicate)
+	010110->22: CUE 3
+	011001->25: OFF CUE 4 (duplicate)
+	011010->26: CUE 5
+	011100->28: CUE 6
+	100011->35: PAGE SEQS OFF, CUE 1
+	100101->37: PAGE SEQS OFF, CUE 2
+	100110->38: reserved (type: "page-ab")
+	101001->41: PAGE SEQS OFF, CUE 4
+	101010->42: reserved (type: "page-ac")
+	101100->44: reserved (type: "page-bc")
+	110001->49: PAGE SEQS OFF, CUE 0
+	110010->50: reserved (type: "page-cue-1")
+	110100->52: reserved (type: "page-cue-2")
+	111000->56: reserved (type: "page-cue-4")
+
+	4-keypress:
+	001111->15: OFF CUE 7
+	010111->23: OFF CUE 3 (duplicate)
+	011011->27: OFF CUE 5 (duplicate)
+	011101->29: OFF CUE 6 (duplicate)
+	011110->30: CUE 7
+	100111->39: PAGE SEQS OFF, CUE 3
+	101011->43: PAGE SEQS OFF, CUE 5
+	101101->45: PAGE SEQS OFF, CUE 6
+	101110->46: reserved (type: "page-abc")
+	110011->51: reserved (type: "page-cue-1-off")
+	110101->53: reserved (type: "page-cue-2-off")
+	110110->54: reserved (type: "page-cue-3")
+	111001->57: reserved (type: "page-cue-4-off")
+	111010->58: reserved (type: "page-cue-5")
+	111100->60: GLOBAL PLAY/STOP
+
+	5-keypress:
+	011111->31: OFF CUE 7 (duplicate)
+	101111->47: PAGE SEQS OFF, CUE 7
+	110111->55: reserved (type: "page-cue-3-off")
+	111011->59: reserved (type: "page-cue-5-off")
+	111101->61: reserved (type: "page-cue-6-off")
+	111110->62: reserved (type: "page-cue-7")
+
+	6-keypress:
+	111111->63: TOGGLE RECORD MODE
+
 
 Button combinations (RECORD MODE):
-	10000 -> 00001 ->  1: RECORD-NOTES
-	01000 -> 00010 ->  2: CHANNEL
-	00100 -> 00100 ->  4: OCTAVE
-	00010 -> 01000 ->  8: VELOCITY
-	00001 -> 10000 -> 16: HUMANIZE
-	11000 -> 00011 ->  3: TIME-QUANTIZE
-	10100 -> 00101 ->  5: SEQ-SIZE
-	10010 -> 01001 ->  9: NOTE-DURATION
-	10001 -> 10001 -> 17: CLOCK MASTER/FOLLOW
-	01010 -> 01010 -> 10: ERASE NOTES
-	11100 -> 00111 ->  7: SAVE
-	00111 -> 11100 -> 28: LOAD
-	10101 -> 10101 -> 21: GLOBAL PLAY/STOP
-	01111 -> 11110 -> 30: UNTOGGLE-RECORD-MODE
+
+	1-keypress:
+	000001-> 1: TOGGLE NOTE-RECORDING
+	000010-> 2: PANEL: BASE-NOTE/OCTAVE/VELO/HUMANIZE
+	000100-> 4: PANEL: CHAN/TIME-QUANTIZE/DUR/SEQ-SIZE
+	001000-> 8: PANEL: CLOCK-MODE/CHAN-LISTENS/BPM
+	010000->16: SWITCH RECORDING-SEQUENCE
+	100000->32: ERASE WHILE HELD
+
+	2-keypress:
+	000011-> 3:
+	000101-> 5:
+	000110-> 6: SAVE
+	001001-> 9:
+	001010->10:
+	001100->12:
+	010001->17:
+	010010->18:
+	010100->20:
+	011000->24: LOAD
+	100001->33:
+	100010->34:
+	100100->36:
+	101000->40:
+	110000->48:
+
+	...
+
+	4-keypress:
+	001111->15: 
+	010111->23: 
+	011011->27: 
+	011101->29: 
+	011110->30: 
+	100111->39: 
+	101011->43: 
+	101101->45: 
+	101110->46: 
+	110011->51: 
+	110101->53: 
+	110110->54: 
+	111001->57: 
+	111010->58: 
+	111100->60: GLOBAL PLAY/STOP
+
+	...
+
+	6-keypress:
+	111111->63: TOGGLE RECORD MODE
+
+

@@ -65,9 +65,7 @@ void parseRawMidi() {
 				INCOUNT++;
 				if (INCOUNT == INTARGET) { // If all the command's bytes have been received...
 					parseMidiCommand(); // Parse the command
-					INBYTES[0] = 0; // Reset incoming-command-tracking vars
-					INBYTES[1] = 0;
-					INBYTES[2] = 0;
+					memset(INBYTES, 0, sizeof(INBYTES)); // Reset incoming-command-tracking vars
 					INCOUNT = 0;
 				}
 			} else { // Else, if this is either a single-byte command, or a multi-byte command's first byte...

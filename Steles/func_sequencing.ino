@@ -1,9 +1,8 @@
 
 // Reset every sequence
 void resetAllSeqs() {
-	for (byte i = 0; i < 72; i++) {
-		resetSeq(i);
-	}
+    memset(SEQ_CMD, 0, sizeof(SEQ_CMD));
+    memset(SEQ_POS, 0, sizeof(SEQ_POS));
 }
 
 // Reset a seq's cued-commands, playing-byte, and tick-position
@@ -15,13 +14,12 @@ void resetSeq(byte s) {
 // Send MIDI-OFF commands for all currently-sustained notes
 void haltAllSustains() {
 	for (byte i = 0; i < 8; i++) {
-		if (SUSTAIN[i][2] > 0) {
-			Serial.write(128 + SUSTAIN[i][0]);
-			Serial.write(SUSTAIN[i][1]);
+		byte i3 = i * 3;
+		if (SUSTAIN[i3 + 2] > 0) {
+			Serial.write(128 + SUSTAIN[i3]);
+			Serial.write(SUSTAIN[i3 + 1]);
 			Serial.write(127);
-			SUSTAIN[i][0] = 0;
-			SUSTAIN[i][1] = 0;
-			SUSTAIN[i][2] = 0;
+			memset(SUSTAIN[i3], 0, 3);
 		}
 	}
 }
@@ -30,34 +28,30 @@ void haltAllSustains() {
 void haltSustain(byte num) {
 
 	// Send a NOTE-OFF to the MIDI-OUT port
-	Serial.write(128 + SUSTAIN[num][0]);
-	Serial.write(SUSTAIN[num][1]);
+	byte n = num * 3;
+	Serial.write(128 + SUSTAIN[n]);
+	Serial.write(SUSTAIN[n + 1]);
 	Serial.write(127);
 
 	// Shift every sustain-note underneath this note upwards by one slot
-	for (byte i = num; i < 7; i++) {
-		byte i2 = i + 1;
-		if (SUSTAIN[i2][0] == 255) { // If the next slot is empty...
-			SUSTAIN[i][0] = 255; // Empty the current slot
-			SUSTAIN[i][1] = 255;
-			SUSTAIN[i][2] = 255;
-			break; // Stop checking for filled sustains, as the rest are empty
-		}
-		memcpy(SUSTAIN[i], SUSTAIN[i2], 3); // Copy the next-lowest slot into the current slot
+	if (num < 7) {
+		byte n2 = 3 * (num + 1);
+		memmove(SUSTAIN + n, SUSTAIN + n2, 24 - n);
 	}
+	memset(SUSTAIN + 21, 255, 3); // Clear the bottommost sustain-slot regardless
 
 }
 
 // Process one tick's worth of duration for all notes in the SUSTAIN system
 void processSustains() {
-	for (byte n = 0; n < 8; n++) { // For each sustain-slot...
-		if (SUSTAIN[n][0] == 255) { break; } // If the slot is empty, then don't check any lower slots
-		if (SUSTAIN[n][2] == 0) { // If the sustain-slot's note has a remaining duration of 0...
+	for (byte n = 0; n < 24; n += 3) { // For each sustain-slot...
+		if (SUSTAIN[n] == 255) { break; } // If the slot is empty, then don't check any lower slots
+		if (SUSTAIN[n + 2] == 0) { // If the sustain-slot's note has a remaining duration of 0...
 			haltSustain(n); // Halt the slot's sustain
-			n--; // Compensate for the shifting-upwards of subsequent sustain-slots that haltSustain() performs
+			n -= 3; // Compensate for the shifting-upwards of subsequent sustain-slots that haltSustain() performs
 			continue; // Skip to the loop's next iteration
 		}
-		SUSTAIN[n][2]--; // Reduce the sustain-slot's duration-value by 1 tick
+		SUSTAIN[n + 2]--; // Reduce the sustain-slot's duration-value by 1 tick
 	}
 }
 
@@ -71,20 +65,17 @@ void playNote(byte dur, byte size, byte b1, byte b2, byte b3) {
 	if (cmd == 144) { // If this is a NOTE-ON cmmand...
 
 		// If the lowest sustain-slot is filled, then halt its note and empty it
-		if (SUSTAIN[7][0] < 255) {
+		if (SUSTAIN[21] < 255) {
 			haltSustain(7);
 		}
 
 		// For every currently-filled sustain-slot, move its contents downward by one slot
-		for (byte i = 0; i < 7; i++) {
-			if (SUSTAIN[i][0] < 255) { break; } // If the current slot is empty, stop shifting slots downward
-			memcpy(SUSTAIN[i + 1], SUSTAIN[i], 3);
-		}
+		memmove(SUSTAIN + 3, SUSTAIN, 21);
 
 		// Put the note's sustain-value in the top sustain-slot
-		SUSTAIN[0][0] = chan;
-		SUSTAIN[0][1] = b2;
-		SUSTAIN[0][2] = dur;
+		SUSTAIN[0] = chan;
+		SUSTAIN[1] = b2;
+		SUSTAIN[2] = dur;
 
 	}
 
@@ -94,7 +85,6 @@ void playNote(byte dur, byte size, byte b1, byte b2, byte b3) {
 	if (size == 3) { // If the command contains three bytes...
 		Serial.write(b3); // Write the third byte
 	}
-
 
 }
 

@@ -9,163 +9,164 @@ const byte EMPTY_TICK[17] PROGMEM = {
 	0, 0, 0, 0, 0, 0, 0, 0
 };
 
-// Partial-screen letter M, for the CLOCK MASTER/FOLLOW screen
-const byte TEXT_M[6] PROGMEM = {
-	B10000001,
-	B11000011,
+// Base glyph for displaying note-related actions
+const byte NOTE_SHAPE[7] PROGMEM = {
+	B01000000,
+	B01000000,
+	B01000000,
+	B01000000,
+	B11000000,
+	B11000000
+};
+
+// Letter glyph: "Bn" for "BASE-NOTE"
+const byte GLYPH_BASENOTE[7] PROGMEM = {
+	B11100000,
+	B10010000,
+	B11100000,
+	B10010111,
+	B10010101,
+	B11100101
+};
+
+// Letter glyph: "BP" for "BPM"
+const byte GLYPH_BPM[7] PROGMEM = {
+	B11100111,
+	B10010101,
+	B11100111,
+	B10010100,
+	B10010100,
+	B11100100,
+};
+
+// Letter glyph: "Ch" for "CHAN"
+const byte GLYPH_CHAN[7] PROGMEM = {
+	B01100100,
+	B10010100,
+	B10000100,
+	B10000110,
+	B10010101,
+	B01100101
+};
+
+// Letter glyph: "CL" for "CHAN-LISTEN"
+const byte GLYPH_CHANLISTEN[7] PROGMEM = {
+	B01100100,
+	B10010100,
+	B10000100,
+	B10000100,
+	B10010100,
+	B01100111
+};
+
+// Letter glyph: "Ck" for "CLOCK-MODE"
+const byte GLYPH_CLOCKMODE[7] PROGMEM = {
+	B01100100,
+	B10010100,
+	B10000100,
+	B10000101,
+	B10010110,
+	B01100101
+};
+
+// Letter glyph: "Du" for "DURATION"
+const byte GLYPH_DURATION[7] PROGMEM = {
+	B11100000,
+	B10010000,
+	B10010000,
+	B10010101,
 	B10100101,
-	B10011001,
-	B10000001,
-	B10000001
+	B11000111
 };
 
-// Partial-screen letter F, for the CLOCK MASTER/FOLLOW screen
-const byte TEXT_F[6] PROGMEM = {
-	B01111110,
+// Letter glyph: "E!!" for "ERASING"
+const byte GLYPH_DURATION[7] PROGMEM = {
+	B11110101,
+	B10000101,
+	B11110101,
+	B10000101,
+	B10000000,
+	B11110101,
+};
+
+// Letter glyph: "Hu" for "HUMANIZE"
+const byte GLYPH_HUMANIZE[7] PROGMEM = {
+	B10010000,
+	B10010000,
+	B11110000,
+	B10010101,
+	B10010101,
+	B10010111
+};
+
+// Letter glyph: "L" for "LOAD"
+const byte GLYPH_LOAD[7] PROGMEM = {
+	B10000000,
+	B10000000,
+	B10000000,
+	B10000000,
+	B10000000,
+	B11110000
+};
+
+// Letter glyph: "Oc" for "OCTAVE"
+const byte GLYPH_OCTAVE[7] PROGMEM = {
+	B01100000,
+	B10010000,
+	B10010000,
+	B10010111,
+	B10010100,
+	B01100111
+};
+
+// Letter glyph: "Qu" for "QUANTIZE"
+const byte GLYPH_QUANTIZE[7] PROGMEM = {
 	B01000000,
-	B01111100,
-	B01000000,
-	B01000000,
-	B01000000
+	B10100000,
+	B10100000,
+	B10100101,
+	B10100101,
+	B01010111
 };
 
-// Partial-screen letter S, displayed during data-save functions
-const byte TEXT_S[6] PROGMEM = {
-	B00111110;
-	B01000000;
-	B00111100;
-	B00000010;
-	B00000010;
-	B01111100;
-};
-
-// Partial-screen letter L, displayed during data-load functions
-const byte TEXT_L[6] PROGMEM = {
-	B01000000;
-	B01000000;
-	B01000000;
-	B01000000;
-	B01000000;
-	B01111110;
-};
-
-
-// Full-screen picture of a half-note
-const byte PICTURE_NOTE[9] PROGMEM = {
-	B00010000,
-	B00010000,
-	B00010000,
-	B00010000,
-	B00010000,
+// Letter glyph: "S" for "SAVE"
+const byte GLYPH_SAVE[7] PROGMEM = {
 	B01110000,
-	B01010000,
-	B01110000
-};
-
-// Partial-screen picture of a plus-sign, for notes with intervals that are neither plain nor dotted
-const byte PICTURE_NOTEPLUS[3] PROGMEM = {
-	B00000010,
-	B00000111,
-	B00000010
-};
-
-
-// Partial-screen number 0
-const byte NUM_0[7] PROGMEM = {
-	B00001110,
-	B00010001,
-	B00010001,
-	B00010001,
-	B00010001,
-	B00001110,
-};
-
-// Partial-screen number 1
-const byte NUM_1[7] PROGMEM = {
-	B00000100,
-	B00001100,
-	B00000100,
-	B00000100,
-	B00000100,
-	B00000100,
-};
-
-// Partial-screen number 2
-const byte NUM_2[7] PROGMEM = {
-	B00001110,
-	B00010001,
-	B00000010,
-	B00000100,
-	B00001000,
-	B00011111,
-};
-
-// Partial-screen number 3
-const byte NUM_3[7] PROGMEM = {
-	B00011111,
-	B00000001,
-	B00001110,
-	B00000001,
-	B00010001,
-	B00001110,
-};
-
-// Partial-screen number 4
-const byte NUM_4[7] PROGMEM = {
-	B00010001,
-	B00010001,
-	B00011111,
-	B00000001,
-	B00000001,
-	B00000001,
-};
-
-// Partial-screen number 5
-const byte NUM_5[7] PROGMEM = {
-	B00011111,
+	B10000000,
+	B01100000,
 	B00010000,
-	B00011110,
-	B00000001,
-	B00010001,
-	B00001110,
-};
-
-// Partial-screen number 6
-const byte NUM_6[7] PROGMEM = {
-	B00001110,
-	B00010001,
 	B00010000,
-	B00011110,
-	B00010001,
-	B00001110,
+	B11100000
 };
 
-// Partial-screen number 7
-const byte NUM_7[7] PROGMEM = {
-	B00011111,
-	B00000001,
-	B00000010,
-	B00000100,
-	B00001000,
-	B00010000,
+// Letter glyph: "RS" for "SWITCH RECORDING-SEQUENCE"
+const byte GLYPH_SWITCHREC[7] PROGMEM = {
+	B11100011,
+	B10010100,
+	B11100010,
+	B10010001,
+	B10010001,
+	B10010110
 };
 
-// Partial-screen number 8
-const byte NUM_8[7] PROGMEM = {
-	B00001110,
-	B00010001,
-	B00001110,
-	B00010001,
-	B00010001,
-	B00001110,
+// Letter glyph: "Sz" for "SIZE"
+const byte GLYPH_SIZE[7] PROGMEM = {
+	B01100000,
+	B10000000,
+	B01001111,
+	B00100010,
+	B00100100,
+	B11001111
 };
 
-// Partial-screen number 9
-const byte NUM_9[7] PROGMEM = {
-	B00001110,
-	B00010001,
-	B00001111,
-	B00000001,
-	B00010001,
-	B00001110,
+// Letter glyph: "Ve" for "VELOCITY"
+const byte GLYPH_VELO[7] PROGMEM = {
+	B10010000,
+	B10010010,
+	B10100101,
+	B10100111,
+	B11000100,
+	B10000011
 };
+
+
