@@ -21,8 +21,7 @@ byte QUANTIZE = B00000100; // Time-quantize value for RECORD-mode notes: bits 0-
 byte DURATION = B00001000; // Duration value for RECORD-mode notes: bits 0-7: 1, 3, 6, 12, 24, 48, 96, 192 (ticks)
 
 // Channels to listen to in RECORD mode, for recording using external MIDI sources
-// Each of the 16 bits corresponds to a MIDI channel
-word LISTEN = 0;
+byte LISTENS[4] = {1, 2, 3};
 
 // Sequencing vars
 byte SONG = 0; // Current song-slot whose data-files are being played

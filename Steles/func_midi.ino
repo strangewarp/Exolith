@@ -34,11 +34,15 @@ void toggleMidiClock(boolean usercmd) {
 void parseMidiCommand() {
 	if (RECORDMODE) { // If RECORDING-mode is active...
 		byte cmd = INBYTES[0] & 240; // Get the command-type
-		if (cmd == 144) { // If this is a NOTE-ON command...
-			RECPITCHES = (RECPITCHES << 4) | (INBYTES[1] % 12); // Shift the RECENT-PITCHES leftward, and add the note's pitch
-		}
+		byte chan = INBYTES[0] & 15; // Get the MIDI channel
 		if (RECORDNOTES) { // If notes are currently being recorded...
-			recordToSeq(0, cmd, INBYTES[0] & 15, INBYTES[1], INBYTES[2]); // Record the incoming MIDI command
+			if ( // If this channel is any of the listen-chans...
+				(LISTENS[0] == chan)
+				|| (LISTENS[1] == chan)
+				|| (LISTENS[2] == chan)
+			) {
+				recordToSeq(0, cmd, chan, INBYTES[1], INBYTES[2]); // Record the incoming MIDI command
+			}
 		}
 	}
 	for (byte i = 0; i < INTARGET; i++) { // Having parsed the command, send its bytes onward to MIDI-OUT
