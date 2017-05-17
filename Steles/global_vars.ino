@@ -17,11 +17,9 @@ byte OCTAVE = 3; // Octave-offset value for RECORD-mode notes
 byte VELOCITY = 127; // Baseline velocity-value for RECORD-mode notes
 byte HUMANIZE = 0; // Maximum velocity-humanize value for RECORD-mode notes
 byte CHANNEL = 0; // MIDI-CHANNEL for RECORD-mode notes
+byte LISTEN = 0; // Channel to listen to in RECORD mode, for recording from external MIDI sources
 byte QUANTIZE = B00000100; // Time-quantize value for RECORD-mode notes: bits 0-7: 1, 3, 6, 12, 24, 48, 96, 192 (ticks)
 byte DURATION = B00001000; // Duration value for RECORD-mode notes: bits 0-7: 1, 3, 6, 12, 24, 48, 96, 192 (ticks)
-
-// Channels to listen to in RECORD mode, for recording using external MIDI sources
-byte LISTENS[4] = {1, 2, 3};
 
 // Sequencing vars
 byte SONG = 0; // Current song-slot whose data-files are being played

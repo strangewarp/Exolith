@@ -17,135 +17,100 @@ void updateGUI() {
 
 		if (TO_UPDATE & 1) { // If the top row is slated for a GUI update...
 
-			if (CTRL == 2) { // If the second-from-bottom CTRL button is held...
-				if (ROWHELD == 0) { // If BASE-NOTE pressed...
-					lc.setRow(0, 0, BASENOTE); // Display BASENOTE value
-				} else if (ROWHELD == 1) { // Else, if OCTAVE pressed...
-					lc.setRow(0, 0, OCTAVE); // Display OCTAVE value
-				} else if (ROWHELD <= 3) { // Else, if VELOCITY pressed...
-					lc.setRow(0, 0, VELO); // Display VELOCITY value
-				} else if (ROWHELD <= 5) { // Else, if HUMANIZE pressed...
-					lc.setRow(0, 0, HUMANIZE); // Display HUMANIZE value
-				}
-			} else if (CTRL == 4) { // If the third-from-bottom CTRL button is held...
-				if (ROWHELD == 0) { // If CHANNEL pressed...
-					lc.setRow(0, 0, CHANNEL); // Display CHANNEL value
-				} else if (ROWHELD == 1) { // If QUANTIZE pressed...
-					lc.setRow(0, 0, QUANTIZE); // Display QUANTIZE value
-				} else if (ROWHELD <= 3) { // If DURATION pressed...
-					lc.setRow(0, 0, DURATION); // Display DURATION value
-				} else if (ROWHELD <= 5) { // If SEQ-SIZE pressed...
-					lc.setRow(0, 0, SEQ_SIZE[RECORDSEQ]); // Display current record-seq's SIZE value
-				}
-			} else if (CTRL == 8) { // If the third-from-top CTRL button is held...
-				if (ROWHELD == 0) { // If CLOCK-MODE pressed...
-					lc.setRow(0, 0, CLOCKMASTER ? 255 : 0); // Display MIDI CLOCK MASTER/FOLLOWER status
-				} else if (ROWHELD <= 3) { // If CHAN-LISTEN pressed...
-					lc.setRow(0, 0, LISTENS[ROWHELD - 1]); // Display the row's CHAN-LISTEN value
-				} else if (ROWHELD <= 5) { // If BPM pressed...
-					lc.setRow(0, 0, BPM); // Display BPM value
-				}
+			if (CTRL == 2) { // If BASE-NOTE pressed...
+				lc.setRow(0, 0, BASENOTE); // Display BASENOTE value
+			} else if (CTRL == 4) { // Else, if OCTAVE pressed...
+				lc.setRow(0, 0, OCTAVE); // Display OCTAVE value
+			} else if (CTRL == 8) { // If DURATION pressed...
+				lc.setRow(0, 0, DURATION); // Display DURATION value
+			} else if (CTRL == 6) { // Else, if VELOCITY pressed...
+				lc.setRow(0, 0, VELO); // Display VELOCITY value
+			} else if (CTRL == 10) { // Else, if HUMANIZE pressed...
+				lc.setRow(0, 0, HUMANIZE); // Display HUMANIZE value
+			} else if (CTRL == 12) { // If QUANTIZE pressed...
+				lc.setRow(0, 0, QUANTIZE); // Display QUANTIZE value
+			} else if (CTRL == 18) { // If CHANNEL pressed...
+				lc.setRow(0, 0, CHANNEL); // Display CHANNEL value
+			} else if (CTRL == 20) { // If SEQ-SIZE pressed...
+				lc.setRow(0, 0, SEQ_SIZE[RECORDSEQ]); // Display current record-seq's SIZE value
+			} else if (CTRL == 24) { // If BPM pressed...
+				lc.setRow(0, 0, BPM); // Display BPM value
+			} else if (CTRL == 22) { // If CLOCK-MODE pressed...
+				lc.setRow(0, 0, CLOCKMASTER ? 255 : 0); // Display MIDI CLOCK MASTER/FOLLOWER status
+			} else if (CTRL == 26) { // If CHAN-LISTEN pressed...
+				lc.setRow(0, 0, LISTEN); // Display the CHAN-LISTEN value
 			} else { // If no CTRL buttons are held, or an unknown or irrelevant combination of CTRL buttons are held...
 				lc.setRow(0, 0, 128 >> byte(floor(CURTICK / 96))); // Display the global-gate position
 			}
 
 		}
 
-		// TO_UPDATE & 2 is handled earlier in the function, because it applies to both RECORD and PLAY modes
-
-
-
-
-
 		if (TO_UPDATE & 252) { // If any of the bottom six rows are slated for a GUI update...
 
-			byte glyph[7];
+			byte marq = (MARQUEE >> 8) % 9; // Get the marquee's current scroll-position
+			word mask = 65280 >> marq; // Get the mask-position for currently-visible scrolled messages
+			byte minv = 8 - marq; // Get the amount by which the masked messages have to be shifted rightward
 
-			if (CTRL <= 1) { // If NOTE-RECORDING is being toggled, or no CTRL button is held...
-				if (RECORDNOTES) { // If RECORDING, then...
-					memcpy_P(glyph, GLYPH_RECORDING, 6); // Slate the RECORDING-glyph for display
-				} else { // Else, if not RECORDING...
+			for (byte i = 0; i < 6; i++) { // For every potential row-to-update...
 
+				// If the row is not slated for update, continue to the next row
+				if (!(TO_UPDATE & (4 << i))) { continue; }
+
+				// Holds the LED-row's contents, which will be assembled based on which commands are held
+				byte contents = 0;
+
+				if (CTRL <= 1) { // If NOTE-RECORDING is being toggled, or no CTRL button is held...
+					if (RECORDNOTES) { // If RECORDING, then...
+						contents = GLYPH_RECORDING[i]; // Slate the RECORDING-glyph for display
+					} else { // Else, if not RECORDING...
+						contents = 128 >> ((marq + i) % 4); // Morph into something cool
+					}
+				} else if (CTRL == 2) { // If BASE-NOTE command is held...
+					contents = (SCROLL_BASENOTE[i] & mask) >> minv; // Slate the BASENOTE-marquee for display
+				} else if (CTRL == 4) { // If OCTAVE command is held...
+					contents = (SCROLL_OCTAVE[i] & mask) >> minv; // Slate the OCTAVE-marquee for display
+				} else if (CTRL == 8) { // If DURATION command is held...
+					contents = (SCROLL_DURATION[i] & mask) >> minv; // Slate the DURATION-marquee for display
+				} else if (CTRL == 16) { // If SWITCH-SEQ command is held...
+					contents = GLYPH_RSWITCH[i]; // Slate the SWITCH-SEQ-glyph for display
+				} else if (CTRL == 32) { // If ERASE WHILE HELD command is held...
+					contents = GLYPH_ERASE[i]; // Slate the ERASE-glyph for display
+				} else if (CTRL == 6) { // If VELOCITY command is held...
+					contents = (SCROLL_VELO[i] & mask) >> minv; // Slate the VELOCITY-marquee for display
+				} else if (CTRL == 10) { // If HUMANIZE command is held...
+					contents = (SCROLL_HUMANIZE[i] & mask) >> minv; // Slate the HUMANIZE-marquee for display
+				} else if (CTRL == 12) { // If QUANTIZE command is held...
+					contents = (SCROLL_QUANTIZE[i] & mask) >> minv; // Slate the QUANTIZE-marquee for display
+				} else if (CTRL == 18) { // If CHANNEL command is held...
+					contents = (SCROLL_CHAN[i] & mask) >> minv; // Slate the CHAN-marquee for display
+				} else if (CTRL == 20) { // If SEQ-SIZE command is held...
+					contents = (SCROLL_SIZE[i] & mask) >> minv; // Slate the SEQ-SIZE-marquee for display
+				} else if (CTRL == 24) { // If BPM command is held...
+					contents = (SCROLL_BPM[i] & mask) >> minv; // Slate the BPM-marquee for display
+				} else if (CTRL == 14) { // If SAVE command is held...
+					contents = GLYPH_SAVE[i]; // Slate the SAVE-glyph for display
+				} else if (CTRL == 22) { // If CLOCK-MODE command is held...
+					contents = (SCROLL_CLOCKMODE[i] & mask) >> minv; // Slate the CLOCK-MODE-marquee for display
+				} else if (CTRL == 26) { // If CHAN-LISTEN command is held...
+					contents = (SCROLL_LISTEN[i] & mask) >> minv; // Slate the CHAN-LISTEN-marquee for display
+				} else if (CTRL == 28) { // If LOAD command is held...
+					contents = GLYPH_LOAD[i]; // Slate the LOAD-glyph for display
 				}
-			} else if (CTRL == 2) { // If second-from-bottom CTRL button is held...
-				if (ROWHELD == 0) { // If BASE-NOTE row is held...
-					memcpy_P(glyph, GLYPH_BASENOTE, 6);
-				} else if (ROWHELD == 1) { // If OCTAVE row is held...
-					memcpy_P(glyph, GLYPH_OCTAVE, 6);
-				} else if (ROWHELD <= 3) { // If VELOCITY rows are held...
-					memcpy_P(glyph, GLYPH_VELO, 6);
-				} else if (ROWHELD <= 5) { // If HUMANIZE rows are held...
-					memcpy_P(glyph, GLYPH_HUMANIZE, 6);
-				} else { // Else, if no row-button is being held on this page...
-					glyph[0] = 96 | BASENOTE;
-					glyph[1] = 144 | OCTAVE;
-					glyph[2] = 240 | ((VELOCITY & 240) >> 4);
-					glyph[3] = 144 | (VELOCITY & 15);
-					glyph[4] = 144 | ((HUMANIZE & 240) >> 4);
-					glyph[5] = 144 | (HUMANIZE & 15);
-				}
-			} else if (CTRL == 4) {
 
-			} else if (CTRL == 8) {
-
-			} else if (CTRL == 16) {
-
-			} else if (CTRL == 32) {
+				lc.setRow(0, i + 2, contents); // Set the LED-row based on the current display-contents
 
 			}
-
-			for (byte i = 0; i < 6; i++) {
-				lc.setRow(0, i + 2, glyph[i]);
-			}
-
 
 		}
 
+	} else { // Else, if PLAY-mode is active...
 
-
-
-
-		if (TO_UPDATE & 4) { // If the third row is slated for a GUI update...
-
-
-			if (CTRL == 2) { // 
-
-			} else if (CTRL == 4) {
-
-			} else if (CTRL == 8) {
-
-			} else if (CTRL == 16) {
-
-			} else if (CTRL == 32) {
-
-			}
-
-
-
-		}
-
-
-
-
-
-	} else {
+		// TODO write this next
 
 
 
 	}
 
-	if (TO_UPDATE & 2) {
-		byte r2 = (CURTICK % 24) ? 0 : 16;
-		r2 |= (2 - PAGE) << 5;
-		for (byte i = 0; i < 8; i++) {
-			if (SUSTAIN[i][1] == 255) { break; }
-			r2++;
-		}
-	}
-
-
-
-
-
+	TO_UPDATE = 0; // Unset the GUI-row-update flags
 
 }
