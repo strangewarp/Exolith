@@ -2,9 +2,9 @@
 // Update the GUI based on update-flags that have been set by the current tick's events
 void updateGUI() {
 
-	// Note: LED-row 2 applies to both RECORD and PLAY modes
+	// Note: The second LED-row is the same in both RECORD and PLAY modes
 	if (TO_UPDATE & 2) { // If the second row is slated for a GUI update...
-		byte r2 |= 1 << (7 - PAGE); // Get the page-location, translated to its LED-row value
+		byte r2 = 1 << (7 - PAGE); // Get the page-location, translated to its LED-row value
 		r2 |= ((CURTICK % 24) < 12) ? 16 : 0; // Metronome on or off, depending on time since last quarter-note
 		for (byte i = 0; i < 8; i++) { // For every sustain-slot...
 			if (SUSTAIN[i][1] == 255) { break; } // If the slot is empty, stop checking sustain-slots
@@ -47,9 +47,8 @@ void updateGUI() {
 
 		if (TO_UPDATE & 252) { // If any of the bottom six rows are slated for a GUI update...
 
-			byte marq = (MARQUEE >> 8) % 9; // Get the marquee's current scroll-position
-			word mask = 65280 >> marq; // Get the mask-position for currently-visible scrolled messages
-			byte minv = 8 - marq; // Get the amount by which the masked messages have to be shifted rightward
+			word mask = 65280 >> MARQUEE; // Get the mask-position for currently-visible scrolled messages
+			byte minv = 8 - MARQUEE; // Get the amount by which the masked messages have to be shifted rightward
 
 			for (byte i = 0; i < 6; i++) { // For every potential row-to-update...
 
@@ -72,7 +71,7 @@ void updateGUI() {
 				} else if (CTRL == 8) { // If DURATION command is held...
 					contents = (SCROLL_DURATION[i] & mask) >> minv; // Slate the DURATION-marquee for display
 				} else if (CTRL == 16) { // If SWITCH-SEQ command is held...
-					contents = GLYPH_RSWITCH[i]; // Slate the SWITCH-SEQ-glyph for display
+					contents = GLYPH_RSWITCH[i] | (15 * (marq % 2)); // Slate the SWITCH-SEQ-glyph for display
 				} else if (CTRL == 32) { // If ERASE WHILE HELD command is held...
 					contents = GLYPH_ERASE[i]; // Slate the ERASE-glyph for display
 				} else if (CTRL == 6) { // If VELOCITY command is held...
@@ -105,9 +104,18 @@ void updateGUI() {
 
 	} else { // Else, if PLAY-mode is active...
 
-		// TODO write this next
+		if (TO_UPDATE & 1) { // If the top row is slated for update...
+			lc.setRow(0, 0, 128 >> byte(floor(CURTICK / 96))); // Display the global-gate position
+		}
 
-
+		for (byte i = 0; i < 6; i++) { // For the six bottom-most rows...
+			if (!(TO_UPDATE & (4 << i))) { continue; } // If the row is not slated for an update, skip to checking the next row
+			byte cdata = (CTRL & (1 << i)) ? 240 : 0; // Get the row's corresponding CTRL-button's status
+			for (byte j = 0; j < 4; j++) { // For each column in this row of the sequence-block...
+				cdata |= (8 >> j) * (SEQ_POS[(PAGE * 24) + (i * 4) + j] >> 15); // Figure out whether this sequence is active
+			}
+			lc.setRow(0, i + 2, cdata); // Set the LEDs to reflect this row of accumulated sequence on/off values
+		}
 
 	}
 

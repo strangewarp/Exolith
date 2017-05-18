@@ -23,18 +23,16 @@ LEDs (RECORD MODE):
 
 	c c c c c c c c
 	p p p b s s s s
-	d d d d v v v v
-	d d d d v v v v
-	d d d d v v v v
-	d d d d v v v v
-	d d d d v v v v
-	d d d d v v v v
+	d d d d d d d d
+	d d d d d d d d
+	d d d d d d d d
+	d d d d d d d d
+	d d d d d d d d
+	d d d d d d d d
 
 	c: Global cue point
 	s: Number of sustains
 	p: Current page
 	b: Blink every 24 ticks
 	d: Display glyph related to user activity
-	v: Values in command-panel; reflects note keypresses
-
 

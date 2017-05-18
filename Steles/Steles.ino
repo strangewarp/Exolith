@@ -60,6 +60,8 @@ void loop() {
         updateTimer();
     }
 
+    updateMarquee();
+
     updateGUI();
 
 }
