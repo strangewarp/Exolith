@@ -47,6 +47,8 @@ void updateGUI() {
 
 		if (TO_UPDATE & 252) { // If any of the bottom six rows are slated for a GUI update...
 
+		    updateMarquee();
+
 			word mask = 65280 >> MARQUEE; // Get the mask-position for currently-visible scrolled messages
 			byte minv = 8 - MARQUEE; // Get the amount by which the masked messages have to be shifted rightward
 
