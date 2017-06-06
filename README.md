@@ -1,3 +1,3 @@
 
-# Exolith
-Firmware for the ATMEGA328-based Exolith project (in development).
+# Tegnesten
+Firmware for the ATMEGA328-based Tegnesten project (in development).

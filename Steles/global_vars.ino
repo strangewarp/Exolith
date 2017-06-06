@@ -1,6 +1,7 @@
 
 // UI vars
 byte CTRL = 0; // Tracks left-column control-button presses in bits 0 thru 5
+word MARQUEE = 0; // Tracks all rapid main-loop ticks, whose divisions are used to generate marquee-scroll positions
 byte TO_UPDATE = 0; // Tracks which rows of LEDs should be updated at the end of a given tick
 
 // Timing vars

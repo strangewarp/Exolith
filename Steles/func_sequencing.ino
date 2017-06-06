@@ -1,8 +1,8 @@
 
 // Reset every sequence
 void resetAllSeqs() {
-    memset(SEQ_CMD, 0, sizeof(SEQ_CMD));
-    memset(SEQ_POS, 0, sizeof(SEQ_POS));
+	memset(SEQ_CMD, 0, sizeof(SEQ_CMD));
+	memset(SEQ_POS, 0, sizeof(SEQ_POS));
 }
 
 // Reset a seq's cued-commands, playing-byte, and tick-position

@@ -2,7 +2,7 @@
 
 /*
 
-		Steles is a MIDI sequencer for the "Exolith" hardware.
+		Steles is a MIDI sequencer for the "Tegnesten" hardware.
 		THIS CODE IS UNDER DEVELOPMENT AND DOESN'T DO ANYTHING!
 		Copyright (C) 2016-onward, Christian D. Madsen (sevenplagues@gmail.com).
 
@@ -25,26 +25,26 @@
 
 void setup() {
 
-    // Initialize empty arrays
-    resetAllSeqs();
-    memset(SEQ_SIZE, 0, sizeof(SEQ_SIZE));
+	// Initialize empty arrays
+	resetAllSeqs();
+	memset(SEQ_SIZE, 0, sizeof(SEQ_SIZE));
 
-    // Initialize the SD-card at full speed
-    if (!sd.begin(10, SPI_FULL_SPEED)) {
-        sd.initErrorHalt();
-    }
+	// Initialize the SD-card at full speed
+	if (!sd.begin(10, SPI_FULL_SPEED)) {
+		sd.initErrorHalt();
+	}
 
-    // Set an extremely minimal debounce time, since the device uses clicky buttons
+	// Set an extremely minimal debounce time, since the device uses clicky buttons
 	kpd.setDebounceTime(1);
 
-    // Power up ledControl to full brightness
+	// Power up ledControl to full brightness
 	lc.shutdown(0, false);
 	lc.setIntensity(0, 15);
 
-    // Load the default song, or create its folder and files if they don't exist
-    loadSong(SONG);
+	// Load the default song, or create its folder and files if they don't exist
+	loadSong(SONG);
 
-    // Start serial comms at the MIDI baud rate
+	// Start serial comms at the MIDI baud rate
 	Serial.begin(31250);
 	
 }
@@ -52,15 +52,15 @@ void setup() {
 
 void loop() {
 
-    parseRawMidi();
+	parseRawMidi();
 
-    parseKeystrokes();
+	updateTimer();
 
-    if (CLOCKMASTER) {
-        updateTimer();
-    }
+	parseKeystrokes();
 
-    updateGUI();
+	MARQUEE++; // Increase the value that is used to calculate all scrolling graphical marquee positions
+
+	updateGUI();
 
 }
 
