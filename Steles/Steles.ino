@@ -2,7 +2,7 @@
 
 /*
 
-		Steles is a MIDI sequencer for the "Tegnesten" hardware.
+		Steles is a MIDI sequencer for the "Tegne" hardware.
 		THIS CODE IS UNDER DEVELOPMENT AND DOESN'T DO ANYTHING!
 		Copyright (C) 2016-onward, Christian D. Madsen (sevenplagues@gmail.com).
 

@@ -1,3 +1,3 @@
 
-# Tegnesten
-Firmware for the ATMEGA328-based Tegnesten project (in development).
+# Tegne
+Firmware for the ATMEGA328-based Tegne project (in development).
