@@ -7,23 +7,22 @@ Steles data-file spec
 		/n.tmp: currently-loaded temp-data file
 
 	File contents:
-		(7077961 total bytes [~6.75 megabytes])
+		(294961 total bytes)
 		Header bytes:
-			(73 total bytes)
+			(49 total bytes)
 			0: BPM value
-			1-72:
+			1-48:
 				Each sequence's size, in beats
 				(* 24 * 4 = size in ticks)
 		Body bytes:
-			72 sequences (7077888 total bytes)
-			Per sequence (for 72 sequences):
-				6144 tick-slots (98304 total bytes)
+			48 sequences (294912 total bytes)
+			Per sequence (for 48 sequences):
+				1024 tick-slots (6144 total bytes)
 				Per tick-slot:
-					4 notes (16 total bytes)
+					2 notes (6 total bytes)
 					Per note:
-						(4 total bytes)
-						0: Steles-unique data
-							0: DURATION value
-						1-3: Reformed MIDI command
-
+						(3 total bytes)
+						0: Chan-dur composite
+						1: Pitch
+						2: Velocity
 

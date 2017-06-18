@@ -4,10 +4,7 @@
 const unsigned long FILE_BYTES PROGMEM = 7077961;
 
 // Buffer of empty bytes, for writing into a newly-emptied tick en masse
-const byte EMPTY_TICK[17] PROGMEM = {
-	0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0
-};
+const byte EMPTY_TICK[7] PROGMEM = {0, 0, 0, 0, 0, 0};
 
 // Scrolling text: BASENOTE
 const word SCROLL_BASENOTE[7] PROGMEM = {
@@ -169,3 +166,12 @@ const byte GLYPH_SAVE[7] PROGMEM = {
 	B11100000
 };
 
+// Multi-letter glyph: "SD" for "SD-card"
+const byte GLYPH_SD[7] PROGMEM = {
+	B01101110,
+	B10001001,
+	B01001001,
+	B00101001,
+	B00101010,
+	B11001100
+};

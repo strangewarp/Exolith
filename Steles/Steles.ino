@@ -26,20 +26,23 @@
 void setup() {
 
 	// Initialize empty arrays
-	resetAllSeqs();
-	memset(SEQ_SIZE, 0, sizeof(SEQ_SIZE));
+	//resetAllSeqs();
+	//memset(SEQ_STATS, 0, sizeof(SEQ_STATS));
 
-	// Initialize the SD-card at full speed
+    // Power up ledControl to full brightness
+    lc.shutdown(0, false);
+    lc.setIntensity(0, 15);
+
+	// Initialize the SD-card at full speed, or throw a visible error message if no SD-card is inserted
 	if (!sd.begin(10, SPI_FULL_SPEED)) {
+        for (byte i = 2; i < 8; i++) {
+            lc.setRow(0, i, GLYPH_SD[i - 2]);
+        }
 		sd.initErrorHalt();
 	}
 
-	// Set an extremely minimal debounce time, since the device uses clicky buttons
-	kpd.setDebounceTime(1);
-
-	// Power up ledControl to full brightness
-	lc.shutdown(0, false);
-	lc.setIntensity(0, 15);
+	// Set a short debounce time (8ms), but not so short as to lag the other functions with constant checks
+	kpd.setDebounceTime(8);
 
 	// Load the default song, or create its folder and files if they don't exist
 	loadSong(SONG);
@@ -57,8 +60,6 @@ void loop() {
 	updateTimer();
 
 	parseKeystrokes();
-
-	MARQUEE++; // Increase the value that is used to calculate all scrolling graphical marquee positions
 
 	updateGUI();
 

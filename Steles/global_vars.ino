@@ -1,7 +1,6 @@
 
 // UI vars
 byte CTRL = 0; // Tracks left-column control-button presses in bits 0 thru 5
-word MARQUEE = 0; // Tracks all rapid main-loop ticks, whose divisions are used to generate marquee-scroll positions
 byte TO_UPDATE = 0; // Tracks which rows of LEDs should be updated at the end of a given tick
 
 // Timing vars
@@ -31,33 +30,34 @@ boolean CLOCKMASTER = true; // Toggles whether to generate MIDI CLOCK ticks, or 
 byte BPM = 120; // Beats-per-minute value: one beat is 96 tempo-ticks
 
 // Cued-command flags, one per seq.
-// bits 0-2: cue 4, 2, 1;
-// bits 3-5: slice 4, 2, 1;
-// bit 6: TURN ON
-// bit 7: TURN OFF
-byte SEQ_CMD[73];
+// bit 0: TURN OFF
+// bit 1: TURN ON
+// bits 2-4: slice 4, 2, 1;
+// bits 5-7: cue 4, 2, 1;
+byte SEQ_CMD[49];
 
-// Holds 72 seqs' sizes
-// bit 0: reserved
-// bits 1-7: 1, 2, 4, 8, 16, 32, 64 (* 24 * 4 = size, in ticks)
-byte SEQ_SIZE[73];
+// Holds 48 seqs' sizes and activity-flags
+// bits 0-6: 1, 2, 4, 8, 16, 32, 64 (= size, in beats)
+// bit 7: on/off flag
+byte SEQ_STATS[49];
 
-// Holds 72 seqs' internal tick-positions and playing-statuses
-// bit 0: playing
-// bits 1-15: current tick
-word SEQ_POS[73];
+// Holds the 48 seqs' internal tick-positions
+// bits 0-7: current 16th-note position
+byte SEQ_POS[49];
+
+// Holds up to 8 MIDI notes from a given tick,
+// (format: MOUT[n*3] = channel, pitch, velocity)
+// to be sent in a batch at the tick's end
+byte MOUT[25];
+byte MOUT_COUNT = 0; // Counts the current number of note entries in MOUT
+
+// Note-Sustain data storage
+// (format: SUST[n*2] = chan-dur, pitch)
+byte SUST[17];
 
 // MIDI-IN vars
-byte INBYTES[4] = {0, 0, 0};
+byte INBYTES[4];
 byte INCOUNT = 0;
 byte INTARGET = 0;
 boolean SYSIGNORE = false;
 
-// MIDI SUSTAIN vars
-// Format: SUSTAIN[n] = {channel, pitch, remaining duration in ticks}
-byte SUSTAIN[9][4] = {
-	{255, 255, 255}, {255, 255, 255},
-	{255, 255, 255}, {255, 255, 255},
-	{255, 255, 255}, {255, 255, 255},
-	{255, 255, 255}, {255, 255, 255}
-};

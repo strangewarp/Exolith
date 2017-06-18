@@ -43,11 +43,11 @@ void loadSong(byte song) {
 	// Get the seq-parameters from the file's header, and copy them into both the tempfile and program-vars
 	file.open(name, O_READ);
 	file.read(BPM);
-	file.read(SEQ_SIZE, 72);
+	file.read(SEQ_STATS, 72);
 	file.close();
 	file.open(name2, O_WRITE | O_APPEND);
 	file.write(BPM);
-	file.write(SEQ_SIZE, 72);
+	file.write(SEQ_STATS, 72);
 	file.close();
 
 	// Set the currently-active SONG-position to the given save-slot
@@ -79,7 +79,7 @@ void saveSong(byte slot) {
 
 	// Write the header bytes
 	file.write(BPM);
-	file.write(SEQ_SIZE, 72);
+	file.write(SEQ_STATS, 72);
 
 	// Do some time magic
 	file.timestamp(T_CREATE, 1987, 5, 12, 4, 20, 7);

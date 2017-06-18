@@ -3,7 +3,7 @@
 void recordToSeq(int offset, byte cmd, byte chan, byte b1, byte b2) {
 
 	// Create a virtual tick-position that compensates for any given tick-offset
-	word tick = ((SEQ_POS[RECORDSEQ] & B0111111111111111) + offset) % (SEQ_SIZE[RECORDSEQ] * 96);
+	word tick = ((SEQ_POS[RECORDSEQ] & B0111111111111111) + offset) % (SEQ_STATS[RECORDSEQ] * 96);
 
 	byte buf[17]; // SD-card read/write buffer
 	byte toinsert = 255; // Tracks which empty slot to insert the note into
