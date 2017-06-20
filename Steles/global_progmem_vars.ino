@@ -4,7 +4,7 @@
 const unsigned long FILE_BYTES PROGMEM = 7077961;
 
 // Buffer of empty bytes, for writing into a newly-emptied tick en masse
-const byte EMPTY_TICK[7] PROGMEM = {0, 0, 0, 0, 0, 0};
+const byte EMPTY_TICK[9] PROGMEM = {0, 0, 0, 0, 0, 0, 0, 0};
 
 // Scrolling text: BASENOTE
 const word SCROLL_BASENOTE[7] PROGMEM = {

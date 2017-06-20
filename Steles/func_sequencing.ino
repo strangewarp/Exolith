@@ -13,79 +13,40 @@ void resetSeq(byte s) {
 
 // Send MIDI-OFF commands for all currently-sustained notes
 void haltAllSustains() {
-	for (byte i = 0; i < 8; i++) {
-		byte i3 = i * 3;
-		if (SUSTAIN[i3 + 2] > 0) {
-			Serial.write(128 + SUSTAIN[i3]);
-			Serial.write(SUSTAIN[i3 + 1]);
-			Serial.write(127);
-			memset(SUSTAIN[i3], 0, 3);
-		}
+	for (uint8_c i = 0; i < (SUST_COUNT * 3); i++) { // For every active sustain...
+		Serial.write(SUST[n + 1]); // Send a premature NOTE-OFF for the sustain
+		Serial.write(SUST[n + 2]); // ^
+		Serial.write(127); // ^
 	}
-}
-
-// Halt a single sustain in the sustain-system
-void haltSustain(byte num) {
-
-	// Send a NOTE-OFF to the MIDI-OUT port
-	byte n = num << 1;
-	Serial.write(128 + SUSTAIN[n]);
-	Serial.write(SUSTAIN[n + 1]);
-	Serial.write(127);
-
-	// Shift every sustain-note underneath this note upwards by one slot
-	if (num < 7) {
-		byte n2 = 3 * (num + 1);
-		memmove(SUSTAIN + n, SUSTAIN + n2, 24 - n);
-	}
-	memset(SUSTAIN + 21, 255, 3); // Clear the bottommost sustain-slot regardless
-
+	SUST_COUNT = 0;
 }
 
 // Process one 16th-note worth of duration for all notes in the SUSTAIN system
 void processSustains() {
-	for (byte n = 0; n < 16; n += 2) { // For every sustain-entry in the SUST array...
-		if (SUST[n + 1] == 255) { break; } // If this sustain-slot is empty, finish checking
-		byte dur = SUST[n] & 15; // Get the remaining-duration-in-16th-notes for this sustain
-		if (dur) { // If any duration remains...
-			SUST[n] &= (dur - 1) | 240; // Reduce the duration by 1, and add it back to its chan-dur composite byte
+	uint8_c n = 0; // Value to iterate through each sustain-position
+	while (n < (SUST_COUNT * 3)) { // For every sustain-entry in the SUST array...
+		if (SUST[n]) { // If any duration remains...
+			SUST[n]--; // Reduce the duration by 1
+			n += 3; // Move on to the next sustain-position normally
 		} else { // Else, if the remaining duration is 0...
-			haltSustain(n); // Halt the sustain
+			Serial.write(SUST[n + 1]); // Send a NOTE-OFF for the sustain
+			Serial.write(SUST[n + 2]); // ^
+			Serial.write(127); // ^
+			if (n < 21) { // If this isn't the lowest sustain-slot...
+				memmove(SUST + n, SUST + n + 3, 24 - (n + 3)); // Move all lower sustains one slot upwards
+			}
+			SUST_COUNT--; // Reduce the sustain-count
+			// n doesn't need to be increased here, since the next sustain occupies the same index now
 		}
 	}
 }
 
-// Play a given MIDI note, adding a corresponding note to the SUSTAIN system if applicable
-void playNote(byte dur, byte size, byte b1, byte b2, byte b3) {
-
-	// Split the MIDI CHANNEL off from its command-type
-	byte chan = b1 % 16;
-	byte cmd = b1 - chan;
-
-	if (cmd == 144) { // If this is a NOTE-ON cmmand...
-
-		// If the lowest sustain-slot is filled, then halt its note and empty it
-		if (SUSTAIN[21] < 255) {
-			haltSustain(7);
-		}
-
-		// For every currently-filled sustain-slot, move its contents downward by one slot
-		memmove(SUSTAIN + 3, SUSTAIN, 21);
-
-		// Put the note's sustain-value in the top sustain-slot
-		SUSTAIN[0] = chan;
-		SUSTAIN[1] = b2;
-		SUSTAIN[2] = dur;
-
-	}
-
-	// Send the MIDI command to the MIDI-OUT port
-	Serial.write(b1);
-	Serial.write(b2);
-	if (size == 3) { // If the command contains three bytes...
-		Serial.write(b3); // Write the third byte
-	}
-
+// Send all outgoing MIDI commands in a single burst
+void flushNoteOns() {
+	if (!MOUT_COUNT) { return; } // If there are no commands in the NOTE-ON buffer, exit the function
+	uint8_c mbytes = MOUT_COUNT * 3; // Get the total number of bytes in the MIDI buffer
+	Serial.write(MOUT, mbytes); // Send all outgoing MIDI-command bytes at once
+	MOUT_COUNT = 0; // Clear the MIDI buffer's counting-byte
 }
 
 // Advance global tick, and iterate through all currently-active sequences
@@ -94,31 +55,35 @@ void iterateAll() {
 	if (!(CURTICK % 6)) { // If this tick falls on a 16th-note...
 
 		processSustains(); // Process one 16th-note's worth of duration for all sustained notes
-		flushMidiOut(); // Flush the MIDI-OUT array, which may now contain sustains' OFF-commands
 
 		if (PLAYING) { // If the sequencer is currently in PLAYING mode...
 
-			byte buf[7]; // Buffer for reading note-events from the datafile
+			if (!(CURTICK % 96)) { // If the global tick is the first tick within a global cue-section...
+				TO_UPDATE |= 1; // Flag the global-cue row of LEDs for an update
+			}
+
+			uint8_c buf[7]; // Buffer for reading note-events from the datafile
 
 			for (byte i = 0; i < 48; i++) { // For every loaded sequence...
 
-				byte s16 = (SEQ_STATS[i] & 31) << 4; // Get seq's absolute size, in 16th-notes
-				byte c16 = s16 >> 3; // Get seq's chunk-size, in 16th-notes
+				uint8_c seqbeats = SEQ_STATS[i] & 127; // Get seq's absolute size, in beats
+				uint16_c seq16 = seqbeats << 4; // Get seq's absolute size, in 16th-notes
 
 				if (SEQ_CMD[i]) { // If the seq has cued commands...
-					byte slice = (SEQ_CMD[i] & B00011100) >> 2; // Get slice-point from incoming command
-					if (CURTICK == ((((SEQ_CMD[i] & B11100000) >> 5) * 96) % 768)) { // If the global tick corresponds to the seq's cue-point...
+
+					if (CURTICK == (((SEQ_CMD[i] & B11100000) >> 5) * 96)) { // If the global tick corresponds to the seq-command's global-cue-point...
 
 						// Enable or disable the sequence's playing-bit
-						SEQ_STATS[i] = (SEQ_STATS[i] & B00011111) | (128 * ((SEQ_CMD[i] & 3) >> 1));
+						SEQ_STATS[i] = (SEQ_STATS[i] & B01111111) | (128 * ((SEQ_CMD[i] & 3) >> 1));
 
 						// Set the sequence's internal tick to a position based on the incoming SLICE bits
-						SEQ_POS[i] = c16 * slice;
+						SEQ_POS[i] = (seq16 >> 3) * ((SEQ_CMD[i] & B00011100) >> 2);
 
 						// Flag the sequence's LED-row for an update
 						TO_UPDATE |= (i % 24) >> 2;
 
 					}
+
 				}
 
 				// If the seq isn't currently playing, go to the next seq's iteration-routine
@@ -127,53 +92,53 @@ void iterateAll() {
 				// If RECORD MODE is active, and the ERASE-NOTES command is being held,
 				// and notes are being recorded into this seq...
 				if (RECORDMODE && ERASENOTES && (RECORDNOTES == i)) {
-					file.seekSet(49 + SEQ_POS[i] + (i * 6144)); // Set position to start of tick's first note
-					file.write(EMPTY_TICK, 6) // Write in an entire empty tick's worth of bytes
-					continue; // Skip the remaining read-and-play routines for this sequence
-				}
 
-				if (MOUT_COUNT < 8) { // If the MIDI-OUT queue isn't full...
+					file.seekSet(49 + SEQ_POS[i] + (i * 8192)); // Set position to start of tick's first note
+					file.write(EMPTY_TICK, 8); // Write in an entire empty tick's worth of bytes
 
-					file.seekSet(49 + SEQ_POS[i] + (i * 2048)); // Navigate to the note's absolute position
-					file.read(buf, 6); // Read the data of the tick's notes
-					if (buf[2]) { // If the note exists...
-						byte bnum = (buf[5] && (MOUT_COUNT < 7)) ? 2 : 1; // Check if a second note exists, and if there's a MOUT space for it
-						memcpy(MOUT + (MOUT_COUNT * 3), buf, 3 * bnum); // Copy note-data to the MIDI-OUT buffer
-						MOUT_COUNT += bnum; // Increase the count of notes contained within the MIDI-OUT buffer
+				} else { // Else, if any other combination of states applies...
+
+					if (MOUT_COUNT < 8) { // If the MIDI-OUT queue isn't full...
+						file.seekSet(49 + SEQ_POS[i] + (i * 8192)); // Navigate to the note's absolute position
+						file.read(buf, 8); // Read the data of the tick's notes
+						for (uint8_c bn = 0; bn < 8; bn += 4) { // For each of the two note-slots on a given tick...
+							if (
+								(!buf[bn + 3]) // If the note doesn't exist...
+								|| (MOUT_COUNT == 8) // Or the MIDI buffer is full...
+							) {
+								break; // Don't add any notes to the MIDI buffer
+							}
+							uint8_c pos = MOUT_COUNT * 3; // Get the lowest empty MOUT location
+							memcpy(MOUT + pos, buf + bn + 1, 3); // Copy the note into the MIDI buffer
+							MOUT_COUNT++; // Increase the counter that tracks the number of bytes in the MIDI buffer
+							if (SUST_COUNT == 8) { // If the SUSTAIN buffer is already full...
+								Serial.write(SUST[23]); // Send a premature NOTE-OFF for the oldest active sustain
+								Serial.write(SUST[24]); // ^
+								Serial.write(127); // ^
+								SUST_COUNT--; // Reduce the number of active sustains by 1
+							}
+							memmove(SUST, SUST + 3, (SUST_COUNT * 3)); // Move all sustains one space downward
+							memcpy(SUST, buf + bn, 3); // Create a new sustain corresponding to this note
+							SUST[1] ^= 16; // Turn the new sustain's NOTE-ON into a NOTE-OFF preemptively
+							SUST_COUNT++; // Increase the number of active sustains by 1
+						}
 					}
 
 				}
 
 				// Increase the seq's 16th-note position by one increment, wrapping it around its top limit
-				SEQ_POS[i] = (SEQ_POS[i] + 1) % s16;
+				SEQ_POS[i] = (SEQ_POS[i] + 1) % seq16;
 
 			}
-
-
 
 		}
 
 	}
 
-
-	// note: needs file.open at start of function??
-
-
-
-
-	//ICOUNT = (ICOUNT + 1) % 6;
-
-
-	file.close(); // Close the tempfile, having done all reads for all seqs on this tick
-
 	CURTICK = (CURTICK + 1) % 768; // Advance the global current-tick, bounded to the global slice-size
 
-	TO_UPDATE |= 1 >> (CURTICK % 96); // If the global cue-timer advanced by a chunk, cue the global-tick-row for a GUI update
-
-
-
 	if (MOUT_COUNT) { // If any notes are in the MIDI-OUT buffer...
-		flushMidiOut(); // Send them all at once
+		flushNoteOns(); // Send them all at once
 	}
 
 }

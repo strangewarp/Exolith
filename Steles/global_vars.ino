@@ -46,14 +46,15 @@ byte SEQ_STATS[49];
 byte SEQ_POS[49];
 
 // Holds up to 8 MIDI notes from a given tick,
-// (format: MOUT[n*3] = channel, pitch, velocity)
+// (format: MOUT[n*3] = command, pitch, velocity)
 // to be sent in a batch at the tick's end
 byte MOUT[25];
 byte MOUT_COUNT = 0; // Counts the current number of note entries in MOUT
 
 // Note-Sustain data storage
-// (format: SUST[n*2] = chan-dur, pitch)
-byte SUST[17];
+// (format: SUST[n*3] = duration, channel, pitch)
+byte SUST[25];
+byte SUST_COUNT = 0; // Counts the current number of sustained notes
 
 // MIDI-IN vars
 byte INBYTES[4];
