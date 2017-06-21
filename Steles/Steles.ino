@@ -57,7 +57,7 @@ void loop() {
 
 	parseRawMidi();
 
-	updateTimer();
+	updateTimer(); // note to self: throttle to 16th-notes here too? and in global tick-counter?
 
 	parseKeystrokes();
 
