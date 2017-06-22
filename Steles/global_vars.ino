@@ -28,7 +28,7 @@ uint8_c DUMMYTICK = 0; // Tracks whether to expect a dummy MIDI CLOCK tick befor
 uint8_c CLOCKMASTER = 1; // Toggles whether to generate MIDI CLOCK ticks, or respond to incoming CLOCK ticks from an external device
 uint8_c BPM = 120; // Beats-per-minute value: one beat is 96 tempo-ticks
 uint8_c TICKCOUNT = 5; // Current global tick, bounded within the size of a 16th-note
-uint8_c CUR16 = 63; // Current global sixteenth-note
+uint8_c CUR16 = 127; // Current global sixteenth-note (bounded to 128, or 8 beats)
 
 // Cued-command flags, one per seq.
 // bit 0: TURN OFF

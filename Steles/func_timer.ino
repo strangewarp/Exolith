@@ -15,8 +15,8 @@ void updateTimer() {
 	TICKCOUNT = (TICKCOUNT + 1) % 6; // Increase the value that tracks ticks, bounded to the size of a 16th-note
 	Serial.write(248); // Send a MIDI CLOCK pulse
 	if (TICKCOUNT) { return; } // If the current tick doesn't fall on a 16th-note, exit the function
-	CUR16 = (CUR16 + 1) % 64; // Since we're sure we're on a new 16th-note, increase the current-16th-note variable
-	if (!(CUR16 % 8)) { // If the global 16th-note is the first within a global cue-section...
+	CUR16 = (CUR16 + 1) % 128; // Since we're sure we're on a new 16th-note, increase the current-16th-note variable
+	if (!(CUR16 % 16)) { // If the global 16th-note is the first within a global cue-section...
 		TO_UPDATE |= 1; // Flag the global-cue row of LEDs for an update
 	}
 	iterateAll(); // Iterate through a step of each active sequence
