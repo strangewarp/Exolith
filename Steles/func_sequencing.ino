@@ -6,14 +6,14 @@ void resetAllSeqs() {
 }
 
 // Reset a seq's cued-commands, playing-byte, and tick-position
-void resetSeq(uint8_c s) {
+void resetSeq(uint8_t s) {
 	SEQ_CMD[s] = 0;
 	SEQ_POS[s] = 0;
 }
 
 // Send MIDI-OFF commands for all currently-sustained notes
 void haltAllSustains() {
-	for (uint8_c i = 0; i < (SUST_COUNT * 3); i++) { // For every active sustain...
+	for (uint8_t i = 0; i < (SUST_COUNT * 3); i++) { // For every active sustain...
 		Serial.write(SUST[n + 1]); // Send a premature NOTE-OFF for the sustain
 		Serial.write(SUST[n + 2]); // ^
 		Serial.write(127); // ^
@@ -23,7 +23,7 @@ void haltAllSustains() {
 
 // Process one 16th-note worth of duration for all notes in the SUSTAIN system
 void processSustains() {
-	uint8_c n = 0; // Value to iterate through each sustain-position
+	uint8_t n = 0; // Value to iterate through each sustain-position
 	while (n < (SUST_COUNT * 3)) { // For every sustain-entry in the SUST array...
 		if (SUST[n]) { // If any duration remains...
 			SUST[n]--; // Reduce the duration by 1
@@ -49,7 +49,7 @@ void flushNoteOns() {
 }
 
 // Compare a seq's CUE-commands to the global CUE-point, and parse them if the timing is correct
-void parseCues(uint8_c s, uint16_c size) {
+void parseCues(uint8_t s, uint16_t size) {
 
 	if (
 		(!SEQ_CMD[s]) // If the seq has no cued commands...
@@ -60,26 +60,36 @@ void parseCues(uint8_c s, uint16_c size) {
 	SEQ_STATS[s] = (SEQ_STATS[s] & B01111111) | ((SEQ_CMD[s] & 2) << 6);
 
 	// Set the sequence's internal tick to a position based on the incoming SLICE bits
-	SEQ_POS[s] = (size >> 3) * ((SEQ_CMD[s] & B00011100) >> 2);
+	SEQ_POS[s] = size * ((SEQ_CMD[s] & B00011100) >> 1);
 
 	// Flag the sequence's LED-row for an update
 	TO_UPDATE |= (s % 24) >> 2;
 
 }
 
+
 // Get the notes from the current tick in a given seq, and add them to the MIDI-OUT buffer
-void getTickNotes(uint8_c s) {
+void getTickNotes(uint8_t s) {
+
+	uint8_t buf[7]; // Buffer for reading note-events from the datafile
+
 	if (MOUT_COUNT == 8) { return; } // If the MIDI-OUT queue is full, exit the function
+
 	file.seekSet(49 + SEQ_POS[s] + (s * 8192)); // Navigate to the note's absolute position
 	file.read(buf, 8); // Read the data of the tick's notes
-	for (uint8_c bn = 0; bn < 8; bn += 4) { // For each of the two note-slots on a given tick...
+
+	for (uint8_t bn = 0; bn < 8; bn += 4) { // For each of the two note-slots on a given tick...
+
 		if (
 			(!buf[bn + 3]) // If the note doesn't exist...
 			|| (MOUT_COUNT == 8) // Or the MIDI buffer is full...
 		) { break; } // Don't add any notes to the MIDI buffer
-		uint8_c pos = MOUT_COUNT * 3; // Get the lowest empty MOUT location
+
+		uint8_t pos = MOUT_COUNT * 3; // Get the lowest empty MOUT location
+
 		memcpy(MOUT + pos, buf + bn + 1, 3); // Copy the note into the MIDI buffer
 		MOUT_COUNT++; // Increase the counter that tracks the number of bytes in the MIDI buffer
+
 		if (SUST_COUNT == 8) { // If the SUSTAIN buffer is already full...
 			Serial.write(SUST[23]); // Send a premature NOTE-OFF for the oldest active sustain
 			Serial.write(SUST[24]); // ^
@@ -90,7 +100,9 @@ void getTickNotes(uint8_c s) {
 		memcpy(SUST, buf + bn, 3); // Create a new sustain corresponding to this note
 		SUST[1] ^= 16; // Turn the new sustain's NOTE-ON into a NOTE-OFF preemptively
 		SUST_COUNT++; // Increase the number of active sustains by 1
+
 	}
+
 }
 
 // Advance global tick, and iterate through all currently-active sequences
@@ -100,13 +112,11 @@ void iterateAll() {
 
 	if (PLAYING) { // If the sequencer is currently in PLAYING mode...
 
-		uint8_c buf[7]; // Buffer for reading note-events from the datafile
+		for (uint8_t i = 0; i < 48; i++) { // For every loaded sequence...
 
-		for (uint8_c i = 0; i < 48; i++) { // For every loaded sequence...
+			uint16_t size = SEQ_STATS[i] & 127; // Get seq's absolute size, in beats
 
-			uint16_c seq16 = (SEQ_STATS[i] & 127) << 4; // Get seq's absolute size, in 16th-notes
-
-			parseCues(i, seq16); // Parse a sequence's cued commands, if any
+			parseCues(i, size); // Parse a sequence's cued commands, if any
 
 			// If the seq isn't currently playing, go to the next seq's iteration-routine
 			if (!(SEQ_STATS[i] & 128)) { continue; }
@@ -121,7 +131,7 @@ void iterateAll() {
 			}
 
 			// Increase the seq's 16th-note position by one increment, wrapping it around its top limit
-			SEQ_POS[i] = (SEQ_POS[i] + 1) % seq16;
+			SEQ_POS[i] = (SEQ_POS[i] + 1) % (size << 4);
 
 		}
 

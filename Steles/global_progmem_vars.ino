@@ -1,7 +1,7 @@
 
 
 // Number of bytes in a savefile
-const unsigned long FILE_BYTES PROGMEM = 7077961;
+const unsigned long FILE_BYTES PROGMEM = 393265;
 
 // Buffer of empty bytes, for writing into a newly-emptied tick en masse
 const byte EMPTY_TICK[9] PROGMEM = {0, 0, 0, 0, 0, 0, 0, 0};
@@ -36,8 +36,8 @@ const word SCROLL_CHAN[7] PROGMEM = {
 	B0110100110011001
 };
 
-// Scrolling text: CLOCK-MODE
-const word SCROLL_CLOCKMODE[7] PROGMEM = {
+// Scrolling text: CLOCK-MASTER
+const word SCROLL_CLOCKMASTER[7] PROGMEM = {
 	B0110100001100110,
 	B1001100010011001,
 	B1000100010011000,
