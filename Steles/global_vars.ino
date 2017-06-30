@@ -30,6 +30,12 @@ uint8_t BPM = 120; // Beats-per-minute value: one beat is 96 tempo-ticks
 uint8_t TICKCOUNT = 5; // Current global tick, bounded within the size of a 16th-note
 uint8_t CUR16 = 127; // Current global sixteenth-note (bounded to 128, or 8 beats)
 
+// Beat-scattering flags, one per seq.
+// bits 0-3: scatter distance
+// bits 4-6: scatter chance
+// bit 7: flag for "seq's read-head is in scatter mode"
+uint8_t SCATTER[49];
+
 // Cued-command flags, one per seq.
 // bit 0: TURN OFF
 // bit 1: TURN ON

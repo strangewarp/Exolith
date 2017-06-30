@@ -75,7 +75,23 @@ void getTickNotes(uint8_t s) {
 
 	if (MOUT_COUNT == 8) { return; } // If the MIDI-OUT queue is full, exit the function
 
-	file.seekSet(49 + SEQ_POS[s] + (s * 8192)); // Navigate to the note's absolute position
+	uint8_t readpos = SEQ_POS[s]; // Get the default read-position for this tick
+
+	if (SCATTER[s] & 128) { // If the seq's SCATTER is flagged as active...
+
+		uint8_t sbits = SCATTER[s] & 15 // Get the seq's scatter-distance bits 
+		int8_t sign = B10000000 * random(2); // Get the direction in which to look for scatter-notes
+
+		// Get a random value from within the combinations of the scatter-distance bits,
+		// or get the smallest scatter-distance bit
+		int8_t dist = max(sbits ^ (sbits & (sbits - 1)), random(1, 16) & sbits);
+
+		// Add the scatter-distance (positive or negative) to the read-position
+		readpos = (SEQ_POS[s] + (dist | sign)) % (SEQ_STATS[s] & 127);
+
+	}
+
+	file.seekSet(49 + readpos + (s * 8192)); // Navigate to the note's absolute position
 	file.read(buf, 8); // Read the data of the tick's notes
 
 	for (uint8_t bn = 0; bn < 8; bn += 4) { // For each of the two note-slots on a given tick...
@@ -83,7 +99,7 @@ void getTickNotes(uint8_t s) {
 		if (
 			(!buf[bn + 3]) // If the note doesn't exist...
 			|| (MOUT_COUNT == 8) // Or the MIDI buffer is full...
-		) { break; } // Don't add any notes to the MIDI buffer
+		) { return; } // Exit the function
 
 		uint8_t pos = MOUT_COUNT * 3; // Get the lowest empty MOUT location
 
@@ -103,6 +119,16 @@ void getTickNotes(uint8_t s) {
 
 	}
 
+	// If the function hasn't exited, then that means at least one note was found.
+	// Regardless of whether this was a SCATTER note, the seq's SCATTER byte should have no activity flag;
+	// so remove it.
+	SCATTER[s] &= 127;
+
+	uint8_t schance = SCATTER[s] & 112; // Get the scatter-chance bits, which are user-controlled
+	if (schance && (!(SCATTER[s] & 128))) { // If there are scatter-chance bits, but no scatter-active flag...
+		SCATTER[s] |= (schance > random(225)) ? 128 : 0; // Have a random chance of setting the scatter-active flag
+	}
+
 }
 
 // Advance global tick, and iterate through all currently-active sequences
@@ -112,7 +138,7 @@ void iterateAll() {
 
 	if (PLAYING) { // If the sequencer is currently in PLAYING mode...
 
-		for (uint8_t i = 0; i < 48; i++) { // For every loaded sequence...
+		for (uint8_t i = 47; i >= 0; i--) { // For every loaded sequence, in reverse order...
 
 			uint16_t size = SEQ_STATS[i] & 127; // Get seq's absolute size, in beats
 
