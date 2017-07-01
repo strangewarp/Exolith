@@ -1,14 +1,16 @@
 
 // Reset every sequence
 void resetAllSeqs() {
-	memset(SEQ_CMD, 0, sizeof(SEQ_CMD));
-	memset(SEQ_POS, 0, sizeof(SEQ_POS));
+	memset(CMD, 0, sizeof(CMD));
+	memset(POS, 0, sizeof(POS));
+	memset(SCATTER, 0, sizeof(SCATTER));
 }
 
 // Reset a seq's cued-commands, playing-byte, and tick-position
 void resetSeq(uint8_t s) {
-	SEQ_CMD[s] = 0;
-	SEQ_POS[s] = 0;
+	CMD[s] = 0;
+	POS[s] = 0;
+	SCATTER[s] &= 7; // Wipe all of the seq's scatter-counting and scatter-flagging bits, but not its scatter-chance bits
 }
 
 // Send MIDI-OFF commands for all currently-sustained notes
@@ -52,15 +54,15 @@ void flushNoteOns() {
 void parseCues(uint8_t s, uint16_t size) {
 
 	if (
-		(!SEQ_CMD[s]) // If the seq has no cued commands...
-		|| (CUR16 != ((SEQ_CMD[s] & B11100000) >> 1)) // Or the global 16th-note doesn't correspnd to the seq's cue-point...
+		(!CMD[s]) // If the seq has no cued commands...
+		|| (CUR16 != ((CMD[s] & B11100000) >> 1)) // Or the global 16th-note doesn't correspnd to the seq's cue-point...
 	) { return; } // ...Exit the function
 
 	// Enable or disable the sequence's playing-bit
-	SEQ_STATS[s] = (SEQ_STATS[s] & B01111111) | ((SEQ_CMD[s] & 2) << 6);
+	STATS[s] = (STATS[s] & B01111111) | ((CMD[s] & 2) << 6);
 
 	// Set the sequence's internal tick to a position based on the incoming SLICE bits
-	SEQ_POS[s] = size * ((SEQ_CMD[s] & B00011100) >> 1);
+	POS[s] = size * ((CMD[s] & B00011100) >> 1);
 
 	// Flag the sequence's LED-row for an update
 	TO_UPDATE |= (s % 24) >> 2;
@@ -71,35 +73,32 @@ void parseCues(uint8_t s, uint16_t size) {
 // Get the notes from the current tick in a given seq, and add them to the MIDI-OUT buffer
 void getTickNotes(uint8_t s) {
 
-	uint8_t buf[7]; // Buffer for reading note-events from the datafile
+	uint8_t buf[9]; // Buffer for reading note-events from the datafile
 
 	if (MOUT_COUNT == 8) { return; } // If the MIDI-OUT queue is full, exit the function
 
-	uint8_t readpos = SEQ_POS[s]; // Get the default read-position for this tick
+	uint8_t readpos = POS[s]; // Get the default read-position for this tick
 
 	if (SCATTER[s] & 128) { // If the seq's SCATTER is flagged as active...
-
-		uint8_t sbits = SCATTER[s] & 15 // Get the seq's scatter-distance bits 
-		int8_t sign = B10000000 * random(2); // Get the direction in which to look for scatter-notes
-
-		// Get a random value from within the combinations of the scatter-distance bits,
-		// or get the smallest scatter-distance bit
-		int8_t dist = max(sbits ^ (sbits & (sbits - 1)), random(1, 16) & sbits);
-
-		// Add the scatter-distance (positive or negative) to the read-position
-		readpos = (SEQ_POS[s] + (dist | sign)) % (SEQ_STATS[s] & 127);
-
+		// Get bits from ABSOLUTETIME, to use for pseudo-random values
+		int8_t rnd = ABSOLUTETIME & 3; // 1st random: 2 bits
+		int8_t rnd2 = rnd ? ((ABSOLUTETIME >> 2) & 3) : 0; // 2nd random: 2 bits, or 0 if rnd is 0
+		int8_t rnd3 = (ABSOLUTETIME >> 4) & 1; // 3rd random: 1 bit
+		rnd2 &= rnd2 >> 1; // Ensure that rnd2 is 1 a quarter of the time, and 0 the rest of the time
+		// Add a random scatter-distance (positive or negative) to the read-position,
+		// favoring eighth-notes, quarter-notes, and half-notes
+		readpos = (readpos + (((((int8_t) 2) | rnd2) << rnd) | (128 * rnd4))) % (STATS[s] & 127);
 	}
 
 	file.seekSet(49 + readpos + (s * 8192)); // Navigate to the note's absolute position
 	file.read(buf, 8); // Read the data of the tick's notes
 
-	for (uint8_t bn = 0; bn < 8; bn += 4) { // For each of the two note-slots on a given tick...
+	if (!buf[3]) { return; } // If no notes are present, exit the function
 
-		if (
-			(!buf[bn + 3]) // If the note doesn't exist...
-			|| (MOUT_COUNT == 8) // Or the MIDI buffer is full...
-		) { return; } // Exit the function
+	uint8_t lim = buf[7] ? 8 : 4; // Set the limit of the for-loop based on whether 1 or 2 notes are present
+	for (uint8_t bn = 0; bn < lim; bn += 4) { // For each of the two note-slots on a given tick...
+
+		if (MOUT_COUNT == 8) { return; } // If the MIDI buffer is full, exit the function
 
 		uint8_t pos = MOUT_COUNT * 3; // Get the lowest empty MOUT location
 
@@ -119,14 +118,22 @@ void getTickNotes(uint8_t s) {
 
 	}
 
-	// If the function hasn't exited, then that means at least one note was found.
-	// Regardless of whether this was a SCATTER note, the seq's SCATTER byte should have no activity flag;
-	// so remove it.
-	SCATTER[s] &= 127;
+	// If the function hasn't exited by this point, then that means this tick contained a note. So...
 
-	uint8_t schance = SCATTER[s] & 112; // Get the scatter-chance bits, which are user-controlled
-	if (schance && (!(SCATTER[s] & 128))) { // If there are scatter-chance bits, but no scatter-active flag...
-		SCATTER[s] |= (schance > random(225)) ? 128 : 0; // Have a random chance of setting the scatter-active flag
+	if (SCATTER[s] >= 128) { // If this was a SCATTER note...
+		SCATTER[s] &= 7; // Remove the seq's scatter-activity flag & note-counting bits
+	} else { // Else, if this wasn't a SCATTER note...
+		uint8_t chance = SCATTER[s] & B00000111; // Get the seq's scatter-chance bits, which are set by the user
+		uint8_t count = (SCATTER[s] & B01111000) >> 3; // Get the note-count since last scatter-event
+		if (chance) { // If this seq has scatter-chance bits...
+			// Have a random chance of setting the scatter-active flag,
+			// made more likely if it has been a long time since the last scatter-event (counted by the "count" bits)
+			SCATTER[s] |= ((chance + count) > random(31)) ? 128 : 0;
+			if (count < 15) { // If the count-value hasn't reached its maximum...
+				// Increment it by 1 and put it back into the seq's SCATTER count-bits
+				SCATTER[s] = (SCATTER[s] & B10000111) | ((count + 1) << 3);
+			}
+		}
 	}
 
 }
@@ -140,24 +147,24 @@ void iterateAll() {
 
 		for (uint8_t i = 47; i >= 0; i--) { // For every loaded sequence, in reverse order...
 
-			uint16_t size = SEQ_STATS[i] & 127; // Get seq's absolute size, in beats
+			uint16_t size = STATS[i] & 127; // Get seq's absolute size, in beats
 
 			parseCues(i, size); // Parse a sequence's cued commands, if any
 
 			// If the seq isn't currently playing, go to the next seq's iteration-routine
-			if (!(SEQ_STATS[i] & 128)) { continue; }
+			if (!(STATS[i] & 128)) { continue; }
 
 			// If RECORD MODE is active, and the ERASE-NOTES command is being held,
 			// and notes are being recorded into this seq...
 			if (RECORDMODE && ERASENOTES && (RECORDNOTES == i)) {
-				file.seekSet(49 + SEQ_POS[i] + (i * 8192)); // Set position to start of tick's first note
+				file.seekSet(49 + POS[i] + (i * 8192)); // Set position to start of tick's first note
 				file.write(EMPTY_TICK, 8); // Write in an entire empty tick's worth of bytes
 			} else { // Else, if any other combination of states applies...
 				getTickNotes(i); // Get the notes from this tick in a given seq, and add them to the MIDI-OUT buffer
 			}
 
 			// Increase the seq's 16th-note position by one increment, wrapping it around its top limit
-			SEQ_POS[i] = (SEQ_POS[i] + 1) % (size << 4);
+			POS[i] = (POS[i] + 1) % (size << 4);
 
 		}
 

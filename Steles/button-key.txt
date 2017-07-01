@@ -27,7 +27,7 @@ Button combinations (PLAY MODE):
 	010001: PAGE A
 	001001: PAGE B
 	000101: PAGE C
-	000011: reserved (type: "page-cue")
+	000011: SCATTER
 
 	3-keypress:
 	111000: OFF CUE 3

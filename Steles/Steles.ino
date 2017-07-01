@@ -25,10 +25,6 @@
 
 void setup() {
 
-	// Initialize empty arrays
-	//resetAllSeqs();
-	//memset(SEQ_STATS, 0, sizeof(SEQ_STATS));
-
     // Power up ledControl to full brightness
     lc.shutdown(0, false);
     lc.setIntensity(0, 15);
@@ -57,7 +53,7 @@ void loop() {
 
 	parseRawMidi();
 
-	updateTimer(); // note to self: throttle to 16th-notes here too? and in global tick-counter?
+	updateTimer();
 
 	parseKeystrokes();
 

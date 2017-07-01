@@ -31,8 +31,8 @@ uint8_t TICKCOUNT = 5; // Current global tick, bounded within the size of a 16th
 uint8_t CUR16 = 127; // Current global sixteenth-note (bounded to 128, or 8 beats)
 
 // Beat-scattering flags, one per seq.
-// bits 0-3: scatter distance
-// bits 4-6: scatter chance
+// bits 0-2: scatter chance
+// bits 3-6: count of notes since last scatter
 // bit 7: flag for "seq's read-head is in scatter mode"
 uint8_t SCATTER[49];
 
@@ -41,16 +41,16 @@ uint8_t SCATTER[49];
 // bit 1: TURN ON
 // bits 2-4: slice 4, 2, 1;
 // bits 5-7: cue 4, 2, 1;
-uint8_t SEQ_CMD[49];
+uint8_t CMD[49];
 
 // Holds 48 seqs' sizes and activity-flags
 // bits 0-6: 1, 2, 4, 8, 16, 32, 64 (= size, in beats)
 // bit 7: on/off flag
-uint8_t SEQ_STATS[49];
+uint8_t STATS[49];
 
 // Holds the 48 seqs' internal tick-positions
 // bits 0-15: current 16th-note position
-uint16_t SEQ_POS[49];
+uint16_t POS[49];
 
 // Holds up to 8 MIDI notes from a given tick,
 // (format: MOUT[n*3] = command, pitch, velocity)

@@ -32,7 +32,7 @@ void updateGUI() {
 			} else if (CTRL == 18) { // If CHANNEL pressed...
 				lc.setRow(0, 0, CHANNEL); // Display CHANNEL value
 			} else if (CTRL == 20) { // If SEQ-SIZE pressed...
-				lc.setRow(0, 0, SEQ_STATS[RECORDSEQ]); // Display current record-seq's SIZE value
+				lc.setRow(0, 0, STATS[RECORDSEQ]); // Display current record-seq's SIZE value
 			} else if (CTRL == 24) { // If BPM pressed...
 				lc.setRow(0, 0, BPM); // Display BPM value
 			} else if (CTRL == 22) { // If CLOCK-MASTER pressed...
@@ -112,7 +112,7 @@ void updateGUI() {
 			if (!(TO_UPDATE & (4 << i))) { continue; } // If the row is not slated for an update, skip to checking the next row
 			byte cdata = (CTRL & (1 << i)) ? 240 : 0; // Get the row's corresponding CTRL-button's status
 			for (byte j = 0; j < 4; j++) { // For each column in this row of the sequence-block...
-				cdata |= (8 >> j) * (SEQ_POS[(PAGE * 24) + (i * 4) + j] >> 15); // Figure out whether this sequence is active
+				cdata |= (8 >> j) * (POS[(PAGE * 24) + (i * 4) + j] >> 15); // Figure out whether this sequence is active
 			}
 			lc.setRow(0, i + 2, cdata); // Set the LEDs to reflect this row of accumulated sequence on/off values
 		}
