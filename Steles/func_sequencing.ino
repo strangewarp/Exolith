@@ -1,5 +1,5 @@
 
-// Reset every sequence
+// Reset every sequence, including SCATTER values
 void resetAllSeqs() {
 	memset(CMD, 0, sizeof(CMD));
 	memset(POS, 0, sizeof(POS));
@@ -10,7 +10,8 @@ void resetAllSeqs() {
 void resetSeq(uint8_t s) {
 	CMD[s] = 0;
 	POS[s] = 0;
-	SCATTER[s] &= 7; // Wipe all of the seq's scatter-counting and scatter-flagging bits, but not its scatter-chance bits
+	STATS[s] &= 127;
+	//SCATTER[s] &= 7; // Wipe all of the seq's scatter-counting and scatter-flagging bits, but not its scatter-chance bits
 }
 
 // Send MIDI-OFF commands for all currently-sustained notes

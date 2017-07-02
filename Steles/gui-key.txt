@@ -2,27 +2,26 @@
 
 LEDs (PLAY MODE):
 
+	p p u u u u u u
 	c c c c c c c c
-	p p p b s s s s
-	d d d d q q q q
-	d d d d q q q q
-	d d d d q q q q
-	d d d d q q q q
-	d d d d q q q q
-	d d d d q q q q
+	s s s s q q q q
+	s s s s q q q q
+	s s s s q q q q
+	s s s s q q q q
+	s s s s q q q q
+	s s s s q q q q
 
-	c: Global cue point
-	s: Number of sustains
 	p: Current page
-	b: Blink every 24 ticks
-	d: Display glyph related to user activity
-	q: Sequence activity on current page
+	u: Current user-held command-buttons
+	c: Global cue point
+	s: Seqs with SCATTER active
+	q: Active seqs on current page
 
 
 LEDs (RECORD MODE):
 
+	p p u u u u u u
 	c c c c c c c c
-	p p p b s s s s
 	d d d d d d d d
 	d d d d d d d d
 	d d d d d d d d
@@ -30,9 +29,8 @@ LEDs (RECORD MODE):
 	d d d d d d d d
 	d d d d d d d d
 
-	c: Global cue point
-	s: Number of sustains
 	p: Current page
-	b: Blink every 24 ticks
+	u: Current user-held command-buttons
+	c: Global cue point
 	d: Display glyph related to user activity
 
