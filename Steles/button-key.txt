@@ -23,7 +23,7 @@ Button combinations (PLAY MODE):
 	010010: CUE 1
 	010100: CUE 2
 	011000: CUE 4
-	100001: reserved (type: "page-off")
+	100001: PAGE OFF
 	100010: PAGE A
 	100100: PAGE B
 	101000: reserved (type: "page-c")
@@ -46,7 +46,7 @@ Button combinations (PLAY MODE):
 	101001: reserved (type: "page-off-4")
 	101010: reserved (type: "page-ac")
 	101100: reserved (type: "page-bc")
-	110001: reserved (type: "page-cue-off")
+	110001: PAGE SCATTER UNSET
 	110010: SCATTER 1
 	110100: SCATTER 2
 	111000: SCATTER 4
