@@ -72,7 +72,7 @@ void parseRecPress(byte col, byte row) {
 		// Get a note that corresponds to the key, organized from bottom-left to top-right, with all modifiers applied;
 		// And also get the note's velocity with a random humanize-offset
 		uint8_t pitch = min(127, (OCTAVE * 12) + BASENOTE + ((23 - key) ^ 3));
-		uint8_t velo = min(127, max(1, VELOCITY + (((int8_t)(HUMANIZE / 2)) - random(HUMANIZE))));
+		uint8_t velo = min(127, max(1, VELOCITY + ((HUMANIZE >> 1) - random(HUMANIZE + 1))));
 
 		uint8_t play = 1; // Track whether a note should be played in response to this keystroke
 
@@ -109,31 +109,44 @@ void parseRecPress(byte col, byte row) {
 
 	} else if (CTRL == B00000010) { // If the BASENOTE button is held...
 		BASENOTE = min(12, BASENOTE ^ (8 >> col)); // Modify the BASENOTE value
+		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
 	} else if (CTRL == B00000100) { // If the OCTAVE button is held...
 		OCTAVE = min(10, OCTAVE ^ (8 >> col)); // Modify the OCTAVE value
+		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
 	} else if (CTRL == B00001000) { // If the DURATION button is held...
 		DURATION = min(64, DURATION ^ (128 >> (key % 8))); // Modify the DURATION value
+		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
 	} else if (CTRL == B00010000) { // If the SWITCH RECORDING SEQUENCE button is held...
+		TO_UPDATE |= 4 >> (RECORDSEQ >> 2); // Flag the previous seq's corresponding LED-row for updating
 		RECORDSEQ = (PAGE * 24) + key; // Switch to the seq that corresponds to the key-position on the active page
+		TO_UPDATE |= 4 >> row; // Flag the new seq's corresponding LED-row for updating
 	} else if (CTRL == B00000110) { // If the VELOCITY button is held...
 		VELOCITY = min(127, max(1, VELOCITY ^ (128 >> (key % 8)))); // Modify the VELOCITY value
+		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
 	} else if (CTRL == B00001010) { // If the HUMANIZE button is held...
 		HUMANIZE = min(127, HUMANIZE ^ (128 >> (key % 8))); // Modify the HUMANIZE value
+		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
 	} else if (CTRL == B00001100) { // If the TIME-QUANTIZE button is held...
 		QUANTIZE = 8 >> col; // Modify the TIME-QUANTIZE value
+		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
 	} else if (CTRL == B00010010) { // If the CHANNEL button is held...
 		CHAN ^= 8 >> col; // Modify the CHANNEL value
+		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
 	} else if (CTRL == B00010100) { // If the SEQ-SIZE button is held...
 		// Modify the currently-recording-seq's size
 		STATS[RECORDSEQ] = min(64, max(1, STATS[RECORDSEQ] ^ (128 >> (key % 8))));
+		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
 	} else if (CTRL == B00011000) { // If the BPM command is held...
 		BPM = max(16, min(200, BPM ^ (128 >> (key % 8)))); // Change the BPM rate
+		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
 	} else if (CTRL == B00001110) { // If the SAVE command is held...
 		saveSong((PAGE * 24) + key); // Save the current tempfile into a savefile slot
 	} else if (CTRL == B00010110) { // If the CLOCK-MASTER command is held...
 		CLOCKMASTER ^= 1; // Toggle the CLOCK-MASTER value
+		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
 	} else if (CTRL == B00011010) { // If the CHAN-LISTEN command is held...
 		LISTEN ^= 8 >> col; // Modify the CHAN-LISTEN value
+		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
 	} else if (CTRL == B00011100) { // If the LOAD command is held...
 		loadSong((PAGE * 24) + key); // Load a save-slot's contents into its tempfile, and start using that file
 	}
@@ -146,7 +159,7 @@ void assignKey(byte col, byte row) {
 
 	if (col == 0) { // If the keystroke is in the leftmost column...
 
-		TO_UPDATE |= 253; // Flag the top LED-row, and bttom 6 LED-rows, for updating
+		TO_UPDATE |= 1; // Flag the top LED-row for updating
 
 		CTRL |= 1 << row; // Add this button to control-tracking
 
@@ -155,6 +168,7 @@ void assignKey(byte col, byte row) {
 			RECORDMODE ^= 1; // Toggle/untoggle the mode's tracking-variable
 			RECORDNOTES = 255; // Disable note-recording, to avoid recording new notes automatically on a future toggle cycle
 			ERASENOTES = 0; // Disable note-erasing, to avoid erasing new notes automatically on a future toggle cycle
+			TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
 			return; // No need to go through the rest of the function at this point
 		}
 
@@ -162,21 +176,23 @@ void assignKey(byte col, byte row) {
 			if (CTRL == B00100000) { // ERASE WHILE HELD special command...
 				ERASENOTES = 1; // As the button is held down, start erasing notes
 			}
+			TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
 		} else { // Else, if PLAY MODE is active...
 			if (CTRL == B00100010) { // If this is a PAGE A special command...
 				PAGE = 0; // Toggle to page A
+				TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
 			} else if (CTRL == B00100100) { // If this is a PAGE B special command...
 				PAGE = 1; // Toggle to page B
+				TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
 			} //else if (CTRL == B00101000) { // If this is a PAGE C special command...
 				//PAGE = 2; // Toggle to page C
+				//TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
 			//}
 		}
 
-		TO_UPDATE |= 252; // Flag the lower 6 LED-rows for updating
-
 	} else { // Else, if the keystroke is in any of the other columns...
 
-		if (CTRL == B00110011) { // GLOBAL PLAY/STOP special command...
+		if (CTRL == B00110011) { // GLOBAL PLAY/STOP special command, with a regular button-press to signal intent...
 			toggleMidiClock(1); // Toggle the MIDI clock, with "1" for "the user did this, not a device"
 			return; // Exit the function, so the keystroke isn't also interpreted as a note or slice command
 		}
@@ -203,16 +219,17 @@ void unassignKey(byte col, byte row) {
 		}
 	}
 	CTRL &= ~(1 << row); // Remove this button from control-tracking
+	TO_UPDATE |= 1; // Flag the top LED-row for updating
 }
 
 // Parse any incoming keystrokes in the Keypad grid
 void parseKeystrokes() {
 	if (!kpd.getKeys()) { return; } // If no keys are pressed, exit the function
-	for (byte i = 0; i < 10; i++) { // For every keypress slot...
+	for (uint8_t i = 0; i < 10; i++) { // For every keypress slot...
 		if (!kpd.key[i].stateChanged) { continue; } // If the key's state hasn't just changed, check the next key
-		byte keynum = byte(kpd.key[i].kchar) - 48; // Convert the key's unique ASCII character into a number that reflects its position
-		byte kcol = keynum % 5; // Get the key's column
-		byte krow = byte((keynum - kcol) / 5); // Get the key's row
+		uint8_t keynum = (uint8_t)(kpd.key[i].kchar - 48); // Convert the key's unique ASCII character into a number that reflects its position
+		uint8_t kcol = keynum % 5; // Get the key's column
+		uint8_t krow = (uint8_t)((keynum - kcol) / 5); // Get the key's row
 		if (kpd.key[i].kstate == PRESSED) { // If the button is pressed...
 			assignKey(kcol, krow); // Interpret the keystroke
 		} else if (kpd.key[i].kstate == RELEASED) { // Else, if the button is released...

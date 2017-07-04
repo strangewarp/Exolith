@@ -22,15 +22,16 @@ LEDs (RECORD MODE):
 
 	p p u u u u u u
 	c c c c c c c c
-	d d d d d d d d
-	d d d d d d d d
-	d d d d d d d d
-	d d d d d d d d
-	d d d d d d d d
-	d d d d d d d d
+	d d d d q q q q
+	d d d d q q q q
+	d d d d q q q q
+	d d d d q q q q
+	d d d d q q q q
+	d d d d q q q q
 
 	p: Current page
 	u: Current user-held command-buttons
 	c: Global cue point
 	d: Display glyph related to user activity
+	q: Display seq activity, or quantity related to user activity
 
