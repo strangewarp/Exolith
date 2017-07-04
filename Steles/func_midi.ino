@@ -36,8 +36,8 @@ void parseMidiCommand() {
 		byte cmd = INBYTES[0] & 240; // Get the command-type
 		byte chan = INBYTES[0] & 15; // Get the MIDI channel
 		if (RECORDNOTES) { // If notes are currently being recorded...
-			if (LISTEN == chan) { // If this channel is the listen-chan...
-				recordToSeq(0, cmd, chan, INBYTES[1], INBYTES[2]); // Record the incoming MIDI command
+			if ((LISTEN == chan) && (cmd == 144)) { // If this is a NOTE-ON in the listen-chan...
+				recordToSeq(0, chan, INBYTES[1], INBYTES[2]); // Record the incoming MIDI command
 			}
 		}
 	}
