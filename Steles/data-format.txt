@@ -13,7 +13,7 @@ Steles data-file spec
 			0: BPM value
 			1-48:
 				Each sequence's size, in beats
-				(* 24 * 4 = size in ticks)
+				(* 16 = size in 16th notes)
 		Body bytes:
 			48 sequences (393216 total bytes)
 			Per sequence (for 48 sequences):

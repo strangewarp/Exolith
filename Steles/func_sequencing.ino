@@ -4,6 +4,14 @@ void resetAllSeqs() {
 	memset(CMD, 0, sizeof(CMD));
 	memset(POS, 0, sizeof(POS));
 	memset(SCATTER, 0, sizeof(SCATTER));
+	resetAllPlaying();
+}
+
+// Reset all seqs' PLAYING flags in the STATS array
+void resetAllPlaying() {
+	for (uint8_t i = 0; i < 48; i++) {
+		STATS[i] &= 127;
+	}
 }
 
 // Reset a seq's cued-commands, playing-byte, and tick-position

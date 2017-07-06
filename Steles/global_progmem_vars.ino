@@ -1,7 +1,6 @@
 
-
-// Number of bytes in a savefile
-const unsigned long FILE_BYTES PROGMEM = 393265;
+// Number of bytes in each savefile
+const uint32_t FILE_BYTES PROGMEM = 393265;
 
 // Buffer of empty bytes, for writing into a newly-emptied tick en masse
 const byte EMPTY_TICK[9] PROGMEM = {0, 0, 0, 0, 0, 0, 0, 0};
@@ -124,16 +123,6 @@ const byte GLYPH_ERASE[7] PROGMEM = {
 	B10000101,
 	B10000000,
 	B11110101,
-};
-
-// Letter glyph: "L" for "LOAD"
-const byte GLYPH_LOAD[7] PROGMEM = {
-	B10000000,
-	B10000000,
-	B10000000,
-	B10000000,
-	B10000000,
-	B11110000
 };
 
 // Letter glyph: "R" for "RECORDING"
