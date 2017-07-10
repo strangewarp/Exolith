@@ -1,4 +1,19 @@
 
+uint8_t getRowVals(uint8_t r) {
+	uint8_t ib = (PAGE * 24) + (r << 2); // Get the row's contents' base array positions
+	uint8_t ib2 = ib + 1;
+	uint8_t ib3 = ib2 + 1;
+	uint8_t ib4 = ib3 + 1;
+	return ((SCATTER[ib] & 7) ? 128 : 0) // Return all the row's SCATTER and PLAYING info as a row's worth of bits
+		| ((SCATTER[ib2] & 7) ? 64 : 0) // ^
+		| ((SCATTER[ib3] & 7) ? 32 : 0) // ^
+		| ((SCATTER[ib4] & 7) ? 16 : 0) // ^
+		| ((STATS[ib] & 128) >> 4) // ^
+		| ((STATS[ib2] & 128) >> 5) // ^
+		| ((STATS[ib3] & 128) >> 6) // ^
+		| ((STATS[ib4] & 128) >> 7); // ^
+}
+
 // Update the GUI based on update-flags that have been set by the current tick's events
 void updateGUI() {
 
@@ -54,6 +69,8 @@ void updateGUI() {
 
 				if (CTRL <= 1) { // If NOTE-RECORDING is being toggled, or no CTRL button is held...
 					if (RECORDNOTES) { // If currently recording notes, then...
+						row = GLYPH_RECORDING[i]; // Grab a section of the ARMED-RECORDING-glyph for display
+					} else {
 						row = GLYPH_RECORDING[i]; // Grab a section of the RECORDING-glyph for display
 					}
 				} else if (CTRL == 2) { // If BASE-NOTE command is held...
@@ -86,6 +103,8 @@ void updateGUI() {
 					row = GLYPH_LISTEN[i]; // Grab a section of the CHAN-LISTEN glyph for display
 				} else if (CTRL == 28) { // If LOAD command is held...
 					row = GLYPH_LOAD[i]; // Grab a section of the LOAD-glyph for display
+				} else { // Else, if no command is held...
+					row = getRowVals(i);
 				}
 
 				lc.setRow(0, i + 2, row); // Set the LED-row based on the current display-row
@@ -95,19 +114,7 @@ void updateGUI() {
 		} else { // Else, if PLAYING MODE is actve...
 			for (uint8_t i = 2; i < 8; i++) { // For each of the bottom 6 GUI rows...
 				if (!(TO_UPDATE & (1 << i))) { continue; } // If the row is not flagged for an update, continue to the next row
-				uint8_t ib = (PAGE * 24) + ((i - 2) << 2); // Get the row's contents' base array positions
-				uint8_t ib2 = ib + 1;
-				uint8_t ib3 = ib2 + 1;
-				uint8_t ib4 = ib3 + 1;
-				uint8_t row = ((SCATTER[ib] & 7) ? 128 : 0) // Put all the row's SCATTER and PLAYING info into a row's worth of bits
-					| ((SCATTER[ib2] & 7) ? 64 : 0) // ^
-					| ((SCATTER[ib3] & 7) ? 32 : 0) // ^
-					| ((SCATTER[ib4] & 7) ? 16 : 0) // ^
-					| ((STATS[ib] & 128) >> 4) // ^
-					| ((STATS[ib2] & 128) >> 5) // ^
-					| ((STATS[ib3] & 128) >> 6) // ^
-					| ((STATS[ib4] & 128) >> 7); // ^
-				lc.setRow(0, i, row); // Display the row of SCATTER and PLAYING info
+				lc.setRow(0, i, getRowVals(i - 2)); // Display the row of SCATTER and PLAYING info
 			}
 		}
 
