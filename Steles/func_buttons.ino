@@ -72,7 +72,7 @@ void parseRecPress(byte col, byte row) {
 		// Get a note that corresponds to the key, organized from bottom-left to top-right, with all modifiers applied;
 		// And also get the note's velocity with a random humanize-offset
 		uint8_t pitch = min(127, (OCTAVE * 12) + BASENOTE + ((23 - key) ^ 3));
-		uint8_t velo = min(127, max(1, VELOCITY + ((HUMANIZE >> 1) - random(HUMANIZE + 1))));
+		uint8_t velo = min(127, max(1, VELO + ((HUMANIZE >> 1) - random(HUMANIZE + 1))));
 
 		uint8_t play = 1; // Track whether a note should be played in response to this keystroke
 
@@ -120,8 +120,8 @@ void parseRecPress(byte col, byte row) {
 		TO_UPDATE |= 4 >> (RECORDSEQ >> 2); // Flag the previous seq's corresponding LED-row for updating
 		RECORDSEQ = (PAGE * 24) + key; // Switch to the seq that corresponds to the key-position on the active page
 		TO_UPDATE |= 4 >> row; // Flag the new seq's corresponding LED-row for updating
-	} else if (CTRL == B00000110) { // If the VELOCITY button is held...
-		VELOCITY = min(127, max(1, VELOCITY ^ (128 >> (key % 8)))); // Modify the VELOCITY value
+	} else if (CTRL == B00000110) { // If the VELO button is held...
+		VELO = min(127, max(1, VELO ^ (128 >> (key % 8)))); // Modify the VELO value
 		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
 	} else if (CTRL == B00001010) { // If the HUMANIZE button is held...
 		HUMANIZE = min(127, HUMANIZE ^ (128 >> (key % 8))); // Modify the HUMANIZE value
@@ -129,8 +129,8 @@ void parseRecPress(byte col, byte row) {
 	} else if (CTRL == B00001100) { // If the TIME-QUANTIZE button is held...
 		QUANTIZE = 8 >> col; // Modify the TIME-QUANTIZE value
 		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
-	} else if (CTRL == B00010010) { // If the CHANNEL button is held...
-		CHAN ^= 8 >> col; // Modify the CHANNEL value
+	} else if (CTRL == B00010010) { // If the CHAN button is held...
+		CHAN ^= 8 >> col; // Modify the CHAN value
 		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
 	} else if (CTRL == B00010100) { // If the SEQ-SIZE button is held...
 		// Modify the currently-recording-seq's size

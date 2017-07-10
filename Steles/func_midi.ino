@@ -121,7 +121,7 @@ void parseRawMidi() {
 				} else if (
 					(b == 243) // SONG SELECT command
 					|| (b == 241) // MIDI TIME CODE QUARTER FRAME command
-					|| (cmd == 208) // CHANNEL PRESSURE (AFTERTOUCH) command
+					|| (cmd == 208) // CHAN PRESSURE (AFTERTOUCH) command
 					|| (cmd == 192) // PROGRAM CHANGE command
 				) { // Anticipate an incoming 2-byte message
 					INBYTES[0] = b;
