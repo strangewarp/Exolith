@@ -95,15 +95,18 @@ void updateGUI() {
 		} else { // Else, if PLAYING MODE is actve...
 			for (uint8_t i = 2; i < 8; i++) { // For each of the bottom 6 GUI rows...
 				if (!(TO_UPDATE & (1 << i))) { continue; } // If the row is not flagged for an update, continue to the next row
-				uint8_t ibase = (PAGE * 24) + ((i - 2) << 2); // Get the row's contents' base array positions
-				uint8_t row = ((SCATTER[ibase] & 7) ? 128 : 0) // Put all the row's SCATTER and PLAYING info into a row's worth of bits
-					| ((SCATTER[ibase + 1] & 7) ? 64 : 0) // ^
-					| ((SCATTER[ibase + 2] & 7) ? 32 : 0) // ^
-					| ((SCATTER[ibase + 3] & 7) ? 16 : 0) // ^
-					| ((STATS[ibase] & 128) ? 8 : 0) // ^
-					| ((STATS[ibase + 1] & 128) ? 4 : 0) // ^
-					| ((STATS[ibase + 2] & 128) ? 2 : 0) // ^
-					| ((STATS[ibase + 3] & 128) ? 1 : 0); // ^
+				uint8_t ib = (PAGE * 24) + ((i - 2) << 2); // Get the row's contents' base array positions
+				uint8_t ib2 = ib + 1;
+				uint8_t ib3 = ib2 + 1;
+				uint8_t ib4 = ib3 + 1;
+				uint8_t row = ((SCATTER[ib] & 7) ? 128 : 0) // Put all the row's SCATTER and PLAYING info into a row's worth of bits
+					| ((SCATTER[ib2] & 7) ? 64 : 0) // ^
+					| ((SCATTER[ib3] & 7) ? 32 : 0) // ^
+					| ((SCATTER[ib4] & 7) ? 16 : 0) // ^
+					| ((STATS[ib] & 128) >> 4) // ^
+					| ((STATS[ib2] & 128) >> 5) // ^
+					| ((STATS[ib3] & 128) >> 6) // ^
+					| ((STATS[ib4] & 128) >> 7); // ^
 				lc.setRow(0, i, row); // Display the row of SCATTER and PLAYING info
 			}
 		}
