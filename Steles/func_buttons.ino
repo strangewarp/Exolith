@@ -74,8 +74,6 @@ void parseRecPress(byte col, byte row) {
 		uint8_t pitch = min(127, (OCTAVE * 12) + BASENOTE + ((23 - key) ^ 3));
 		uint8_t velo = min(127, max(1, VELO + ((HUMANIZE >> 1) - random(HUMANIZE + 1))));
 
-		uint8_t play = 1; // Track whether a note should be played in response to this keystroke
-
 		if (RECORDNOTES) { // If notes are being recorded...
 
 			// Make a time-offset for the RECORDSEQ's current 16th-note, based on the QUANTIZE value;
@@ -84,7 +82,7 @@ void parseRecPress(byte col, byte row) {
 			uint8_t up = QUANTIZE - down;
 			int8_t offset = (down <= up) ? (-down) : up;
 
-			recordToSeq(offset, DURATION, 144 + CHAN, pitch, velo); // Record the note into the current RECORDSEQ slot
+			recordToSeq(offset, 144 + CHAN, pitch, velo); // Record the note into the current RECORDSEQ slot
 
 			// If the tick was inserted at an offset after the current position,
 			// exit the function without playing the note, because it will be played momentarily

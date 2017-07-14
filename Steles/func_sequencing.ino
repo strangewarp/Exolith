@@ -1,9 +1,9 @@
 
 // Reset every sequence, including SCATTER values
 void resetAllSeqs() {
-	memset(CMD, 0, sizeof(CMD));
-	memset(POS, 0, sizeof(POS));
-	memset(SCATTER, 0, sizeof(SCATTER));
+	memset(CMD, 0, sizeof(CMD) - 1);
+	memset(POS, 0, sizeof(POS) - 1);
+	memset(SCATTER, 0, sizeof(SCATTER) - 1);
 	resetAllPlaying();
 }
 
@@ -25,8 +25,8 @@ void resetSeq(uint8_t s) {
 // Send MIDI-OFF commands for all currently-sustained notes
 void haltAllSustains() {
 	for (uint8_t i = 0; i < (SUST_COUNT * 3); i++) { // For every active sustain...
-		Serial.write(SUST[n + 1]); // Send a premature NOTE-OFF for the sustain
-		Serial.write(SUST[n + 2]); // ^
+		Serial.write(SUST[i + 1]); // Send a premature NOTE-OFF for the sustain
+		Serial.write(SUST[i + 2]); // ^
 		Serial.write(127); // ^
 	}
 	SUST_COUNT = 0;
@@ -96,7 +96,7 @@ void getTickNotes(uint8_t s) {
 		rnd2 &= rnd2 >> 1; // Ensure that rnd2 is 1 a quarter of the time, and 0 the rest of the time
 		// Add a random scatter-distance (positive or negative) to the read-position,
 		// favoring eighth-notes, quarter-notes, and half-notes
-		readpos = (readpos + (((((int8_t) 2) | rnd2) << rnd) | (128 * rnd4))) % (STATS[s] & 127);
+		readpos = (readpos + (((((int8_t) 2) | rnd2) << rnd) | (128 * rnd3))) % (STATS[s] & 127);
 	}
 
 	file.seekSet(49 + readpos + (s * 8192)); // Navigate to the note's absolute position
@@ -154,7 +154,7 @@ void iterateAll() {
 
 	if (PLAYING) { // If the sequencer is currently in PLAYING mode...
 
-		for (uint8_t i = 47; i >= 0; i--) { // For every loaded sequence, in reverse order...
+		for (int8_t i = 47; i >= 0; i--) { // For every loaded sequence, in reverse order...
 
 			uint16_t size = STATS[i] & 127; // Get seq's absolute size, in beats
 

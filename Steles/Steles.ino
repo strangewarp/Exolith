@@ -40,7 +40,7 @@
 
 
 // Number of uint8_ts in each savefile
-const uint32_t FILE_uint8_tS PROGMEM = 393265;
+const uint32_t FILE_BYTES PROGMEM = 393265;
 
 // Buffer of empty uint8_ts, for writing into a newly-emptied tick en masse
 const uint8_t EMPTY_TICK[9] PROGMEM = {0, 0, 0, 0, 0, 0, 0, 0};
@@ -69,6 +69,9 @@ const uint8_t GLYPH_HUMANIZE[7] PROGMEM = {B10101001, B10101001, B11101001, B101
 
 // Glyph: LISTEN-CHAN
 const uint8_t GLYPH_LISTEN[7] PROGMEM = {B10001110, B10001010, B10001000, B10001000, B10001010, B11101110};
+
+// Glyph: LOAD
+const uint8_t GLYPH_LOAD[7] PROGMEM = {B10000101, B10000101, B10000101, B10000101, B10000000, B11110101};
 
 // Glyph: OCTAVE
 const uint8_t GLYPH_OCTAVE[7] PROGMEM = {B01100111, B10010101, B10010100, B10010100, B10010101, B01100111};
@@ -101,6 +104,7 @@ const uint8_t GLYPH_VELO[7] PROGMEM = {B10010111, B10010100, B10010111, B1010010
 
 // UI vars
 uint8_t CTRL = 0; // Tracks left-column control-button presses in bits 0 thru 5
+uint8_t PAGE = 0; // Tracks currently-active page of sequences
 uint8_t TO_UPDATE = 0; // Tracks which rows of LEDs should be updated at the end of a given tick
 
 // Timing vars
@@ -111,6 +115,7 @@ uint32_t TICKSIZE = 100000; // Size of the current tick, in microseconds; tick =
 // Recording vars
 uint8_t RECORDMODE = 0; // Tracks whether RECORD MODE is active
 uint8_t RECORDNOTES = 0; // Tracks whether notes are being recorded into the RECORDSEQ-sequence or not
+uint8_t ERASENOTES = 0; // Tracks whether notes are being erased from the RECORDSEQ-sequence or not
 uint8_t RECORDSEQ = 0; // Sequence currently being recorded into
 uint8_t BASENOTE = 0; // Baseline pitch-offset value for RECORD-mode notes
 uint8_t OCTAVE = 3; // Octave-offset value for RECORD-mode notes
@@ -175,20 +180,19 @@ uint8_t SYSIGNORE = 0; // Ignores SYSEX messages when toggled
 const uint8_t ROWS PROGMEM = 6;
 const uint8_t COLS PROGMEM = 5;
 int8_t KEYS[ROWS][COLS] = {
-    {'0', '1', '2', '3', '4'},
-    {'5', '6', '7', '8', '9'},
-    {':', ';', '<', '=', '>'},
-    {'?', '@', 'A', 'B', 'C'},
-    {'D', 'E', 'F', 'G', 'H'},
-    {'I', 'J', 'K', 'L', 'M'}
+	{'0', '1', '2', '3', '4'},
+	{'5', '6', '7', '8', '9'},
+	{':', ';', '<', '=', '>'},
+	{'?', '@', 'A', 'B', 'C'},
+	{'D', 'E', 'F', 'G', 'H'},
+	{'I', 'J', 'K', 'L', 'M'}
 };
 uint8_t rowpins[ROWS] = {5, 6, 7, 8, 18, 19};
 uint8_t colpins[COLS] = {9, 14, 15, 16, 17};
 Keypad kpd(makeKeymap(KEYS), rowpins, colpins, ROWS, COLS);
 
-// Initialize SdFat and SdFile objects, for filesystem manipulation on the SD-card
-SdFat sd;
-SdFile file;
+SdFat sd; // Initialize SdFat FAT32 Volume object
+SdFile file;// Initialize an SdFile File object, to control default data read/write processes
 
 // Initialize the object that controls the MAX7219's LED-grid
 LedControl lc = LedControl(2, 3, 4, 1);
@@ -197,15 +201,15 @@ LedControl lc = LedControl(2, 3, 4, 1);
 
 void setup() {
 
-    // Power up ledControl to full brightness
-    lc.shutdown(0, false);
-    lc.setIntensity(0, 15);
+	// Power up ledControl to full brightness
+	lc.shutdown(0, false);
+	lc.setIntensity(0, 15);
 
 	// Initialize the SD-card at full speed, or throw a visible error message if no SD-card is inserted
 	if (!sd.begin(10, SPI_FULL_SPEED)) {
-        for (byte i = 2; i < 8; i++) {
-            lc.setRow(0, i, GLYPH_SD[i - 2]);
-        }
+		for (byte i = 2; i < 8; i++) {
+			lc.setRow(0, i, GLYPH_SD[i - 2]);
+		}
 		sd.initErrorHalt();
 	}
 
