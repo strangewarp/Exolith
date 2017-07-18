@@ -1,10 +1,22 @@
 
+// Get the name of a target song-slot's savefile or tempfile,
+// either ".dat" or ".tmp" depending on whether isdt is 1 or 0
+void getFilename(char source[], byte fnum, byte isdt) {
+	byte rem = fnum % 10;
+	source[0] = char(rem + 48);
+	source[1] = char((fnum - rem) + 48);
+	source[2] = 46;
+	source[3] = isdt ? 100 : 116;
+	source[4] = isdt ? 97 : 109;
+	source[5] = isdt ? 116 : 112;
+}
+
 // Set a savefile or tempfile's header bytes to their default contents.
 // Note: file must already be open before this function is called
 void makeDefaultHeader() {
 	file.seekSet(0); // Set write-position to the first byte
 	file.write(112); // Write a default BPM byte at the start of the file
-	for (uint8_t i = 1; i < 49; i++) { // For each seq's SIZE-byte in the header...
+	for (byte i = 1; i < 49; i++) { // For each seq's SIZE-byte in the header...
 		file.seekSet(i); // Go to the next byte location
 		file.write(8); // Set the seq's default size to 8 beats
 	}
@@ -28,9 +40,9 @@ void initializeSavefile(char name[7]) {
 void clearFile(char name[7]) {
 	file.open(name, O_WRITE);
 	makeDefaultHeader(); // Fill the file's header-bytes with their default contents
-	uint8_t buf[33]; // Create a buffer of blank bytes to insert
+	byte buf[33]; // Create a buffer of blank bytes to insert
 	memset(buf, 0, sizeof(buf) - 1); // Ensure that the blank bytes are all zeroed out
-	for (uint32_t i = 49; i < FILE_BYTES; i += 32) { // For every 32 bytes in the file...
+	for (unsigned long i = 49; i < FILE_BYTES; i += 32) { // For every 32 bytes in the file...
 		file.seekSet(i); // Go to the start of those 32 bytes
 		file.write(EMPTY_TICK, 32); // Fill them with 32 empty bytes
 	}
@@ -38,7 +50,7 @@ void clearFile(char name[7]) {
 }
 
 // Load a given song, or create its files if they don't exist
-void loadSong(uint8_t slot) {
+void loadSong(byte slot) {
 
 	// Display an "L" while loading data
 	lc.setRow(0, 0, 0);
@@ -54,15 +66,13 @@ void loadSong(uint8_t slot) {
 	resetAllSeqs(); // Reset all seqs' internal activity variables of all kinds
 
 	// Get the names of the target song-slot's savefile and tempfile
-	char name[7] = "XX.dat";
-	char name2[7] = "XX.tmp";
-	name[0] = char(floor(slot / 10));
-	name[1] = slot % 10;
-	name2[0] = name[0];
-	name2[1] = name[1];
+	char name[7];
+	char name2[7];
+	getFilename(name, slot, 1);
+	getFilename(name2, slot, 0);
 
 	// Create a small buffer for data-transfer between the savefile and tempfile
-	uint8_t buf[17];
+	byte buf[17];
 
 	initializeSavefile(name); // Make sure the savefile exists, and is the correct size
 
@@ -82,7 +92,7 @@ void loadSong(uint8_t slot) {
 	// Put the header-bytes from the savefile into the program RAM, and then into the tempfile
 	file.seekSet(0);
 	temp.seekSet(0);
-	file.read(BPM);
+	BPM = file.read();
 	temp.write(BPM);
 	file.seekSet(1);
 	temp.seekSet(1);
@@ -90,12 +100,13 @@ void loadSong(uint8_t slot) {
 	temp.write(STATS, 48);
 
 	// Copy the savefile's body-bytes into the tempfile
-	for (uint32_t b = 49; b < FILE_BYTES; b += 32) {
+	for (unsigned long b = 49; b < FILE_BYTES; b += 32) {
 		file.seekSet(b);
 		temp.seekSet(b);
 		file.read(buf, 16);
 		temp.write(buf, 16);
 	}
+
 	file.close();
 	temp.close();
 
@@ -112,7 +123,7 @@ void loadSong(uint8_t slot) {
 }
 
 // Save the active song's tempfile contents into a given song-slot's perma-files
-void saveSong(uint8_t slot) {
+void saveSong(byte slot) {
 
 	// Display an "S" while saving data
 	lc.setRow(0, 0, 0);
@@ -127,44 +138,45 @@ void saveSong(uint8_t slot) {
 	haltAllSustains(); // Clear all currently-sustained notes
 	resetAllSeqs(); // Reset all seqs' internal activity variables of all kinds
 
-	// Get the names of the target song-slot's savefile and tempfile
-	int8_t name[7] = string(slot) + ".dat";
-	int8_t name2[7] = string(SONG) + ".tmp";
+	char name[7];
+	char name2[7];
+	getFilename(name, slot, 1);
+	getFilename(name2, SONG, 0);
 
 	// Create a small buffer for data-transfer between the savefile and tempfile
-	uint8_t buf[17];
+	byte buf[17];
 
 	initializeSavefile(name); // Make sure the savefile exists, and is the correct size
 
-	SdFile tempfile; // Create a second SdFile object for data-transfer
+	SdFile temp; // Create a second SdFile object for data-transfer
 
 	file.open(name, O_WRITE); // Open the song's savefile
-	tempfile.open(name2, O_WRITE); // Open the tempfile too
+	temp.open(name2, O_WRITE); // Open the tempfile too
 
 	// Write the program's header-data into both the savefile and tempfile
 	file.seekSet(0);
-	tempfile.seekSet(0);
+	temp.seekSet(0);
 	file.write(BPM);
-	tempfile.write(BPM);
+	temp.write(BPM);
 	file.seekSet(1);
-	tempfile.seekSet(1);
+	temp.seekSet(1);
 	file.write(STATS, 48);
-	tempfile.write(STATS, 48);
+	temp.write(STATS, 48);
 
-	tempfile.close(); // Close the tempfile (necessary to hop out of write-mode and into read-mode)
+	temp.close(); // Close the tempfile (necessary to hop out of write-mode and into read-mode)
 
-	tempfile.open(name2, O_READ); // Open the tempfile for reading
+	temp.open(name2, O_READ); // Open the tempfile for reading
 
 	// Copy the current tempfile's body-bytes into the given savefile slot
-	for (uint32_t b = 49; b < 393265; b += 16) {
+	for (unsigned long b = 49; b < 393265; b += 16) {
 		file.seekSet(b);
-		tempfile.seekSet(b);
-		tempfile.read(buf, 16);
+		temp.seekSet(b);
+		temp.read(buf, 16);
 		file.write(buf, 16);
 	}
 
 	file.close(); // Close savefile
-	tempfile.close(); // Close tempfile
+	temp.close(); // Close tempfile
 
 	SONG = slot; // Set the currently-active SONG-position to the given save-slot
 

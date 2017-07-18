@@ -2,15 +2,15 @@
 // Parse a slice-keypress that was generated while in SLICE or OVERRVIEW mode
 void parsePlayPress(byte col, byte row) {
 
-	uint8_t seq = col + (row * 4) + (PAGE * 24); // Get the sequence that corresponds to the given column and row
-	uint8_t pg = CTRL & B00100000; // Get the PAGE button's status
-	uint8_t cue = CTRL & B00010000; // Get the CUE command's status
-	uint8_t nums = CTRL & B00001110; // Get the NUMBER commands' status
-	uint8_t off = CTRL & B00000001; // Get the OFF command's status
+	byte seq = col + (row * 4) + (PAGE * 24); // Get the sequence that corresponds to the given column and row
+	byte pg = CTRL & B00100000; // Get the PAGE button's status
+	byte cue = CTRL & B00010000; // Get the CUE command's status
+	byte nums = CTRL & B00001110; // Get the NUMBER commands' status
+	byte off = CTRL & B00000001; // Get the OFF command's status
 
 	if (CTRL == B00100001) { // If PAGE-OFF is held, and a regular button-press was made to signal intent...
-		uint8_t ptop = PAGE * 24; // Get the position of the first seq on the current page
-		for (uint8_t i = ptop; i < (ptop + 24); i++) { // For every seq on this page...
+		byte ptop = PAGE * 24; // Get the position of the first seq on the current page
+		for (byte i = ptop; i < (ptop + 24); i++) { // For every seq on this page...
 			resetSeq(i); // Reset the seq's contents
 		}
 		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for an update
@@ -18,8 +18,8 @@ void parsePlayPress(byte col, byte row) {
 		SCATTER[seq] = 0; // Unset the seq's SCATTER flags
 		TO_UPDATE |= 4 << row; // Flag the seq's corresponding LED-row for an update
 	} else if (CTRL == B00110001) { // If PAGE-SCATTER-UNSET is held, and a regular button-press was made to signal intent...
-		uint8_t ptop = PAGE * 24; // Get the position of the first seq on the current page
-		for (uint8_t i = ptop; i < (ptop + 24); i++) { // For every seq on this page...
+		byte ptop = PAGE * 24; // Get the position of the first seq on the current page
+		for (byte i = ptop; i < (ptop + 24); i++) { // For every seq on this page...
 			SCATTER[i] = 0; // Unset the seq's SCATTER flags
 		}
 		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for an update
@@ -41,7 +41,7 @@ void parsePlayPress(byte col, byte row) {
 		} else { // Else, if the sequence has no cued ON value, then this is a pure beatslice, so...
 
 			// Get the number of 16th-notes in one of the seq's slice-chunks
-			uint8_t csize = ((STATS[seq] & 127) * 16) >> 3;
+			byte csize = ((STATS[seq] & 127) * 16) >> 3;
 
 			// Set the sequence's position to:
 			//   A base-position equal to the slice-numbers being held,
@@ -65,22 +65,22 @@ void parsePlayPress(byte col, byte row) {
 // Parse a note-keypress that was generated while in RECORDMODE mode
 void parseRecPress(byte col, byte row) {
 
-	uint8_t key = col + (row * 4); // Get the button-key that corresponds to the given column and row
+	byte key = col + (row * 4); // Get the button-key that corresponds to the given column and row
 
 	if (!CTRL) { // If no CTRL buttons are held...
 
 		// Get a note that corresponds to the key, organized from bottom-left to top-right, with all modifiers applied;
 		// And also get the note's velocity with a random humanize-offset
-		uint8_t pitch = min(127, (OCTAVE * 12) + BASENOTE + ((23 - key) ^ 3));
-		uint8_t velo = min(127, max(1, VELO + ((HUMANIZE >> 1) - random(HUMANIZE + 1))));
+		byte pitch = min(127, (OCTAVE * 12) + BASENOTE + ((23 - key) ^ 3));
+		byte velo = min(127, max(1, VELO + ((HUMANIZE >> 1) - random(HUMANIZE + 1))));
 
 		if (RECORDNOTES) { // If notes are being recorded...
 
 			// Make a time-offset for the RECORDSEQ's current 16th-note, based on the QUANTIZE value;
 			// this will be fed to the recordToSeq command to achieve the correct insert-position
-			uint8_t down = POS[RECORDSEQ] % QUANTIZE;
-			uint8_t up = QUANTIZE - down;
-			int8_t offset = (down <= up) ? (-down) : up;
+			byte down = POS[RECORDSEQ] % QUANTIZE;
+			byte up = QUANTIZE - down;
+			char offset = (down <= up) ? (-down) : up;
 
 			recordToSeq(offset, 144 + CHAN, pitch, velo); // Record the note into the current RECORDSEQ slot
 
@@ -223,11 +223,11 @@ void unassignKey(byte col, byte row) {
 // Parse any incoming keystrokes in the Keypad grid
 void parseKeystrokes() {
 	if (!kpd.getKeys()) { return; } // If no keys are pressed, exit the function
-	for (uint8_t i = 0; i < 10; i++) { // For every keypress slot...
+	for (byte i = 0; i < 10; i++) { // For every keypress slot...
 		if (!kpd.key[i].stateChanged) { continue; } // If the key's state hasn't just changed, check the next key
-		uint8_t keynum = (uint8_t)(kpd.key[i].kchar - 48); // Convert the key's unique ASCII character into a number that reflects its position
-		uint8_t kcol = keynum % 5; // Get the key's column
-		uint8_t krow = (uint8_t)((keynum - kcol) / 5); // Get the key's row
+		byte keynum = (byte)(kpd.key[i].kchar - 48); // Convert the key's unique ASCII character into a number that reflects its position
+		byte kcol = keynum % 5; // Get the key's column
+		byte krow = (byte)((keynum - kcol) / 5); // Get the key's row
 		if (kpd.key[i].kstate == PRESSED) { // If the button is pressed...
 			assignKey(kcol, krow); // Interpret the keystroke
 		} else if (kpd.key[i].kstate == RELEASED) { // Else, if the button is released...

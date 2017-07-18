@@ -1,9 +1,9 @@
 
-uint8_t getRowVals(uint8_t r) {
-	uint8_t ib = (PAGE * 24) + (r << 2); // Get the row's contents' base array positions
-	uint8_t ib2 = ib + 1;
-	uint8_t ib3 = ib2 + 1;
-	uint8_t ib4 = ib3 + 1;
+byte getRowVals(byte r) {
+	byte ib = (PAGE * 24) + (r << 2); // Get the row's contents' base array positions
+	byte ib2 = ib + 1;
+	byte ib3 = ib2 + 1;
+	byte ib4 = ib3 + 1;
 	return ((SCATTER[ib] & 7) ? 128 : 0) // Return all the row's SCATTER and PLAYING info as a row's worth of bits
 		| ((SCATTER[ib2] & 7) ? 64 : 0) // ^
 		| ((SCATTER[ib3] & 7) ? 32 : 0) // ^
@@ -60,12 +60,12 @@ void updateGUI() {
 
 		if (RECORDMODE) { // If RECORD MODE is active...
 
-			for (uint8_t i = 0; i < 6; i++) { // For each of the bottom 6 GUI rows...
+			for (byte i = 0; i < 6; i++) { // For each of the bottom 6 GUI rows...
 
 				if (!(TO_UPDATE & (4 << i))) { continue; } // If the row is not flagged for an update, continue to the next row
 
 				// Holds the LED-row's contents, which will be assembled based on which commands are held
-				uint8_t row = 0;
+				byte row = 0;
 
 				if (CTRL <= 1) { // If NOTE-RECORDING is being toggled, or no CTRL button is held...
 					if (RECORDNOTES) { // If currently recording notes, then...
@@ -112,7 +112,7 @@ void updateGUI() {
 			}
 
 		} else { // Else, if PLAYING MODE is actve...
-			for (uint8_t i = 2; i < 8; i++) { // For each of the bottom 6 GUI rows...
+			for (byte i = 2; i < 8; i++) { // For each of the bottom 6 GUI rows...
 				if (!(TO_UPDATE & (1 << i))) { continue; } // If the row is not flagged for an update, continue to the next row
 				lc.setRow(0, i, getRowVals(i - 2)); // Display the row of SCATTER and PLAYING info
 			}

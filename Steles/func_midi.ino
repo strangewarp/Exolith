@@ -1,6 +1,6 @@
 
 // Toggle whether the MIDI CLOCK is playing, provided that this unit is in CLOCK MASTER mode
-void toggleMidiClock(uint8_t usercmd) {
+void toggleMidiClock(byte usercmd) {
 	PLAYING = !PLAYING; // Toggle/untoggle the var that tracks whether the MIDI CLOCK is playing
 	if (CLOCKMASTER) { // If in CLOCK MASTER mode...
 		if (PLAYING) { // If playing has just been enabled...
@@ -29,15 +29,15 @@ void toggleMidiClock(uint8_t usercmd) {
 // Parse a given MIDI command
 void parseMidiCommand() {
 	if (RECORDMODE) { // If RECORDING-mode is active...
-		uint8_t cmd = INBYTES[0] & 240; // Get the command-type
-		uint8_t chan = INBYTES[0] & 15; // Get the MIDI channel
+		byte cmd = INBYTES[0] & 240; // Get the command-type
+		byte chan = INBYTES[0] & 15; // Get the MIDI channel
 		if (RECORDNOTES) { // If notes are currently being recorded...
 			if ((LISTEN == chan) && (cmd == 144)) { // If this is a NOTE-ON in the listen-chan...
 				recordToSeq(0, chan, INBYTES[1], INBYTES[2]); // Record the incoming MIDI command
 			}
 		}
 	}
-	for (uint8_t i = 0; i < INTARGET; i++) { // Having parsed the command, send its bytes onward to MIDI-OUT
+	for (byte i = 0; i < INTARGET; i++) { // Having parsed the command, send its bytes onward to MIDI-OUT
 		Serial.write(INBYTES[i]);
 	}
 }
@@ -48,7 +48,7 @@ void parseRawMidi() {
 	// While new MIDI bytes are available to read from the MIDI-IN port...
 	while (Serial.available() > 0) {
 
-		uint8_t b = Serial.read(); // Get the frontmost incoming byte
+		byte b = Serial.read(); // Get the frontmost incoming byte
 
 		if (SYSIGNORE) { // If this is an ignoreable SYSEX command...
 			if (b == 247) { // If this was an END SYSEX byte, clear SYSIGNORE and stop ignoring new bytes
@@ -66,7 +66,7 @@ void parseRawMidi() {
 				}
 			} else { // Else, if this is either a single-byte command, or a multi-byte command's first byte...
 
-				uint8_t cmd = b & 240; // Get the command-type of any given non-SYSEX command
+				byte cmd = b & 240; // Get the command-type of any given non-SYSEX command
 
 				if (b == 248) { // TIMING CLOCK command
 					Serial.write(b); // Send the byte to MIDI-OUT

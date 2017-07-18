@@ -1,20 +1,20 @@
 
 // Record a given MIDI command into the tempdata-file of the current RECORDSEQ sequence
-void recordToSeq(int8_t offset, uint8_t chan, uint8_t b1, uint8_t b2) {
+void recordToSeq(char offset, byte chan, byte b1, byte b2) {
 
-	uint8_t buf[9]; // SD-card read/write buffer
+	byte buf[9]; // SD-card read/write buffer
 
 	// Create a virtual tick-position that compensates for any given tick-offset
-	uint16_t tick = (POS[RECORDSEQ] + offset) % (STATS[RECORDSEQ] & 127);
+	word tick = (POS[RECORDSEQ] + offset) % (STATS[RECORDSEQ] & 127);
 
 	// Get the position of the start of this tick's notes, in the data-file
-	uint32_t tickstart = 49 + (8192 * RECORDSEQ) + tick;
+	unsigned long tickstart = 49 + (8192 * RECORDSEQ) + tick;
 
 	// Get the tick's note-slots, and check whether any of them are empty
 	file.seekSet(tickstart);
 	file.read(buf, 8);
 
-	uint8_t toinsert = buf[3] ? 1 : 0; // Tracks which empty slot to insert the note into
+	byte toinsert = buf[3] ? 1 : 0; // Tracks which empty slot to insert the note into
 
 	// If none of the note-slots are empty, then shift their contents downward by one note, deleting the lowest item
 	if (buf[7]) {
