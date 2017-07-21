@@ -106,6 +106,8 @@ byte TO_UPDATE = 0; // Tracks which rows of LEDs should be updated at the end of
 // Timing vars
 unsigned long ABSOLUTETIME = 0; // Absolute time elapsed: wraps around after reaching its limit
 unsigned long ELAPSED = 0; // Time elapsed since last tick
+word KEYELAPSED = 0; // Time elapsed since last keystroke-scan
+const word SCANRATE PROGMEM = 7000; // Amount of time between keystroke-scans, in microseconds
 unsigned long TICKSIZE = 100000; // Size of the current tick, in microseconds; tick = 60000000 / (bpm * 96)
 
 // Recording vars

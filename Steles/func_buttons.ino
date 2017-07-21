@@ -197,6 +197,8 @@ void parseRecPress(byte col, byte row) {
 		saveSong((PAGE * 24) + key); // Save the current tempfile into a savefile slot
 	} else if (ctrl == B00011010) { // If the CLOCK-MASTER command is held...
 		CLOCKMASTER ^= 1; // Toggle the CLOCK-MASTER value
+		ABSOLUTETIME = micros(); // Set the ABSOLUTETIME-tracking var to now
+		ELAPSED = 0; // Set the ELAPSED value to show that no time has elapsed since the last tick-check
 		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
 	} else if (ctrl == B00010110) { // If the CHAN-LISTEN command is held...
 		LISTEN ^= 8 >> col; // Modify the CHAN-LISTEN value
