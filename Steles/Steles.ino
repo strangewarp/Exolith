@@ -24,10 +24,6 @@
 
 
 
-// Digital-pin keypad library
-#include <Key.h>
-#include <Keypad.h>
-
 // MAX7219/MAX7221 LED-matrix library
 #include <LedControl.h>
 
@@ -103,7 +99,7 @@ const byte GLYPH_VELO[7] PROGMEM = {B10010111, B10010100, B10010111, B10100100, 
 
 
 // UI vars
-byte CTRL = 0; // Tracks left-column control-button presses in bits 0 thru 5
+unsigned long BUTTONS = 0; // Tracks which of the 30 buttons are currently pressed; each button has an on/off bit
 byte PAGE = 0; // Tracks currently-active page of sequences
 byte TO_UPDATE = 0; // Tracks which rows of LEDs should be updated at the end of a given tick
 
@@ -174,25 +170,44 @@ byte INCOUNT = 0; // Number of MIDI bytes received from current incoming command
 byte INTARGET = 0; // Number of expected incoming MIDI bytes
 byte SYSIGNORE = 0; // Ignores SYSEX messages when toggled
 
-
-
-// Initialize the object that controls the Keypad buttons
-const byte ROWS PROGMEM = 6;
-const byte COLS PROGMEM = 5;
-char KEYS[ROWS][COLS] = {
-	{'0', '1', '2', '3', '4'},
-	{'5', '6', '7', '8', '9'},
-	{':', ';', '<', '=', '>'},
-	{'?', '@', 'A', 'B', 'C'},
-	{'D', 'E', 'F', 'G', 'H'},
-	{'I', 'J', 'K', 'L', 'M'}
+// ROW_BIT and ROW_REG consts:
+// ROW_REG describes which port-register the pin is in (0 = PORTD; 1 = PORTB; 2 = PORTC)
+// ROW_BIT describes which bit within said port-register represents the pin itself
+const byte ROW_BIT[7] PROGMEM = {
+	B00100000, // row 0: pin 5  = 5
+	B01000000, // row 1: pin 6  = 6
+	B10000000, // row 2: pin 7  = 7
+	B00000001, // row 3: pin 8  = 0
+	B00000100, // row 4: pin 18 = 2
+	B00001000  // row 5: pin 19 = 3
 };
-byte rowpins[ROWS] = {5, 6, 7, 8, 18, 19};
-byte colpins[COLS] = {9, 14, 15, 16, 17};
-Keypad kpd(makeKeymap(KEYS), rowpins, colpins, ROWS, COLS);
+const byte ROW_REG[7] PROGMEM = {
+	B00000000, // row 0: pin 5  = 0
+	B00000000, // row 1: pin 6  = 0
+	B00000000, // row 2: pin 7  = 0
+	B00000001, // row 3: pin 8  = 1
+	B00000010, // row 4: pin 18 = 2
+	B00000010  // row 5: pin 19 = 2
+};
+const byte COL_BIT[6] PROGMEM = {
+	B00000010, // col 0: pin 9  = 1
+	B01000000, // col 1: pin 14 = 6
+	B10000000, // col 2: pin 15 = 7
+	B00000001, // col 3: pin 16 = 0
+	B00000010  // col 4: pin 17 = 1
+};
+const byte COL_REG[6] PROGMEM = {
+	B00000001, // col 0: pin 9  = 1
+	B00000001, // col 1: pin 14 = 1
+	B00000001, // col 2: pin 15 = 1
+	B00000010, // col 3: pin 16 = 2
+	B00000010  // col 4: pin 17 = 2
+};
 
-SdFat sd; // Initialize SdFat FAT32 Volume object
-SdFile file;// Initialize an SdFile File object, to control default data read/write processes
+
+
+SdFat sd; // Initialize SdFat object
+SdFile file; // Initialize an SdFile File object, to control default data read/write processes
 
 // Initialize the object that controls the MAX7219's LED-grid
 LedControl lc = LedControl(2, 3, 4, 1);
@@ -213,8 +228,12 @@ void setup() {
 		sd.initErrorHalt();
 	}
 
-	// Set a short debounce time (8ms), but not so short as to lag the other functions with constant checks
-	kpd.setDebounceTime(8);
+	// Set all the keypad's row-pins to INPUT_PULLUP mode, and all its column-pins to OUTPUT mode
+	for (byte i = 0; i < 6; i++) {
+		pinMode((ROW_REG[i] << 3) + ROW_BIT[i], INPUT_PULLUP);
+		if (i == 5) { break; }
+		pinMode((COL_REG[i] << 3) + COL_BIT[i], OUTPUT);
+	}
 
 	// Load the default song, or create its folder and files if they don't exist
 	loadSong(SONG);

@@ -1,80 +1,80 @@
 
-Leftmost binary digit: top row
-Rightmost binary digit: bottom row
+Rightmost binary digit: top row
+Leftmost binary digit: bottom row
 
 Button combinations (PLAY MODE):
 
 	1-keypress:
-	000001: OFF
-	000010: 1
-	000100: 2
-	001000: 4
-	010000: CUE (default 0)
-	100000: PAGE
+	100000: OFF
+	010000: 1
+	001000: 2
+	000100: 4
+	000010: CUE (default 0)
+	000001: PAGE
 
 	2-keypress:
-	000011: OFF CUE 1
-	000101: OFF CUE 2
-	000110: 3
-	001001: OFF CUE 4
-	001010: 5
+	110000: OFF CUE 1
+	101000: OFF CUE 2
+	011000: 3
+	100100: OFF CUE 4
+	010100: 5
 	001100: 6
-	010001: OFF CUE 0
+	100010: OFF CUE 0
 	010010: CUE 1
-	010100: CUE 2
-	011000: CUE 4
+	001010: CUE 2
+	000110: CUE 4
 	100001: PAGE OFF
-	100010: PAGE A
-	100100: PAGE B
-	101000: reserved (type: "page-c")
-	110000: SCATTER UNSET
+	010001: PAGE A
+	001001: PAGE B
+	000101: reserved (type: "page-c")
+	000011: SCATTER UNSET
 
 	3-keypress:
-	000111: OFF CUE 3
-	001011: OFF CUE 5
-	001101: OFF CUE 6
-	001110: 7
-	010011: OFF CUE 1 (duplicate)
-	010101: OFF CUE 2 (duplicate)
-	010110: CUE 3
-	011001: OFF CUE 4 (duplicate)
-	011010: CUE 5
-	011100: CUE 6
-	100011: reserved (type: "page-off-1")
-	100101: reserved (type: "page-off-2")
-	100110: reserved (type: "page-ab")
-	101001: reserved (type: "page-off-4")
-	101010: reserved (type: "page-ac")
-	101100: reserved (type: "page-bc")
-	110001: PAGE SCATTER UNSET
-	110010: SCATTER 1
-	110100: SCATTER 2
-	111000: SCATTER 4
+	111000: OFF CUE 3
+	110100: OFF CUE 5
+	101100: OFF CUE 6
+	011100: 7
+	110010: OFF CUE 1 (duplicate)
+	101010: OFF CUE 2 (duplicate)
+	011010: CUE 3
+	100110: OFF CUE 4 (duplicate)
+	010110: CUE 5
+	001110: CUE 6
+	110001: reserved (type: "page-off-1")
+	101001: reserved (type: "page-off-2")
+	011001: reserved (type: "page-ab")
+	100101: reserved (type: "page-off-4")
+	010101: reserved (type: "page-ac")
+	001101: reserved (type: "page-bc")
+	100011: PAGE SCATTER UNSET
+	010011: SCATTER 1
+	001011: SCATTER 2
+	000111: SCATTER 4
 
 	4-keypress:
-	001111: OFF CUE 7
-	010111: OFF CUE 3 (duplicate)
-	011011: OFF CUE 5 (duplicate)
-	011101: OFF CUE 6 (duplicate)
+	111100: OFF CUE 7
+	111010: OFF CUE 3 (duplicate)
+	110110: OFF CUE 5 (duplicate)
+	101110: OFF CUE 6 (duplicate)
 	011110: CUE 7
-	100111: reserved (type: "page-off-3")
-	101011: reserved (type: "page-off-5")
+	111001: reserved (type: "page-off-3")
+	110101: reserved (type: "page-off-5")
 	101101: reserved (type: "page-off-6")
-	101110: reserved (type: "page-abc")
+	011101: reserved (type: "page-abc")
 	110011: GLOBAL PLAY/STOP
-	110101: reserved (type: "page-cue-2-off")
-	110110: SCATTER 3
-	111001: reserved (type: "page-cue-4-off")
-	111010: SCATTER 5
-	111100: SCATTER 6
+	101011: reserved (type: "page-cue-2-off")
+	011011: SCATTER 3
+	100111: reserved (type: "page-cue-4-off")
+	010111: SCATTER 5
+	001111: SCATTER 6
 
 	5-keypress:
-	011111: OFF CUE 7 (duplicate)
-	101111: reserved (type: "page-off-7")
-	110111: reserved (type: "page-cue-3-off")
-	111011: reserved (type: "page-cue-5-off")
-	111101: reserved (type: "page-cue-6-off")
-	111110: SCATTER 7
+	111110: OFF CUE 7 (duplicate)
+	111101: reserved (type: "page-off-7")
+	111011: reserved (type: "page-cue-3-off")
+	110111: reserved (type: "page-cue-5-off")
+	101111: reserved (type: "page-cue-6-off")
+	011111: SCATTER 7
 
 	6-keypress:
 	111111: TOGGLE RECORD MODE
@@ -83,71 +83,71 @@ Button combinations (PLAY MODE):
 Button combinations (RECORD MODE):
 
 	1-keypress:
-	000001: TOGGLE NOTE-RECORDING
-	000010: BASENOTE
-	000100: OCTAVE
-	001000: DURATION
-	010000: SWITCH RECORDING-SEQUENCE
-	100000: ERASE WHILE HELD
+	100000: TOGGLE NOTE-RECORDING
+	010000: BASENOTE
+	001000: OCTAVE
+	000100: DURATION
+	000010: SWITCH RECORDING-SEQUENCE
+	000001: ERASE WHILE HELD
 
 	2-keypress:
-	000011:
-	000101:
-	000110: VELO
-	001001:
-	001010: HUMANIZE
-	001100: QUANTIZE
-	010001:
-	010010: CHAN
-	010100: SEQ-SIZE
-	011000: BPM
-	100001:
-	100010:
-	100100:
-	101000:
 	110000:
+	101000:
+	011000: VELO
+	100100:
+	010100: HUMANIZE
+	001100: QUANTIZE
+	100010:
+	010010: CHAN
+	001010: SEQ-SIZE
+	000110: BPM
+	100001:
+	010001:
+	001001:
+	000101:
+	000011:
 
 	3-keypress:
-	000111:
-	001011:
-	001101:
-	001110: SAVE
-	010011:
-	010101:
-	010110: CLOCK-MASTER
-	011001:
-	011010: CHAN-LISTEN
-	011100: LOAD
-	100011:
-	100101:
-	100110:
-	101001:
-	101010:
-	101100:
-	110001:
-	110010:
-	110100:
 	111000:
+	110100:
+	101100:
+	011100: SAVE
+	110010:
+	101010:
+	011010: CLOCK-MASTER
+	100110:
+	010110: CHAN-LISTEN
+	001110: LOAD
+	110001:
+	101001:
+	011001:
+	100101:
+	010101:
+	001101:
+	100011:
+	010011:
+	001011:
+	000111:
 
 
 	...
 
 	4-keypress:
-	001111: 
-	010111: 
-	011011: 
-	011101: 
-	011110: 
-	100111: 
-	101011: 
-	101101: 
-	101110: 
-	110011: 
-	110101: 
-	110110: 
-	111001: 
+	111100: 
 	111010: 
-	111100: GLOBAL PLAY/STOP
+	110110: 
+	101110: 
+	011110: 
+	111001: 
+	110101: 
+	101101: 
+	011101: 
+	110011: 
+	101011: 
+	011011: 
+	100111: 
+	010111: 
+	001111: GLOBAL PLAY/STOP
 
 	...
 
