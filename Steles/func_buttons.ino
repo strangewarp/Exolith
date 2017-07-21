@@ -26,7 +26,7 @@ void scanColumn(byte col) {
 		if (bstate) { // If the button's new state is ON...
 			assignKey(col, row); // Assign any key-commands that might be based on this keystroke
 		} else { // Else, the button's new state is OFF, so...
-			unassignKey(col, row); // Assign any key-commands that might be based on this release-keystroke
+			unassignKey(col); // Assign any key-commands that might be based on this release-keystroke
 		}
 
 	}
@@ -262,7 +262,7 @@ void assignKey(byte col, byte row) {
 }
 
 // Interpret a key-release according to whatever command-mode is active
-void unassignKey(byte col, byte row) {
+void unassignKey(byte col) {
 	byte ctrl = BUTTONS & B00111111; // Get the control-row buttons' activity
 	if (col == 0) { // If this up-keystroke was in the leftmost column...
 		TO_UPDATE |= 1; // Flag the top LED-row for updating

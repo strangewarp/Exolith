@@ -250,7 +250,7 @@ void loop() {
 
 	updateTimer();
 
-	parseKeystrokes();
+	scanKeypad();
 
 	updateGUI();
 
