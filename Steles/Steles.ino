@@ -252,8 +252,6 @@ void loop() {
 
 	updateTimer();
 
-	scanKeypad();
-
 	updateGUI();
 
 }

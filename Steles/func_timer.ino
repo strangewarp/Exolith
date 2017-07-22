@@ -4,16 +4,16 @@ void updateTimer() {
 
 	unsigned long micr = micros(); // Get the current microsecond-timer value
 
-	unsigned long offset = 0; // Will hold the time-offset between the previous and current timer-check times
 	if (micr < ABSOLUTETIME) { // If the micros-value has wrapped around its finite counting-space to be less than the last absolute-time position...
-		offset = (4294967295 - ABSOLUTETIME) + micr; // Get an offset representing time since last check, wrapped around the unsigned long's limit
+		unsigned long offset = (4294967295 - ABSOLUTETIME) + micr; // Get an offset representing time since last check, wrapped around the unsigned long's limit
+		KEYELAPSED += offset; // Put the wrapped-around microseconds into the elapsed-time-for-keypad-checks value
+		ELAPSED += offset; // Put the wrapped-around microseconds into the elapsed-time value
 	} else { // Else, if the micros-value is greater than or equal to last loop's absolute-time position...
-		offset = micr - ABSOLUTETIME; // Get an offset representing time since last check
+		unsigned long offset = micr - ABSOLUTETIME; // Get an offset representing time since last check
+		KEYELAPSED += offset; // Add the difference between the current time and the previous time to the elapsed-time-for-keypad-checks value
+		ELAPSED += offset; // Add the difference between the current time and the previous time to the elapsed-time value
 	}
-	KEYELAPSED += offset; // Add the difference between the current time and the previous time to the elapsed-time-for-keypad-checks value
-	ELAPSED += offset; // Add the difference between the current time and the previous time to the elapsed-time value
 	ABSOLUTETIME = micr; // Set the absolute-time to the current time-value
-
 	if (KEYELAPSED >= SCANRATE) { // If the next keypad-check time has been reached...
 		scanKeypad(); // Scan the keypad for changes in keystroke values
 		KEYELAPSED = 0; // Reset the keypad-check timer
