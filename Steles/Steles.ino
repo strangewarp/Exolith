@@ -98,6 +98,45 @@ const byte GLYPH_VELO[7] PROGMEM = {B10010111, B10010100, B10010111, B10100100, 
 
 
 
+// REG, BIT, and SUBNUM consts:
+// REG describes which port-register the pin is in (0 = PORTD; 1 = PORTB; 2 = PORTC)
+// BIT holds the positional value for the pin's place in its port-register
+// SUBNUM holds the numeric value for the pin's place in its port-register
+const byte ROW_SUBNUM[7] PROGMEM = {5, 6, 7, 0, 2, 3};
+const byte ROW_BIT[7] PROGMEM = {
+	B00100000, // row 0: pin 5  = 5
+	B01000000, // row 1: pin 6  = 6
+	B10000000, // row 2: pin 7  = 7
+	B00000001, // row 3: pin 8  = 0
+	B00000100, // row 4: pin 18 = 2
+	B00001000  // row 5: pin 19 = 3
+};
+const byte ROW_REG[7] PROGMEM = {
+	B00000000, // row 0: pin 5  = 0
+	B00000000, // row 1: pin 6  = 0
+	B00000000, // row 2: pin 7  = 0
+	B00000001, // row 3: pin 8  = 1
+	B00000010, // row 4: pin 18 = 2
+	B00000010  // row 5: pin 19 = 2
+};
+const byte COL_SUBNUM[6] PROGMEM = {1, 6, 7, 0, 1};
+const byte COL_BIT[6] PROGMEM = {
+	B00000010, // col 0: pin 9  = 1
+	B01000000, // col 1: pin 14 = 6
+	B10000000, // col 2: pin 15 = 7
+	B00000001, // col 3: pin 16 = 0
+	B00000010  // col 4: pin 17 = 1
+};
+const byte COL_REG[6] PROGMEM = {
+	B00000001, // col 0: pin 9  = 1
+	B00000001, // col 1: pin 14 = 1
+	B00000001, // col 2: pin 15 = 1
+	B00000010, // col 3: pin 16 = 2
+	B00000010  // col 4: pin 17 = 2
+};
+
+
+
 // UI vars
 unsigned long BUTTONS = 0; // Tracks which of the 30 buttons are currently pressed; each button has an on/off bit
 byte PAGE = 0; // Tracks currently-active page of sequences
@@ -172,40 +211,6 @@ byte INCOUNT = 0; // Number of MIDI bytes received from current incoming command
 byte INTARGET = 0; // Number of expected incoming MIDI bytes
 byte SYSIGNORE = 0; // Ignores SYSEX messages when toggled
 
-// ROW_BIT and ROW_REG consts:
-// ROW_REG describes which port-register the pin is in (0 = PORTD; 1 = PORTB; 2 = PORTC)
-// ROW_BIT describes which bit within said port-register represents the pin itself
-const byte ROW_BIT[7] PROGMEM = {
-	B00100000, // row 0: pin 5  = 5
-	B01000000, // row 1: pin 6  = 6
-	B10000000, // row 2: pin 7  = 7
-	B00000001, // row 3: pin 8  = 0
-	B00000100, // row 4: pin 18 = 2
-	B00001000  // row 5: pin 19 = 3
-};
-const byte ROW_REG[7] PROGMEM = {
-	B00000000, // row 0: pin 5  = 0
-	B00000000, // row 1: pin 6  = 0
-	B00000000, // row 2: pin 7  = 0
-	B00000001, // row 3: pin 8  = 1
-	B00000010, // row 4: pin 18 = 2
-	B00000010  // row 5: pin 19 = 2
-};
-const byte COL_BIT[6] PROGMEM = {
-	B00000010, // col 0: pin 9  = 1
-	B01000000, // col 1: pin 14 = 6
-	B10000000, // col 2: pin 15 = 7
-	B00000001, // col 3: pin 16 = 0
-	B00000010  // col 4: pin 17 = 1
-};
-const byte COL_REG[6] PROGMEM = {
-	B00000001, // col 0: pin 9  = 1
-	B00000001, // col 1: pin 14 = 1
-	B00000001, // col 2: pin 15 = 1
-	B00000010, // col 3: pin 16 = 2
-	B00000010  // col 4: pin 17 = 2
-};
-
 
 
 SdFat sd; // Initialize SdFat object
@@ -232,9 +237,9 @@ void setup() {
 
 	// Set all the keypad's row-pins to INPUT_PULLUP mode, and all its column-pins to OUTPUT mode
 	for (byte i = 0; i < 6; i++) {
-		pinMode((ROW_REG[i] << 3) + ROW_BIT[i], INPUT_PULLUP);
+		pinMode((ROW_REG[i] << 3) + ROW_SUBNUM[i], INPUT_PULLUP);
 		if (i == 5) { break; }
-		pinMode((COL_REG[i] << 3) + COL_BIT[i], OUTPUT);
+		pinMode((COL_REG[i] << 3) + COL_SUBNUM[i], OUTPUT);
 	}
 
 	// Load the default song, or create its folder and files if they don't exist
