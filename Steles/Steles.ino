@@ -102,14 +102,14 @@ const byte GLYPH_VELO[7] PROGMEM = {B10010111, B10010100, B10010111, B10100100, 
 // REG describes which port-register the pin is in (0 = PORTD; 1 = PORTB; 2 = PORTC)
 // BIT holds the positional value for the pin's place in its port-register
 // SUBNUM holds the numeric value for the pin's place in its port-register
-const byte ROW_SUBNUM[7] PROGMEM = {5, 6, 7, 0, 2, 3};
+const byte ROW_SUBNUM[7] PROGMEM = {5, 6, 7, 0, 4, 5};
 const byte ROW_BIT[7] PROGMEM = {
 	B00100000, // row 0: pin 5  = 5
 	B01000000, // row 1: pin 6  = 6
 	B10000000, // row 2: pin 7  = 7
 	B00000001, // row 3: pin 8  = 0
-	B00000100, // row 4: pin 18 = 2
-	B00001000  // row 5: pin 19 = 3
+	B00010000, // row 4: pin 18 = 4
+	B00100000  // row 5: pin 19 = 5
 };
 const byte ROW_REG[7] PROGMEM = {
 	B00000000, // row 0: pin 5  = 0
@@ -119,18 +119,18 @@ const byte ROW_REG[7] PROGMEM = {
 	B00000010, // row 4: pin 18 = 2
 	B00000010  // row 5: pin 19 = 2
 };
-const byte COL_SUBNUM[6] PROGMEM = {1, 6, 7, 0, 1};
+const byte COL_SUBNUM[6] PROGMEM = {1, 0, 1, 2, 3};
 const byte COL_BIT[6] PROGMEM = {
 	B00000010, // col 0: pin 9  = 1
-	B01000000, // col 1: pin 14 = 6
-	B10000000, // col 2: pin 15 = 7
-	B00000001, // col 3: pin 16 = 0
-	B00000010  // col 4: pin 17 = 1
+	B00000001, // col 1: pin 14 = 0
+	B00000010, // col 2: pin 15 = 1
+	B00000100, // col 3: pin 16 = 2
+	B00001000  // col 4: pin 17 = 3
 };
 const byte COL_REG[6] PROGMEM = {
 	B00000001, // col 0: pin 9  = 1
-	B00000001, // col 1: pin 14 = 1
-	B00000001, // col 2: pin 15 = 1
+	B00000010, // col 1: pin 14 = 2
+	B00000010, // col 2: pin 15 = 2
 	B00000010, // col 3: pin 16 = 2
 	B00000010  // col 4: pin 17 = 2
 };
@@ -253,7 +253,7 @@ void setup() {
 
 void loop() {
 
-	parseRawMidi();
+	//parseRawMidi();
 
 	updateTimer();
 

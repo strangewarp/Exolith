@@ -19,9 +19,8 @@ void updateTimer() {
 		KEYELAPSED = 0; // Reset the keypad-check timer
 	}
 
-	if (!CLOCKMASTER) { return; } // If not in CLOCKMASTER mode, exit the function
-
-	if (ELAPSED < TICKSIZE) { return; } // If the next tick hasn't been reached, exit the function
+	// If not in CLOCKMASTER mode, or if the next tick hasn't been reached, exit the function
+	if ((!CLOCKMASTER) || (ELAPSED < TICKSIZE)) { return; }
 
 	ELAPSED -= TICKSIZE; // Subtract the tick-delay length from the elapsed-time variable
 

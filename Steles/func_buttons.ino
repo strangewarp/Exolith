@@ -5,10 +5,9 @@ void scanColumn(byte col) {
 	for (byte row = 0; row < 6; row++) { // For each keypad row...
 
 		byte bstate = 0; // Will hold the incoming button-state
-
 		if (!ROW_REG[row]) { // If this row's pin is in bank D...
 			bstate = PIND & ROW_BIT[row]; // Get the pin's input-state from bank D
-		} else if (ROW_REG[row] == 1) {//Else, if this ro's pin is in bank B...
+		} else if (ROW_REG[row] == 1) { // Else, if this row's pin is in bank B...
 			bstate = PINB & ROW_BIT[row]; // Get the pin's input-state from bank B
 		} else { // Else, if this row's pin is in bank C...
 			bstate = PINC & ROW_BIT[row]; // Get the pin's input-state from bank C
@@ -43,7 +42,7 @@ void scanKeypad() {
 		} else if (COL_REG[col] == 2) { // Else, if this col's register is in PORTC...
 			PORTC &= ~COL_BIT[col]; // Pulse the column's pin low, in port-bank C
 			scanColumn(col); // Scan the column for keystrokes
-			PORTC |= COL_BIT[col]; // Raise the column's pin high, in port-bank B
+			PORTC |= COL_BIT[col]; // Raise the column's pin high, in port-bank C
 		}
 	}
 }
