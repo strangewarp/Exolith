@@ -98,45 +98,6 @@ const byte GLYPH_VELO[7] PROGMEM = {B10010111, B10010100, B10010111, B10100100, 
 
 
 
-// REG, BIT, and PIN consts:
-// PIN holds the port's Arduino digital-pin value
-// REG describes which port-register the pin is in (0 = PORTD; 1 = PORTB; 2 = PORTC)
-// BIT holds the positional value for the pin's place in its port-register
-const byte ROW_PIN[7] PROGMEM = {5, 6, 7, 8, 18, 19};
-const byte ROW_REG[7] PROGMEM = {
-	B00000000, // row 0: pin 5  = 0
-	B00000000, // row 1: pin 6  = 0
-	B00000000, // row 2: pin 7  = 0
-	B00000001, // row 3: pin 8  = 1
-	B00000010, // row 4: pin 18 = 2
-	B00000010  // row 5: pin 19 = 2
-};
-const byte ROW_BIT[7] PROGMEM = {
-	B00100000, // row 0: pin 5  = 5
-	B01000000, // row 1: pin 6  = 6
-	B10000000, // row 2: pin 7  = 7
-	B00000001, // row 3: pin 8  = 0
-	B00010000, // row 4: pin 18 = 4
-	B00100000  // row 5: pin 19 = 5
-};
-const byte COL_PIN[6] PROGMEM = {9, 14, 15, 16, 17};
-const byte COL_REG[6] PROGMEM = {
-	B00000001, // col 0: pin 9  = 1
-	B00000010, // col 1: pin 14 = 2
-	B00000010, // col 2: pin 15 = 2
-	B00000010, // col 3: pin 16 = 2
-	B00000010  // col 4: pin 17 = 2
-};
-const byte COL_BIT[6] PROGMEM = {
-	B00000010, // col 0: pin 9  = 1
-	B00000001, // col 1: pin 14 = 0
-	B00000010, // col 2: pin 15 = 1
-	B00000100, // col 3: pin 16 = 2
-	B00001000  // col 4: pin 17 = 3
-};
-
-
-
 // UI vars
 unsigned long BUTTONS = 0; // Tracks which of the 30 buttons are currently pressed; each button has an on/off bit
 byte PAGE = 0; // Tracks currently-active page of sequences
@@ -216,8 +177,7 @@ byte SYSIGNORE = 0; // Ignores SYSEX messages when toggled
 SdFat sd; // Initialize SdFat object
 SdFile file; // Initialize an SdFile File object, to control default data read/write processes
 
-// Initialize the object that controls the MAX7219's LED-grid
-LedControl lc = LedControl(2, 3, 4, 1);
+LedControl lc = LedControl(5, 7, 6, 1); // Initialize the object that controls the MAX7219's LED-grid
 
 
 
@@ -236,11 +196,17 @@ void setup() {
 	}
 
 	// Set all the keypad's row-pins to INPUT_PULLUP mode, and all its column-pins to OUTPUT mode
-	for (byte i = 0; i < 6; i++) {
-		pinMode(ROW_PIN[i], INPUT_PULLUP);
-		if (i == 5) { break; }
-		pinMode(COL_PIN[i], OUTPUT);
-	}
+	pinMode(14, INPUT_PULLUP);
+	pinMode(15, INPUT_PULLUP);
+	pinMode(16, INPUT_PULLUP);
+	pinMode(17, INPUT_PULLUP);
+	pinMode(18, INPUT_PULLUP);
+	pinMode(19, INPUT_PULLUP);
+	pinMode(2, OUTPUT);
+	pinMode(3, OUTPUT);
+	pinMode(4, OUTPUT);
+	pinMode(8, OUTPUT);
+	pinMode(9, OUTPUT);
 
 	// Load the default song, or create its folder and files if they don't exist
 	loadSong(SONG);
