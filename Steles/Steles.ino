@@ -4,7 +4,7 @@
 
 		Steles is a MIDI sequencer for the "Tegne" hardware.
 		THIS CODE IS UNDER DEVELOPMENT AND DOESN'T DO ANYTHING!
-		Copyright (C) 2016-onward, Christian D. Madsen (sevenplagues@gmail.com).
+		Copyright (C) 2016-onward, C.D.M. Rørmose (sevenplagues@gmail.com).
 
 		This program is free software; you can redistribute it and/or modify
 		it under the terms of the GNU General Public License as published by
@@ -196,6 +196,11 @@ void setup() {
 	}
 
 	// Set all the keypad's row-pins to INPUT_PULLUP mode, and all its column-pins to OUTPUT mode
+	DDRC = 0;
+	PORTC = 255;
+	DDRD |= B00011100;
+	DDRB |= B00000011;
+	/*
 	pinMode(14, INPUT_PULLUP);
 	pinMode(15, INPUT_PULLUP);
 	pinMode(16, INPUT_PULLUP);
@@ -207,6 +212,7 @@ void setup() {
 	pinMode(4, OUTPUT);
 	pinMode(8, OUTPUT);
 	pinMode(9, OUTPUT);
+	*/
 
 	// Load the default song, or create its folder and files if they don't exist
 	loadSong(SONG);
