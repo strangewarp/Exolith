@@ -200,19 +200,6 @@ void setup() {
 	PORTC = 255;
 	DDRD |= B00011100;
 	DDRB |= B00000011;
-	/*
-	pinMode(14, INPUT_PULLUP);
-	pinMode(15, INPUT_PULLUP);
-	pinMode(16, INPUT_PULLUP);
-	pinMode(17, INPUT_PULLUP);
-	pinMode(18, INPUT_PULLUP);
-	pinMode(19, INPUT_PULLUP);
-	pinMode(2, OUTPUT);
-	pinMode(3, OUTPUT);
-	pinMode(4, OUTPUT);
-	pinMode(8, OUTPUT);
-	pinMode(9, OUTPUT);
-	*/
 
 	// Load the default song, or create its folder and files if they don't exist
 	loadSong(SONG);
