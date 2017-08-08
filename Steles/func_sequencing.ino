@@ -154,6 +154,8 @@ void iterateAll() {
 
 	if (PLAYING) { // If the sequencer is currently in PLAYING mode...
 
+		byte changed = 0;
+
 		for (byte i = 47; i != 255; i--) { // For every loaded sequence, in reverse order...
 
 			word size = STATS[i] & 127; // Get seq's absolute size, in beats
@@ -166,8 +168,10 @@ void iterateAll() {
 			// If RECORD MODE is active, and the ERASE-NOTES command is being held,
 			// and notes are being recorded into this seq...
 			if (RECORDMODE && ERASENOTES && (RECORDNOTES == i)) {
+				byte buf[9] = {0, 0, 0, 0, 0, 0, 0, 0};
 				file.seekSet(49 + POS[i] + (i * 8192)); // Set position to start of tick's first note
-				file.write(EMPTY_TICK, 8); // Write in an entire empty tick's worth of bytes
+				file.write(buf, 8); // Write in an entire empty tick's worth of bytes
+				changed = 1;
 			} else { // Else, if any other combination of states applies...
 				getTickNotes(i); // Get the notes from this tick in a given seq, and add them to the MIDI-OUT buffer
 			}
@@ -175,6 +179,10 @@ void iterateAll() {
 			// Increase the seq's 16th-note position by one increment, wrapping it around its top limit
 			POS[i] = (POS[i] + 1) % (size << 4);
 
+		}
+
+		if (changed) { // If any changes have been queued for the tempfile's data...
+			file.sync(); // Apply all changes to the tempfile
 		}
 
 	}

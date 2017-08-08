@@ -4,7 +4,7 @@
 
 		Steles is a MIDI sequencer for the "Tegne" hardware.
 		THIS CODE IS UNDER DEVELOPMENT AND DOESN'T DO ANYTHING!
-		Copyright (C) 2016-onward, C.D.M. Rørmose (sevenplagues@gmail.com).
+		Copyright (C) 2016-2017, C.D.M. Rørmose (sevenplagues@gmail.com).
 
 		This program is free software; you can redistribute it and/or modify
 		it under the terms of the GNU General Public License as published by
@@ -24,6 +24,17 @@
 
 
 
+// Define statements:
+//   These values may need to be changed in the course of programming/debugging,
+//   but will always stay the same at runtime.
+#define FILE_BYTES 393265 // Number of bytes in each savefile
+#define SCANRATE 7000 // Amount of time between keystroke-scans, in microseconds
+
+
+
+// Program-space (PROGMEM) library
+#include <avr/pgmspace.h>
+
 // MAX7219/MAX7221 LED-matrix library
 #include <LedControl.h>
 
@@ -35,66 +46,63 @@
 
 
 
-// Number of bytes in each savefile
-const unsigned long FILE_BYTES PROGMEM = 393265;
-
-// Buffer of empty bytes, for writing into a newly-emptied tick en masse
-const byte EMPTY_TICK[9] PROGMEM = {0, 0, 0, 0, 0, 0, 0, 0};
+// Scrolling glyph: logo to display on startup
+const unsigned long LOGO[] PROGMEM = {2868354351, 1415848360, 2858921327, 1415849320, 2858916143};
 
 // Glyph: BASENOTE
-const byte GLYPH_BASENOTE[7] PROGMEM = {B11100010, B10010010, B11100010, B10010110, B10010110, B11100000};
+const byte GLYPH_BASENOTE[] PROGMEM = {B11100010, B10010010, B11100010, B10010110, B10010110, B11100000};
 
 // Glyph: BPM
-const byte GLYPH_BPM[7] PROGMEM = {B01111110, B11001011, B10011001, B10011001, B11000011, B01111110};
+const byte GLYPH_BPM[] PROGMEM = {B01111110, B11001011, B10011001, B10011001, B11000011, B01111110};
 
 // Glyph: CHAN
-const byte GLYPH_CHAN[7] PROGMEM = {B11101001, B10101001, B10001111, B10001001, B10101001, B11101001};
+const byte GLYPH_CHAN[] PROGMEM = {B11101001, B10101001, B10001111, B10001001, B10101001, B11101001};
 
 // Glyph: CLOCK-MASTER
-const byte GLYPH_CLOCKMASTER[7] PROGMEM = {B11101001, B10101010, B10001100, B10001010, B10101001, B11101001};
+const byte GLYPH_CLOCKMASTER[] PROGMEM = {B11101001, B10101010, B10001100, B10001010, B10101001, B11101001};
 
 // Glyph: DURATION
-const byte GLYPH_DURATION[7] PROGMEM = {B11001110, B10101001, B10101110, B10101011, B10101001, B11001001};
+const byte GLYPH_DURATION[] PROGMEM = {B11001110, B10101001, B10101110, B10101011, B10101001, B11001001};
 
 // Glyph: "ERASING"
-const byte GLYPH_ERASE[7] PROGMEM = {B11110101, B10000101, B11110101, B10000101, B10000000, B11110101
+const byte GLYPH_ERASE[] PROGMEM = {B11110101, B10000101, B11110101, B10000101, B10000000, B11110101
 };
 
 // Glyph: HUMANIZE
-const byte GLYPH_HUMANIZE[7] PROGMEM = {B10101001, B10101001, B11101001, B10101001, B10101001, B10100110};
+const byte GLYPH_HUMANIZE[] PROGMEM = {B10101001, B10101001, B11101001, B10101001, B10101001, B10100110};
 
 // Glyph: LISTEN-CHAN
-const byte GLYPH_LISTEN[7] PROGMEM = {B10001110, B10001010, B10001000, B10001000, B10001010, B11101110};
+const byte GLYPH_LISTEN[] PROGMEM = {B10001110, B10001010, B10001000, B10001000, B10001010, B11101110};
 
 // Glyph: LOAD
-const byte GLYPH_LOAD[7] PROGMEM = {B10000101, B10000101, B10000101, B10000101, B10000000, B11110101};
+const byte GLYPH_LOAD[] PROGMEM = {B10000101, B10000101, B10000101, B10000101, B10000000, B11110101};
 
 // Glyph: OCTAVE
-const byte GLYPH_OCTAVE[7] PROGMEM = {B01100111, B10010101, B10010100, B10010100, B10010101, B01100111};
+const byte GLYPH_OCTAVE[] PROGMEM = {B01100111, B10010101, B10010100, B10010100, B10010101, B01100111};
 
 // Glyph: QUANTIZE
-const byte GLYPH_QUANTIZE[7] PROGMEM = {B01100010, B10010010, B10010010, B10010110, B01100110, B00110000};
+const byte GLYPH_QUANTIZE[] PROGMEM = {B01100010, B10010010, B10010010, B10010110, B01100110, B00110000};
 
 // Glyph: "RECORDING"
-const byte GLYPH_RECORDING[7] PROGMEM = {B11100000, B10010000, B11100000, B10010000, B10010000, B10010000};
+const byte GLYPH_RECORDING[] PROGMEM = {B11100000, B10010000, B11100000, B10010000, B10010000, B10010000};
 
 // Glyph: "RECORDING NOW!"
-const byte GLYPH_RECORDING_ARMED[7] PROGMEM = {B11100101, B10010101, B11100101, B10010101, B10010000, B10010101};
+const byte GLYPH_RECORDING_ARMED[] PROGMEM = {B11100101, B10010101, B11100101, B10010101, B10010000, B10010101};
 
 // Glyph: "SWITCH RECORDING-SEQUENCE"
-const byte GLYPH_RSWITCH[7] PROGMEM = {B11100111, B10010100, B11100111, B10010001, B10010001, B10010111};
+const byte GLYPH_RSWITCH[] PROGMEM = {B11100111, B10010100, B11100111, B10010001, B10010001, B10010111};
 
 // Glyph: "SAVE"
-const byte GLYPH_SAVE[7] PROGMEM = {B01110101, B10000101, B01100101, B00010101, B00010000, B11100101};
+const byte GLYPH_SAVE[] PROGMEM = {B01110101, B10000101, B01100101, B00010101, B00010000, B11100101};
 
 // Glyph: "SD-CARD"
-const byte GLYPH_SD[7] PROGMEM = {B11101110, B10001001, B11101001, B00101001, B00101010, B11101100};
+const byte GLYPH_SD[] PROGMEM = {B11101110, B10001001, B11101001, B00101001, B00101010, B11101100};
 
 // Glyph: "SEQ-SIZE"
-const byte GLYPH_SIZE[7] PROGMEM = {B11101111, B10000001, B11100010, B00100100, B00101000, B11101111};
+const byte GLYPH_SIZE[] PROGMEM = {B11101111, B10000001, B11100010, B00100100, B00101000, B11101111};
 
 // Glyph: VELO
-const byte GLYPH_VELO[7] PROGMEM = {B10010111, B10010100, B10010111, B10100100, B11000100, B10000111};
+const byte GLYPH_VELO[] PROGMEM = {B10010111, B10010100, B10010111, B10100100, B11000100, B10000111};
 
 
 
@@ -107,7 +115,6 @@ byte TO_UPDATE = 0; // Tracks which rows of LEDs should be updated at the end of
 unsigned long ABSOLUTETIME = 0; // Absolute time elapsed: wraps around after reaching its limit
 unsigned long ELAPSED = 0; // Time elapsed since last tick
 word KEYELAPSED = 0; // Time elapsed since last keystroke-scan
-const word SCANRATE PROGMEM = 7000; // Amount of time between keystroke-scans, in microseconds
 unsigned long TICKSIZE = 100000; // Size of the current tick, in microseconds; tick = 60000000 / (bpm * 96)
 
 // Recording vars
@@ -188,12 +195,34 @@ void setup() {
 	lc.setIntensity(0, 15);
 
 	// Initialize the SD-card at full speed, or throw a visible error message if no SD-card is inserted
+	/*
 	if (!sd.begin(10, SPI_FULL_SPEED)) {
-		for (byte i = 2; i < 8; i++) {
-			lc.setRow(0, i, GLYPH_SD[i - 2]);
-		}
+		lc.setRow(0, 2, B11101110);
+		lc.setRow(0, 3, B10001001);
+		lc.setRow(0, 4, B11101001);
+		lc.setRow(0, 5, B00101001);
+		lc.setRow(0, 6, B00101010);
+		lc.setRow(0, 7, B11101100);
 		sd.initErrorHalt();
 	}
+	*/
+
+	// Display startup-animation
+	for (char i = 39; i > -9; i--) {
+		for (byte row = 0; row < 5; row++) {
+			unsigned long lr = pgm_read_dword_near(LOGO + row);
+			byte slice = byte(((i >= 0) ? (lr >> i) : (lr << abs(i))) & 255UL);
+			lc.setRow(0, row + 3, slice);
+		}
+		delay(45);
+	}
+
+	// Clear rows that were used for startup animation
+	lc.setRow(0, 3, 0);
+	lc.setRow(0, 4, 0);
+	lc.setRow(0, 5, 0);
+	lc.setRow(0, 6, 0);
+	lc.setRow(0, 7, 0);
 
 	// Set all the keypad's row-pins to INPUT_PULLUP mode, and all its column-pins to OUTPUT mode
 	DDRC = 0;
@@ -202,7 +231,7 @@ void setup() {
 	DDRB |= B00000011;
 
 	// Load the default song, or create its folder and files if they don't exist
-	loadSong(SONG);
+	//loadSong(SONG);
 
 	// Start serial comms at the MIDI baud rate
 	Serial.begin(31250);
@@ -214,9 +243,9 @@ void loop() {
 
 	//parseRawMidi();
 
-	updateTimer();
+	//updateTimer();
 
-	updateGUI();
+	//updateGUI();
 
 }
 

@@ -44,13 +44,16 @@ void clearFile(char name[7]) {
 	memset(buf, 0, sizeof(buf) - 1); // Ensure that the blank bytes are all zeroed out
 	for (unsigned long i = 49; i < FILE_BYTES; i += 32) { // For every 32 bytes in the file...
 		file.seekSet(i); // Go to the start of those 32 bytes
-		file.write(EMPTY_TICK, 32); // Fill them with 32 empty bytes
+		file.write(buf, 32); // Fill them with 32 empty bytes
 	}
 	file.close(); // Cose the file
 }
 
 // Load a given song, or create its files if they don't exist
 void loadSong(byte slot) {
+
+	haltAllSustains(); // Clear all currently-sustained notes
+	resetAllSeqs(); // Reset all seqs' internal activity variables of all kinds
 
 	// Display an "L" while loading data
 	lc.setRow(0, 0, 0);
@@ -62,9 +65,6 @@ void loadSong(byte slot) {
 	lc.setRow(0, 6, 112);
 	lc.setRow(0, 7, 0);
 
-	haltAllSustains(); // Clear all currently-sustained notes
-	resetAllSeqs(); // Reset all seqs' internal activity variables of all kinds
-
 	// Get the names of the target song-slot's savefile and tempfile
 	char name[7];
 	char name2[7];
@@ -73,6 +73,10 @@ void loadSong(byte slot) {
 
 	// Create a small buffer for data-transfer between the savefile and tempfile
 	byte buf[17];
+
+	if (file.isOpen()) { // If a tempfile is still open and in use...
+		file.close(); // Close it
+	}
 
 	initializeSavefile(name); // Make sure the savefile exists, and is the correct size
 
@@ -109,6 +113,9 @@ void loadSong(byte slot) {
 
 	file.close();
 	temp.close();
+
+	// Open the song's tempfile, and leave it open, for all read/write operations during general use
+	file.open(name2, O_RDWR);
 
 	// Set the currently-active SONG-position to the given save-slot
 	SONG = slot;
