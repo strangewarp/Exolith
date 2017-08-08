@@ -28,7 +28,7 @@
 //   These values may need to be changed in the course of programming/debugging,
 //   but will always stay the same at runtime.
 #define FILE_BYTES 393265 // Number of bytes in each savefile
-#define SCANRATE 7000 // Amount of time between keystroke-scans, in microseconds
+#define SCANRATE 6000 // Amount of time between keystroke-scans, in microseconds
 
 
 
@@ -195,7 +195,6 @@ void setup() {
 	lc.setIntensity(0, 15);
 
 	// Initialize the SD-card at full speed, or throw a visible error message if no SD-card is inserted
-	/*
 	if (!sd.begin(10, SPI_FULL_SPEED)) {
 		lc.setRow(0, 2, B11101110);
 		lc.setRow(0, 3, B10001001);
@@ -205,7 +204,6 @@ void setup() {
 		lc.setRow(0, 7, B11101100);
 		sd.initErrorHalt();
 	}
-	*/
 
 	// Display startup-animation
 	for (char i = 39; i > -9; i--) {
@@ -231,7 +229,7 @@ void setup() {
 	DDRB |= B00000011;
 
 	// Load the default song, or create its folder and files if they don't exist
-	//loadSong(SONG);
+	loadSong(SONG);
 
 	// Start serial comms at the MIDI baud rate
 	Serial.begin(31250);
