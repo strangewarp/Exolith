@@ -27,7 +27,7 @@
 // Define statements:
 //   These values may need to be changed in the course of programming/debugging,
 //   but will always stay the same at runtime.
-#define FILE_BYTES 393265 // Number of bytes in each savefile
+#define FILE_BYTES 393265UL // Number of bytes in each savefile
 #define SCANRATE 6000 // Amount of time between keystroke-scans, in microseconds
 
 
@@ -243,7 +243,7 @@ void loop() {
 
 	//updateTimer();
 
-	//updateGUI();
+	updateGUI();
 
 }
 

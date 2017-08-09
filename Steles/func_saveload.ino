@@ -6,9 +6,10 @@ void getFilename(char source[], byte fnum, byte isdt) {
 	source[0] = char(rem + 48);
 	source[1] = char((fnum - rem) + 48);
 	source[2] = 46;
-	source[3] = isdt ? 100 : 116;
-	source[4] = isdt ? 97 : 109;
-	source[5] = isdt ? 116 : 112;
+	source[3] = isdt ? 68 : 84;
+	source[4] = isdt ? 65 : 77;
+	source[5] = isdt ? 84 : 80;
+	source[6] = 0;
 }
 
 // Set a savefile or tempfile's header bytes to their default contents.
@@ -28,8 +29,11 @@ void initializeSavefile(char name[7]) {
 		(!file.exists(name)) // The savefile doesn't exist...
 		|| (file.fileSize() != FILE_BYTES) // Or the file isn't the expected size...
 	) { // Then...
+
 		file.createContiguous(name, FILE_BYTES); // Recreate and open a blank datafile
+		//file.createContiguous("test.dat", FILE_BYTES); // Recreate and open a blank datafile
 		file.close(); // Close file after creating it
+
 		file.open(name, O_WRITE); // Reopen the newly-created file in write-mode
 		makeDefaultHeader(); // Fill the file's header-bytes with their default contents
 		file.close(); // Close the file
