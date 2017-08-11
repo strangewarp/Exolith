@@ -27,7 +27,7 @@
 // Define statements:
 //   These values may need to be changed in the course of programming/debugging,
 //   but will always stay the same at runtime.
-#define FILE_BYTES 393265UL // Number of bytes in each savefile
+#define FILE_BYTES 393265UL // Number of bytes in each seq-file
 #define SCANRATE 6000 // Amount of time between keystroke-scans, in microseconds
 
 
@@ -47,7 +47,17 @@
 
 
 // Scrolling glyph: logo to display on startup
-const unsigned long LOGO[] PROGMEM = {2868354351, 1415848360, 2858921327, 1415849320, 2858916143};
+const unsigned long LOGO[] PROGMEM = {
+	4294934211,
+	4294967267,
+	415286259,
+	419414235,
+	419418063,
+	415286215,
+	419430339,
+	419397571
+};
+//const unsigned long LOGO[] PROGMEM = {2868354351, 1415848360, 2858921327, 1415849320, 2858916143};
 
 // Glyph: BASENOTE
 const byte GLYPH_BASENOTE[] PROGMEM = {B11100010, B10010010, B11100010, B10010110, B10010110, B11100000};
@@ -205,22 +215,7 @@ void setup() {
 		sd.initErrorHalt();
 	}
 
-	// Display startup-animation
-	for (char i = 39; i > -9; i--) {
-		for (byte row = 0; row < 5; row++) {
-			unsigned long lr = pgm_read_dword_near(LOGO + row);
-			byte slice = byte(((i >= 0) ? (lr >> i) : (lr << abs(i))) & 255UL);
-			lc.setRow(0, row + 3, slice);
-		}
-		delay(45);
-	}
-
-	// Clear rows that were used for startup animation
-	lc.setRow(0, 3, 0);
-	lc.setRow(0, 4, 0);
-	lc.setRow(0, 5, 0);
-	lc.setRow(0, 6, 0);
-	lc.setRow(0, 7, 0);
+	startupAnimation(); // Display startup-animation
 
 	// Set all the keypad's row-pins to INPUT_PULLUP mode, and all its column-pins to OUTPUT mode
 	DDRC = 0;
@@ -229,7 +224,7 @@ void setup() {
 	DDRB |= B00000011;
 
 	// Load the default song, or create its folder and files if they don't exist
-	loadSong(SONG);
+	//loadSong(SONG);
 
 	// Start serial comms at the MIDI baud rate
 	Serial.begin(31250);

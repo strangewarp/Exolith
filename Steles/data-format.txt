@@ -2,9 +2,8 @@
 
 Steles data-file spec
 
-	File locations:
-		/n.dat: datafile with song's number
-		/n.tmp: currently-loaded temp-data file
+	File location:
+		/00.dat: datafile with song's number
 
 	File contents:
 		(393265 total bytes)

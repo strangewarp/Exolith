@@ -1,5 +1,23 @@
 
+// Display the startup-animation
+void startupAnimation() {
+	for (byte i = 0; i < 5; i++) {
+		for (byte row = 0; row < 8; row++) {
+			lc.setRow(0, row, (pgm_read_dword_near(LOGO + row) >> ((i == 4) ? 16 : (8 * (3 - i))) & 255));
+		}
+		delay(150);
+		lc.clearDisplay(0);
+		delay(35);
+	}
+	for (byte row = 0; row < 8; row++) {
+		lc.setRow(0, row, 255);
+	}
+	delay(150);
+	lc.clearDisplay(0);
+	delay(35);
+}
 
+// Get the LED-values for a given GUI row within the lower 6 rows (SCATTER/SEQ rows)
 byte getRowVals(byte r) {
 	byte ib = (PAGE * 24) + (r << 2); // Get the row's contents' base array positions
 	byte ib2 = ib + 1;
