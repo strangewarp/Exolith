@@ -1,31 +1,3 @@
-
-// Toggle whether the MIDI CLOCK is playing, provided that this unit is in CLOCK MASTER mode
-void toggleMidiClock(byte usercmd) {
-	PLAYING = !PLAYING; // Toggle/untoggle the var that tracks whether the MIDI CLOCK is playing
-	if (CLOCKMASTER) { // If in CLOCK MASTER mode...
-		if (PLAYING) { // If playing has just been enabled...
-			Serial.write(250); // Send a MIDI CLOCK START command
-			Serial.write(248); // Send a MIDI CLOCK TICK (dummy-tick immediately following START command, as per MIDI spec)
-		} else { // Else, if playing has just been disabled...
-			haltAllSustains(); // Halt all currently-broadcasting MIDI sustains
-			Serial.write(252); // Send a MIDI CLOCK STOP command
-			resetAllSeqs(); // Reset the internal pointers of all sequences
-		}
-	} else { // If in CLOCK FOLLOW mode...
-		if (PLAYING) { // If PLAYING has just been enabled...
-			CUR16 = 127; // Set the global 16th-note to a position where it will wrap around to 0
-			if (!usercmd) { // If this toggle was sent by an external device...
-				DUMMYTICK = true; // Flag the sequencer to wait for an incoming dummy-tick, as per MIDI spec
-			}
-		} else { // Else, if playing has just been disabled...
-			haltAllSustains(); // Halt all currently-broadcasting MIDI sustains
-			if (!usercmd) {
-				resetAllSeqs(); // Reset the internal pointers of all sequences
-			}
-		}
-	}
-}
-
 // Parse a given MIDI command
 void parseMidiCommand() {
 	if (RECORDMODE) { // If RECORDING-mode is active...
