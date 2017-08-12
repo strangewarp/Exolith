@@ -81,7 +81,7 @@ void parseRecPress(byte col, byte row) {
 		byte pitch = min(127, (OCTAVE * 12) + BASENOTE + ((23 - key) ^ 3));
 		byte velo = min(127, max(1, VELO + ((HUMANIZE >> 1) - random(HUMANIZE + 1))));
 
-		if (RECORDNOTES) { // If notes are being recorded...
+		if (PLAYING && RECORDNOTES) { // If notes are being recorded into a playing sequence...
 
 			// Make a time-offset for the RECORDSEQ's current 16th-note, based on the QUANTIZE value;
 			// this will be fed to the recordToSeq command to achieve the correct insert-position
