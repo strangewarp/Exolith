@@ -140,9 +140,11 @@ void parseRecPress(byte col, byte row) {
 	} else if (ctrl == B00001010) { // If the SEQ-SIZE button is held...
 		// Modify the currently-recording-seq's size
 		STATS[RECORDSEQ] = min(64, max(1, STATS[RECORDSEQ] ^ (128 >> (key % 8))));
+		updateFileByte(RECORDSEQ + 1, STATS[RECORDSEQ]); // Update the seq's size-byte in the song's savefile
 		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
 	} else if (ctrl == B00000110) { // If the BPM command is held...
 		BPM = max(16, min(200, BPM ^ (128 >> (key % 8)))); // Change the BPM rate
+		updateFileByte(0, BPM); // Update the BPM-byte in the song's savefile
 		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
 	} else if (ctrl == B00011100) { // If the SAVE command is held...
 		saveSong((PAGE * 24) + key); // Save the current tempfile into a savefile slot

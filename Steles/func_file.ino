@@ -73,3 +73,21 @@ void loadSong(byte slot) {
 	TO_UPDATE = 255; // Flag entire GUI for an LED-update
 
 }
+
+// Update a given byte within a given song-file.
+// This is used to update BPM and SEQ-SIZE bytes in the header
+void updateFileByte(byte pos, byte b) {
+	byte wasopen = file.isOpen(); // Remember whether a file was open at the start of the function or not
+	if (!wasopen) { // If a file wasn't open...
+		byte name[7];
+		getFilename(name, SONG); // Get the filename for the current song
+		file.open(name, O_WRITE); // Open the song's corresponding savefile
+	}
+	file.seekSet(pos); // Go to the given insert-point
+	file.write(b); // Write the new byte into the file
+	if (wasopen) { // If a file was open at the start of the function...
+		file.sync(); // Make sure the changes are recorded
+	} else { // Else, if a file wasn't open...
+		file.close(); // Close the file that was just opened
+	}
+}
