@@ -200,6 +200,12 @@ LedControl lc = LedControl(5, 7, 6, 1); // Initialize the object that controls t
 
 void setup() {
 
+	// Set all the keypad's row-pins to INPUT_PULLUP mode, and all its column-pins to OUTPUT mode
+	DDRC = 0;
+	PORTC = 255;
+	DDRD |= B00011100;
+	DDRB |= B00000011;
+
 	// Power up ledControl to full brightness
 	lc.shutdown(0, false);
 	lc.setIntensity(0, 15);
@@ -217,14 +223,7 @@ void setup() {
 
 	startupAnimation(); // Display startup-animation
 
-	// Set all the keypad's row-pins to INPUT_PULLUP mode, and all its column-pins to OUTPUT mode
-	DDRC = 0;
-	PORTC = 255;
-	DDRD |= B00011100;
-	DDRB |= B00000011;
-
-	// Load the default song, or create its folder and files if they don't exist
-	//loadSong(SONG);
+	loadSong(SONG); // Load the default song, or create its savefile if it doesn't exist
 
 	// Start serial comms at the MIDI baud rate
 	Serial.begin(31250);

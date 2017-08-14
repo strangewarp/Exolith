@@ -5,7 +5,7 @@ void toggleMidiClock(byte usercmd) {
 	PLAYING = !PLAYING; // Toggle/untoggle the var that tracks whether the MIDI CLOCK is playing
 
 	if (PLAYING) { // If PLAYING has just been toggled...
-		byte name[7];
+		char name[7];
 		getFilename(name, SONG); // Get the filename corresponding to the current song
 		file.open(name, O_RDWR); // Open its savefile for both read and write
 	} else { // Else, if PLAYING has just been untoggled...

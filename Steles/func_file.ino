@@ -39,7 +39,7 @@ void initializeFile(char name[7]) {
 	}
 }
 
-// Load a given song, or create its files if they don't exist
+// Load a given song, or create its savefile if it doesn't exist
 void loadSong(byte slot) {
 
 	// If the song is playing, do not load anything; this protects against random key-mashing
@@ -58,9 +58,11 @@ void loadSong(byte slot) {
 	lc.setRow(0, 6, 255);
 	lc.setRow(0, 7, 255);
 
+	delay(10); // Wait for a long enough time for the screen-flash to be visible
+
 	char name[7];
 	getFilename(name, slot); // Get the name of the target song-slot's savefile
-	initializeFile(name, FILE_BYTES); // Make sure the savefile exists, and is the correct size
+	initializeFile(name); // Make sure the savefile exists, and is the correct size
 
 	// Put the header-bytes from the savefile into the global BPM and STATS vars
 	file.open(name, O_READ);
@@ -79,7 +81,7 @@ void loadSong(byte slot) {
 void updateFileByte(byte pos, byte b) {
 	byte wasopen = file.isOpen(); // Remember whether a file was open at the start of the function or not
 	if (!wasopen) { // If a file wasn't open...
-		byte name[7];
+		char name[7];
 		getFilename(name, SONG); // Get the filename for the current song
 		file.open(name, O_WRITE); // Open the song's corresponding savefile
 	}

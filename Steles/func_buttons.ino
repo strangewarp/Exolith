@@ -125,6 +125,16 @@ void parseRecPress(byte col, byte row) {
 		TO_UPDATE |= 4 >> (RECORDSEQ >> 2); // Flag the previous seq's corresponding LED-row for updating
 		RECORDSEQ = (PAGE * 24) + key; // Switch to the seq that corresponds to the key-position on the active page
 		TO_UPDATE |= 4 >> row; // Flag the new seq's corresponding LED-row for updating
+	} else if (ctrl == B00110000) { // If the LOAD command is held...
+		loadSong((PAGE * 24) + key); // Load a save-slot's contents into its tempfile, and start using that file
+	} else if (ctrl == B00101000) { // If the CLOCK-MASTER command is held...
+		CLOCKMASTER ^= 1; // Toggle the CLOCK-MASTER value
+		ABSOLUTETIME = micros(); // Set the ABSOLUTETIME-tracking var to now
+		ELAPSED = 0; // Set the ELAPSED value to show that no time has elapsed since the last tick-check
+		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
+	} else if (ctrl == B00100100) { // If the CHAN-LISTEN command is held...
+		LISTEN ^= 8 >> col; // Modify the CHAN-LISTEN value
+		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
 	} else if (ctrl == B00011000) { // If the VELO button is held...
 		VELO = min(127, max(1, VELO ^ (128 >> (key % 8)))); // Modify the VELO value
 		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
@@ -146,16 +156,6 @@ void parseRecPress(byte col, byte row) {
 		BPM = max(16, min(200, BPM ^ (128 >> (key % 8)))); // Change the BPM rate
 		updateFileByte(0, BPM); // Update the BPM-byte in the song's savefile
 		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
-	} else if (ctrl == B00011010) { // If the CLOCK-MASTER command is held...
-		CLOCKMASTER ^= 1; // Toggle the CLOCK-MASTER value
-		ABSOLUTETIME = micros(); // Set the ABSOLUTETIME-tracking var to now
-		ELAPSED = 0; // Set the ELAPSED value to show that no time has elapsed since the last tick-check
-		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
-	} else if (ctrl == B00010110) { // If the CHAN-LISTEN command is held...
-		LISTEN ^= 8 >> col; // Modify the CHAN-LISTEN value
-		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
-	} else if (ctrl == B00001110) { // If the LOAD command is held...
-		loadSong((PAGE * 24) + key); // Load a save-slot's contents into its tempfile, and start using that file
 	}
 
 }
