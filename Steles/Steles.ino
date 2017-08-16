@@ -142,7 +142,7 @@ byte DURATION = B00001000; // Duration value for RECORD-mode notes: bits 0-7: 1,
 
 // Sequencing vars
 byte SONG = 0; // Current song-slot whose data-files are being played
-byte PLAYING = 0; // Controls whether the sequences are iterating through their contents
+byte PLAYING = 1; // Controls whether the sequences and global tick-counter are iterating
 byte DUMMYTICK = 0; // Tracks whether to expect a dummy MIDI CLOCK tick before starting to iterate through sequences
 byte CLOCKMASTER = 1; // Toggles whether to generate MIDI CLOCK ticks, or respond to incoming CLOCK ticks from an external device
 byte BPM = 120; // Beats-per-minute value: one beat is 96 tempo-ticks

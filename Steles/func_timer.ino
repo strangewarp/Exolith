@@ -14,6 +14,9 @@ void toggleMidiClock(byte usercmd) {
 
 	if (CLOCKMASTER) { // If in CLOCK MASTER mode...
 		if (PLAYING) { // If playing has just been enabled...
+			ELAPSED = TICKSIZE; // Cue the next tick-update to occur on the next timer-check
+			TICKCOUNT = 5; // Cue the next 16th-note to be cued for the next timer-check
+			CUR16 = 127; // Ensure that the global 16th-note position will reach 0 on the next timer-check
 			Serial.write(250); // Send a MIDI CLOCK START command
 			Serial.write(248); // Send a MIDI CLOCK TICK (dummy-tick immediately following START command, as per MIDI spec)
 		} else { // Else, if playing has just been disabled...
