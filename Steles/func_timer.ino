@@ -43,7 +43,7 @@ void updateTimer() {
 	unsigned long micr = micros(); // Get the current microsecond-timer value
 
 	if (micr < ABSOLUTETIME) { // If the micros-value has wrapped around its finite counting-space to be less than the last absolute-time position...
-		unsigned long offset = (4294967295 - ABSOLUTETIME) + micr; // Get an offset representing time since last check, wrapped around the unsigned long's limit
+		unsigned long offset = (4294967295UL - ABSOLUTETIME) + micr; // Get an offset representing time since last check, wrapped around the unsigned long's limit
 		KEYELAPSED += offset; // Put the wrapped-around microseconds into the elapsed-time-for-keypad-checks value
 		ELAPSED += offset; // Put the wrapped-around microseconds into the elapsed-time value
 	} else { // Else, if the micros-value is greater than or equal to last loop's absolute-time position...
@@ -66,8 +66,10 @@ void updateTimer() {
 
 	TICKCOUNT = (TICKCOUNT + 1) % 6; // Increase the value that tracks ticks, bounded to the size of a 16th-note
 	Serial.write(248); // Send a MIDI CLOCK pulse
+
 	if (TICKCOUNT) { return; } // If the current tick doesn't fall on a 16th-note, exit the function
-	CUR16 = (CUR16 + 1) % 128; // Since we're sure we're on a new 16th-note, increase the current-16th-note variable
+
+	CUR16 = (CUR16 + 1) % 128; // Since we're sure we're on a new 16th-note, increase the global current-16th-note variable
 	if (!(CUR16 % 16)) { // If the global 16th-note is the first within a global cue-section...
 		TO_UPDATE |= 2; // Flag the global-cue row of LEDs for an update
 	}

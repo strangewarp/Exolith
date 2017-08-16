@@ -57,7 +57,6 @@ const unsigned long LOGO[] PROGMEM = {
 	419430339,
 	419397571
 };
-//const unsigned long LOGO[] PROGMEM = {2868354351, 1415848360, 2858921327, 1415849320, 2858916143};
 
 // Glyph: BASENOTE
 const byte GLYPH_BASENOTE[] PROGMEM = {B11100010, B10010010, B11100010, B10010110, B10010110, B11100000};
@@ -235,7 +234,7 @@ void loop() {
 
 	//parseRawMidi();
 
-	//updateTimer();
+	updateTimer();
 
 	updateGUI();
 
