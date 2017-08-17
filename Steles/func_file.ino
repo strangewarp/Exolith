@@ -70,6 +70,9 @@ void loadSong(byte slot) {
 	file.read(STATS, 48);
 	file.close();
 
+	// Update the tick-size, in microseconds, to reflect the new BPM value
+	TICKSIZE = ((unsigned long) round(60000 / (BPM * 96))) * 1000;
+
 	SONG = slot; // Set the currently-active SONG-position to the given save-slot
 
 	TO_UPDATE = 255; // Flag entire GUI for an LED-update
