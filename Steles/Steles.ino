@@ -182,6 +182,10 @@ byte MOUT_COUNT = 0; // Counts the current number of note entries in MOUT
 byte SUST[25];
 byte SUST_COUNT = 0; // Counts the current number of sustained notes
 
+// Keeps a record of the most recent note-pitch sent to each MIDI channel
+// 255 = "no qualifying note has been played in this context yet"
+byte RECENT[17] = {255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255};
+
 // MIDI-IN vars
 byte INBYTES[4]; // Buffer for incoming MIDI commands
 byte INCOUNT = 0; // Number of MIDI bytes received from current incoming command

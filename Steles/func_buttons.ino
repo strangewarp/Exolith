@@ -81,6 +81,14 @@ void parseRecPress(byte col, byte row) {
 		byte pitch = min(127, (OCTAVE * 12) + BASENOTE + ((23 - key) ^ 3));
 		byte velo = min(127, max(1, VELO + ((HUMANIZE >> 1) - random(HUMANIZE + 1))));
 
+		byte rep = 0; // Will hold a REPEAT-command flag, if applicable
+
+		if ((!row) && (col == 4)) { // If the top-right button was pressed...
+			rep = 1; // Flag the presence of a REPEAT command
+			// Make the pitch into its channel's most-recent pitch, or a dummy-pitch-value if the most-recent pitch is empty
+			pitch = (RECENT[CHAN] <= 127) ? RECENT[CHAN] : (pitch - 12);
+		}
+
 		if (PLAYING && RECORDNOTES) { // If notes are being recorded into a playing sequence...
 
 			// Make a time-offset for the RECORDSEQ's current 16th-note, based on the QUANTIZE value;
@@ -89,7 +97,8 @@ void parseRecPress(byte col, byte row) {
 			byte up = QUANTIZE - down;
 			char offset = (down <= up) ? (-down) : up;
 
-			recordToSeq(offset, 144 + CHAN, pitch, velo); // Record the note into the current RECORDSEQ slot
+			// Record either the note or a REPEAT-COMMAND into the current RECORDSEQ slot
+			recordToSeq(offset, 144 + CHAN, rep ? rep : pitch, velo);
 
 			// If the tick was inserted at an offset after the current position,
 			// exit the function without playing the note, because it will be played momentarily
@@ -160,7 +169,6 @@ void parseRecPress(byte col, byte row) {
 	}
 
 }
-
 
 // Interpret an incoming keystroke, using a given button's row and column
 void assignKey(byte col, byte row) {

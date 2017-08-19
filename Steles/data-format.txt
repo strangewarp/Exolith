@@ -23,6 +23,11 @@ Steles data-file spec
 						(4 total bytes)
 						0: Duration
 						1: Channel (+ 144)
-						2: Pitch
+						2:
+							byte values:
+								0-127: Pitch
+								128-223: Reserved
+								224: Repeat
+								225-255: Reserved
 						3: Velocity
 

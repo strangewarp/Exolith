@@ -89,14 +89,20 @@ void getTickNotes(byte s) {
 	byte readpos = POS[s]; // Get the default read-position for this tick
 
 	if (SCATTER[s] & 128) { // If the seq's SCATTER is flagged as active...
+
+		// Get a byte-sized truncation of ABSOLUTETIME, for faster(?) bitwise operations
+		byte ashort = ABSOLUTETIME & 255;
+
 		// Get bits from ABSOLUTETIME, to use for pseudo-random values
-		char rnd = ABSOLUTETIME & 3; // 1st random: 2 bits
-		char rnd2 = rnd ? ((ABSOLUTETIME >> 2) & 3) : 0; // 2nd random: 2 bits, or 0 if rnd is 0
-		char rnd3 = (ABSOLUTETIME >> 4) & 1; // 3rd random: 1 bit
+		char rnd = ashort & 3; // 1st random: 2 bits
+		char rnd2 = rnd ? ((ashort >> 2) & 3) : 0; // 2nd random: 2 bits, or 0 if rnd is 0
+		char rnd3 = (ashort >> 4) & 1; // 3rd random: 1 bit
 		rnd2 &= rnd2 >> 1; // Ensure that rnd2 is 1 a quarter of the time, and 0 the rest of the time
+
 		// Add a random scatter-distance (positive or negative) to the read-position,
 		// favoring eighth-notes, quarter-notes, and half-notes
 		readpos = (readpos + (((((char) 2) | rnd2) << rnd) | (128 * rnd3))) % (STATS[s] & 127);
+
 	}
 
 	file.seekSet(49 + readpos + (s * 8192)); // Navigate to the note's absolute position
@@ -104,14 +110,24 @@ void getTickNotes(byte s) {
 
 	if (!buf[3]) { return; } // If no notes are present, exit the function
 
-	byte lim = buf[7] ? 8 : 4; // Set the limit of the for-loop based on whether 1 or 2 notes are present
-	for (byte bn = 0; bn < lim; bn += 4) { // For each of the two note-slots on a given tick...
+	// For either one or both note-slots on this tick, depending on how many are filled...
+	for (byte bn = 0; bn < (((!!buf[7]) + 1) << 2); bn += 4) {
 
 		if (MOUT_COUNT == 8) { return; } // If the MIDI buffer is full, exit the function
 
+		byte bn1 = bn + 1; // Get note's CHANNEL index
+		byte bn2 = bn + 2; // Get note's PITCH/SPECIAL index
+
+		if (buf[bn2] == 224) { // If this is a special REPEAT command...
+			if (RECENT[buf[bn1]] == 255) { continue; } // If no note has played on this channel yet, this command does nothing
+			buf[bn2] = RECENT[buf[bn1]]; // Change this command's PITCH byte to the most-recent pitch for this command's cannel
+		} else { // Else, if this is a regular NOTE command...
+			RECENT[buf[bn1]] = buf[bn2]; // Store the note's pitch, indexed by its channel
+		}
+
 		byte pos = MOUT_COUNT * 3; // Get the lowest empty MOUT location
 
-		memcpy(MOUT + pos, buf + bn + 1, 3); // Copy the note into the MIDI buffer
+		memcpy(MOUT + pos, buf + bn1, 3); // Copy the note into the MIDI buffer
 		MOUT_COUNT++; // Increase the counter that tracks the number of bytes in the MIDI buffer
 
 		if (SUST_COUNT == 8) { // If the SUSTAIN buffer is already full...
