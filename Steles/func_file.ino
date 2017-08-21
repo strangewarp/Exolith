@@ -47,6 +47,7 @@ void loadSong(byte slot) {
 
 	haltAllSustains(); // Clear all currently-sustained notes
 	resetAllSeqs(); // Reset all seqs' internal activity variables of all kinds
+	clearRecentNotes(); // Reset the "most recent note by channel" array
 
 	// Display a fully-lit screen while loading data
 	lc.setRow(0, 0, 255);
@@ -57,7 +58,6 @@ void loadSong(byte slot) {
 	lc.setRow(0, 5, 255);
 	lc.setRow(0, 6, 255);
 	lc.setRow(0, 7, 255);
-
 	delay(10); // Wait for a long enough time for the screen-flash to be visible
 
 	char name[7];

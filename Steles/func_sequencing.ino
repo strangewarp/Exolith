@@ -1,4 +1,9 @@
 
+// Reset the "most recent note by channel" array
+void clearRecentNotes() {
+	memset(RECENT, 255, 16);
+}
+
 // Reset every sequence, including SCATTER values
 void resetAllSeqs() {
 	memset(CMD, 0, sizeof(CMD) - 1);

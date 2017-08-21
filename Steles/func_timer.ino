@@ -4,6 +4,8 @@ void toggleMidiClock(byte usercmd) {
 
 	PLAYING = !PLAYING; // Toggle/untoggle the var that tracks whether the MIDI CLOCK is playing
 
+	clearRecentNotes(); // Reset the "most recent note by channel" array
+
 	if (PLAYING) { // If PLAYING has just been toggled...
 		char name[7];
 		getFilename(name, SONG); // Get the filename corresponding to the current song
