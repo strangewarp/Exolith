@@ -11,6 +11,14 @@ void getFilename(char source[], byte fnum) {
 	source[6] = 0;
 }
 
+// Update a given byte within a given song-file.
+// This is used to update BPM and SEQ-SIZE bytes in the header
+void updateFileByte(byte pos, byte b) {
+	file.seekSet(pos); // Go to the given insert-point
+	file.write(b); // Write the new byte into the file
+	file.sync(); // Make sure the changes are recorded
+}
+
 // Make sure a given savefile exists, and is the correct size
 void initializeFile(char name[7]) {
 	if ( // If...
@@ -70,29 +78,10 @@ void loadSong(byte slot) {
 	file.read(STATS, 48);
 	file.close();
 
-	// Update the tick-size, in microseconds, to reflect the new BPM value
-	TICKSIZE = ((unsigned long) round(60000 / (BPM * 96))) * 1000;
+	updateTickSize(); // Update the internal tick-size (in microseconds) to match the new BPM value
 
 	SONG = slot; // Set the currently-active SONG-position to the given save-slot
 
 	TO_UPDATE = 255; // Flag entire GUI for an LED-update
 
-}
-
-// Update a given byte within a given song-file.
-// This is used to update BPM and SEQ-SIZE bytes in the header
-void updateFileByte(byte pos, byte b) {
-	byte wasopen = file.isOpen(); // Remember whether a file was open at the start of the function or not
-	if (!wasopen) { // If a file wasn't open...
-		char name[7];
-		getFilename(name, SONG); // Get the filename for the current song
-		file.open(name, O_WRITE); // Open the song's corresponding savefile
-	}
-	file.seekSet(pos); // Go to the given insert-point
-	file.write(b); // Write the new byte into the file
-	if (wasopen) { // If a file was open at the start of the function...
-		file.sync(); // Make sure the changes are recorded
-	} else { // Else, if a file wasn't open...
-		file.close(); // Close the file that was just opened
-	}
 }

@@ -1,4 +1,9 @@
 
+// Update the internal tick-size (in microseconds) to match the new BPM value
+void updateTickSize() {
+	TICKSIZE = round(60000000L / (BPM * 96));
+}
+
 // Reset the "most recent note by channel" array
 void clearRecentNotes() {
 	memset(RECENT, 255, 16);

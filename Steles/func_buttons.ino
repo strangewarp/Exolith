@@ -164,7 +164,7 @@ void parseRecPress(byte col, byte row) {
 	} else if (ctrl == B00000110) { // If the BPM command is held...
 		BPM = max(16, min(200, BPM ^ (128 >> (key % 8)))); // Change the BPM rate
 		updateFileByte(0, BPM); // Update the BPM-byte in the song's savefile
-		TICKSIZE = ((unsigned long) round(60000 / (BPM * 96))) * 1000; // Update the tick-size, in microseconds, to reflect the new BPM value
+		updateTickSize(); // Update the internal tick-size (in microseconds) to match the new BPM value
 		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
 	}
 

@@ -6,14 +6,6 @@ void toggleMidiClock(byte usercmd) {
 
 	clearRecentNotes(); // Reset the "most recent note by channel" array
 
-	if (PLAYING) { // If PLAYING has just been toggled...
-		char name[7];
-		getFilename(name, SONG); // Get the filename corresponding to the current song
-		file.open(name, O_RDWR); // Open its savefile for both read and write
-	} else { // Else, if PLAYING has just been untoggled...
-		file.close(); // Close the file that will have already been open
-	}
-
 	if (CLOCKMASTER) { // If in CLOCK MASTER mode...
 		if (PLAYING) { // If playing has just been enabled...
 			ELAPSED = TICKSIZE; // Cue the next tick-update to occur on the next timer-check
