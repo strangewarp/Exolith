@@ -93,12 +93,12 @@ void parseRecPress(byte col, byte row) {
 
 			// Make a time-offset for the RECORDSEQ's current 16th-note, based on the QUANTIZE value;
 			// this will be fed to the recordToSeq command to achieve the correct insert-position
-			byte down = POS[RECORDSEQ] % QUANTIZE;
+			char down = POS[RECORDSEQ] % QUANTIZE;
 			byte up = QUANTIZE - down;
 			char offset = (down <= up) ? (-down) : up;
 
 			// Record either the note or a REPEAT-COMMAND into the current RECORDSEQ slot
-			recordToSeq(offset, 144 + CHAN, rep ? rep : pitch, velo);
+			recordToSeq(offset, CHAN, rep ? rep : pitch, velo);
 
 			// If the tick was inserted at an offset after the current position,
 			// exit the function without playing the note, because it will be played momentarily
@@ -121,6 +121,9 @@ void parseRecPress(byte col, byte row) {
 		Serial.write(pitch); // ^
 		Serial.write(velo); // ^
 
+	} else if (ctrl == B00100000) { // If TOGGLE NOTE-RECORDING is held...
+		RECORDNOTES ^= 1; // Toggle the note-recording flag
+		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
 	} else if (ctrl == B00010000) { // If the BASENOTE button is held...
 		BASENOTE = min(12, BASENOTE ^ (8 >> col)); // Modify the BASENOTE value
 		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
@@ -143,6 +146,9 @@ void parseRecPress(byte col, byte row) {
 		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
 	} else if (ctrl == B00100100) { // If the CHAN-LISTEN command is held...
 		LISTEN ^= 8 >> col; // Modify the CHAN-LISTEN value
+		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
+	} else if (ctrl == B00100010) { // If the CONTROL CHANGE command is held...
+		CHAN ^= 16; // Flip the CHAN bit that turns all NOTE command-entry into CC command-entry
 		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
 	} else if (ctrl == B00011000) { // If the VELO button is held...
 		VELO = min(127, max(1, VELO ^ (128 >> (key % 8)))); // Modify the VELO value
@@ -182,7 +188,7 @@ void assignKey(byte col, byte row) {
 		// Commands that apply to both modes:
 		if (ctrl == B00111111) { // TOGGLE RECORD-MODE special command...
 			RECORDMODE ^= 1; // Toggle/untoggle the mode's tracking-variable
-			RECORDNOTES = 255; // Disable note-recording, to avoid recording new notes automatically on a future toggle cycle
+			RECORDNOTES = 0; // Disable note-recording, to avoid recording new notes automatically on a future toggle cycle
 			ERASENOTES = 0; // Disable note-erasing, to avoid erasing new notes automatically on a future toggle cycle
 			TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
 			return; // No need to go through the rest of the function at this point

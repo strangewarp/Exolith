@@ -131,14 +131,19 @@ void getTickNotes(byte s) {
 		if (buf[bn2] == 224) { // If this is a special REPEAT command...
 			if (RECENT[buf[bn1]] == 255) { continue; } // If no note has played on this channel yet, this command does nothing
 			buf[bn2] = RECENT[buf[bn1]]; // Change this command's PITCH byte to the most-recent pitch for this command's cannel
-		} else { // Else, if this is a regular NOTE command...
+		} else if (buf[bn1] <= 15) { // Else, if this is a regular NOTE command...
 			RECENT[buf[bn1]] = buf[bn2]; // Store the note's pitch, indexed by its channel
 		}
 
 		byte pos = MOUT_COUNT * 3; // Get the lowest empty MOUT location
 
+		// Convert the note's CHANNEL byte into either a NOTE or CC command
+		buf[bn1] += 144 + ((buf[bn1] & 16) << 1);
+
 		memcpy(MOUT + pos, buf + bn1, 3); // Copy the note into the MIDI buffer
 		MOUT_COUNT++; // Increase the counter that tracks the number of bytes in the MIDI buffer
+
+		if (buf[bn1] >= 16) { continue; } // If this was a proto-MIDI-CC command, forego any sustain mechanisms
 
 		if (SUST_COUNT == 8) { // If the SUSTAIN buffer is already full...
 			Serial.write(SUST[23]); // Send a premature NOTE-OFF for the oldest active sustain
@@ -191,9 +196,11 @@ void iterateAll() {
 			// If the seq isn't currently playing, go to the next seq's iteration-routine
 			if (!(STATS[i] & 128)) { continue; }
 
-			// If RECORD MODE is active, and the ERASE-NOTES command is being held,
-			// and notes are being recorded into this seq...
-			if (RECORDMODE && ERASENOTES && (RECORDNOTES == i)) {
+			// If notes are being recorded into this seq,
+			// and RECORD MODE is active,
+			// and notes are currently being recorded,
+			// and the ERASE-NOTES command is being held...
+			if ((RECORDSEQ == i) && RECORDMODE && RECORDNOTES && ERASENOTES) {
 				byte buf[9] = {0, 0, 0, 0, 0, 0, 0, 0};
 				file.seekSet(49 + POS[i] + (i * 8192)); // Set position to start of tick's first note
 				file.write(buf, 8); // Write in an entire empty tick's worth of bytes

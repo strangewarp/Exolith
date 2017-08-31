@@ -22,7 +22,10 @@ Steles data-file spec
 					Per note:
 						(4 total bytes)
 						0: Duration
-						1: Channel (+ 144)
+						1:
+							byte values:
+								0-15: Channel
+								16-31: CC Channel 0-15
 						2:
 							byte values:
 								0-127: Pitch

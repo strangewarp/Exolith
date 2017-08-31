@@ -23,8 +23,8 @@ void recordToSeq(char offset, byte chan, byte b1, byte b2) {
 		toinsert = 0; // Prepare to insert the new note into the first space in the tick
 	}
 
-	buf[0] = DURATION; // Construct a MIDI NOTE-ON, with an additional DURATION value, in the write buffer
-	buf[1] = 144 | chan; // ^
+	buf[0] = DURATION; // Construct a virtual MIDI command, with an additional DURATION value, in the write buffer
+	buf[1] = chan; // ^
 	buf[2] = b1; // ^
 	buf[3] = b2; // ^
 
