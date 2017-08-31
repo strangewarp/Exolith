@@ -84,9 +84,10 @@ void parseRecPress(byte col, byte row) {
 		byte rep = 0; // Will hold a REPEAT-command flag, if applicable
 
 		if ((!row) && (col == 4)) { // If the top-right button was pressed...
+			byte rchan = CHAN & 15; // Get real channel-value, without the virtual CC-bit
 			rep = 1; // Flag the presence of a REPEAT command
 			// Make the pitch into its channel's most-recent pitch, or a dummy-pitch-value if the most-recent pitch is empty
-			pitch = (RECENT[CHAN] <= 127) ? RECENT[CHAN] : (pitch - 12);
+			pitch = (RECENT[rchan] <= 127) ? RECENT[rchan] : (pitch - 12);
 		}
 
 		if (PLAYING && RECORDNOTES) { // If notes are being recorded into a playing sequence...
@@ -105,6 +106,8 @@ void parseRecPress(byte col, byte row) {
 			if (offset >= 1) { return; }
 
 		}
+
+		if (CHAN & 16) { return; } // If this was a CC command, forego all SUSTAIN operations
 
 		// Update SUSTAIN buffer in preparation for playing the user-pressed note
 		if (SUST_COUNT == 8) { // If the SUSTAIN buffer is already full...
