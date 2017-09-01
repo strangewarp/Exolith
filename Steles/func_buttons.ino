@@ -126,55 +126,57 @@ void parseRecPress(byte col, byte row) {
 
 	} else if (ctrl == B00100000) { // If TOGGLE NOTE-RECORDING is held...
 		RECORDNOTES ^= 1; // Toggle the note-recording flag
-		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
+		TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
 	} else if (ctrl == B00010000) { // If the BASENOTE button is held...
 		BASENOTE = min(12, BASENOTE ^ (8 >> col)); // Modify the BASENOTE value
-		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
+		TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
 	} else if (ctrl == B00001000) { // If the OCTAVE button is held...
 		OCTAVE = min(10, OCTAVE ^ (8 >> col)); // Modify the OCTAVE value
-		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
+		TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
 	} else if (ctrl == B00000100) { // If the DURATION button is held...
 		DURATION = min(64, DURATION ^ (128 >> (key % 8))); // Modify the DURATION value
-		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
+		TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
 	} else if (ctrl == B00000010) { // If the SWITCH RECORDING SEQUENCE button is held...
 		TO_UPDATE |= 4 >> (RECORDSEQ >> 2); // Flag the previous seq's corresponding LED-row for updating
 		RECORDSEQ = (PAGE * 24) + key; // Switch to the seq that corresponds to the key-position on the active page
 		TO_UPDATE |= 4 >> row; // Flag the new seq's corresponding LED-row for updating
+		TO_UPDATE |= 1; // Flag the topmost row for updating
 	} else if (ctrl == B00110000) { // If the LOAD command is held...
 		loadSong((PAGE * 24) + key); // Load a save-slot's contents into its tempfile, and start using that file
+		TO_UPDATE |= 1; // Flag the topmost row for updating
 	} else if (ctrl == B00101000) { // If the CLOCK-MASTER command is held...
 		CLOCKMASTER ^= 1; // Toggle the CLOCK-MASTER value
 		ABSOLUTETIME = micros(); // Set the ABSOLUTETIME-tracking var to now
 		ELAPSED = 0; // Set the ELAPSED value to show that no time has elapsed since the last tick-check
-		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
+		TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
 	} else if (ctrl == B00100100) { // If the CHAN-LISTEN command is held...
 		LISTEN ^= 8 >> col; // Modify the CHAN-LISTEN value
-		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
+		TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
 	} else if (ctrl == B00100010) { // If the CONTROL CHANGE command is held...
 		CHAN ^= 16; // Flip the CHAN bit that turns all NOTE command-entry into CC command-entry
-		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
+		TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
 	} else if (ctrl == B00011000) { // If the VELO button is held...
 		VELO = min(127, max(1, VELO ^ (128 >> (key % 8)))); // Modify the VELO value
-		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
+		TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
 	} else if (ctrl == B00010100) { // If the HUMANIZE button is held...
 		HUMANIZE = min(127, HUMANIZE ^ (128 >> (key % 8))); // Modify the HUMANIZE value
-		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
+		TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
 	} else if (ctrl == B00001100) { // If the TIME-QUANTIZE button is held...
 		QUANTIZE = 8 >> col; // Modify the TIME-QUANTIZE value
-		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
+		TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
 	} else if (ctrl == B00010010) { // If the CHAN button is held...
 		CHAN ^= 8 >> col; // Modify the CHAN value
-		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
+		TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
 	} else if (ctrl == B00001010) { // If the SEQ-SIZE button is held...
 		// Modify the currently-recording-seq's size
 		STATS[RECORDSEQ] = min(64, max(1, STATS[RECORDSEQ] ^ (128 >> (key % 8))));
 		updateFileByte(RECORDSEQ + 1, STATS[RECORDSEQ]); // Update the seq's size-byte in the song's savefile
-		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
+		TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
 	} else if (ctrl == B00000110) { // If the BPM command is held...
 		BPM = max(16, min(200, BPM ^ (128 >> (key % 8)))); // Change the BPM rate
 		updateFileByte(0, BPM); // Update the BPM-byte in the song's savefile
 		updateTickSize(); // Update the internal tick-size (in microseconds) to match the new BPM value
-		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
+		TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
 	}
 
 }
