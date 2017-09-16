@@ -40,6 +40,10 @@ void parsePlayPress(byte col, byte row) {
 			}
 			resetSeq(seq); // Reset the sequence
 		}
+	} else if (ctrl == B00111111) { // If the TOGGLE RECORD-MODE command is present...
+		RECORDMODE = 1; // Toggle RECORD-MODE
+		RECORDSEQ = seq; // Set the RECORD-SEQ to match the button that was pressed
+		TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
 	} else { // Else, if no special command is present...
 		if (CMD[seq] & B00000010) { // If the sequence already contains a cued ON value...
 			CMD[seq] = (CMD[seq] & B11100011) | (nums << 2); // Add a slice-position to the cued ON command
@@ -177,6 +181,11 @@ void parseRecPress(byte col, byte row) {
 		updateFileByte(0, BPM); // Update the BPM-byte in the song's savefile
 		updateTickSize(); // Update the internal tick-size (in microseconds) to match the new BPM value
 		TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
+	} else if (ctrl == B00111111) { // If the TOGGLE RECORD-MODE command is held...
+		RECORDMODE = 0; // Untoggle RECORD-MODE
+		RECORDNOTES = 0; // Disable note-recording, to avoid recording new notes automatically on a future toggle cycle
+		ERASENOTES = 0; // Disable note-erasing, to avoid erasing new notes automatically on a future toggle cycle
+		TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
 	}
 
 }
@@ -192,10 +201,7 @@ void assignKey(byte col, byte row) {
 
 		// Commands that apply to both modes:
 		if (ctrl == B00111111) { // TOGGLE RECORD-MODE special command...
-			RECORDMODE ^= 1; // Toggle/untoggle the mode's tracking-variable
-			RECORDNOTES = 0; // Disable note-recording, to avoid recording new notes automatically on a future toggle cycle
-			ERASENOTES = 0; // Disable note-erasing, to avoid erasing new notes automatically on a future toggle cycle
-			TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
+			TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
 			return; // No need to go through the rest of the function at this point
 		}
 
@@ -207,13 +213,13 @@ void assignKey(byte col, byte row) {
 		} else { // Else, if PLAY MODE is active...
 			if (ctrl == B00010001) { // If this is a PAGE A special command...
 				PAGE = 0; // Toggle to page A
-				TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
+				TO_UPDATE |= 254; // Flag LED-rows 1-7 for updating
 			} else if (ctrl == B00001001) { // If this is a PAGE B special command...
 				PAGE = 1; // Toggle to page B
-				TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
+				TO_UPDATE |= 254; // Flag LED-rows 1-7 for updating
 			} //else if (ctrl == B00101000) { // If this is a PAGE C special command...
 				//PAGE = 2; // Toggle to page C
-				//TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
+				//TO_UPDATE |= 254; // Flag LED-rows 1-7 for updating
 			//}
 		}
 

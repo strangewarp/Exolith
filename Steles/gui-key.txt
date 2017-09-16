@@ -2,8 +2,8 @@
 
 LEDs (PLAY MODE):
 
-	p p u u u u u u
 	c c c c c c c c
+	p p u u u u u u
 	s s s s q q q q
 	s s s s q q q q
 	s s s s q q q q
@@ -11,17 +11,17 @@ LEDs (PLAY MODE):
 	s s s s q q q q
 	s s s s q q q q
 
+	c: Global cue point
 	p: Current page
 	u: Current user-held command-buttons
-	c: Global cue point
 	s: Seqs on current page with SCATTER active
 	q: Active seqs on current page
 
 
 LEDs (RECORD MODE):
 
-	p p u u u u u u
 	c c c c c c c c
+	p p u u u u u u
 	d d d d d d d d
 	d d d d d d d d
 	d d d d d d d d
@@ -29,8 +29,8 @@ LEDs (RECORD MODE):
 	d d d d d d d d
 	d d d d d d d d
 
+	c: Global cue point, or quantity related to user activity
 	p: Current page
 	u: Current user-held command-buttons
-	c: Global cue point, or quantity related to user activity
 	d: Display glyph related to user activity
 

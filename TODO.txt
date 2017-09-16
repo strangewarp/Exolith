@@ -3,38 +3,40 @@ Tegne TODO
 
 Software:
 
-. test basic UI functionality
-	. test toggling into RECORD MODE
-		-- make RECORD TOGGLE's glyph more visible when its buttons are simply held
-	. test all GUI menus in RECORD MODE
-	. test all user-controlled var-setting operations in RECORD MODE
-. test basic recording
-	. test note-playing on grid-keyboard
-	. test REPEAT button
-	. test note-recording itself
-. test basic sequencing
-. test sustain system
-. test "toggle to next/prev sequence" in RECORD mode
-. test REPEAT commands
-. test MIDI CC commands
-. test file-load
-. test MIDI-IN (notes)
-	. uncomment parseRawMidi() in void loop()
-. test MIDI-IN (clock)
-. add PROGRAM CHANGE functionality (in addition to CONTROL CHANGE)
-. add GUI prompts for:
-	. current RECORDSEQ value (RECORD MODE)
-. check whether sequences are allowed to have non-multiple-of-2 lengths
-. add SONG POSITION POINTER functionality while in CLOCK FOLLOW mode, to orient the global cue-position correctly?
+	. test basic UI functionality
+		. test toggling into RECORD MODE
+			-- make RECORD TOGGLE's glyph more visible when its buttons are simply held
+		. test all GUI menus in RECORD MODE
+		. test all user-controlled var-setting operations in RECORD MODE
+	. test basic recording
+		. test note-playing on grid-keyboard
+		. test REPEAT button
+		. test note-recording itself
+	. test basic sequencing
+	. test sustain system
+	. test "toggle to next/prev sequence" in RECORD mode
+	. test REPEAT commands
+	. test MIDI CC commands
+	. test file-load
+	. test MIDI-IN (notes)
+		. uncomment parseRawMidi() in void loop()
+	. test MIDI-IN (clock)
+		. add a "DO NOT SEND CLOCK SIGNALS" user-flag to the CLOCK MASTER/FOLLOW mechanism
+	. add PROGRAM CHANGE functionality (in addition to CONTROL CHANGE)
+	. add GUI prompts for:
+		. current RECORDSEQ value (RECORD MODE)
+	. check whether sequences are allowed to have non-multiple-of-2 lengths
+	. add SONG POSITION POINTER functionality while in CLOCK FOLLOW mode, to orient the global cue-position correctly?
 
 Hardware:
 
-. test MIDI-IO LED circuit with 0.1uF & 1uF capacitors
-	. or with 1k/10k resistor from cap+ to GND
-	. if it's as bright as the current kind, then: change KiCad schematics & PCBs & Mouser order to reflect this
-. update KiCad file:
-	. use regular-sized capacitors, in a laying-down position, because people replacing capacitors wouldn't have special tiny ones
-		. reroute traces based on this
-		. update Mouser cart to reflect this
-	. update R-SET resistor's value based on the new diffused LEDs
+	. test MIDI-IO LED circuit with 0.1uF & 1uF capacitors
+		. or with 1k/10k resistor from cap+ to GND
+		. if it's as bright as the current kind, then: change KiCad schematics & PCBs & Mouser order to reflect this
+	. update KiCad file:
+		. use regular-sized capacitors, in a laying-down position, because people replacing capacitors wouldn't have special tiny ones
+			. reroute traces based on this
+			. update Mouser cart to reflect this
+		. update R-SET resistor's value based on the new diffused LEDs
+	. move AVR-ISP programming header as close to the back of the unit as possible, to not interfere with new diffused-LED design
 
