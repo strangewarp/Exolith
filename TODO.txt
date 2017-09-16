@@ -14,6 +14,17 @@ Software:
 		. test note-recording itself
 	. test basic sequencing
 	. test sustain system
+	. test all cue-commands
+		. OFF
+		. CUE
+		. SLICE
+		. CUE (with SLICE insertion)
+		. CUE OFF
+		. PAGE OFF
+		. SCATTER (amount)
+		. SCATTER UNSET
+		. PAGE SCATTER UNSET
+		. GLOBAL PLAY/STOP
 	. test "toggle to next/prev sequence" in RECORD mode
 	. test REPEAT commands
 	. test MIDI CC commands
@@ -25,8 +36,9 @@ Software:
 	. add PROGRAM CHANGE functionality (in addition to CONTROL CHANGE)
 	. add GUI prompts for:
 		. current RECORDSEQ value (RECORD MODE)
-	. check whether sequences are allowed to have non-multiple-of-2 lengths
+	. check whether sequences can actually function with non-multiple-of-2 lengths
 	. add SONG POSITION POINTER functionality while in CLOCK FOLLOW mode, to orient the global cue-position correctly?
+	. add a command to shift the position of the global cue-point?
 
 Hardware:
 
@@ -38,5 +50,5 @@ Hardware:
 			. reroute traces based on this
 			. update Mouser cart to reflect this
 		. update R-SET resistor's value based on the new diffused LEDs
-	. move AVR-ISP programming header as close to the back of the unit as possible, to not interfere with new diffused-LED design
+		. move AVR-ISP programming header as close to the back of the unit as possible, to not interfere with new diffused-LED design
 
