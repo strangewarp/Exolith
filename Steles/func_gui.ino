@@ -134,6 +134,8 @@ void updateGUI() {
 				} else if (ctrl == B00110011) { // If GLOBAL PLAY/STOP is held...
 					// Grab a section of the PLAYING-glyph for display, or its ARMED version, if sequences are playing
 					row = pgm_read_byte_near((PLAYING ? GLYPH_PLAYSTOP_ARMED : GLYPH_PLAYSTOP) + i);
+				} else if (ctrl == B00111111) { // Else, if RECORD-MODE TOGGLE is held...
+					row = pgm_read_byte_near(GLYPH_RECORDING + i); // Grab a section of the RECORDING glyph for display
 				}
 				// If any ctrl-buttons are held in an unknown configuration,
 				// then no action is taken, leaving "row" set to 0 (all row-LEDs off).

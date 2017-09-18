@@ -5,7 +5,11 @@ Software:
 
 	. test basic UI functionality
 		. test toggling into RECORD MODE
-			-- make RECORD TOGGLE's glyph more visible when its buttons are simply held
+		--seems to work
+			. make RECORD TOGGLE's glyph more visible when its buttons are simply held
+			--did this in RECORD MODE; in PLAY MODE it would disrupt things / be overcomplicated to implement correctly for efficiency reasons
+		. shorten all glyphs to 5 rows high, for better visibility
+			. change glyph-related TO_UPDATE calls accordingly
 		. test all GUI menus in RECORD MODE
 		. test all user-controlled var-setting operations in RECORD MODE
 	. test basic recording
@@ -39,6 +43,7 @@ Software:
 	. check whether sequences can actually function with non-multiple-of-2 lengths
 	. add SONG POSITION POINTER functionality while in CLOCK FOLLOW mode, to orient the global cue-position correctly?
 	. add a command to shift the position of the global cue-point?
+	. remove "THIS CODE IS UNDER DEVELOPMENT AND DOESN'T DO ANYTHING" from license-statement
 
 Hardware:
 
@@ -46,9 +51,13 @@ Hardware:
 		. or with 1k/10k resistor from cap+ to GND
 		. if it's as bright as the current kind, then: change KiCad schematics & PCBs & Mouser order to reflect this
 	. update KiCad file:
-		. use regular-sized capacitors, in a laying-down position, because people replacing capacitors wouldn't have special tiny ones
-			. reroute traces based on this
-			. update Mouser cart to reflect this
-		. update R-SET resistor's value based on the new diffused LEDs
-		. move AVR-ISP programming header as close to the back of the unit as possible, to not interfere with new diffused-LED design
+		. bottom-board:
+			.use regular-sized capacitors, in a laying-down position, because people replacing capacitors wouldn't have special tiny ones sitting around
+				. update Mouser cart to reflect this
+			. update R-SET resistor's value based on the new diffused LEDs
+				. update Mouser cart to reflect this
+		. top-board:
+			. move AVR-ISP programming header as close to the back of the unit as possible, to not interfere with new diffused-LED design
+			. move MIDI-IN LED to left side
+			. move POWER LED to right side
 

@@ -31,6 +31,10 @@ void parsePlayPress(byte col, byte row) {
 	} else if (pg && cue && nums && (!off)) { // If this is a SCATTER command of any kind...
 		SCATTER[seq] = nums; // Turn this command's numeric value into the seq's SCATTER-chance flags
 		TO_UPDATE |= 4 << row; // Flag the seq's corresponding LED-row for an update
+	} else if (ctrl == B00111111) { // If the TOGGLE RECORD-MODE command is present...
+		RECORDMODE = 1; // Toggle RECORD-MODE
+		RECORDSEQ = seq; // Set the RECORD-SEQ to match the button that was pressed
+		TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
 	} else if (cue | off) { // If either a CUE or OFF command is present...
 		if (cue | nums) { // If there is a CUE or any NUMBERS...
 			CMD[seq] = (nums << 5) | ((off ^ 1) << 1) | off; // Cue an on-or-off command at the given global time
@@ -40,10 +44,6 @@ void parsePlayPress(byte col, byte row) {
 			}
 			resetSeq(seq); // Reset the sequence
 		}
-	} else if (ctrl == B00111111) { // If the TOGGLE RECORD-MODE command is present...
-		RECORDMODE = 1; // Toggle RECORD-MODE
-		RECORDSEQ = seq; // Set the RECORD-SEQ to match the button that was pressed
-		TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
 	} else { // Else, if no special command is present...
 		if (CMD[seq] & B00000010) { // If the sequence already contains a cued ON value...
 			CMD[seq] = (CMD[seq] & B11100011) | (nums << 2); // Add a slice-position to the cued ON command
@@ -197,13 +197,15 @@ void assignKey(byte col, byte row) {
 
 	if (col == 0) { // If the keystroke is in the leftmost column...
 
-		TO_UPDATE |= 1; // Flag the top LED-row for updating
+		TO_UPDATE |= 2; // Flag the second LED-row for updating
 
 		// Commands that apply to both modes:
+		/* This is unnecessary, because these GUI updates are applied on RECORD-MODE keystrokes already
 		if (ctrl == B00111111) { // TOGGLE RECORD-MODE special command...
 			TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
 			return; // No need to go through the rest of the function at this point
 		}
+		*/
 
 		if (RECORDMODE) { // If RECORD-MODE is active...
 			if (ctrl == B00000001) { // ERASE WHILE HELD special command...
@@ -213,14 +215,14 @@ void assignKey(byte col, byte row) {
 		} else { // Else, if PLAY MODE is active...
 			if (ctrl == B00010001) { // If this is a PAGE A special command...
 				PAGE = 0; // Toggle to page A
-				TO_UPDATE |= 254; // Flag LED-rows 1-7 for updating
+				TO_UPDATE |= 252; // Flag LED-rows 2-7 for updating
 			} else if (ctrl == B00001001) { // If this is a PAGE B special command...
 				PAGE = 1; // Toggle to page B
-				TO_UPDATE |= 254; // Flag LED-rows 1-7 for updating
-			} //else if (ctrl == B00101000) { // If this is a PAGE C special command...
-				//PAGE = 2; // Toggle to page C
-				//TO_UPDATE |= 254; // Flag LED-rows 1-7 for updating
-			//}
+				TO_UPDATE |= 252; // Flag LED-rows 2-7 for updating
+			} /* else if (ctrl == B00101000) { // If this is a PAGE C special command...
+				PAGE = 2; // Toggle to page C
+				TO_UPDATE |= 252; // Flag LED-rows 2-7 for updating
+			} */
 		}
 
 	} else { // Else, if the keystroke is in any of the other columns...
@@ -252,5 +254,5 @@ void unassignKey(byte col) {
 			TO_UPDATE |= 252; // Flag the lower 6 LED-rows for updating
 		}
 	}
-	TO_UPDATE |= 1; // Flag the top LED-row for updating
+	TO_UPDATE |= 2; // Flag the second LED-row for updating
 }
