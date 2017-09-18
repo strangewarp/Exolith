@@ -12,9 +12,9 @@ void startupAnimation() {
 	for (byte row = 0; row < 8; row++) {
 		lc.setRow(0, row, 255);
 	}
-	delay(150);
+	delay(210);
 	lc.clearDisplay(0);
-	delay(35);
+	delay(40);
 }
 
 // Get the LED-values for a given GUI row within the lower 6 rows (SCATTER/SEQ rows)
@@ -89,15 +89,21 @@ void updateGUI() {
 
 		if (RECORDMODE) { // If RECORD MODE is active...
 
-			for (byte i = 0; i < 6; i++) { // For each of the bottom 6 GUI rows...
+			if (TO_UPDATE & 4) { // If the third row is flagged for an update...
+				// If a CTRL-button is held, clear the row; else get this row's SEQ and SCATTER values
+				lc.setRow(0, 2, ctrl ? 0 : getRowVals(0));
+			}
 
-				if (!(TO_UPDATE & (4 << i))) { continue; } // If the row is not flagged for an update, continue to the next row
+			for (byte i = 0; i < 5; i++) { // For each of the bottom 5 GUI rows...
+
+				// If the row is not flagged for an update, continue to the next row
+				if ((~TO_UPDATE) & (8 << i)) { continue; }
 
 				// Holds the LED-row's contents, which will be assembled based on which commands are held
 				byte row = 0;
 
 				if (!ctrl) { // If no command-buttons are held...
-					row = getRowVals(i); // Get the row's standard SEQ and SCATTER values
+					row = getRowVals(i + 1); // Get the row's standard SEQ and SCATTER values
 				} else if (ctrl == B00100000) { // If TOGGLE NOTE-RECORDING is held...
 					// Grab a section of the RECORDING-glyph for display, or its ARMED variant, if notes are being recorded
 					row = pgm_read_byte_near((RECORDNOTES ? GLYPH_RECORDING_ARMED : GLYPH_RECORDING) + i);
@@ -140,7 +146,7 @@ void updateGUI() {
 				// If any ctrl-buttons are held in an unknown configuration,
 				// then no action is taken, leaving "row" set to 0 (all row-LEDs off).
 
-				lc.setRow(0, i + 2, row); // Set the LED-row based on the current display-row
+				lc.setRow(0, i + 3, row); // Set the LED-row based on the current display-row
 
 			}
 

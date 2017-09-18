@@ -9,7 +9,9 @@ Software:
 			. make RECORD TOGGLE's glyph more visible when its buttons are simply held
 			--did this in RECORD MODE; in PLAY MODE it would disrupt things / be overcomplicated to implement correctly for efficiency reasons
 		. shorten all glyphs to 5 rows high, for better visibility
+		--done
 			. change glyph-related TO_UPDATE calls accordingly
+			--updated everything that actually needed an update, which meant leaving a lot of these values the same, as the blank row requires the same update type
 		. test all GUI menus in RECORD MODE
 		. test all user-controlled var-setting operations in RECORD MODE
 	. test basic recording
