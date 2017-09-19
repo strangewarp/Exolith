@@ -197,7 +197,7 @@ void assignKey(byte col, byte row) {
 
 	if (col == 0) { // If the keystroke is in the leftmost column...
 
-		TO_UPDATE |= 2; // Flag the second LED-row for updating
+		TO_UPDATE |= 3; // Flag the top two LED-rows for updating
 
 		// Commands that apply to both modes:
 		/* This is unnecessary, because these GUI updates are applied on RECORD-MODE keystrokes already

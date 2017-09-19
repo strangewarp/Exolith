@@ -14,6 +14,7 @@ Software:
 			--updated everything that actually needed an update, which meant leaving a lot of these values the same, as the blank row requires the same update type
 		. test all GUI menus in RECORD MODE
 		. test all user-controlled var-setting operations in RECORD MODE
+	. timing system / global cue system look broken? fix them
 	. test basic recording
 		. test note-playing on grid-keyboard
 		. test REPEAT button
