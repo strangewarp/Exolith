@@ -14,7 +14,6 @@ Software:
 			--updated everything that actually needed an update, which meant leaving a lot of these values the same, as the blank row requires the same update type
 		. test all GUI menus in RECORD MODE
 		-- they seem to work
-		. replace LedControl with LedControl_HW_SPI???
 		. test all user-controlled var-setting operations in RECORD MODE
 		. change second LED-row:
 			. leftmost 3 LEDs: binary value: current chorded CTRL-buttons
@@ -52,6 +51,7 @@ Software:
 	. check whether sequences can actually function with non-multiple-of-2 lengths
 	. add SONG POSITION POINTER functionality while in CLOCK FOLLOW mode, to orient the global cue-position correctly?
 	. add a command to shift the position of the global cue-point?
+	. replace LedControl with LedControl_HW_SPI???
 	. remove "THIS CODE IS UNDER DEVELOPMENT AND DOESN'T DO ANYTHING" from license-statement
 	. test overloading the 8-events-per-tick system
 	. test overloading the SUSTAIN system
@@ -61,7 +61,11 @@ Software:
 Hardware:
 
 	. test breadboarded prototype with shared-SPI-line layout (and two digital SPI-select pins), for LedControl_HW_SPI
-		. if this works, update both KiCad and firmware to reflect the changes
+		. if this works:
+			. reroute PCB prototype to reflect the changes
+			. update both KiCad and firmware to reflect the changes
+			. put 2 extra LEDs in the design on the freed-up pins, and use these to display the current PAGE value
+	. remove superfluous POWER-LED & its resistor
 	. test MIDI-IO LED circuit with 0.1uF & 1uF capacitors
 		. or with 1k/10k resistor from cap+ to GND
 		. if it's as bright as the current kind, then: change KiCad schematics & PCBs & Mouser order to reflect this
