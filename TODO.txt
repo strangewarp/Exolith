@@ -64,7 +64,7 @@ Hardware:
 		. if this works:
 			. reroute PCB prototype to reflect the changes
 			. update both KiCad and firmware to reflect the changes
-			. put 2 extra LEDs in the design on the freed-up pins, and use these to display the current PAGE value
+			. (later) put 2 extra LEDs in the design on the freed-up pins, and use these to display the current PAGE value
 	. remove superfluous POWER-LED & its resistor
 	. test MIDI-IO LED circuit with 0.1uF & 1uF capacitors
 		. or with 1k/10k resistor from cap+ to GND
