@@ -2,35 +2,42 @@
 
 LEDs (PLAY MODE):
 
-	c c c c c c c c
-	p p u u u u u u
-	s s s s q q q q
-	s s s s q q q q
-	s s s s q q q q
-	s s s s q q q q
-	s s s s q q q q
-	s s s s q q q q
+	   c c c c c c c c
+	   a a a a a a a a
+	   s s s s s s s s
+	   s s s s s s s s
+	P  s s s s s s s s  P
+	   s s s s s s s s
+	   s s s s s s s s  I
+	K  s s s s s s s s  O
+
+	P: Currently active page
+	K: Blinks whenever a new CTRL-button is pressed
+	I: Analog MIDI-IN indicator
+	O: Analog MIDI-OUT indicator
 
 	c: Global cue point
-	p: Current page
-	u: Current user-held command-buttons
-	s: Seqs on current page with SCATTER active
-	q: Active seqs on current page
+	a: Number of active sustains
+	s: Seq activity, or SCATTERed seqs when SCATTER is held
 
 
 LEDs (RECORD MODE):
 
-	c c c c c c c c
-	p p u u u u u u
-	d d d d d d d d
-	d d d d d d d d
-	d d d d d d d d
-	d d d d d d d d
-	d d d d d d d d
-	d d d d d d d d
+	   c c c c c c c c
+	   a a a a a a a a
+	   d d d d d d d d
+	   d d d d d d d d
+	P  d d d d d d d d  P
+	   d d d d d d d d
+	   d d d d d d d d  I
+	K  d d d d d d d d  O
+
+	P: Currently active page
+	K: Blinks whenever a new CTRL-button is pressed
+	I: Analog MIDI-IN indicator
+	O: Analog MIDI-OUT indicator
 
 	c: Global cue point, or quantity related to user activity
-	p: Current page
-	u: Current user-held command-buttons
+	a: Number of active sustains
 	d: Display glyph related to user activity
 

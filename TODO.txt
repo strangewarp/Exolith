@@ -14,11 +14,10 @@ Software:
 			--updated everything that actually needed an update, which meant leaving a lot of these values the same, as the blank row requires the same update type
 		. test all GUI menus in RECORD MODE
 		-- they seem to work
+		. replace bloated LedControl with optimized custom functions
 		. test all user-controlled var-setting operations in RECORD MODE
-		. change second LED-row:
-			. leftmost 3 LEDs: binary value: current chorded CTRL-buttons
-			. middle 3 LEDs: binary value: current number of active sustains
-			. right 2 LEDs: current page
+		. change second LED-row to display the current number of active sustains
+	. display both pages' sequence-activity simultaneously; use 
 	. timing system / global cue system look broken? fix them
 	. test basic recording
 		. test note-playing on grid-keyboard
@@ -60,12 +59,16 @@ Software:
 
 Hardware:
 
-	. test breadboarded prototype with shared-SPI-line layout (and two digital SPI-select pins), for LedControl_HW_SPI
+	. test breadboarded prototype with shared-SPI-line layout (and two digital SPI-select pins), for LedControl_HW_SPI lag-reduction
 		. if this works:
 			. reroute PCB prototype to reflect the changes
 			. update both KiCad and firmware to reflect the changes
-			. (later) put 2 extra LEDs in the design on the freed-up pins, and use these to display the current PAGE value
-	. remove superfluous POWER-LED & its resistor
+			. two pins will be freed up by this, so reassign them:
+				. pin 1: connect to PNP-NPN circuit that always lights up one of two LEDs, to display which page is active
+				. pin 2: light up on keystroke-down events (diode-transistor-transistor-capacitor ramp circuit driving LED) (apply pin value on keystroke, and unset pin value on start of next keystroke-check loop)
+			. put 2 extra LEDs+resistors in the design on the two freed-up pins, and use these to display the current PAGE value
+	. move POWER-LED to center of bottom-board, and use a high-brightness white LED with a very wide visibility-cone
+	. test higher resistor values for POWER-LED to get a matching brightness level
 	. test MIDI-IO LED circuit with 0.1uF & 1uF capacitors
 		. or with 1k/10k resistor from cap+ to GND
 		. if it's as bright as the current kind, then: change KiCad schematics & PCBs & Mouser order to reflect this
