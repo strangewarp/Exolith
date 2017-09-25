@@ -15,7 +15,9 @@ Software:
 		. test all GUI menus in RECORD MODE
 		-- they seem to work
 		. test all user-controlled var-setting operations in RECORD MODE
-		. change second LED-row to display the current number of active sustains
+		-- seems ok
+	. change second LED-row to display the current number of active sustains
+	
 	. display both pages' sequence-activity simultaneously
 	. display SCATTER status only when a SCATTER command is held
 	. timing system / global cue system look broken? fix them
