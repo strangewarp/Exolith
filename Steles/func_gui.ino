@@ -3,40 +3,44 @@
 void startupAnimation() {
 	for (byte i = 0; i < 5; i++) {
 		for (byte row = 0; row < 8; row++) {
-			lc.setRow(0, row, (pgm_read_dword_near(LOGO + row) >> ((i == 4) ? 16 : (8 * (3 - i))) & 255));
+			lc.setRow(0, row, (pgm_read_dword_near(LOGO + row) >> ((i == 4) ? 16 : (8 * (3 - i)))) & 255);
 		}
 		delay(150);
 		lc.clearDisplay(0);
 		delay(35);
 	}
-	for (byte row = 0; row < 8; row++) {
-		lc.setRow(0, row, 255);
-	}
-	delay(210);
-	lc.clearDisplay(0);
-	delay(40);
 }
 
-// Get the LED-values for a given GUI row within the lower 6 rows (SCATTER/SEQ rows)
-byte getRowVals(byte r) {
-	byte ib = (PAGE * 24) + (r << 2); // Get the row's contents' base array positions
-	byte ib2 = ib + 1;
-	byte ib3 = ib2 + 1;
-	byte ib4 = ib3 + 1;
-	return ((SCATTER[ib] & 7) ? 128 : 0) // Return all the row's SCATTER and PLAYING info as a row's worth of bits
-		| ((SCATTER[ib2] & 7) ? 64 : 0) // ^
-		| ((SCATTER[ib3] & 7) ? 32 : 0) // ^
-		| ((SCATTER[ib4] & 7) ? 16 : 0) // ^
-		| ((STATS[ib] & 128) >> 4) // ^
-		| ((STATS[ib2] & 128) >> 5) // ^
-		| ((STATS[ib3] & 128) >> 6) // ^
-		| ((STATS[ib4] & 128) >> 7); // ^
+// Get the SEQUENCE-ACTIVITY LED-values for a given GUI row within the lower 6 rows
+byte getRowSeqVals(byte r) {
+	byte ib = r << 2; // Get the row's left-side's global-array position
+	byte ib2 = 24 + ib; // Get the row's right-side's global-array position
+	return (STATS[ib] & 128) // Return the row's PLAYING info, from both pages, as a row's worth of bits
+		| ((STATS[ib + 1] & 128) >> 1)
+		| ((STATS[ib + 2] & 128) >> 2)
+		| ((STATS[ib + 3] & 128) >> 3)
+		| ((STATS[ib2] & 128) >> 4)
+		| ((STATS[ib2 + 1] & 128) >> 5)
+		| ((STATS[ib2 + 2] & 128) >> 6)
+		| ((STATS[ib2 + 3] & 128) >> 7);
+}
+
+// Get the SCATTER-ACTIVITY LED-values for a given GUI row within the lower 6 rows
+byte getRowScatterVals(byte r) {
+	byte ib = r << 2; // Get the row's left-side's global-array position
+	byte ib2 = 24 + ib; // Get the row's right-side's global-array position
+	return ((!!(SCATTER[ib] & 7)) << 7) // Return the row's SCATTER info, from both pages, as a row's worth of bits
+		| ((!!(SCATTER[ib + 1] & 7)) << 6)
+		| ((!!(SCATTER[ib + 2] & 7)) << 5)
+		| ((!!(SCATTER[ib + 3] & 7)) << 4)
+		| ((!!(SCATTER[ib2] & 7)) << 3)
+		| ((!!(SCATTER[ib2 + 1] & 7)) << 2)
+		| ((!!(SCATTER[ib2 + 2] & 7)) << 1)
+		| (!!(SCATTER[ib2 + 3] & 7));
 }
 
 // Update the GUI based on update-flags that have been set by the current tick's events
 void updateGUI() {
-
-	// Note: The top two LED-rows are the same in both RECORD and PLAY modes
 
 	byte ctrl = BUTTONS & B00111111; // Get the control-row buttons' activity
 
@@ -91,8 +95,8 @@ void updateGUI() {
 		if (RECORDMODE) { // If RECORD MODE is active...
 
 			if (TO_UPDATE & 4) { // If the third row is flagged for an update...
-				// If a CTRL-button is held, clear the row; else get this row's SEQ and SCATTER values
-				lc.setRow(0, 2, ctrl ? 0 : getRowVals(0));
+				// If a CTRL-button is held, clear the row; else get this row's SEQ values
+				lc.setRow(0, 2, ctrl ? 0 : getRowSeqVals(0));
 			}
 
 			for (byte i = 0; i < 5; i++) { // For each of the bottom 5 GUI rows...
@@ -104,7 +108,7 @@ void updateGUI() {
 				byte row = 0;
 
 				if (!ctrl) { // If no command-buttons are held...
-					row = getRowVals(i + 1); // Get the row's standard SEQ and SCATTER values
+					row = getRowSeqVals(i + 1); // Get the row's standard SEQ values
 				} else if (ctrl == B00100000) { // If TOGGLE NOTE-RECORDING is held...
 					// Grab a section of the RECORDING-glyph for display, or its ARMED variant, if notes are being recorded
 					row = pgm_read_byte_near((RECORDNOTES ? GLYPH_RECORDING_ARMED : GLYPH_RECORDING) + i);
@@ -152,9 +156,15 @@ void updateGUI() {
 			}
 
 		} else { // Else, if PLAYING MODE is actve...
+			// Check whether a SCATTER-related command is held:
+			byte heldsc = (ctrl != B00110011) // Eliminate GLOBAL PLAY/STOP-based false-positives
+				&& (ctrl != B00111111) // Eliminate TOGGLE RECORD MODE-based false-positives
+				&& ((ctrl & B00000011) == B00000011); // Make sure this is, indeed, a command with SCATTER shape
 			for (byte i = 2; i < 8; i++) { // For each of the bottom 6 GUI rows...
-				if (!(TO_UPDATE & (1 << i))) { continue; } // If the row is not flagged for an update, continue to the next row
-				lc.setRow(0, i, getRowVals(i - 2)); // Display the row of SCATTER and PLAYING info
+				if (TO_UPDATE & (1 << i)) { // If the row is flagged for an update...
+					// If a SCATTER-related command is held, display a row of SCATTER info; else display a row of SEQ info
+					lc.setRow(0, i, heldsc ? getRowScatterVals(i - 2) : getRowSeqVals(i - 2));
+				}
 			}
 		}
 

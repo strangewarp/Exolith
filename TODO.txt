@@ -6,6 +6,7 @@ Software:
 	. change second LED-row to display the current number of active sustains
 	-- done afaict, but still needs additional fixes to underlying sustain & note-press systems before being testable
 	. display both pages' sequence-activity simultaneously
+	-- done afaict, but still needs fixes to the sequencing system before being testable
 	. display SCATTER status only when a SCATTER command is held
 	. timing system / global cue system look broken? fix them
 	. test basic recording
