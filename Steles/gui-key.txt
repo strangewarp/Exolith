@@ -1,24 +1,64 @@
 
 
+LEDs (PLAY MODE) (possible design change):
+
+	c  q q q q  a
+	c  q q q q  a
+	c  q q q q  a
+	c  q q q q  a
+	   q q q q
+	I  q q q q  O
+
+	dual color: a, c, q
+	single color: I, O
+
+	I: Digital MIDI-IN indicator (or analog, if pins can't be freed up)
+	O: Digital MIDI-OUT indicator (or analog, if pins can't be freed up)
+
+	a: Number of active sustains
+	c: Global cue point
+	q: Seq activity, or SCATTERed seqs when SCATTER is held
+
+
+LEDs (RECORD MODE) (possible design change):
+
+	c  q q q q  a
+	c  q q q q  a
+	c  q q q q  a
+	c  q q q q  a
+	   q q q q
+	I  q q q q  O
+
+	dual color: a, c, q
+	single color: I, O
+
+	I: Digital MIDI-IN indicator (or analog, if pins can't be freed up)
+	O: Digital MIDI-OUT indicator (or analog, if pins can't be freed up)
+
+	a: Number of active sustains
+	c: Global cue point, or quantity related to user activity
+	q: Display-symbol related to user activity
+
+
 LEDs (PLAY MODE):
 
 	   c c c c c c c c
-	   a a a a a a a a
-	   s s s s s s s s
-	   s s s s s s s s
-	P  s s s s s s s s  P
-	   s s s s s s s s
-	   s s s s s s s s  I
-	K  s s s s s s s s  O
+	I  a a a a a a a a  O
+	   q q q q q q q q
+	   q q q q q q q q
+	   q q q q q q q q
+	P  q q q q q q q q  P
+	   q q q q q q q q
+	K  q q q q q q q q
 
-	P: Currently active page
-	K: Blinks whenever a new CTRL-button is pressed
 	I: Analog MIDI-IN indicator
+	K: Blinks whenever a new CTRL-button is pressed
 	O: Analog MIDI-OUT indicator
+	P: Currently active page
 
-	c: Global cue point
 	a: Number of active sustains
-	s: Seq activity, or SCATTERed seqs when SCATTER is held
+	c: Global cue point
+	q: Seq activity, or SCATTERed seqs when SCATTER is held
 
 
 LEDs (RECORD MODE):
@@ -32,12 +72,12 @@ LEDs (RECORD MODE):
 	   d d d d d d d d  I
 	K  d d d d d d d d  O
 
-	P: Currently active page
-	K: Blinks whenever a new CTRL-button is pressed
 	I: Analog MIDI-IN indicator
+	K: Blinks whenever a new CTRL-button is pressed
 	O: Analog MIDI-OUT indicator
+	P: Currently active page
 
-	c: Global cue point, or quantity related to user activity
 	a: Number of active sustains
+	c: Global cue point, or quantity related to user activity
 	d: Display glyph related to user activity
 

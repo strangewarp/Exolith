@@ -128,6 +128,8 @@ void parseRecPress(byte col, byte row) {
 		Serial.write(pitch); // ^
 		Serial.write(velo); // ^
 
+		TO_UPDATE |= 2; // Update sustain-displaying GUI row
+
 	} else if (ctrl == B00100000) { // If TOGGLE NOTE-RECORDING is held...
 		RECORDNOTES ^= 1; // Toggle the note-recording flag
 		TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating

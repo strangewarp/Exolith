@@ -3,21 +3,8 @@ Tegne TODO
 
 Software:
 
-	. test basic UI functionality
-		. test toggling into RECORD MODE
-		--seems to work
-			. make RECORD TOGGLE's glyph more visible when its buttons are simply held
-			--did this in RECORD MODE; in PLAY MODE it would disrupt things / be overcomplicated to implement correctly for efficiency reasons
-		. shorten all glyphs to 5 rows high, for better visibility
-		--done
-			. change glyph-related TO_UPDATE calls accordingly
-			--updated everything that actually needed an update, which meant leaving a lot of these values the same, as the blank row requires the same update type
-		. test all GUI menus in RECORD MODE
-		-- they seem to work
-		. test all user-controlled var-setting operations in RECORD MODE
-		-- seems ok
 	. change second LED-row to display the current number of active sustains
-	
+	-- done afaict, but still needs additional fixes to underlying sustain & note-press systems before being testable
 	. display both pages' sequence-activity simultaneously
 	. display SCATTER status only when a SCATTER command is held
 	. timing system / global cue system look broken? fix them
@@ -27,6 +14,7 @@ Software:
 		. test note-recording itself
 	. test basic sequencing
 	. test sustain system
+		. test sustain-display row
 	. test all cue-commands
 		. OFF
 		. CUE
@@ -47,6 +35,7 @@ Software:
 	. test MIDI-IN (clock)
 		. add a "DO NOT SEND CLOCK SIGNALS" user-flag to the CLOCK MASTER/FOLLOW mechanism
 	. replace bloated LedControl with optimized custom functions
+	. survey all TO_UPDATE calls, for superfluous flags
 	. add PROGRAM CHANGE functionality (in addition to CONTROL CHANGE)
 	. add GUI prompts for:
 		. current RECORDSEQ value (RECORD MODE)
@@ -67,27 +56,34 @@ Hardware:
 			. reroute PCB prototype to reflect the changes
 			. update both KiCad and firmware to reflect the changes
 			. two pins will be freed up by this, so reassign them:
-				. pin 1: connect to PNP-NPN circuit that always lights up one of two LEDs, to display which page is active
-				. pin 2: light up on keystroke-down events (diode-transistor-transistor-capacitor ramp circuit driving LED) (apply pin value on keystroke, and unset pin value on start of next keystroke-check loop)
-			. put 2 extra LEDs+resistors in the design on the two freed-up pins, and use these to display the current PAGE value
+				. pin 1: digital MIDI-IN indicator (NOTEs only)
+				. pin 2: digital MIDI-OUT indicator (NOTEs only)
+			. if 2 pins are indeed freed-up for MIDI I/O indicators, then only two slots of the 74HC14N Schmitt-trigger will end up being used, so look for a smaller 2-slot alternative to it
+			. put the results of this line of inquiry into the "update KiCad file" task
 	. consider using 32x 2-color LEDs, instead of 64x 1-color LEDs, because that may actually fit the UI better
 		. note: each color within these LEDs needs to have the same voltage/current requirements, so as to play nice with the MAX7219 chip
-	. move POWER-LED to center of bottom-board, and use a high-brightness white LED with a very wide visibility-cone
-	. reduce button-spacing by 1mm, both vertical and horizontal
-	. reduce board size, due to button and LED changes
-	. reduce thermal-plate size to accomodate new smaller heatsinks
+		. if this is viable, change the "update KiCad file: top-board" task to: "replace LEDs with 2-color LEDs"
 	. test higher resistor values for POWER-LED to get a matching brightness level
-	. test MIDI-IO LED circuit with 0.1uF & 1uF capacitors
-		. or with 1k/10k resistor from cap+ to GND
-		. if it's as bright as the current kind, then: change KiCad schematics & PCBs & Mouser order to reflect this
+	. note: this task may no longer be necessary, but keeping it until I'm sure:
+		. test MIDI-IO LED circuit with 0.1uF & 1uF capacitors
+			. or with 1k/10k resistor from cap+ to GND
+			. if it's as bright as the current kind, then: change KiCad schematics & PCBs & Mouser order to reflect this
 	. update KiCad file:
+		. reduce thermal-plate size to accomodate new smaller heatsinks
 		. bottom-board:
-			.use regular-sized capacitors, in a laying-down position, because people replacing capacitors wouldn't have special tiny ones sitting around
-				. update Mouser cart to reflect this
+			. use regular-sized capacitors, in a laying-down position, because people replacing capacitors wouldn't have special tiny ones sitting around
 			. update R-SET resistor's value based on the new diffused LEDs
-				. update Mouser cart to reflect this
+			. move POWER-LED to center of bottom-board, and use a high-brightness white LED with a very wide visibility-cone
 		. top-board:
-			. move AVR-ISP programming header as close to the back of the unit as possible, to not interfere with new diffused-LED design
-			. move MIDI-IN LED to left side
-			. move POWER LED to right side
+			. update all LED positioning & LED formats(?)
+			. reduce button-spacing by 1mm, both vertical and horizontal
+		. both boards:
+			. move shrouded AVR-ISP jack to edge of bottom-board, to prevent any need to muck around with safety-caps
+				. make a cut through edge of top-board, so AVR-ISP header can be accessed more easily when faceplate is removed
+			. reduce boards' size, to fit the results of various changes
+			. make sure there's still enough room for all M3 screws & standoffs
+				. move POWER port to right side?
+			. change all edge-cuts to reflect the rearrangement of ports
+			. double-check that ports aren't competing for space with standoffs
+	. look into rubber adhesive nubs, for protecting the screws on the underside, & preventing any scratching/wear of surfaces
 
