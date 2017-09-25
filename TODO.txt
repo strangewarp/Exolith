@@ -14,10 +14,10 @@ Software:
 			--updated everything that actually needed an update, which meant leaving a lot of these values the same, as the blank row requires the same update type
 		. test all GUI menus in RECORD MODE
 		-- they seem to work
-		. replace bloated LedControl with optimized custom functions
 		. test all user-controlled var-setting operations in RECORD MODE
 		. change second LED-row to display the current number of active sustains
-	. display both pages' sequence-activity simultaneously; use 
+	. display both pages' sequence-activity simultaneously
+	. display SCATTER status only when a SCATTER command is held
 	. timing system / global cue system look broken? fix them
 	. test basic recording
 		. test note-playing on grid-keyboard
@@ -44,6 +44,7 @@ Software:
 		. uncomment parseRawMidi() in void loop()
 	. test MIDI-IN (clock)
 		. add a "DO NOT SEND CLOCK SIGNALS" user-flag to the CLOCK MASTER/FOLLOW mechanism
+	. replace bloated LedControl with optimized custom functions
 	. add PROGRAM CHANGE functionality (in addition to CONTROL CHANGE)
 	. add GUI prompts for:
 		. current RECORDSEQ value (RECORD MODE)
@@ -70,6 +71,9 @@ Hardware:
 	. consider using 32x 2-color LEDs, instead of 64x 1-color LEDs, because that may actually fit the UI better
 		. note: each color within these LEDs needs to have the same voltage/current requirements, so as to play nice with the MAX7219 chip
 	. move POWER-LED to center of bottom-board, and use a high-brightness white LED with a very wide visibility-cone
+	. reduce button-spacing by 1mm, both vertical and horizontal
+	. reduce board size, due to button and LED changes
+	. reduce thermal-plate size to accomodate new smaller heatsinks
 	. test higher resistor values for POWER-LED to get a matching brightness level
 	. test MIDI-IO LED circuit with 0.1uF & 1uF capacitors
 		. or with 1k/10k resistor from cap+ to GND
