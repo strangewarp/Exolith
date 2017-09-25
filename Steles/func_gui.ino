@@ -14,29 +14,27 @@ void startupAnimation() {
 // Get the SEQUENCE-ACTIVITY LED-values for a given GUI row within the lower 6 rows
 byte getRowSeqVals(byte r) {
 	byte ib = r << 2; // Get the row's left-side's global-array position
-	byte ib2 = 24 + ib; // Get the row's right-side's global-array position
 	return (STATS[ib] & 128) // Return the row's PLAYING info, from both pages, as a row's worth of bits
 		| ((STATS[ib + 1] & 128) >> 1)
 		| ((STATS[ib + 2] & 128) >> 2)
 		| ((STATS[ib + 3] & 128) >> 3)
-		| ((STATS[ib2] & 128) >> 4)
-		| ((STATS[ib2 + 1] & 128) >> 5)
-		| ((STATS[ib2 + 2] & 128) >> 6)
-		| ((STATS[ib2 + 3] & 128) >> 7);
+		| ((STATS[ib + 24] & 128) >> 4)
+		| ((STATS[ib + 25] & 128) >> 5)
+		| ((STATS[ib + 26] & 128) >> 6)
+		| ((STATS[ib + 27] & 128) >> 7);
 }
 
 // Get the SCATTER-ACTIVITY LED-values for a given GUI row within the lower 6 rows
 byte getRowScatterVals(byte r) {
 	byte ib = r << 2; // Get the row's left-side's global-array position
-	byte ib2 = 24 + ib; // Get the row's right-side's global-array position
 	return ((!!(SCATTER[ib] & 7)) << 7) // Return the row's SCATTER info, from both pages, as a row's worth of bits
 		| ((!!(SCATTER[ib + 1] & 7)) << 6)
 		| ((!!(SCATTER[ib + 2] & 7)) << 5)
 		| ((!!(SCATTER[ib + 3] & 7)) << 4)
-		| ((!!(SCATTER[ib2] & 7)) << 3)
-		| ((!!(SCATTER[ib2 + 1] & 7)) << 2)
-		| ((!!(SCATTER[ib2 + 2] & 7)) << 1)
-		| (!!(SCATTER[ib2 + 3] & 7));
+		| ((!!(SCATTER[ib + 24] & 7)) << 3)
+		| ((!!(SCATTER[ib + 25] & 7)) << 2)
+		| ((!!(SCATTER[ib + 26] & 7)) << 1)
+		| (!!(SCATTER[ib + 27] & 7));
 }
 
 // Update the GUI based on update-flags that have been set by the current tick's events
