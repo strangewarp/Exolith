@@ -4,10 +4,9 @@ Tegne TODO
 Software:
 
 	. change second LED-row to display the current number of active sustains
-	-- done afaict, but still needs additional fixes to underlying sustain & note-press systems before being testable
+		-- done afaict, but still needs additional fixes to underlying sustain & note-press systems before being testable
 	. display both pages' sequence-activity simultaneously
-	-- done afaict, but still needs fixes to the sequencing system before being testable
-	. display SCATTER status only when a SCATTER command is held
+		-- done afaict, but still needs fixes to the sequencing system before being testable
 	. timing system / global cue system look broken? fix them
 	. test basic recording
 		. test note-playing on grid-keyboard
@@ -27,6 +26,7 @@ Software:
 		. SCATTER UNSET
 		. PAGE SCATTER UNSET
 		. GLOBAL PLAY/STOP
+	. display SCATTER status only when a SCATTER command is held
 	. test "toggle to next/prev sequence" in RECORD mode
 	. test REPEAT commands
 	. test MIDI CC commands
