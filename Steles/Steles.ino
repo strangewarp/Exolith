@@ -129,7 +129,7 @@ byte TO_UPDATE = 0; // Tracks which rows of LEDs should be updated at the end of
 unsigned long ABSOLUTETIME = 0; // Absolute time elapsed: wraps around after reaching its limit
 unsigned long ELAPSED = 0; // Time elapsed since last tick
 word KEYELAPSED = 0; // Time elapsed since last keystroke-scan
-unsigned long TICKSIZE = 100000; // Size of the current tick, in microseconds; tick = 60000000 / (bpm * 96)
+unsigned long TICKSIZE = 6250; // Size of the current tick, in microseconds; tick = 60000000 / (bpm * 96)
 
 // Recording vars
 byte RECORDMODE = 0; // Tracks whether RECORD MODE is active
@@ -150,9 +150,9 @@ byte SONG = 0; // Current song-slot whose data-files are being played
 byte PLAYING = 1; // Controls whether the sequences and global tick-counter are iterating
 byte DUMMYTICK = 0; // Tracks whether to expect a dummy MIDI CLOCK tick before starting to iterate through sequences
 byte CLOCKMASTER = 1; // Toggles whether to generate MIDI CLOCK ticks, or respond to incoming CLOCK ticks from an external device
-byte BPM = 120; // Beats-per-minute value: one beat is 96 tempo-ticks
+byte BPM = 100; // Beats-per-minute value: one beat is 96 tempo-ticks
 byte TICKCOUNT = 5; // Current global tick, bounded within the size of a 16th-note
-byte CUR16 = 127; // Current global sixteenth-note (bounded to 128, or 8 beats)
+byte CUR16 = 255; // Current global sixteenth-note (bounded to 256, or 16 beats)
 
 // Beat-scattering flags, one per seq.
 // bits 0-2: scatter chance
@@ -233,9 +233,14 @@ void setup() {
 
 	loadSong(SONG); // Load the default song, or create its savefile if it doesn't exist
 
+	TO_UPDATE = 255; // Cue all GUI rows for an initial update
+	updateGUI(); // ...And perform the update right now
+
 	// Start serial comms at the MIDI baud rate
 	Serial.begin(31250);
 	
+	ABSOLUTETIME = micros(); // Make sure ABSOLUTETIME matches the current time, so tempo doesn't have an initial jerk
+
 }
 
 

@@ -8,6 +8,7 @@ Software:
 	. display both pages' sequence-activity simultaneously
 		-- done afaict, but still needs fixes to the sequencing system before being testable
 	. timing system / global cue system look broken? fix them
+		-- seem fixed now, though may require tweaking as the sequencing system comes online
 	. test basic recording
 		. test note-playing on grid-keyboard
 		. test REPEAT button

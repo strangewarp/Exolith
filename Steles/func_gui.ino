@@ -79,7 +79,7 @@ void updateGUI() {
 				lc.setRow(0, 0, 0); // Clear this row
 			}
 		} else { // Else, if this isn't RECORD-MODE, OR no ctrl-buttons are held...
-			lc.setRow(0, 0, 128 >> ((CUR16 >> 4) - 1)); // Display the global-tick position
+			lc.setRow(0, 0, 128 >> (CUR16 >> 5)); // Display the global-tick position
 		}
 	}
 
