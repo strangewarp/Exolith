@@ -16,6 +16,7 @@ Software:
 	. test basic sequencing
 	. test sustain system
 		. test sustain-display row
+	. remove all outdated updates for second GUI-row in PAGE and CTRL-BUTTON functions
 	. test all cue-commands
 		. OFF
 		. CUE
@@ -70,6 +71,9 @@ Hardware:
 		. test MIDI-IO LED circuit with 0.1uF & 1uF capacitors
 			. or with 1k/10k resistor from cap+ to GND
 			. if it's as bright as the current kind, then: change KiCad schematics & PCBs & Mouser order to reflect this
+	. change design so "cap" pieces of the enclosure are on the sides, not top and bottom?
+		. would have to figure out a "bracket" that can fit on the M-screws, to hold on the side-panels with another M-screw per bracket
+		. upside: this would result in a screw-free faceplate, and automatically give clearance for the screws on the underside & protect the LEDs up top
 	. update KiCad file:
 		. reduce thermal-plate size to accomodate new smaller heatsinks
 		. bottom-board:
@@ -87,5 +91,6 @@ Hardware:
 				. move POWER port to right side?
 			. change all edge-cuts to reflect the rearrangement of ports
 			. double-check that ports aren't competing for space with standoffs
+	. redo all Inkscape files for enclosure, making sure to retake all measurements & repeat the KiCad-to-Inkscape vector paste process
 	. look into rubber adhesive nubs, for protecting the screws on the underside, & preventing any scratching/wear of surfaces
 
