@@ -80,16 +80,27 @@ void parseRecPress(byte col, byte row) {
 
 	if (!ctrl) { // If no CTRL buttons are held...
 
-		// Get a note that corresponds to the key, organized from bottom-left to top-right, with all modifiers applied;
-		// And also get the note's velocity with a random humanize-offset
-		byte pitch = min(127, (OCTAVE * 12) + BASENOTE + ((23 - key) ^ 3));
-		byte velo = min(127, max(1, VELO + ((HUMANIZE >> 1) - random(HUMANIZE + 1))));
+		// Get a note that corresponds to the key, organized from bottom-left to top-right, with all modifiers applied
+		byte pitch = (OCTAVE * 12) + BASENOTE + ((23 - key) ^ 3);
+		while (pitch > 127) { // If the pitch is above 127, which is the limit for MIDI notes...
+			pitch -= 12; // Reduce it by 12 until it is at or below 127
+		}
 
-		byte rep = 0; // Will hold a REPEAT-command flag, if applicable
+		// Get the note's velocity, with a random humanize-offset
+		byte velo = abs(char(VELO) + (char(HUMANIZE >> 1) - random(HUMANIZE + 1)));
 
-		if ((!row) && (col == 4)) { // If the top-right button was pressed...
+
+		// testing code todo remove
+		//lc.setRow(0, 5, pitch % 12);
+		//lc.setRow(0, 6, pitch);
+		//lc.setRow(0, 7, velo);
+		//delay(500);
+
+
+		byte rep = key == 3; // Will hold a REPEAT-command flag, if the top-right button was pressed
+
+		if (rep) { // If the top-right button was pressed...
 			byte rchan = CHAN & 15; // Get real channel-value, without the virtual CC-bit
-			rep = 1; // Flag the presence of a REPEAT command
 			// Make the pitch into its channel's most-recent pitch, or a dummy-pitch-value if the most-recent pitch is empty
 			pitch = (RECENT[rchan] <= 127) ? RECENT[rchan] : (pitch - 12);
 		}
@@ -103,7 +114,7 @@ void parseRecPress(byte col, byte row) {
 			char offset = (down <= up) ? (-down) : up;
 
 			// Record either the note or a REPEAT-COMMAND into the current RECORDSEQ slot
-			recordToSeq(offset, CHAN, rep ? rep : pitch, velo);
+			recordToSeq(offset, CHAN, rep ? 224 : pitch, velo);
 
 			// If the tick was inserted at an offset after the current position,
 			// exit the function without playing the note, because it will be played momentarily

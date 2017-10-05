@@ -234,7 +234,9 @@ void setup() {
 	loadSong(SONG); // Load the default song, or create its savefile if it doesn't exist
 
 	TO_UPDATE = 255; // Cue all GUI rows for an initial update
-	updateGUI(); // ...And perform the update right now
+	// updateGUI(); // ...And perform the update right now
+	// Note: this would lead the cue-row to briefly flash its 8th LED,
+	// so keep it commented out, and just wait for the first call to updateGUI() from within loop().
 
 	// Start serial comms at the MIDI baud rate
 	Serial.begin(31250);
