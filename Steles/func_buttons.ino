@@ -89,20 +89,11 @@ void parseRecPress(byte col, byte row) {
 		// Get the note's velocity, with a random humanize-offset
 		byte velo = abs(char(VELO) + (char(HUMANIZE >> 1) - random(HUMANIZE + 1)));
 
-
-		// testing code todo remove
-		//lc.setRow(0, 5, pitch % 12);
-		//lc.setRow(0, 6, pitch);
-		//lc.setRow(0, 7, velo);
-		//delay(500);
-
-
 		byte rep = key == 3; // Will hold a REPEAT-command flag, if the top-right button was pressed
 
 		if (rep) { // If the top-right button was pressed...
 			byte rchan = CHAN & 15; // Get real channel-value, without the virtual CC-bit
-			// Make the pitch into its channel's most-recent pitch, or a dummy-pitch-value if the most-recent pitch is empty
-			pitch = (RECENT[rchan] <= 127) ? RECENT[rchan] : (pitch - 12);
+			pitch = RECENT[rchan]; // Make the pitch into its channel's most-recent pitch
 		}
 
 		if (PLAYING && RECORDNOTES) { // If notes are being recorded into a playing sequence...
@@ -122,7 +113,7 @@ void parseRecPress(byte col, byte row) {
 
 		}
 
-		if (CHAN & 16) { return; } // If this was a CC command, forego all SUSTAIN operations
+		if (CHAN & 16) { return; } // If this was a virtual CC command, forego all SUSTAIN operations
 
 		// Update SUSTAIN buffer in preparation for playing the user-pressed note
 		if (SUST_COUNT == 8) { // If the SUSTAIN buffer is already full...
@@ -135,6 +126,7 @@ void parseRecPress(byte col, byte row) {
 		SUST[0] = DURATION; // Fill the topmost sustain-slot with the user-pressed note
 		SUST[1] = 128 + CHAN; // ^
 		SUST[2] = pitch; // ^
+		SUST_COUNT++; // Increase the number of active sustains, to accurately reflect the new note
 		Serial.write(144 + CHAN); // Send the user-pressed note to MIDI-OUT immediately, without buffering
 		Serial.write(pitch); // ^
 		Serial.write(velo); // ^

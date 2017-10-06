@@ -11,11 +11,13 @@ Software:
 		-- seem fixed now, though may require tweaking as the sequencing system comes online
 	. test basic recording
 		. test note-playing on grid-keyboard
+			-- seems to work
 		. test REPEAT button
 		. test note-recording itself
 	. test basic sequencing
 	. test sustain system
 		. test sustain-display row
+			. note: seems to be a bug in here, where sustains are either displayed wrongly or linger incorrectly; spotted during previous tasks
 	. remove all outdated updates for second GUI-row in PAGE and CTRL-BUTTON functions
 	. test all cue-commands
 		. OFF
