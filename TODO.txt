@@ -9,18 +9,13 @@ Software:
 		-- done afaict, but still needs fixes to the sequencing system before being testable
 	. timing system / global cue system look broken? fix them
 		-- seem fixed now, though may require tweaking as the sequencing system comes online
-	. test basic recording
-		. test note-playing on grid-keyboard
-			-- seems to work
-		. test REPEAT button
-			-- irrelevant since I'm going to change this now
-		. test note-recording itself
 	. change the REPEAT command into an INTERVAL command:
 		. acts like a REPEAT when holding a value of 0
 		. when holding a nonzero value (+/-), applies that interval to the channel's last REPEAT value & sends a new NOTE-ON accordingly
 		. playable in RECORD MODE
 		. stored as a seq-command in the savefile
 		. played by the sequencing mechanism
+	. test note-recording itself
 	. test the INTERVAL button in RECORD-MODE
 	. test basic sequencing
 	. test sustain system
@@ -75,9 +70,6 @@ Hardware:
 				. pin 2: digital MIDI-OUT indicator (NOTEs only)
 			. if 2 pins are indeed freed-up for MIDI I/O indicators, then only two slots of the 74HC14N Schmitt-trigger will end up being used, so look for a smaller 2-slot alternative to it
 			. put the results of this line of inquiry into the "update KiCad file" task
-	. consider using 32x 2-color LEDs, instead of 64x 1-color LEDs, because that may actually fit the UI better
-		. note: each color within these LEDs needs to have the same voltage/current requirements, so as to play nice with the MAX7219 chip
-		. if this is viable, change the "update KiCad file: top-board" task to: "replace LEDs with 2-color LEDs"
 	. test higher resistor values for POWER-LED to get a matching brightness level
 	. note: this task may no longer be necessary, but keeping it until I'm sure:
 		. test MIDI-IO LED circuit with 0.1uF & 1uF capacitors
@@ -86,14 +78,21 @@ Hardware:
 	. change design so "cap" pieces of the enclosure are on the sides, not top and bottom?
 		. would have to figure out a "bracket" that can fit on the M-screws, to hold on the side-panels with another M-screw per bracket
 		. upside: this would result in a screw-free faceplate, and automatically give clearance for the screws on the underside & protect the LEDs up top
+		. upside: depending on thickness, the brackets would eliminate any need to use washers to get enough clearance for the MIDI ports' height
 	. update KiCad file:
-		. reduce thermal-plate size to accomodate new smaller heatsinks
 		. bottom-board:
+			. reduce thermal-plate size to accomodate new smaller heatsinks
 			. use regular-sized capacitors, in a laying-down position, because people replacing capacitors wouldn't have special tiny ones sitting around
+			. socket all capacitors, to futureproof the capacitor-replacement process
 			. update R-SET resistor's value based on the new diffused LEDs
+			. socket the R-SET resistor, to futureproof against any possible changes to the top-board LEDs
 			. move POWER-LED to center of bottom-board, and use a high-brightness white LED with a very wide visibility-cone
 		. top-board:
-			. update all LED positioning & LED formats(?)
+			. use 3mm LEDs instead of 5mm LEDs
+				. look for a variety that has a high luminosity but relatively low price
+				. make sure the LED-variant has enough physical height to poke through the enclosure
+				. check whether a different RSET resistor value is necessary to match the LEDs' voltage/current requirements
+				. keep spacing between the edges of LED bulbs at ~3mm, to keep the laser-cut faceplate from being fragile
 			. reduce button-spacing by 1mm, both vertical and horizontal
 		. both boards:
 			. move shrouded AVR-ISP jack to edge of bottom-board, to prevent any need to muck around with safety-caps
