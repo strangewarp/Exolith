@@ -13,7 +13,15 @@ Software:
 		. test note-playing on grid-keyboard
 			-- seems to work
 		. test REPEAT button
+			-- irrelevant since I'm going to change this now
 		. test note-recording itself
+	. change the REPEAT command into an INTERVAL command:
+		. acts like a REPEAT when holding a value of 0
+		. when holding a nonzero value (+/-), applies that interval to the channel's last REPEAT value & sends a new NOTE-ON accordingly
+		. playable in RECORD MODE
+		. stored as a seq-command in the savefile
+		. played by the sequencing mechanism
+	. test the INTERVAL button in RECORD-MODE
 	. test basic sequencing
 	. test sustain system
 		. test sustain-display row
@@ -32,7 +40,9 @@ Software:
 		. GLOBAL PLAY/STOP
 	. display SCATTER status only when a SCATTER command is held
 	. test "toggle to next/prev sequence" in RECORD mode
-	. test REPEAT commands
+	. test INTERVAL commands
+		. recording them to seq
+		. playing them from seq
 	. test MIDI CC commands
 	. test file-load
 	. test MIDI-IN (notes)
