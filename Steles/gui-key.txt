@@ -1,4 +1,40 @@
 
+Buttons (PLAY MODE):
+
+	c s s s s
+	c s s s s
+	c s s s s
+	c s s s s
+	c s s s s
+	c s s s s
+
+	c: Control button
+		* Hold one or several to toggle a control-command
+	s: Sequence button
+		* Applies various commands to a sequence
+
+
+Buttons (RECORD MODE):
+
+	c n D U R
+	c n n n n
+	c n n n n
+	c n n n n
+	c n n n n
+	c n n n n
+
+	c: Control button
+		* Hold one or several to toggle the modification of var values
+	n: Note button
+		* Plays a note when no control-chord is held
+		* Changes var values when a control-chord is held
+	D: Down-interval button
+		* Plays a downward interval from the channel's most recent note, or records the generic interval into the sequence
+	U: Up-interval button
+		* Plays an upward interval from the channel's most recent note, or records the generic interval into the sequence
+	R: Repeat button
+		* Plays a repeat of the channel's most recent note, or records the generic repeat into the sequence
+
 
 LEDs (PLAY MODE) (possible design change):
 
