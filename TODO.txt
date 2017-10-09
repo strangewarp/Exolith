@@ -11,16 +11,16 @@ Software:
 		-- seem fixed now, though may require tweaking as the sequencing system comes online
 	. change the REPEAT command into an INTERVAL command:
 		. acts like a REPEAT when holding a value of 0
+			-- yes
 		. when holding a nonzero value (+/-), applies that interval to the channel's last REPEAT value & sends a new NOTE-ON accordingly
-		. playable in RECORD MODE
-		. stored as a seq-command in the savefile
-		. played by the sequencing mechanism
-		. add INTERVAL command-types & IBUTTONS tracking var to:
-			. recording
-			. data-storage
-			. button-press
-			. button-unset on mode-switch
-			. sequencing
+			. applies in record-mode
+				-- yes
+			. applies in seq-mode
+		. check: playable in RECORD MODE?
+		. store as a seq-command in the savefile
+		. check: played by the sequencing mechanism?
+		. check: has button-press routines?
+		. check: clears button-press on mode-switch?
 	. test note-recording itself
 	. test the INTERVAL button in RECORD-MODE
 	. test basic sequencing

@@ -89,12 +89,17 @@ void parseRecPress(byte col, byte row) {
 		// Get the note's velocity, with a random humanize-offset
 		byte velo = abs(char(VELO) + (char(HUMANIZE >> 1) - random(HUMANIZE + 1)));
 
-		if (IBUTTONS) { // If any INTERVAL-keys are held on the top row...
-			byte rchan = CHAN & 15; // Strip the chan of any special-command flag bits
+		byte rchan = CHAN & 15; // Strip the chan of any special-command flag bits
+
+		if (IBUTTONS) { // If any INTERVAL-keys are held...
 			// Get a composite INTERVAL command, as it would appear in data-storage
 			byte composite = (IBUTTONS << 4) | (key | 15);
 			// Apply the INTERVAL command to the channel's most-recent pitch
 			pitch = applyIntervalCommand(composite, rchan, RECENT[rchan]);
+		}
+
+		if (IBUTTONS || (rchan == CHAN)) { // If INTERVAL keys are held, or this is a normal NOTE...
+			RECENT[rchan] = pitch; // Update the channel's most-recent note to the pitch-value
 		}
 
 		if (PLAYING && RECORDNOTES) { // If notes are being recorded into a playing sequence...
@@ -105,9 +110,9 @@ void parseRecPress(byte col, byte row) {
 			byte up = QUANTIZE - down;
 			char offset = (down <= up) ? (-down) : up;
 
-			// Record either the note or a REPEAT-command into the current RECORDSEQ slot;
-			// and if this is a REPEAT-command, then clip off any virtual CC-info from the 
-			recordToSeq(offset, IBUTTONS ? (CHAN % 16) : CHAN, rep ? 224 : pitch, velo);
+			// Record the note, either natural or modified by INTERVAL, into the current RECORDSEQ slot;
+			// and if this is an INTERVAL-command, then clip off any virtual CC-info from the chan-byte 
+			recordToSeq(offset, IBUTTONS ? (CHAN % 16) : CHAN, pitch, velo);
 
 			// If the tick was inserted at an offset after the current position,
 			// exit the function without playing the note, because it will be played momentarily
