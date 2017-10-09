@@ -16,7 +16,7 @@ Software:
 			-- yes
 		. check: clears button-press on mode-switch?
 			-- yes: since INTERVAL keypress data is held as generic BUTTONS data, it cannot interfere, and so nothing needs to be done here
-		. store as a seq-command in the savefile
+		. store as a seq-command in the savefile (modify recordToSeq() et al)
 		. read and interpret correctly while iterating through sequences in PLAY MODE
 		. when holding a nonzero value (+/-), applies that interval to the channel's last REPEAT value & sends a new NOTE-ON accordingly
 			. applies in record-mode?
