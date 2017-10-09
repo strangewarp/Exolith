@@ -122,7 +122,6 @@ const byte GLYPH_VELO[] PROGMEM = {B10010000, B10010000, B01010000, B00110000, B
 
 // UI vars
 unsigned long BUTTONS = 0; // Tracks which of the 30 buttons are currently pressed; each button has an on/off bit
-byte IBUTTONS = 0; // Tracks which of the INTERVAL-command's buttons are held in RECORD MODE
 byte PAGE = 0; // Tracks currently-active page of sequences
 byte TO_UPDATE = 0; // Tracks which rows of LEDs should be updated at the end of a given tick
 

@@ -12,13 +12,14 @@ Software:
 	. change the REPEAT command into an INTERVAL command:
 		. acts like a REPEAT when holding a value of 0
 			-- yes
-		. when holding a nonzero value (+/-), applies that interval to the channel's last REPEAT value & sends a new NOTE-ON accordingly
-			. applies in record-mode
-				-- yes
-			. applies in seq-mode
-		. store as a seq-command in the savefile
 		. check: has button-press routines?
+			-- yes
 		. check: clears button-press on mode-switch?
+		. when holding a nonzero value (+/-), applies that interval to the channel's last REPEAT value & sends a new NOTE-ON accordingly
+			. applies in record-mode?
+				-- yes
+			. applies in seq-mode?
+		. store as a seq-command in the savefile
 		. check: playable in RECORD MODE?
 		. check: played by the sequencing mechanism?
 	. test note-recording itself

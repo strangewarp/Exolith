@@ -13,7 +13,13 @@ void parsePlayPress(byte col, byte row) {
 	// (1 in lowest bit, 2 next, then 4)
 	nums = (((nums & 16) >> 2) | ((nums & 4) << 2) | (nums & 8)) >> 2;
 
-	if (ctrl == B00100001) { // If PAGE-OFF is held, and a regular button-press was made to signal intent...
+	if (ctrl == B00010001) { // If PAGE A is held...
+		PAGE = 0; // Toggle to page A
+		TO_UPDATE |= 252; // Flag LED-rows 2-7 for updating
+	} else if (ctrl == B00001001) { // If PAGE B is held...
+		PAGE = 1; // Toggle to page B
+		TO_UPDATE |= 252; // Flag LED-rows 2-7 for updating
+	} else if (ctrl == B00100001) { // If PAGE-OFF is held, and a regular button-press was made to signal intent...
 		byte ptop = PAGE * 24; // Get the position of the first seq on the current page
 		for (byte i = ptop; i < (ptop + 24); i++) { // For every seq on this page...
 			resetSeq(i); // Reset the seq's contents
@@ -76,6 +82,9 @@ void parseRecPress(byte col, byte row) {
 
 	byte ctrl = BUTTONS & B00111111; // Get the control-row buttons' activity
 
+	// Get the interval-buttons' activity, in a format identical to how their save-byte data is stored
+	byte ibs = ((BUTTONS >> 10) & 64) | ((BUTTONS >> 17) & 32) | ((BUTTONS >> 24) & 16);
+
 	byte key = col + (row * 4); // Get the button-key that corresponds to the given column and row
 
 	if (!ctrl) { // If no CTRL buttons are held...
@@ -91,14 +100,14 @@ void parseRecPress(byte col, byte row) {
 
 		byte rchan = CHAN & 15; // Strip the chan of any special-command flag bits
 
-		if (IBUTTONS) { // If any INTERVAL-keys are held...
+		if (ibs) { // If any INTERVAL-keys are held...
 			// Get a composite INTERVAL command, as it would appear in data-storage
-			byte composite = (IBUTTONS << 4) | (key | 15);
+			byte composite = (ibs << 4) | (key & 15);
 			// Apply the INTERVAL command to the channel's most-recent pitch
 			pitch = applyIntervalCommand(composite, rchan, RECENT[rchan]);
 		}
 
-		if (IBUTTONS || (rchan == CHAN)) { // If INTERVAL keys are held, or this is a normal NOTE...
+		if (ibs || (rchan == CHAN)) { // If INTERVAL keys are held, or this is a normal NOTE...
 			RECENT[rchan] = pitch; // Update the channel's most-recent note to the pitch-value
 		}
 
@@ -112,7 +121,7 @@ void parseRecPress(byte col, byte row) {
 
 			// Record the note, either natural or modified by INTERVAL, into the current RECORDSEQ slot;
 			// and if this is an INTERVAL-command, then clip off any virtual CC-info from the chan-byte 
-			recordToSeq(offset, IBUTTONS ? (CHAN % 16) : CHAN, pitch, velo);
+			recordToSeq(offset, ibs ? (CHAN % 16) : CHAN, pitch, velo);
 
 			// If the tick was inserted at an offset after the current position,
 			// exit the function without playing the note, because it will be played momentarily
@@ -207,34 +216,24 @@ void assignKey(byte col, byte row) {
 
 	byte ctrl = BUTTONS & B00111111; // Get the control-row buttons' activity
 
+	byte key = col + (row * 4); // Get the button-key that corresponds to the given column and row
+
+	// If RECORDMODE is active, and no ctrl-buttons are held,
+	// and the keystroke is on one of the INTERVAL-keys...
+	if (RECORDMODE && (!ctrl) && ((key % 6) == 5) && (key >= 17)) {
+		TO_UPDATE |= 252; // Update the lower 6 rows
+		return; // Exit the function, so the INTERVAL keystroke isn't also interpreted as a NOTE keystroke
+	}
+
 	if (col == 0) { // If the keystroke is in the leftmost column...
 
 		TO_UPDATE |= 3; // Flag the top two LED-rows for updating
-
-		// Commands that apply to both modes:
-		/* This is unnecessary, because these GUI updates are applied on RECORD-MODE keystrokes already
-		if (ctrl == B00111111) { // TOGGLE RECORD-MODE special command...
-			TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
-			return; // No need to go through the rest of the function at this point
-		}
-		*/
 
 		if (RECORDMODE) { // If RECORD-MODE is active...
 			if (ctrl == B00000001) { // ERASE WHILE HELD special command...
 				ERASENOTES = 1; // As the button is held down, start erasing notes
 			}
 			TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
-		} else { // Else, if PLAY MODE is active...
-			if (ctrl == B00010001) { // If this is a PAGE A special command...
-				PAGE = 0; // Toggle to page A
-				TO_UPDATE |= 252; // Flag LED-rows 2-7 for updating
-			} else if (ctrl == B00001001) { // If this is a PAGE B special command...
-				PAGE = 1; // Toggle to page B
-				TO_UPDATE |= 252; // Flag LED-rows 2-7 for updating
-			} /* else if (ctrl == B00101000) { // If this is a PAGE C special command...
-				PAGE = 2; // Toggle to page C
-				TO_UPDATE |= 252; // Flag LED-rows 2-7 for updating
-			} */
 		}
 
 	} else { // Else, if the keystroke is in any of the other columns...
