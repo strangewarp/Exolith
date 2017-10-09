@@ -32,6 +32,35 @@ void resetSeq(byte s) {
 	//SCATTER[s] &= 7; // Wipe all of the seq's scatter-counting and scatter-flagging bits, but not its scatter-chance bits
 }
 
+// Apply an interval-command to a given pitch, within a given CHANNEL
+byte applyIntervalCommand(byte cmd, byte chan, byte pitch) {
+
+	byte interv = cmd & 15; // Get interval-value
+	char offset = interv; // Default offset: the interval itself
+
+	if (cmd == B01000000) { // If this is a RANDOM-only command...
+		// Get a random offset within a doubled version of the interval-value, with half being negative
+		offset = (char(random((interv << 1) + 1))) - interv;
+	} else if (cmd & B01000000) { // Else, if this is a RANDOM-flavored command...
+		offset = char(random(interv + 1)); // Get a random offset within the bounds of the interval-value
+	}
+
+	if (cmd & B00110000) { // DOWN-UP or RANDOM-DOWN-UP command
+		offset = random(2) ? offset : (-offset); // Point the offset in a random up-or-down direction
+	} else if (cmd & B00100000) { // DOWN or RANDOM-DOWN command
+		offset = -offset; // Point the offset downwards
+	} //else if (cmd & B00010000) { // UP or RANDOM-UP command
+		// Do nothing here: UP and RANDOM-UP match this function's default behavior
+	//}
+
+	int shift = pitch + offset; // Get a shifted version of the given pitch
+	while (shift < 0) { shift += 12; } // Increase too-low shift-values
+	while (shift > 127) { shift -= 12; } // Decrease too-high shift-values
+
+	return byte(shift); // Return a MIDI-style pitch-byte
+
+}
+
 // Send MIDI-OFF commands for all currently-sustained notes
 void haltAllSustains() {
 	for (byte i = 0; i < (SUST_COUNT * 3); i++) { // For every active sustain...

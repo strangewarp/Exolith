@@ -28,9 +28,12 @@ Steles data-file spec
 								16-31: CC Channel 0-15
 						2:
 							byte values:
-								0-127: Pitch
-								128-223: Reserved
-								224: Repeat
-								225-255: Reserved
+								0-127: Normal pitch
+								128-255, as bits:
+									128: signals presence of an INTERVAL command
+									64: UP flag
+									32: DOWN flag
+									16: RANDOM flag
+									1-15: Interval distance
 						3: Velocity
 

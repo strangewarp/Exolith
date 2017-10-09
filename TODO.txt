@@ -15,6 +15,12 @@ Software:
 		. playable in RECORD MODE
 		. stored as a seq-command in the savefile
 		. played by the sequencing mechanism
+		. add INTERVAL command-types & IBUTTONS tracking var to:
+			. recording
+			. data-storage
+			. button-press
+			. button-unset on mode-switch
+			. sequencing
 	. test note-recording itself
 	. test the INTERVAL button in RECORD-MODE
 	. test basic sequencing
@@ -47,6 +53,7 @@ Software:
 	. replace bloated LedControl with optimized custom functions
 	. survey all TO_UPDATE calls, for superfluous flags
 	. add PROGRAM CHANGE functionality (in addition to CONTROL CHANGE)
+		. make sure this has its virtual PC-bit lopped off by REPEAT-commands in RECORD mode, just like virtual CC-bits
 	. add GUI prompts for:
 		. current RECORDSEQ value (RECORD MODE)
 	. check whether sequences can actually function with non-multiple-of-2 lengths
@@ -102,6 +109,7 @@ Hardware:
 				. move POWER port to right side?
 			. change all edge-cuts to reflect the rearrangement of ports
 			. double-check that ports aren't competing for space with standoffs
+	. make sure to use B3F-5050 buttons in finished unit; these have a longer life than B3F-4050 buttons
 	. redo all Inkscape files for enclosure, making sure to retake all measurements & repeat the KiCad-to-Inkscape vector paste process
 	. look into rubber adhesive nubs, for protecting the screws on the underside, & preventing any scratching/wear of surfaces
 
