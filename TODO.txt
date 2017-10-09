@@ -15,11 +15,13 @@ Software:
 		. check: has button-press routines?
 			-- yes
 		. check: clears button-press on mode-switch?
+			-- yes: since INTERVAL keypress data is held as generic BUTTONS data, it cannot interfere, and so nothing needs to be done here
+		. store as a seq-command in the savefile
+		. read and interpret correctly while iterating through sequences in PLAY MODE
 		. when holding a nonzero value (+/-), applies that interval to the channel's last REPEAT value & sends a new NOTE-ON accordingly
 			. applies in record-mode?
 				-- yes
-			. applies in seq-mode?
-		. store as a seq-command in the savefile
+			. applies in seq-mode, when reading savefile data?
 		. check: playable in RECORD MODE?
 		. check: played by the sequencing mechanism?
 	. test note-recording itself
