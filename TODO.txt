@@ -16,11 +16,11 @@ Software:
 			. applies in record-mode
 				-- yes
 			. applies in seq-mode
-		. check: playable in RECORD MODE?
 		. store as a seq-command in the savefile
-		. check: played by the sequencing mechanism?
 		. check: has button-press routines?
 		. check: clears button-press on mode-switch?
+		. check: playable in RECORD MODE?
+		. check: played by the sequencing mechanism?
 	. test note-recording itself
 	. test the INTERVAL button in RECORD-MODE
 	. test basic sequencing
