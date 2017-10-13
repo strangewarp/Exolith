@@ -42,14 +42,15 @@ LEDs (PLAY MODE) (possible design change):
 	c  q q q q  a
 	c  q q q q  a
 	c  q q q q  a
-	   q q q q
+	 P q q q q P
 	I  q q q q  O
 
 	dual color: a, c, q
-	single color: I, O
+	single color: I, O, P
 
-	I: Digital MIDI-IN indicator (or analog, if pins can't be freed up)
-	O: Digital MIDI-OUT indicator (or analog, if pins can't be freed up)
+	I: Analog MIDI-IN indicator
+	O: Analog MIDI-OUT indicator
+	P: Active-page indicator
 
 	a: Number of active sustains
 	c: Global cue point
@@ -62,14 +63,15 @@ LEDs (RECORD MODE) (possible design change):
 	c  q q q q  a
 	c  q q q q  a
 	c  q q q q  a
-	   q q q q
+	 P q q q q P
 	I  q q q q  O
 
 	dual color: a, c, q
-	single color: I, O
+	single color: I, O, P
 
-	I: Digital MIDI-IN indicator (or analog, if pins can't be freed up)
-	O: Digital MIDI-OUT indicator (or analog, if pins can't be freed up)
+	I: Analog MIDI-IN indicator
+	O: Analog MIDI-OUT indicator
+	P: Active-page indicator
 
 	a: Number of active sustains
 	c: Global cue point, or quantity related to user activity

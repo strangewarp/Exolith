@@ -17,11 +17,14 @@ Software:
 		. check: clears button-press on mode-switch?
 			-- yes: since INTERVAL keypress data is held as generic BUTTONS data, it cannot interfere, and so nothing needs to be done here
 		. store as a seq-command in the savefile (modify recordToSeq() et al)
+			-- didn't actually need any changes, because of how it handles data
 		. read and interpret correctly while iterating through sequences in PLAY MODE
+			-- afaict this is implemented now, needs testing
 		. when holding a nonzero value (+/-), applies that interval to the channel's last REPEAT value & sends a new NOTE-ON accordingly
 			. applies in record-mode?
 				-- yes
 			. applies in seq-mode, when reading savefile data?
+				-- yes
 		. check: playable in RECORD MODE?
 		. check: played by the sequencing mechanism?
 	. test note-recording itself
@@ -105,6 +108,7 @@ Hardware:
 				. keep spacing between the edges of LED bulbs at ~3mm, to keep the laser-cut faceplate from being fragile
 			. reduce button-spacing by 1mm, both vertical and horizontal
 		. both boards:
+			. double-check that the stacking-headers on the bottom-board and top-board share their corresponding positions
 			. move shrouded AVR-ISP jack to edge of bottom-board, to prevent any need to muck around with safety-caps
 				. make a cut through edge of top-board, so AVR-ISP header can be accessed more easily when faceplate is removed
 			. reduce boards' size, to fit the results of various changes

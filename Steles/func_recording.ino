@@ -8,7 +8,7 @@ void recordToSeq(char offset, byte chan, byte b1, byte b2) {
 	word tick = (POS[RECORDSEQ] + offset) % (STATS[RECORDSEQ] & 127);
 
 	// Get the position of the start of this tick's notes, in the data-file
-	unsigned long tickstart = 49 + (8192 * RECORDSEQ) + tick;
+	unsigned long tickstart = 49 + (8192UL * RECORDSEQ) + tick;
 
 	// Get the tick's note-slots, and check whether any of them are empty
 	file.seekSet(tickstart);
@@ -23,14 +23,15 @@ void recordToSeq(char offset, byte chan, byte b1, byte b2) {
 		toinsert = 0; // Prepare to insert the new note into the first space in the tick
 	}
 
-	buf[0] = DURATION; // Construct a virtual MIDI command, with an additional DURATION value, in the write buffer
-	buf[1] = chan; // ^
-	buf[2] = b1; // ^
-	buf[3] = b2; // ^
+	// Construct a virtual MIDI command, with an additional DURATION value, in the write buffer
+	buf[0] = DURATION;
+	buf[1] = chan;
+	buf[2] = b1;
+	buf[3] = b2;
 
 	file.seekSet(tickstart + (toinsert * 4)); // Set the insert-point to the highest unfilled note
 	file.write(buf, 4); // Write the note to the current tempdata
 
-	file.sync(); // Force this function's write processes to be committed to the datafile
+	file.sync(); // Force this function's write processes to be committed to the savefile immediately
 
 }

@@ -61,36 +61,6 @@ byte applyIntervalCommand(byte cmd, byte chan, byte pitch) {
 
 }
 
-// Send MIDI-OFF commands for all currently-sustained notes
-void haltAllSustains() {
-	for (byte i = 0; i < (SUST_COUNT * 3); i++) { // For every active sustain...
-		Serial.write(SUST[i + 1]); // Send a premature NOTE-OFF for the sustain
-		Serial.write(SUST[i + 2]); // ^
-		Serial.write(127); // ^
-	}
-	SUST_COUNT = 0;
-}
-
-// Process one 16th-note worth of duration for all notes in the SUSTAIN system
-void processSustains() {
-	byte n = 0; // Value to iterate through each sustain-position
-	while (n < (SUST_COUNT * 3)) { // For every sustain-entry in the SUST array...
-		if (SUST[n]) { // If any duration remains...
-			SUST[n]--; // Reduce the duration by 1
-			n += 3; // Move on to the next sustain-position normally
-		} else { // Else, if the remaining duration is 0...
-			Serial.write(SUST[n + 1]); // Send a NOTE-OFF for the sustain
-			Serial.write(SUST[n + 2]); // ^
-			Serial.write(127); // ^
-			if (n < 21) { // If this isn't the lowest sustain-slot...
-				memmove(SUST + n, SUST + n + 3, 24 - (n + 3)); // Move all lower sustains one slot upwards
-			}
-			SUST_COUNT--; // Reduce the sustain-count
-			// n doesn't need to be increased here, since the next sustain occupies the same index now
-		}
-	}
-}
-
 // Send all outgoing MIDI commands in a single burst
 void flushNoteOns() {
 	if (!MOUT_COUNT) { return; } // If there are no commands in the NOTE-ON buffer, exit the function
@@ -116,7 +86,6 @@ void parseCues(byte s, word size) {
 	TO_UPDATE |= 4 >> ((s % 24) >> 2);
 
 }
-
 
 // Get the notes from the current tick in a given seq, and add them to the MIDI-OUT buffer
 void getTickNotes(byte s) {
@@ -157,19 +126,21 @@ void getTickNotes(byte s) {
 		byte bn1 = bn + 1; // Get note's CHANNEL index
 		byte bn2 = bn + 2; // Get note's PITCH/SPECIAL index
 
-		if (buf[bn2] == 224) { // If this is a special REPEAT command...
-			if (RECENT[buf[bn1]] == 255) { continue; } // If no note has played on this channel yet, this command does nothing
-			buf[bn2] = RECENT[buf[bn1]]; // Change this command's PITCH byte to the most-recent pitch for this command's cannel
-		} else if (buf[bn1] <= 15) { // Else, if this is a regular NOTE command...
-			RECENT[buf[bn1]] = buf[bn2]; // Store the note's pitch, indexed by its channel
+		if (buf[bn2] & 128) { // If this is an INTERVAL command...
+			buf[bn1] &= 15; // Ensure that this command's CHAN byte is in NOTE format
+			if (RECENT[buf[bn1]] == 255) { continue; } // If no note has played on this channel yet, this command should do nothing
+			// Apply the byte's INTERVAL command to the channel's most-recent pitch,
+			// and then act like the command's byte was always the resulting pitch
+			buf[bn2] = applyIntervalCommand(buf[bn2], buf[bn1], RECENT[buf[bn1]]);
 		}
 
-		byte pos = MOUT_COUNT * 3; // Get the lowest empty MOUT location
+		if (buf[bn1] <= 15) { // If this is a NOTE command...
+			RECENT[buf[bn1]] = buf[bn2]; // Set the channel's most-recent note to this command's pitch
+		}
 
-		// Convert the note's CHANNEL byte into either a NOTE or CC command
-		buf[bn1] += 144 + ((buf[bn1] & 16) << 1);
+		buf[bn1] += 144 + ((buf[bn1] & 16) << 1); // Convert the note's CHANNEL byte into either a NOTE or CC command
 
-		memcpy(MOUT + pos, buf + bn1, 3); // Copy the note into the MIDI buffer
+		memcpy(MOUT + (MOUT_COUNT * 3), buf + bn1, 3); // Copy the note into the MIDI buffer's lowest empty MOUT location
 		MOUT_COUNT++; // Increase the counter that tracks the number of bytes in the MIDI buffer
 
 		if (buf[bn1] >= 16) { continue; } // If this was a proto-MIDI-CC command, forego any sustain mechanisms
@@ -243,8 +214,8 @@ void iterateAll() {
 
 		}
 
-		if (changed) { // If any changes have been queued for the tempfile's data...
-			file.sync(); // Apply all changes to the tempfile
+		if (changed) { // If any changes have been queued for the savefile's data...
+			file.sync(); // Apply all changes to the savefile immediately
 		}
 
 	}
