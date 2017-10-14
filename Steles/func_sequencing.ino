@@ -33,7 +33,7 @@ void resetSeq(byte s) {
 }
 
 // Apply an interval-command to a given pitch, within a given CHANNEL
-byte applyIntervalCommand(byte cmd, byte chan, byte pitch) {
+byte applyIntervalCommand(byte cmd, byte pitch) {
 
 	byte interv = cmd & 15; // Get interval-value
 	char offset = interv; // Default offset: the interval itself
@@ -131,7 +131,7 @@ void getTickNotes(byte s) {
 			if (RECENT[buf[bn1]] == 255) { continue; } // If no note has played on this channel yet, this command should do nothing
 			// Apply the byte's INTERVAL command to the channel's most-recent pitch,
 			// and then act like the command's byte was always the resulting pitch
-			buf[bn2] = applyIntervalCommand(buf[bn2], buf[bn1], RECENT[buf[bn1]]);
+			buf[bn2] = applyIntervalCommand(buf[bn2], RECENT[buf[bn1]]);
 		}
 
 		if (buf[bn1] <= 15) { // If this is a NOTE command...
