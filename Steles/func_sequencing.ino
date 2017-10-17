@@ -130,8 +130,10 @@ void getTickNotes(byte s) {
 			buf[bn1] &= 15; // Ensure that this command's CHAN byte is in NOTE format
 			if (RECENT[buf[bn1]] == 255) { continue; } // If no note has played on this channel yet, this command should do nothing
 			// Apply the byte's INTERVAL command to the channel's most-recent pitch,
-			// and then act like the command's byte was always the resulting pitch
-			buf[bn2] = applyIntervalCommand(buf[bn2], RECENT[buf[bn1]]);
+			// and then act like the command's byte was always the resulting pitch.
+			// Note: the INTERVAL flag-byte is removed from the INTERVAL command before it is sent to the function,
+			// because that is the most-efficient way to format the data
+			buf[bn2] = applyIntervalCommand(buf[bn2] & 127, RECENT[buf[bn1]]);
 		}
 
 		if (buf[bn1] <= 15) { // If this is a NOTE command...

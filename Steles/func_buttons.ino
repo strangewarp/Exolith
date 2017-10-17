@@ -82,8 +82,10 @@ void parseRecPress(byte col, byte row) {
 
 	byte ctrl = BUTTONS & B00111111; // Get the control-row buttons' activity
 
-	// Get the interval-buttons' activity, in a format identical to how their save-byte data is stored
-	byte ibs = (byte(BUTTONS >> 6) & 64) | (byte(BUTTONS >> 13) & 32) | (byte(BUTTONS >> 20) & 16);
+	// Get the interval-buttons' activity, in a format identical to how their save-byte data is stored;
+	// but with an empty 128-bit, since that's where the INTERVAL flag itself is stored,
+	// and the applyIntervalCommand function will require that bit to be stripped anyway
+	byte ibs = ((BUTTONS >> 6) & 64) | ((BUTTONS >> 13) & 32) | ((BUTTONS >> 20) & 16);
 
 	byte key = col + (row * 4); // Get the button-key that corresponds to the given column and row
 
@@ -105,7 +107,7 @@ void parseRecPress(byte col, byte row) {
 		if (ibs && (RECENT[rchan] != 255)) {
 			// Make a composite INTERVAL command, as it would appear in data-storage,
 			// and apply the INTERVAL command to the channel's most-recent pitch
-			pitch = applyIntervalCommand((ibs << 4) | (key & 15), RECENT[rchan]);
+			pitch = applyIntervalCommand(ibs | (key & 15), RECENT[rchan]);
 		}
 
 		if (ibs || (rchan == CHAN)) { // If INTERVAL keys are held, or this is a normal NOTE...
