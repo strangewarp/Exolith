@@ -25,7 +25,17 @@ Software:
 				-- yes
 			. applies in seq-mode, when reading savefile data?
 				-- yes
+		. something is wrong with INTERVAL button-position allocation. fix it
+			-- fixed
+		. INTERVALs are all going in the same direction. fix this
+		. RANDOM intervals are acting like old REPEATs for some reason. fix this
+		. add GUI elements:
+			. GUI-refresh on key-assign and key-unassign
+			. GUI glyphs in progmem
+			. display correctly on every updateGUI() call
 		. check: playable in RECORD MODE?
+			. make sure you're testing the right sequence
+				. check that the sequence whose button is hit as the completion of the TOGGLE RECORD-MODE command is the sequence that ends up being edited
 		. check: played by the sequencing mechanism?
 	. test note-recording itself
 	. test the INTERVAL button in RECORD-MODE
@@ -56,7 +66,13 @@ Software:
 		. uncomment parseRawMidi() in void loop()
 	. test MIDI-IN (clock)
 		. add a "DO NOT SEND CLOCK SIGNALS" user-flag to the CLOCK MASTER/FOLLOW mechanism
+	. double-check all functionality for sequences on the second-page
+	. change GUI to work with 32x dual-color LEDs:
+		. glyphs in RECORD-mode must alternate between their two characters, based on global timing
+		. SEQ and SCATTER values should only be shown for the currently active page
 	. replace bloated LedControl with optimized custom functions
+		. replace LedControl with LedControl_HW_SPI???
+			. either a simplified version of LedControl_HW_SPI, or a simplified version of LedControl, but either way, it needs to directly address port-registers
 	. survey all TO_UPDATE calls, for superfluous flags
 	. add PROGRAM CHANGE functionality (in addition to CONTROL CHANGE)
 		. make sure this has its virtual PC-bit lopped off by REPEAT-commands in RECORD mode, just like virtual CC-bits
@@ -65,7 +81,6 @@ Software:
 	. check whether sequences can actually function with non-multiple-of-2 lengths
 	. add SONG POSITION POINTER functionality while in CLOCK FOLLOW mode, to orient the global cue-position correctly?
 	. add a command to shift the position of the global cue-point?
-	. replace LedControl with LedControl_HW_SPI???
 	. remove "THIS CODE IS UNDER DEVELOPMENT AND DOESN'T DO ANYTHING" from license-statement
 	. test overloading the 8-events-per-tick system
 	. test overloading the SUSTAIN system

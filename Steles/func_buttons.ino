@@ -83,7 +83,7 @@ void parseRecPress(byte col, byte row) {
 	byte ctrl = BUTTONS & B00111111; // Get the control-row buttons' activity
 
 	// Get the interval-buttons' activity, in a format identical to how their save-byte data is stored
-	byte ibs = ((BUTTONS >> 10) & 64) | ((BUTTONS >> 17) & 32) | ((BUTTONS >> 24) & 16);
+	byte ibs = (byte(BUTTONS >> 6) & 64) | (byte(BUTTONS >> 13) & 32) | (byte(BUTTONS >> 20) & 16);
 
 	byte key = col + (row * 4); // Get the button-key that corresponds to the given column and row
 
@@ -217,11 +217,11 @@ void assignKey(byte col, byte row) {
 
 	byte ctrl = BUTTONS & B00111111; // Get the control-row buttons' activity
 
-	byte key = col + (row * 4); // Get the button-key that corresponds to the given column and row
+	//byte key = col + (row * 4); // Get the button-key that corresponds to the given column and row
 
 	// If RECORDMODE is active, and no ctrl-buttons are held,
 	// and the keystroke is on one of the INTERVAL-keys...
-	if (RECORDMODE && (!ctrl) && ((key % 6) == 5) && (key >= 17)) {
+	if (RECORDMODE && (!ctrl) && (!row) && (col >= 2)) {
 		TO_UPDATE |= 252; // Update the lower 6 rows
 		return; // Exit the function, so the INTERVAL keystroke isn't also interpreted as a NOTE keystroke
 	}
