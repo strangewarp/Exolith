@@ -55,7 +55,7 @@ byte applyIntervalCommand(byte cmd, byte pitch) {
 		offset = char(random(interv + 1)); // Get a random offset within the bounds of the interval-value
 	}
 
-	if (cmd & B00110000) { // DOWN-UP or RANDOM-DOWN-UP command
+	if ((cmd & B00110000) == B00110000) { // DOWN-UP or RANDOM-DOWN-UP command
 		offset = random(2) ? offset : (-offset); // Point the offset in a random up-or-down direction
 	} else if (cmd & B00100000) { // DOWN or RANDOM-DOWN command
 		offset = -offset; // Point the offset downwards
