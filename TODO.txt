@@ -80,7 +80,7 @@ Software:
 			. either a simplified version of LedControl_HW_SPI, or a simplified version of LedControl, but either way, it needs to directly address port-registers
 	. survey all TO_UPDATE calls, for superfluous flags
 	. add PROGRAM CHANGE functionality (in addition to CONTROL CHANGE)
-		. make sure this has its virtual PC-bit lopped off by REPEAT-commands in RECORD mode, just like virtual CC-bits
+		. make sure this has its virtual PC-bit lopped off by INTERVAL-commands in RECORD mode, just like virtual CC-bits
 	. add GUI prompts for:
 		. current RECORDSEQ value (RECORD MODE)
 	. check whether sequences can actually function with non-multiple-of-2 lengths
