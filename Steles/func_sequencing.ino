@@ -35,12 +35,22 @@ void resetSeq(byte s) {
 // Apply an interval-command to a given pitch, within a given CHANNEL
 byte applyIntervalCommand(byte cmd, byte pitch) {
 
-	byte interv = cmd & 15; // Get interval-value
+	byte interv = cmd & 15; // Get the pitch-based interval value
 	char offset = interv; // Default offset: the interval itself
+
+	cmd &= B01110000; // Reduce the INTERVAL-command to its flags, now that its interval has been removed
+
+
+
+	lc.setRow(0, 3, cmd);//testing code todo remove
+	lc.setRow(0, 4, pitch);//testing code todo remove
+	lc.setRow(0, 5, interv);//testing code todo remove
+
+
 
 	if (cmd == B01000000) { // If this is a RANDOM-only command...
 		// Get a random offset within a doubled version of the interval-value, with half being negative
-		offset = (char(random((interv << 1) + 1))) - interv;
+		offset = char(random((interv << 1) + 1)) - interv;
 	} else if (cmd & B01000000) { // Else, if this is a RANDOM-flavored command...
 		offset = char(random(interv + 1)); // Get a random offset within the bounds of the interval-value
 	}
@@ -53,9 +63,15 @@ byte applyIntervalCommand(byte cmd, byte pitch) {
 		// Do nothing here: UP and RANDOM-UP match this function's default behavior
 	//}
 
-	int shift = pitch + offset; // Get a shifted version of the given pitch
+	int shift = int(pitch) + offset; // Get a shifted version of the given pitch
 	while (shift < 0) { shift += 12; } // Increase too-low shift-values
 	while (shift > 127) { shift -= 12; } // Decrease too-high shift-values
+
+
+	lc.setRow(0, 6, byte(offset));//testing code todo remove
+	lc.setRow(0, 7, byte(shift));//testing code todo remove
+
+
 
 	return byte(shift); // Return a MIDI-style pitch-byte
 

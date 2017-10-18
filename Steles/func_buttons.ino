@@ -107,7 +107,7 @@ void parseRecPress(byte col, byte row) {
 		if (ibs && (RECENT[rchan] != 255)) {
 			// Make a composite INTERVAL command, as it would appear in data-storage,
 			// and apply the INTERVAL command to the channel's most-recent pitch
-			pitch = applyIntervalCommand(ibs | (key & 15), RECENT[rchan]);
+			pitch = applyIntervalCommand(ibs | (pitch & 15), RECENT[rchan]);
 		}
 
 		if (ibs || (rchan == CHAN)) { // If INTERVAL keys are held, or this is a normal NOTE...
