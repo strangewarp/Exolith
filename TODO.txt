@@ -28,8 +28,9 @@ Software:
 		. something is wrong with INTERVAL button-position allocation. fix it
 			-- fixed
 		. INTERVALs are all going in the same direction. fix this
-			
+			-- fixed
 		. RANDOM intervals are acting like old REPEATs for some reason. fix this
+			-- fixed
 		. add GUI elements:
 			. GUI-refresh on key-assign and key-unassign
 			. GUI glyphs in progmem
