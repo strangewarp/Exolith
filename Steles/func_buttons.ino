@@ -230,13 +230,11 @@ void assignKey(byte col, byte row) {
 
 	if (col == 0) { // If the keystroke is in the leftmost column...
 
-		TO_UPDATE |= 3; // Flag the top two LED-rows for updating
-
 		if (RECORDMODE) { // If RECORD-MODE is active...
 			if (ctrl == B00000001) { // ERASE WHILE HELD special command...
 				ERASENOTES = 1; // As the button is held down, start erasing notes
 			}
-			TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
+			TO_UPDATE |= 253; // Flag the top LED-row, and bottom 6 LED-rows, for updating
 		}
 
 	} else { // Else, if the keystroke is in any of the other columns...
@@ -257,16 +255,18 @@ void assignKey(byte col, byte row) {
 }
 
 // Interpret a key-release according to whatever command-mode is active
-void unassignKey(byte col) {
+void unassignKey(byte col, byte row) {
 	byte ctrl = BUTTONS & B00111111; // Get the control-row buttons' activity
 	if (col == 0) { // If this up-keystroke was in the leftmost column...
-		TO_UPDATE |= 1; // Flag the top LED-row for updating
 		if (RECORDMODE) { // If RECORD MODE is active...
 			if (ctrl == B00000001) { // If ERASE WHILE HELD was held...
 				ERASENOTES = 0; // Stop erasing notes
 			}
-			TO_UPDATE |= 252; // Flag the lower 6 LED-rows for updating
+			TO_UPDATE |= 253; // Flag the top LED-row, and bottom 6 LED-rows, for updating
+		}
+	} else { // Else, if this up-keystroke was in the main button-grid...
+		if (RECORDMODE && (!row) && (col >= 2)) { // If this was an INTERVAL-button in RECORD-mode...
+			TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
 		}
 	}
-	TO_UPDATE |= 2; // Flag the second LED-row for updating
 }

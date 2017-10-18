@@ -92,21 +92,25 @@ void updateGUI() {
 
 		if (RECORDMODE) { // If RECORD MODE is active...
 
-			if (TO_UPDATE & 4) { // If the third row is flagged for an update...
-				// If a CTRL-button is held, clear the row; else get this row's SEQ values
-				lc.setRow(0, 2, ctrl ? 0 : getRowSeqVals(0));
-			}
-
-			for (byte i = 0; i < 5; i++) { // For each of the bottom 5 GUI rows...
+			for (byte i = 0; i < 6; i++) { // For each of the bottom 6 GUI rows...
 
 				// If the row is not flagged for an update, continue to the next row
-				if ((~TO_UPDATE) & (8 << i)) { continue; }
+				if ((~TO_UPDATE) & (4 << i)) { continue; }
 
 				// Holds the LED-row's contents, which will be assembled based on which commands are held
 				byte row = 0;
 
 				if (!ctrl) { // If no command-buttons are held...
-					row = getRowSeqVals(i + 1); // Get the row's standard SEQ values
+					// Get the status of the INTERVAL-buttons
+					byte ibs = ((BUTTONS >> 10) & 4) | ((BUTTONS >> 17) & 2) | ((BUTTONS >> 24) & 1);
+					if (ibs) { // If any INTERVAL-buttons are held...
+						// Combine the attributes of the active INTERVAL-buttons' glyphs into a composite-glyph
+						if (ibs & 4) { row |= pgm_read_byte_near(GLYPH_RANDOM + i); }
+						if (ibs & 2) { row |= pgm_read_byte_near(GLYPH_DOWN + i); }
+						if (ibs & 1) { row |= pgm_read_byte_near(GLYPH_UP + i); }
+					} else { // Else, if no INTERVAL buttons are held...
+						row = getRowSeqVals(i + 1); // Get the row's standard SEQ values
+					}
 				} else if (ctrl == B00100000) { // If TOGGLE NOTE-RECORDING is held...
 					// Grab a section of the RECORDING-glyph for display, or its ARMED variant, if notes are being recorded
 					row = pgm_read_byte_near((RECORDNOTES ? GLYPH_RECORDING_ARMED : GLYPH_RECORDING) + i);
@@ -149,7 +153,7 @@ void updateGUI() {
 				// If any ctrl-buttons are held in an unknown configuration,
 				// then no action is taken, leaving "row" set to 0 (all row-LEDs off).
 
-				lc.setRow(0, i + 3, row); // Set the LED-row based on the current display-row
+				lc.setRow(0, i + 2, row); // Set the LED-row based on the current display-row
 
 			}
 

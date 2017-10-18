@@ -33,8 +33,11 @@ Software:
 			-- fixed
 		. add GUI elements:
 			. GUI-refresh on key-assign and key-unassign
+				-- done
 			. GUI glyphs in progmem
+				-- done
 			. display correctly on every updateGUI() call
+				-- done
 		. check: playable in RECORD MODE?
 			. make sure you're testing the right sequence
 				. check that the sequence whose button is hit as the completion of the TOGGLE RECORD-MODE command is the sequence that ends up being edited
