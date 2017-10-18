@@ -38,12 +38,12 @@ Software:
 				-- done
 			. display correctly on every updateGUI() call
 				-- done
-		. check: playable in RECORD MODE?
-			. make sure you're testing the right sequence
-				. check that the sequence whose button is hit as the completion of the TOGGLE RECORD-MODE command is the sequence that ends up being edited
-		. check: played by the sequencing mechanism?
 	. test note-recording itself
-	. test the INTERVAL button in RECORD-MODE
+		. make sure you're testing the right sequence
+		. check that the sequence whose button is hit as the completion of the TOGGLE RECORD-MODE command is the sequence that ends up being edited
+		. check: played by the sequencing mechanism?
+			. regular notes
+			. intervals
 	. test basic sequencing
 	. test sustain system
 		. test sustain-display row
