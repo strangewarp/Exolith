@@ -27,15 +27,15 @@ void initializeFile(char name[7]) {
 	) { // Then...
 		file.createContiguous(name, FILE_BYTES); // Recreate and open a blank datafile
 		file.close(); // Close file after creating it
-		file.timestamp( // Do some retrocomputing magic
-			T_ACCESS | T_CREATE | T_WRITE,
-			random(1981, 1993),
-			random(1, 13),
-			random(1, 29),
-			random(0, 24),
-			random(0, 60),
-			random(0, 60)
-		);
+		//file.timestamp( // Do some retrocomputing magic
+		//	T_ACCESS | T_CREATE | T_WRITE,
+		//	random(1981, 1993),
+		//	random(1, 13),
+		//	random(1, 29),
+		//	random(0, 24),
+		//	random(0, 60),
+		//	random(0, 60)
+		//);
 		file.open(name, O_WRITE); // Reopen the newly-created file in write-mode
 		file.seekSet(0); // Set write-position to the first byte
 		file.write(112); // Write a default BPM byte at the start of the file
@@ -49,9 +49,6 @@ void initializeFile(char name[7]) {
 
 // Load a given song, or create its savefile if it doesn't exist
 void loadSong(byte slot) {
-
-	// If the song is playing, do not load anything; this protects against random key-mashing
-	if (PLAYING) { return; }
 
 	haltAllSustains(); // Clear all currently-sustained notes
 	resetAllSeqs(); // Reset all seqs' internal activity variables of all kinds
@@ -68,15 +65,18 @@ void loadSong(byte slot) {
 	lc.setRow(0, 7, 255);
 	delay(10); // Wait for a long enough time for the screen-flash to be visible
 
+	if (file.isOpen()) { // If a savefile is already open...
+		file.close(); // Close it
+	}
+
 	char name[7];
 	getFilename(name, slot); // Get the name of the target song-slot's savefile
 	initializeFile(name); // Make sure the savefile exists, and is the correct size
 
 	// Put the header-bytes from the savefile into the global BPM and STATS vars
-	file.open(name, O_READ);
+	file.open(name, O_RDWR);
 	BPM = file.read();
 	file.read(STATS, 48);
-	file.close();
 
 	updateTickSize(); // Update the internal tick-size (in microseconds) to match the new BPM value
 

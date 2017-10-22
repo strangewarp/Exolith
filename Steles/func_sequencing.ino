@@ -6,7 +6,7 @@ void updateTickSize() {
 
 // Reset the "most recent note by channel" array
 void clearRecentNotes() {
-	memset(RECENT, 255, 16);
+	memset(RECENT, 60, 16);
 }
 
 // Reset every sequence, including SCATTER values
@@ -130,7 +130,6 @@ void getTickNotes(byte s) {
 
 		if (buf[bn2] & 128) { // If this is an INTERVAL command...
 			buf[bn1] &= 15; // Ensure that this command's CHAN byte is in NOTE format
-			if (RECENT[buf[bn1]] == 255) { continue; } // If no note has played on this channel yet, this command should do nothing
 			// Apply the byte's INTERVAL command to the channel's most-recent pitch,
 			// and then act like the command's byte was always the resulting pitch.
 			// Note: the INTERVAL flag-byte is removed from the INTERVAL command before it is sent to the function,

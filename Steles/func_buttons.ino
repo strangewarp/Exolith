@@ -102,9 +102,7 @@ void parseRecPress(byte col, byte row) {
 
 		byte rchan = CHAN & 15; // Strip the chan of any special-command flag bits
 
-		// If any INTERVAL-keys are held,
-		// and any note has already been played on the channel in the current session...
-		if (ibs && (RECENT[rchan] != 255)) {
+		if (ibs) { // If any INTERVAL-keys are held...
 			// Make a composite INTERVAL command, as it would appear in data-storage,
 			// and apply the INTERVAL command to the channel's most-recent pitch
 			pitch = applyIntervalCommand(ibs | (pitch & 15), RECENT[rchan]);

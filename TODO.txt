@@ -9,42 +9,23 @@ Software:
 		-- done afaict, but still needs fixes to the sequencing system before being testable
 	. timing system / global cue system look broken? fix them
 		-- seem fixed now, though may require tweaking as the sequencing system comes online
-	. change the REPEAT command into an INTERVAL command:
-		. acts like a REPEAT when holding a value of 0
-			-- yes
-		. check: has button-press routines?
-			-- yes
-		. check: clears button-press on mode-switch?
-			-- yes: since INTERVAL keypress data is held as generic BUTTONS data, it cannot interfere, and so nothing needs to be done here
-		. store as a seq-command in the savefile (modify recordToSeq() et al)
-			-- didn't actually need any changes, because of how it handles data
-		. read and interpret correctly while iterating through sequences in PLAY MODE
-			-- afaict this is implemented now, needs testing
-		. when holding a nonzero value (+/-), applies that interval to the channel's last REPEAT value & sends a new NOTE-ON accordingly
-			. applies in record-mode?
-				-- yes
-			. applies in seq-mode, when reading savefile data?
-				-- yes
-		. something is wrong with INTERVAL button-position allocation. fix it
-			-- fixed
-		. INTERVALs are all going in the same direction. fix this
-			-- fixed
-		. RANDOM intervals are acting like old REPEATs for some reason. fix this
-			-- fixed
-		. add GUI elements:
-			. GUI-refresh on key-assign and key-unassign
-				-- done
-			. GUI glyphs in progmem
-				-- done
-			. display correctly on every updateGUI() call
-				-- done
 	. test note-recording itself
-		. make sure you're testing the right sequence
-		. check that the sequence whose button is hit as the completion of the TOGGLE RECORD-MODE command is the sequence that ends up being edited
-		. check: played by the sequencing mechanism?
-			. regular notes
-			. intervals
+		. manually wipe previous savefile from SD-card before testing anything
+			-- ok
+		. the file mechanism isn't making savefiles, debug it
+			-- maybe fixed. test immediately
+		. test whether the write-and-sync mechanism is, in fact, stable
+
+		. check that the sequence whose button is hit at the completion of the TOGGLE RECORD-MODE command is the sequence that ends up being edited
+		. double-check whether the sequence-selection is dictated by toggling into RECORD MODE, or arming RECORDING itself
+			. if the former, then decide whether the latter makes more sense
+		. look at savefile. have things been recorded?
+		. test behavior of VELOCITY and HUMANIZE
 	. test basic sequencing
+		. regular notes
+		. intervals
+		. duophony
+		. are old notes being knocked out of the sequence by new notes in RECORD-MODE properly?
 	. test sustain system
 		. test sustain-display row
 			. note: seems to be a bug in here, where sustains are either displayed wrongly or linger incorrectly; spotted during previous tasks
@@ -112,6 +93,7 @@ Hardware:
 		. would have to figure out a "bracket" that can fit on the M-screws, to hold on the side-panels with another M-screw per bracket
 		. upside: this would result in a screw-free faceplate, and automatically give clearance for the screws on the underside & protect the LEDs up top
 		. upside: depending on thickness, the brackets would eliminate any need to use washers to get enough clearance for the MIDI ports' height
+		. downside: if AVR-ISP port is internal, this makes it more annoying to upgrade firmware (removing entire enclosure vs. removing faceplate & one sideplate)
 	. update KiCad file:
 		. bottom-board:
 			. reduce thermal-plate size to accomodate new smaller heatsinks
