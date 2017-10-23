@@ -87,10 +87,9 @@ LEDs (PLAY MODE):
 	   q q q q q q q q
 	P  q q q q q q q q  P
 	   q q q q q q q q
-	K  q q q q q q q q
+	   q q q q q q q q
 
 	I: Analog MIDI-IN indicator
-	K: Blinks whenever a new CTRL-button is pressed
 	O: Analog MIDI-OUT indicator
 	P: Currently active page
 
@@ -102,16 +101,15 @@ LEDs (PLAY MODE):
 LEDs (RECORD MODE):
 
 	   c c c c c c c c
-	   a a a a a a a a
+	I  a a a a a a a a  O
 	   d d d d d d d d
 	   d d d d d d d d
 	P  d d d d d d d d  P
 	   d d d d d d d d
-	   d d d d d d d d  I
-	K  d d d d d d d d  O
+	   d d d d d d d d
+	   d d d d d d d d
 
 	I: Analog MIDI-IN indicator
-	K: Blinks whenever a new CTRL-button is pressed
 	O: Analog MIDI-OUT indicator
 	P: Currently active page
 

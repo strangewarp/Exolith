@@ -13,14 +13,13 @@ Software:
 		. manually wipe previous savefile from SD-card before testing anything
 			-- ok
 		. the file mechanism isn't making savefiles, debug it
-			-- maybe fixed. test immediately
-		. test whether the write-and-sync mechanism is, in fact, stable
-
+			-- fixed
 		. check that the sequence whose button is hit at the completion of the TOGGLE RECORD-MODE command is the sequence that ends up being edited
 		. double-check whether the sequence-selection is dictated by toggling into RECORD MODE, or arming RECORDING itself
 			. if the former, then decide whether the latter makes more sense
 		. look at savefile. have things been recorded?
 		. test behavior of VELOCITY and HUMANIZE
+		. test behavior of BASENOTE and OCTAVE
 	. test basic sequencing
 		. regular notes
 		. intervals
@@ -93,6 +92,7 @@ Hardware:
 		. would have to figure out a "bracket" that can fit on the M-screws, to hold on the side-panels with another M-screw per bracket
 		. upside: this would result in a screw-free faceplate, and automatically give clearance for the screws on the underside & protect the LEDs up top
 		. upside: depending on thickness, the brackets would eliminate any need to use washers to get enough clearance for the MIDI ports' height
+		. upside: would allow a "split-level" faceplate, a few mm higher for buttons in front, and a few mm lower for 3mm LEDs in back
 		. downside: if AVR-ISP port is internal, this makes it more annoying to upgrade firmware (removing entire enclosure vs. removing faceplate & one sideplate)
 	. update KiCad file:
 		. bottom-board:

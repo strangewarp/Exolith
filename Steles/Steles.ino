@@ -253,7 +253,7 @@ void setup() {
 
 void loop() {
 
-	//parseRawMidi();
+	parseRawMidi();
 
 	updateTimer();
 
