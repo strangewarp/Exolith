@@ -2,7 +2,7 @@
 // Record a given MIDI command into the tempdata-file of the current RECORDSEQ sequence
 void recordToSeq(char offset, byte chan, byte b1, byte b2) {
 
-	byte buf[9]; // SD-card read/write buffer
+	byte buf[9] = {0, 0, 0, 0, 0, 0, 0, 0}; // SD-card read/write buffer
 
 	// Create a virtual tick-position that compensates for any given tick-offset
 	word tick = (POS[RECORDSEQ] + offset) % (word(STATS[RECORDSEQ] & 127) << 3);

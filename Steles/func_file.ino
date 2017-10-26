@@ -27,16 +27,16 @@ void initializeFile(char name[7]) {
 	) { // Then...
 		file.createContiguous(name, FILE_BYTES); // Recreate and open a blank datafile
 		file.close(); // Close file after creating it
-		//file.timestamp( // Do some retrocomputing magic
-		//	T_ACCESS | T_CREATE | T_WRITE,
-		//	random(1981, 1993),
-		//	random(1, 13),
-		//	random(1, 29),
-		//	random(0, 24),
-		//	random(0, 60),
-		//	random(0, 60)
-		//);
 		file.open(name, O_WRITE); // Reopen the newly-created file in write-mode
+		file.timestamp( // Do some retrocomputing magic
+			T_ACCESS | T_CREATE | T_WRITE,
+			word(random(1981, 1993)),
+			byte(random(1, 13)),
+			byte(random(1, 29)),
+			byte(random(0, 24)),
+			byte(random(0, 60)),
+			byte(random(0, 60))
+		);
 		file.seekSet(0); // Set write-position to the first byte
 		file.write(112); // Write a default BPM byte at the start of the file
 		for (byte i = 1; i < 49; i++) { // For each seq's SIZE-byte in the header...

@@ -5,7 +5,9 @@ Tutorial Outline
 	HARDWARE:
 
 		SD CARD
-			* Do not remove SD-card while Tegne is powered on: this may cause data corruption
+			* Do not remove or insert SD-card while Tegne is powered on: this may cause data corruption
+
+		
 
 	PLAY MODE:
 
