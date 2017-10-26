@@ -18,10 +18,10 @@ Software:
 			-- yes. but:
 			. only currently-playing seqs should be allowed to be edited (requires an if-then check and a cue-clear on mode-toggle)
 				-- done
+		. fix filesystem bugs:
+			. header bytes look corrupted? figure out why
+			. huge block of "ff" bytes for no reason? figure out why
 		. run a simple RECORD-session. now look at savefile. have things been recorded?
-			. yes but in totally the wrong way:
-				. header bytes look corrupted? figure out why
-				. huge block of "ff" bytes for no reason? figure out why
 		. test behavior of VELOCITY and HUMANIZE
 		. test behavior of BASENOTE and OCTAVE
 	. test basic sequencing
