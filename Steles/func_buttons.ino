@@ -38,6 +38,9 @@ void parsePlayPress(byte col, byte row) {
 		SCATTER[seq] = nums; // Turn this command's numeric value into the seq's SCATTER-chance flags
 		TO_UPDATE |= 4 << row; // Flag the seq's corresponding LED-row for an update
 	} else if (ctrl == B00111111) { // If the TOGGLE RECORD-MODE command is present...
+		if (!(STATS[seq] & 128)) { return; } // If the sequence isn't already playing, don't toggle into RECORD-MODE
+		SCATTER[seq] = 0; // Unset the seq's SCATTER values before starting to record
+		CMD[seq] = 0; // Unset any stored CUE values for the seq too
 		RECORDMODE = 1; // Toggle RECORD-MODE
 		RECORDSEQ = seq; // Set the RECORD-SEQ to match the button that was pressed
 		TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating

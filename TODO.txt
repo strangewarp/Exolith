@@ -15,9 +15,13 @@ Software:
 		. the file mechanism isn't making savefiles, debug it
 			-- fixed
 		. check that the sequence whose button is hit at the completion of the TOGGLE RECORD-MODE command is the sequence that ends up being edited
-		. double-check whether the sequence-selection is dictated by toggling into RECORD MODE, or arming RECORDING itself
-			. if the former, then decide whether the latter makes more sense
-		. look at savefile. have things been recorded?
+			-- yes. but:
+			. only currently-playing seqs should be allowed to be edited (requires an if-then check and a cue-clear on mode-toggle)
+				-- done
+		. run a simple RECORD-session. now look at savefile. have things been recorded?
+			. yes but in totally the wrong way:
+				. header bytes look corrupted? figure out why
+				. huge block of "ff" bytes for no reason? figure out why
 		. test behavior of VELOCITY and HUMANIZE
 		. test behavior of BASENOTE and OCTAVE
 	. test basic sequencing
@@ -52,6 +56,11 @@ Software:
 	. test MIDI-IN (clock)
 		. add a "DO NOT SEND CLOCK SIGNALS" user-flag to the CLOCK MASTER/FOLLOW mechanism
 	. double-check all functionality for sequences on the second-page
+	. edge-case testing:
+		. does RECORD MODE work right:
+			. when the sequence is loaded with SCATTERs and CUEs?
+			. in MIDI FOLLOW mode?
+			. for sequences with a weird tempo/slice offset from the global cue?
 	. change GUI to work with 32x dual-color LEDs:
 		. glyphs in RECORD-mode must alternate between their two characters, based on global timing
 		. SEQ and SCATTER values should only be shown for the currently active page

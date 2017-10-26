@@ -5,10 +5,10 @@ void recordToSeq(char offset, byte chan, byte b1, byte b2) {
 	byte buf[9]; // SD-card read/write buffer
 
 	// Create a virtual tick-position that compensates for any given tick-offset
-	word tick = (POS[RECORDSEQ] + offset) % (STATS[RECORDSEQ] & 127);
+	word tick = (POS[RECORDSEQ] + offset) % (word(STATS[RECORDSEQ] & 127) << 3);
 
 	// Get the position of the start of this tick's notes, in the data-file
-	unsigned long tickstart = 49 + (8192UL * RECORDSEQ) + tick;
+	unsigned long tickstart = (49UL + (8192UL * RECORDSEQ)) + tick;
 
 	// Get the tick's note-slots, and check whether any of them are empty
 	file.seekSet(tickstart);

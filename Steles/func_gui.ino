@@ -109,7 +109,7 @@ void updateGUI() {
 						if (ibs & 2) { row |= pgm_read_byte_near(GLYPH_DOWN + i); }
 						if (ibs & 1) { row |= pgm_read_byte_near(GLYPH_UP + i); }
 					} else { // Else, if no INTERVAL buttons are held...
-						row = getRowSeqVals(i + 1); // Get the row's standard SEQ values
+						row = getRowSeqVals(i); // Get the row's standard SEQ values
 					}
 				} else if (ctrl == B00100000) { // If TOGGLE NOTE-RECORDING is held...
 					// Grab a section of the RECORDING-glyph for display, or its ARMED variant, if notes are being recorded

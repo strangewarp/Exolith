@@ -1,0 +1,41 @@
+
+Tutorial Outline
+(AKA: things that would need to be explained in a tutorial for Tegne)
+
+	HARDWARE:
+
+		SD CARD
+			* Do not remove SD-card while Tegne is powered on: this may cause data corruption
+
+	PLAY MODE:
+
+		ON
+
+		OFF
+
+		CUE
+
+		SLICE
+
+		CUED SLICE-INSERTION
+
+		CUE-OFF
+
+		PAGE-OFF
+
+		SCATTER
+			* Is always unset when toggling into RECORD MODE
+
+		SCATTER UNSET
+
+		PAGE SCATTER UNSET
+
+		GLOBAL PLAY/STOP
+
+		TOGGLE RECORD-MODE
+
+
+
+	RECORD MODE:
+
+
