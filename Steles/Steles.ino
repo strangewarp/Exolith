@@ -46,6 +46,8 @@
 
 
 
+const char VERSION_TEXT[] PROGMEM = "\nTegne\n\nSteles Firmware\n\nVersion ALPHA\n#";
+
 // Scrolling glyph: logo to display on startup
 const unsigned long LOGO[] PROGMEM = {
 	4294934211,
@@ -224,7 +226,7 @@ void setup() {
 	lc.setIntensity(0, 15);
 
 	// Initialize the SD-card at full speed, or throw a visible error message if no SD-card is inserted
-	if (!sd.begin(10, SPI_FULL_SPEED)) {
+	if (!sd.begin(10, SD_SCK_MHZ(50))) {
 		lc.setRow(0, 2, B11101110);
 		lc.setRow(0, 3, B10001001);
 		lc.setRow(0, 4, B11101001);

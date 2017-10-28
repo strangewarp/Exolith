@@ -30,12 +30,12 @@ void initializeFile(char name[7]) {
 		file.open(name, O_WRITE); // Reopen the newly-created file in write-mode
 		file.timestamp( // Do some retrocomputing magic
 			T_ACCESS | T_CREATE | T_WRITE,
-			word(random(1981, 1993)),
-			byte(random(1, 13)),
-			byte(random(1, 29)),
-			byte(random(0, 24)),
-			byte(random(0, 60)),
-			byte(random(0, 60))
+			random(1971, 1990),
+			random(1, 13),
+			random(1, 29),
+			random(0, 24),
+			random(0, 60),
+			random(0, 60)
 		);
 		file.seekSet(0); // Set write-position to the first byte
 		file.write(112); // Write a default BPM byte at the start of the file
