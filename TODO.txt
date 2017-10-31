@@ -23,11 +23,11 @@ Software:
 				. something is writing the project's github description-blurb into its savefile header. this shouldn't even be possible. what the hell
 					-- fixed: it was junk-data from when the README was accidentally placed onto the SD-card: createContiguous() didn't overwrite it
 					. figure out how to make the filesystem resilient to this style of junk-data residue
-						. find a fast way to truly blank out the ~300kb savefiles?
-							. this is probably not possible on the ATMEGA - would require a computer-based utility program
-						. shrink the savefiles somehow?
 						. preload the card with blank savefiles?
 							. this would require an additional step in the hardware-manufacturing process to do this to every card in bulk
+								. research this
+									-- ok. looks like various services are willing to do this in bulk, for the manufacturing process. but:
+									. is there a way to ensure the files are totally contiguous, when placed on the card in the first place?
 		. run a simple RECORD-session. now look at savefile. have things been recorded?
 		. test behavior of VELOCITY and HUMANIZE
 		. test behavior of BASENOTE and OCTAVE
@@ -36,6 +36,7 @@ Software:
 		. intervals
 		. duophony
 		. are old notes being knocked out of the sequence by new notes in RECORD-MODE properly?
+	. show currently-active section of recording-seq in RECORD MODE, in addition to global cue-point?
 	. test sustain system
 		. test sustain-display row
 			. note: seems to be a bug in here, where sustains are either displayed wrongly or linger incorrectly; spotted during previous tasks

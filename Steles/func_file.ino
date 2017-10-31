@@ -1,5 +1,26 @@
 
-// Get the name of a target song-slot's savefile
+// Check the SD-card filesystem for correct formatting, or throw an error if incorrect
+void checkFilesystem() {
+	for (byte i = 0; i < 48; i++) { // For every savefile slot...
+		char name[7];
+		getFilename(name, i); // Get the name of a given savefile
+		if ( // If...
+			(!file.exists(name)) // The savefile doesn't exist...
+			|| (file.fileSize() != FILE_BYTES) // Or the file isn't the expected size...
+		) { // Then...
+			lc.setRow(0, 2, B11101110); // Throw a visible error-message: "FS" for "filesystem"
+			lc.setRow(0, 3, B10001000);
+			lc.setRow(0, 4, B11101110);
+			lc.setRow(0, 5, B10000010);
+			lc.setRow(0, 6, B10000010);
+			lc.setRow(0, 7, B10001110);
+			// Intentionally hang the program in an infinite loop, to stop the bad filesystem from being used
+			while (1) { }
+		}
+	}
+}
+
+// Get the name of a target song-slot's savefile (format: "00.DAT" etc.)
 void getFilename(char source[], byte fnum) {
 	byte rem = fnum % 10;
 	source[0] = char(rem + 48);
@@ -17,34 +38,6 @@ void updateFileByte(byte pos, byte b) {
 	file.seekSet(pos); // Go to the given insert-point
 	file.write(b); // Write the new byte into the file
 	file.sync(); // Make sure the changes are recorded
-}
-
-// Make sure a given savefile exists, and is the correct size
-void initializeFile(char name[7]) {
-	if ( // If...
-		(!file.exists(name)) // The savefile doesn't exist...
-		|| (file.fileSize() != FILE_BYTES) // Or the file isn't the expected size...
-	) { // Then...
-		file.createContiguous(name, FILE_BYTES); // Recreate and open a blank datafile
-		file.close(); // Close file after creating it
-		file.open(name, O_WRITE); // Reopen the newly-created file in write-mode
-		file.timestamp( // Do some retrocomputing magic
-			T_ACCESS | T_CREATE | T_WRITE,
-			random(1971, 1990),
-			random(1, 13),
-			random(1, 29),
-			random(0, 24),
-			random(0, 60),
-			random(0, 60)
-		);
-		file.seekSet(0); // Set write-position to the first byte
-		file.write(112); // Write a default BPM byte at the start of the file
-		for (byte i = 1; i < 49; i++) { // For each seq's SIZE-byte in the header...
-			file.seekSet(i); // Go to the next byte location
-			file.write(8); // Set the seq's default size to 8 beats
-		}
-		file.close(); // Close the file
-	}
 }
 
 // Load a given song, or create its savefile if it doesn't exist
@@ -71,7 +64,6 @@ void loadSong(byte slot) {
 
 	char name[7];
 	getFilename(name, slot); // Get the name of the target song-slot's savefile
-	initializeFile(name); // Make sure the savefile exists, and is the correct size
 
 	// Put the header-bytes from the savefile into the global BPM and STATS vars
 	file.open(name, O_RDWR);

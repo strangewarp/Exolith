@@ -3,7 +3,7 @@
 Steles data-file spec
 
 	File location:
-		/00.dat: datafile with song's number
+		/00.DAT: datafile with song's number
 
 	File contents:
 		(393265 total bytes)
@@ -11,8 +11,8 @@ Steles data-file spec
 			(49 total bytes)
 			0: BPM value
 			1-48:
-				Each sequence's size, in beats
-				(* 16 = size in 16th notes)
+				Seq's size, in whole-notes
+				(0-15 = 1-16)
 		Body bytes:
 			48 sequences (393216 total bytes)
 			Per sequence (for 48 sequences):

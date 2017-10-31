@@ -28,7 +28,7 @@
 //   These values may need to be changed in the course of programming/debugging,
 //   but will always stay the same at runtime.
 #define FILE_BYTES 393265UL // Number of bytes in each seq-file
-#define SCANRATE 6000 // Amount of time between keystroke-scans, in microseconds
+#define SCANRATE 7000 // Amount of time between keystroke-scans, in microseconds
 
 
 
@@ -173,12 +173,14 @@ byte SCATTER[49];
 byte CMD[49];
 
 // Holds 48 seqs' sizes and activity-flags
-// bits 0-6: 1, 2, 4, 8, 16, 32, 64 (= size, in beats)
+// bits 0-5: 1, 2, 4, 8, 16, 32 (= size, in beats)
+// bit 6: reserved
 // bit 7: on/off flag
 byte STATS[49];
 
 // Holds the 48 seqs' internal tick-positions
-// bits 0-15: current 16th-note position
+// bits 0-9: current 16th-note position (0-1023)
+// bits 10-15: reserved
 word POS[49];
 
 // Holds up to 8 MIDI notes from a given tick,
@@ -233,6 +235,8 @@ void setup() {
 		lc.setRow(0, 7, B11101100);
 		sd.initErrorHalt();
 	}
+
+	checkFilesystem(); // Check the SD-card filesystem for correct formatting, or throw an error if incorrect
 
 	startupAnimation(); // Display startup-animation
 
