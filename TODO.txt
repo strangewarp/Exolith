@@ -28,6 +28,7 @@ Software:
 								. research this
 									-- ok. looks like various services are willing to do this in bulk, for the manufacturing process. but:
 									. is there a way to ensure the files are totally contiguous, when placed on the card in the first place?
+									
 		. run a simple RECORD-session. now look at savefile. have things been recorded?
 		. test behavior of VELOCITY and HUMANIZE
 		. test behavior of BASENOTE and OCTAVE
