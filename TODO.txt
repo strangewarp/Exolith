@@ -28,7 +28,10 @@ Software:
 								. research this
 									-- ok. looks like various services are willing to do this in bulk, for the manufacturing process. but:
 									. is there a way to ensure the files are totally contiguous, when placed on the card in the first place?
-									
+										. write a createContiguous utility script to block out the file locations, and run it
+											-- done
+											-- also, figured out that the SD Association's formatting utility removes the junk-data! therefore:
+											. write some routines to automatically create contiguous files on a given SD-card's first use by Tegne
 		. run a simple RECORD-session. now look at savefile. have things been recorded?
 		. test behavior of VELOCITY and HUMANIZE
 		. test behavior of BASENOTE and OCTAVE
@@ -142,4 +145,5 @@ Hardware:
 	. make sure to use B3F-5050 buttons in finished unit; these have a longer life than B3F-4050 buttons
 	. redo all Inkscape files for enclosure, making sure to retake all measurements & repeat the KiCad-to-Inkscape vector paste process
 	. look into rubber adhesive nubs, for protecting the screws on the underside, & preventing any scratching/wear of surfaces
+	. make sure that the SD-cards are capable of high-speed transfer, and are shipped in a state identical to what results from the SD Association formatter utility
 

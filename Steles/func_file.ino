@@ -22,9 +22,8 @@ void checkFilesystem() {
 
 // Get the name of a target song-slot's savefile (format: "00.DAT" etc.)
 void getFilename(char source[], byte fnum) {
-	byte rem = fnum % 10;
-	source[0] = char(rem + 48);
-	source[1] = char((fnum - rem) + 48);
+	source[0] = char(floor(fnum / 10)) + 48;
+	source[1] = char((fnum % 10) + 48);
 	source[2] = 46;
 	source[3] = 68;
 	source[4] = 65;
