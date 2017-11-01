@@ -32,7 +32,9 @@ Software:
 											-- done
 											-- also, figured out that the SD Association's formatting utility removes the junk-data! therefore:
 											. write some routines to automatically create contiguous files on a given SD-card's first use by Tegne
+												-- done
 		. run a simple RECORD-session. now look at savefile. have things been recorded?
+		
 		. test behavior of VELOCITY and HUMANIZE
 		. test behavior of BASENOTE and OCTAVE
 	. test basic sequencing
@@ -57,6 +59,7 @@ Software:
 		. PAGE SCATTER UNSET
 		. GLOBAL PLAY/STOP
 	. display SCATTER status only when a SCATTER command is held
+	. reduce sequence-size to 32 whole-notes, to cut down on potential read-lag?
 	. test "toggle to next/prev sequence" in RECORD mode
 	. test INTERVAL commands
 		. recording them to seq

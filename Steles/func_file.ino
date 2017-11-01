@@ -1,22 +1,21 @@
 
-// Check the SD-card filesystem for correct formatting, or throw an error if incorrect
-void checkFilesystem() {
-	for (byte i = 0; i < 48; i++) { // For every savefile slot...
-		char name[7];
-		getFilename(name, i); // Get the name of a given savefile
-		if ( // If...
-			(!file.exists(name)) // The savefile doesn't exist...
-			|| (file.fileSize() != FILE_BYTES) // Or the file isn't the expected size...
-		) { // Then...
-			lc.setRow(0, 2, B11101110); // Throw a visible error-message: "FS" for "filesystem"
-			lc.setRow(0, 3, B10001000);
-			lc.setRow(0, 4, B11101110);
-			lc.setRow(0, 5, B10000010);
-			lc.setRow(0, 6, B10000010);
-			lc.setRow(0, 7, B10001110);
-			// Intentionally hang the program in an infinite loop, to stop the bad filesystem from being used
-			while (1) { }
+// Check whether savefiles exist, and create whichever ones don't exist
+void createFiles() {
+	char name[7];
+	for (byte i = 0; i < 48; i++) { // For every song-slot...
+		getFilename(name, i); // Get the filename that corresponds to this song-slot
+		if (sd.exists(name)) { continue; } // If the file exists, skip the file-creation process for this filename
+		file.createContiguous(sd.vwd(), name, FILE_BYTES); // Create a contiguous file 
+		file.close(); // Close the newly-created file
+		file.open(name, O_WRITE); // Open the file explicitly in WRITE mode
+		file.seekSet(0); // Go to byte 0
+		file.write(byte(100)); // Write a default BPM value of 100
+		for (byte j = 1; j < 49; j++) { // For every header-byte...
+			file.seekSet(j); // Go to that byte's position
+			file.write(byte(8)); // Write a default sequence-size value of 8
 		}
+		file.close(); // Close the file
+		lc.setRow(0, 0, i + 1); // Display how many files have been created so far
 	}
 }
 
