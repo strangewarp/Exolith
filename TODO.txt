@@ -34,7 +34,9 @@ Software:
 											. write some routines to automatically create contiguous files on a given SD-card's first use by Tegne
 												-- done
 		. run a simple RECORD-session. now look at savefile. have things been recorded?
-		
+			-- yes but in the wrong way
+			. figure out why notes for seq 0 are being placed at location 0x28031 (163889)
+				--
 		. test behavior of VELOCITY and HUMANIZE
 		. test behavior of BASENOTE and OCTAVE
 	. test basic sequencing
