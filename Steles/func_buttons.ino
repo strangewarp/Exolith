@@ -120,7 +120,7 @@ void parseRecPress(byte col, byte row) {
 			// Make a time-offset for the RECORDSEQ's current 16th-note, based on the QUANTIZE value;
 			// this will be fed to the recordToSeq command to achieve the correct insert-position
 			char down = POS[RECORDSEQ] % QUANTIZE;
-			byte up = QUANTIZE - down;
+			char up = QUANTIZE - down;
 			char offset = (down <= up) ? (-down) : up;
 
 			// Record the note, either natural or modified by INTERVAL, into the current RECORDSEQ slot;

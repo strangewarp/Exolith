@@ -36,9 +36,12 @@ Software:
 		. run a simple RECORD-session. now look at savefile. have things been recorded?
 			-- yes but in the wrong way
 			. figure out why notes for seq 0 are being placed at location 0x28031 (163889)
-				--
+				-- ok
+			. figure out why notes are appearing in incorrect clusters, with some entries missing
+				-- tentatively fixed: it was wrong scaling between whole-notes (seq-size measurement), 16th-notes (max granularity), and data positions (8 bytes per 16th-note per seq) in recordToSeq()
 		. test behavior of VELOCITY and HUMANIZE
 		. test behavior of BASENOTE and OCTAVE
+		. update behavior of DURATION in both its bounded user-var-setting and its RECORD MODE behavior - was it updated from ticks to 16ths?
 	. test basic sequencing
 		. regular notes
 		. intervals
