@@ -101,7 +101,10 @@ void parseRecPress(byte col, byte row) {
 		}
 
 		// Get the note's velocity, with a random humanize-offset
-		byte velo = abs(char(VELO) + (char(HUMANIZE >> 1) - random(HUMANIZE + 1)));
+		//byte velo = max(1, min(127, int(VELO) + (char(HUMANIZE >> 1) - random(HUMANIZE + 1))));
+		//byte velo = abs(char(VELO) - random(HUMANIZE + 1));
+		byte velo = VELO - min(VELO - 1, random(HUMANIZE + 1));
+		//if (!velo) { velo = 1; } // Make sure velo is at least 1, since 0 can cause odd behavior in certain synths
 
 		byte rchan = CHAN & 15; // Strip the chan of any special-command flag bits
 
@@ -163,7 +166,7 @@ void parseRecPress(byte col, byte row) {
 		OCTAVE = min(10, OCTAVE ^ (8 >> col)); // Modify the OCTAVE value
 		TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
 	} else if (ctrl == B00000100) { // If the DURATION button is held...
-		DURATION = min(64, DURATION ^ (128 >> (key % 8))); // Modify the DURATION value
+		DURATION ^= 128 >> (key % 8); // Modify the DURATION value
 		TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
 	} else if (ctrl == B00000010) { // If the SWITCH RECORDING SEQUENCE button is held...
 		TO_UPDATE |= 4 >> (RECORDSEQ >> 2); // Flag the previous seq's corresponding LED-row for updating

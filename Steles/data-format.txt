@@ -21,7 +21,7 @@ Steles data-file spec
 					2 notes (8 total bytes)
 					Per note:
 						(4 total bytes)
-						0: Duration
+						0: Duration (0-255)
 						1:
 							byte values:
 								0-15: Channel

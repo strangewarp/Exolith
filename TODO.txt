@@ -3,111 +3,128 @@ Tegne TODO
 
 Software:
 
-	. change second LED-row to display the current number of active sustains
-		-- done afaict, but still needs additional fixes to underlying sustain & note-press systems before being testable
-	. display both pages' sequence-activity simultaneously
-		-- done afaict, but still needs fixes to the sequencing system before being testable
-	. timing system / global cue system look broken? fix them
-		-- seem fixed now, though may require tweaking as the sequencing system comes online
-	. test note-recording itself
-		. manually wipe previous savefile from SD-card before testing anything
-			-- ok
-		. the file mechanism isn't making savefiles, debug it
-			-- fixed
-		. check that the sequence whose button is hit at the completion of the TOGGLE RECORD-MODE command is the sequence that ends up being edited
-			-- yes. but:
-			. only currently-playing seqs should be allowed to be edited (requires an if-then check and a cue-clear on mode-toggle)
-				-- done
-		. fix filesystem bugs:
-			. header bytes look corrupted? figure out why
-				. something is writing the project's github description-blurb into its savefile header. this shouldn't even be possible. what the hell
-					-- fixed: it was junk-data from when the README was accidentally placed onto the SD-card: createContiguous() didn't overwrite it
-					. figure out how to make the filesystem resilient to this style of junk-data residue
-						. preload the card with blank savefiles?
-							. this would require an additional step in the hardware-manufacturing process to do this to every card in bulk
-								. research this
-									-- ok. looks like various services are willing to do this in bulk, for the manufacturing process. but:
-									. is there a way to ensure the files are totally contiguous, when placed on the card in the first place?
-										. write a createContiguous utility script to block out the file locations, and run it
-											-- done
-											-- also, figured out that the SD Association's formatting utility removes the junk-data! therefore:
-											. write some routines to automatically create contiguous files on a given SD-card's first use by Tegne
-												-- done
-		. run a simple RECORD-session. now look at savefile. have things been recorded?
-			-- yes but in the wrong way
-			. figure out why notes for seq 0 are being placed at location 0x28031 (163889)
+	Double-back and check later:
+
+		. change second LED-row to display the current number of active sustains
+			-- done afaict, but still needs additional fixes to underlying sustain & note-press systems before being testable
+		. display both pages' sequence-activity simultaneously
+			-- done afaict, but still needs fixes to the sequencing system before being testable
+		. timing system / global cue system look broken? fix them
+			-- seem fixed now, though may require tweaking as the sequencing system comes online
+
+	Current tasks:
+
+		. test note-recording itself
+			. manually wipe previous savefile from SD-card before testing anything
 				-- ok
-			. figure out why notes are appearing in incorrect clusters, with some entries missing
-				-- tentatively fixed: it was wrong scaling between whole-notes (seq-size measurement), 16th-notes (max granularity), and data positions (8 bytes per 16th-note per seq) in recordToSeq()
-				. check that notes are capable of being placed into a seq's first tick
-					-- yes
-		. test behavior of VELOCITY and HUMANIZE
-			--
+			. the file mechanism isn't making savefiles, debug it
+				-- fixed
+			. check that the sequence whose button is hit at the completion of the TOGGLE RECORD-MODE command is the sequence that ends up being edited
+				-- yes. but:
+				. only currently-playing seqs should be allowed to be edited (requires an if-then check and a cue-clear on mode-toggle)
+					-- done
+			. fix filesystem bugs:
+				. header bytes look corrupted? figure out why
+					. something is writing the project's github description-blurb into its savefile header. this shouldn't even be possible. what the hell
+						-- fixed: it was junk-data from when the README was accidentally placed onto the SD-card: createContiguous() didn't overwrite it
+						. figure out how to make the filesystem resilient to this style of junk-data residue
+							. preload the card with blank savefiles?
+								. this would require an additional step in the hardware-manufacturing process to do this to every card in bulk
+									. research this
+										-- ok. looks like various services are willing to do this in bulk, for the manufacturing process. but:
+										. is there a way to ensure the files are totally contiguous, when placed on the card in the first place?
+											. write a createContiguous utility script to block out the file locations, and run it
+												-- done
+												-- also, figured out that the SD Association's formatting utility removes the junk-data! therefore:
+												. write some routines to automatically create contiguous files on a given SD-card's first use by Tegne
+													-- done
+			. run a simple RECORD-session. now look at savefile. have things been recorded?
+				-- yes but in the wrong way
+				. figure out why notes for seq 0 are being placed at location 0x28031 (163889)
+					-- ok
+				. figure out why notes are appearing in incorrect clusters, with some entries missing
+					-- tentatively fixed: it was wrong scaling between whole-notes (seq-size measurement), 16th-notes (max granularity), and data positions (8 bytes per 16th-note per seq) in recordToSeq()
+					. check that notes are capable of being placed into a seq's first tick
+						-- yes
+			. test behavior of VELOCITY and HUMANIZE
+				-- VELOCITY works
+				-- HUMANIZE seems to return values above 127
+				. fix & test this
+					-- fixed, tested
+				. also check HUMANIZE for incorrect wrap-around values from under 0 (= 255)
+					-- checked
+					. now test this
+						-- tested
+			. check behavior of DURATION in both its bounded user-var-setting and its RECORD MODE behavior - was it updated from ticks to 16ths?
+				-- no
+				. update it to assume 16th-notes, so its maximum value is 255 (16 beats, minus one 16th-note)
+					-- ok
+				. check its interactions with RECORD MODE routines
+					-- seem to be in order
+		. the var-change buttons in RECORD MODE feel super awkward. develop and implement a new UI layout for all of them
+		. test basic sequencing
+			. regular notes
+			. intervals
+			. duophony
+			. are old notes being knocked out of the sequence by new notes in RECORD-MODE properly?
+		. show currently-active section of recording-seq in RECORD MODE, in addition to global cue-point?
+		. test sustain system
+			. test sustain-display row
+				. note: seems to be a bug in here, where sustains are either displayed wrongly or linger incorrectly; spotted during previous tasks
+		. remove all outdated updates for second GUI-row in PAGE and CTRL-BUTTON functions
+		. move LOAD command out of RECORD-MODE somehow: toggling into RECORD-MODE now requires a seq to be active, to putting LOAD there is bad UI design
+		. test all cue-commands
+			. OFF
+			. CUE
+			. SLICE
+			. CUE (with SLICE insertion)
+			. CUE OFF
+			. PAGE OFF
+			. SCATTER (amount)
+			. SCATTER UNSET
+			. PAGE SCATTER UNSET
+			. GLOBAL PLAY/STOP
 		. test behavior of BASENOTE and OCTAVE
-			--
-		. check behavior of DURATION in both its bounded user-var-setting and its RECORD MODE behavior - was it updated from ticks to 16ths?
-			--
-	. test basic sequencing
-		. regular notes
-		. intervals
-		. duophony
-		. are old notes being knocked out of the sequence by new notes in RECORD-MODE properly?
-	. show currently-active section of recording-seq in RECORD MODE, in addition to global cue-point?
-	. test sustain system
-		. test sustain-display row
-			. note: seems to be a bug in here, where sustains are either displayed wrongly or linger incorrectly; spotted during previous tasks
-	. remove all outdated updates for second GUI-row in PAGE and CTRL-BUTTON functions
-	. test all cue-commands
-		. OFF
-		. CUE
-		. SLICE
-		. CUE (with SLICE insertion)
-		. CUE OFF
-		. PAGE OFF
-		. SCATTER (amount)
-		. SCATTER UNSET
-		. PAGE SCATTER UNSET
-		. GLOBAL PLAY/STOP
-	. display SCATTER status only when a SCATTER command is held
-	. reduce sequence-size to 32 whole-notes, to cut down on potential read-lag?
-	. test "toggle to next/prev sequence" in RECORD mode
-	. test INTERVAL commands
-		. recording them to seq
-		. playing them from seq
-	. add a "totally empty out the sequence's contents" command to RECORD-MODE
-	. test MIDI CC commands
-	. test file-load
-	. test MIDI-IN (notes)
-		. uncomment parseRawMidi() in void loop()
-	. test MIDI-IN (clock)
-		. add a "DO NOT SEND CLOCK SIGNALS" user-flag to the CLOCK MASTER/FOLLOW mechanism
-	. double-check all functionality for sequences on the second-page
-	. edge-case testing:
-		. does RECORD MODE work right:
-			. when the sequence is loaded with SCATTERs and CUEs?
-			. in MIDI FOLLOW mode?
-			. for sequences with a weird tempo/slice offset from the global cue?
-	. change GUI to work with 32x dual-color LEDs:
-		. glyphs in RECORD-mode must alternate between their two characters, based on global timing
-		. SEQ and SCATTER values should only be shown for the currently active page
-	. replace bloated LedControl with optimized custom functions
-		. replace LedControl with LedControl_HW_SPI???
-			. either a simplified version of LedControl_HW_SPI, or a simplified version of LedControl, but either way, it needs to directly address port-registers
-	. survey all TO_UPDATE calls, for superfluous flags
-	. add PROGRAM CHANGE functionality (in addition to CONTROL CHANGE)
-		. make sure this has its virtual PC-bit lopped off by INTERVAL-commands in RECORD mode, just like virtual CC-bits
-	. add GUI prompts for:
-		. current RECORDSEQ value (RECORD MODE)
-	. check whether sequences can actually function with non-multiple-of-2 lengths
-	. add SONG POSITION POINTER functionality while in CLOCK FOLLOW mode, to orient the global cue-position correctly?
-	. add a command to shift the position of the global cue-point?
-	. double-check that there are no remaining "todo" or "test" comments in the codebase
-	. remove "THIS CODE IS UNDER DEVELOPMENT AND DOESN'T DO ANYTHING" from license-statement
-	. test overloading the 8-events-per-tick system
-	. test overloading the SUSTAIN system
-	. test overloading the MIDI-IN system
-	. update "VERSION_TEXT" to "1"
-	. soak-test the physical prototype
+		. display SCATTER status only when a SCATTER command is held
+		. reduce sequence-size to 32 whole-notes, to cut down on potential read-lag?
+		. test "toggle to next/prev sequence" in RECORD mode
+		. test INTERVAL commands
+			. recording them to seq
+			. playing them from seq
+		. add a "totally empty out the sequence's contents" command to RECORD-MODE
+		. test MIDI CC commands
+		. test file-load
+		. test MIDI-IN (notes)
+			. uncomment parseRawMidi() in void loop()
+		. test MIDI-IN (clock)
+			. add a "DO NOT SEND CLOCK SIGNALS" user-flag to the CLOCK MASTER/FOLLOW mechanism
+		. double-check all functionality for sequences on the second-page
+		. edge-case testing:
+			. does RECORD MODE work right:
+				. when the sequence is loaded with SCATTERs and CUEs?
+				. in MIDI FOLLOW mode?
+				. for sequences with a weird tempo/slice offset from the global cue?
+		. change GUI to work with 32x dual-color LEDs:
+			. glyphs in RECORD-mode must alternate between their two characters, based on global timing
+			. SEQ and SCATTER values should only be shown for the currently active page
+		. replace bloated LedControl with optimized custom functions
+			. replace LedControl with LedControl_HW_SPI???
+				. either a simplified version of LedControl_HW_SPI, or a simplified version of LedControl, but either way, it needs to directly address port-registers
+		. survey all TO_UPDATE calls, for superfluous flags
+		. add PROGRAM CHANGE functionality (in addition to CONTROL CHANGE)
+			. make sure this has its virtual PC-bit lopped off by INTERVAL-commands in RECORD mode, just like virtual CC-bits
+		. add GUI prompts for:
+			. current RECORDSEQ value (RECORD MODE)
+		. check whether sequences can actually function with non-multiple-of-2 lengths
+		. add SONG POSITION POINTER functionality while in CLOCK FOLLOW mode, to orient the global cue-position correctly?
+		. add a command to shift the position of the global cue-point?
+		. double-check that there are no remaining "todo" or "test" comments in the codebase
+		. remove "THIS CODE IS UNDER DEVELOPMENT AND DOESN'T DO ANYTHING" from license-statement
+		. test overloading the 8-events-per-tick system
+		. test overloading the SUSTAIN system
+		. test overloading the MIDI-IN system
+		. update "VERSION_TEXT" to "1"
+		. soak-test the physical prototype
 
 Hardware:
 

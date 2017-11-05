@@ -41,3 +41,8 @@ Tutorial Outline
 	RECORD MODE:
 
 
+
+		HUMANIZE
+			* A random velocity amount, from 0 to the HUMANIZE value, will be subtracted from every VELOCITY as it's recorded
+
+

@@ -24,7 +24,7 @@ void recordToSeq(char offset, byte chan, byte b1, byte b2) {
 	}
 
 	// Construct a virtual MIDI command, with an additional DURATION value, in the write buffer
-	buf[0] = DURATION;
+	buf[0] = (chan <= 15) ? DURATION : 0; // Only include the DURATION if this isn't a flagged special-command
 	buf[1] = chan;
 	buf[2] = b1;
 	buf[3] = b2;
