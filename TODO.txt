@@ -15,6 +15,16 @@ Software:
 	Current tasks:
 
 		. the var-change buttons in RECORD MODE feel super awkward. develop and implement a new UI layout for all of them
+			-- ok
+			. now: test every updated global-var-set command
+				. BASENOTE
+				. OCTAVE
+				. DURATION
+				. CHAN-LISTEN
+				. VELO
+				. HUMANIZE
+				. QUANTIZE
+				. CHAN
 		. test basic sequencing
 			. regular notes
 			. intervals
@@ -45,6 +55,10 @@ Software:
 			. recording them to seq
 			. playing them from seq
 		. add a "totally empty out the sequence's contents" command to RECORD-MODE
+		. test SEQ-SIZE behavior
+			. does a SEQ-SIZE of "0" correspond to 1 beat?
+		. test SEQ-SIZE changes in RECORD-MODE
+			. does this mess with the sequence's synchronization to the global cue pattern? if so, fix it
 		. test MIDI CC commands
 		. test file-load
 		. test MIDI-IN (notes)
@@ -66,6 +80,8 @@ Software:
 		. survey all TO_UPDATE calls, for superfluous flags
 		. add PROGRAM CHANGE functionality (in addition to CONTROL CHANGE)
 			. make sure this has its virtual PC-bit lopped off by INTERVAL-commands in RECORD mode, just like virtual CC-bits
+			. make sure any button-press global-var changes to the CHAN and CC commands don't interfere with this
+				. this will definitely require a change to the "If the CHAN button is held..." lines
 		. add GUI prompts for:
 			. current RECORDSEQ value (RECORD MODE)
 		. check whether sequences can actually function with non-multiple-of-2 lengths
