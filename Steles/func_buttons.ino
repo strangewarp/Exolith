@@ -159,7 +159,7 @@ void parseRecPress(byte col, byte row) {
 	} else { // Else, if CTRL-buttons are held...
 
 		// Get the button's var-change value, for when a global var is being changed
-		char change = ((32 >> row) << !(col % 3)) * ((col >= 2) ? -1 : 1);
+		char change = (32 >> row) * ((col & 2) - 1);
 
 		if (ctrl == B00100000) { // If TOGGLE NOTE-RECORDING is held...
 			RECORDNOTES ^= 1; // Toggle the note-recording flag
@@ -199,7 +199,7 @@ void parseRecPress(byte col, byte row) {
 			HUMANIZE = clamp(0, 127, int(HUMANIZE) + change); // Modify the HUMANIZE value
 			TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
 		} else if (ctrl == B00001100) { // If the TIME-QUANTIZE button is held...
-			QUANTIZE = 8 >> clamp(0, 3, char(QUANTIZE) + change); // Modify the TIME-QUANTIZE value
+			QUANTIZE = clamp(1, 8, abs(change)); // Modify the TIME-QUANTIZE value
 			TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
 		} else if (ctrl == B00010010) { // If the CHAN button is held...
 			CHAN = (CHAN & 16) | clamp(0, 15, char(CHAN & 15) + change); // Modify the CHAN value, while preserving CC flag

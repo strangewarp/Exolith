@@ -16,15 +16,27 @@ Software:
 
 		. the var-change buttons in RECORD MODE feel super awkward. develop and implement a new UI layout for all of them
 			-- ok
+			. actually: the new layout is sort of weird too. change it around
+				-- done
 			. now: test every updated global-var-set command
 				. BASENOTE
+					-- works
 				. OCTAVE
+					-- works
 				. DURATION
+					-- works
 				. CHAN-LISTEN
+					-- works
 				. VELO
+					-- works
 				. HUMANIZE
+					-- wokrs
 				. QUANTIZE
+					-- no
+					. fix it
+						-- works now
 				. CHAN
+					-- works
 		. test basic sequencing
 			. regular notes
 			. intervals
@@ -87,8 +99,11 @@ Software:
 		. check whether sequences can actually function with non-multiple-of-2 lengths
 		. add SONG POSITION POINTER functionality while in CLOCK FOLLOW mode, to orient the global cue-position correctly?
 		. add a command to shift the position of the global cue-point?
+		. add a command to change the global cue-point's granularity? (e.g. being 3 beats, or 7 beats, instead of 8 beats, and ignoring the extra LEDs)
+		. add a single global "stats" file, to save and store global vars? (duration, basenote, etc)
 		. double-check that there are no remaining "todo" or "test" comments in the codebase
 		. remove "THIS CODE IS UNDER DEVELOPMENT AND DOESN'T DO ANYTHING" from license-statement
+		. double-check that everything compiles correctly in the latest version of Arduino
 		. test overloading the 8-events-per-tick system
 		. test overloading the SUSTAIN system
 		. test overloading the MIDI-IN system
