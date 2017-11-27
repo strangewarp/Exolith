@@ -14,39 +14,28 @@ Software:
 
 	Current tasks:
 
-		. the var-change buttons in RECORD MODE feel super awkward. develop and implement a new UI layout for all of them
-			-- ok
-			. actually: the new layout is sort of weird too. change it around
-				-- done
-			. now: test every updated global-var-set command
-				. BASENOTE
-					-- works
-				. OCTAVE
-					-- works
-				. DURATION
-					-- works
-				. CHAN-LISTEN
-					-- works
-				. VELO
-					-- works
-				. HUMANIZE
-					-- wokrs
-				. QUANTIZE
-					-- no
-					. fix it
-						-- works now
-				. CHAN
-					-- works
-		. test basic sequencing
-			. regular notes
-			. intervals
-			. duophony
-			. are old notes being knocked out of the sequence by new notes in RECORD-MODE properly?
-		. show currently-active section of recording-seq in RECORD MODE, in addition to global cue-point?
 		. test sustain system
 			. test sustain-display row
 				. note: seems to be a bug in here, where sustains are either displayed wrongly or linger incorrectly; spotted during previous tasks
+					-- found it: a memmove() in func_buttons.ino had its first and second args swapped
+					. but also: processSustains() wouldn't necessarily work at all either. mentally model, rewrite, and fix this
+						-- fixed?
+						. test it
+							-- 
+		. double-check that every memmove is coupled with a routine to clear out any old bytes that should thusly be empty, wherever applicable
+			-- 
+		. test basic sequencing
+			. regular notes
+				-- 
+			. test note-erasing in RECORD-MODE
+				-- 
+			. intervals
+			. duophony
+			. are old notes being knocked out of the sequence by new notes in RECORD-MODE properly?
+		. change func_gui.ino to show currently-active section of the recording-seq in RECORD MODE, in addition to the global cue-point
+		. change func_sequencing.ino to toggle a GUI update whenever the recording-seq in RECORD MODE reaches a new slice of itself
 		. remove all outdated updates for second GUI-row in PAGE and CTRL-BUTTON functions
+		. convert all multi-byte Serial.write() commands into batch Serial.writes with a buffer-array of bytes, for consistency
 		. move LOAD command out of RECORD-MODE somehow: toggling into RECORD-MODE now requires a seq to be active, to putting LOAD there is bad UI design
 		. test all cue-commands
 			. OFF
@@ -113,6 +102,9 @@ Software:
 Hardware:
 
 	. test breadboarded prototype with shared-SPI-line layout (and two digital SPI-select pins), for LedControl_HW_SPI lag-reduction
+		. remember, when rebuilding breadboard, to follow this error-prevention process:
+			. print out schematics for reference
+			. check off schematic elements with a pencil (both components and wires) as they are added
 		. if this works:
 			. reroute PCB prototype to reflect the changes
 			. update both KiCad and firmware to reflect the changes
@@ -120,6 +112,7 @@ Hardware:
 				. pin 1: digital MIDI-IN indicator (NOTEs only)
 				. pin 2: digital MIDI-OUT indicator (NOTEs only)
 			. if 2 pins are indeed freed-up for MIDI I/O indicators, then only two slots of the 74HC14N Schmitt-trigger will end up being used, so look for a smaller 2-slot alternative to it
+				. or, if 74HC14N ends up with free slots: add another buffering stage to the OUT line, and make the THRU port into a switchable THRU/OUT2 port
 			. put the results of this line of inquiry into the "update KiCad file" task
 	. test higher resistor values for POWER-LED to get a matching brightness level
 	. note: this task may no longer be necessary, but keeping it until I'm sure:

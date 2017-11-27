@@ -145,7 +145,7 @@ void parseRecPress(byte col, byte row) {
 			Serial.write(127); // ^
 			SUST_COUNT--; // Reduce the number of active sustains by 1
 		}
-		memmove(SUST, SUST + 3, (SUST_COUNT * 3)); // Move all sustains one space downward
+		memmove(SUST + 3, SUST, SUST_COUNT * 3); // Move all sustains one space downward
 		SUST[0] = DURATION; // Fill the topmost sustain-slot with the user-pressed note
 		SUST[1] = 128 + CHAN; // ^
 		SUST[2] = pitch; // ^
