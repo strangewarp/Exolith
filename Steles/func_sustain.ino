@@ -28,6 +28,7 @@ void processSustains() {
 			SUST_COUNT--; // Reduce the sustain-count
 			// n doesn't need to be increased here, since the next sustain occupies the same index now
 			memset(SUST + (SUST_COUNT * 3), 0, 3); // Empty out the bottommost sustain's former position
+			TO_UPDATE |= 2; // Flag the second LED-row for a GUI update
 		}
 	}
 }

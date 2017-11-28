@@ -21,7 +21,11 @@ Software:
 					. but also: processSustains() wouldn't necessarily work at all either. mentally model, rewrite, and fix this
 						-- fixed?
 						. test it
-							-- 
+							-- seems to work
+		. sustain-system's LEDs still aren't zeroing out correctly. fix this
+			-- fixed
+		. sustain-system has hanging notes after either reaching or exceeding 8 sustains. fix it
+			-- 
 		. double-check that every memmove is coupled with a routine to clear out any old bytes that should thusly be empty, wherever applicable
 			-- 
 		. test basic sequencing
@@ -94,7 +98,7 @@ Software:
 		. remove "THIS CODE IS UNDER DEVELOPMENT AND DOESN'T DO ANYTHING" from license-statement
 		. double-check that everything compiles correctly in the latest version of Arduino
 		. test overloading the 8-events-per-tick system
-		. test overloading the SUSTAIN system
+		. test overloading the SUSTAIN system with simultaneous sequencing and notes-from-RECORD-MODE
 		. test overloading the MIDI-IN system
 		. update "VERSION_TEXT" to "1"
 		. soak-test the physical prototype
