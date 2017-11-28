@@ -148,15 +148,10 @@ void getTickNotes(byte s) {
 
 		if (buf[bn1] >= 16) { continue; } // If this was a proto-MIDI-CC command, forego any sustain mechanisms
 
-		if (SUST_COUNT == 8) { // If the SUSTAIN buffer is already full...
-			Serial.write(SUST[23]); // Send a premature NOTE-OFF for the oldest active sustain
-			Serial.write(SUST[24]); // ^
-			Serial.write(127); // ^
-			SUST_COUNT--; // Reduce the number of active sustains by 1
-		}
-		memmove(SUST, SUST + 3, (SUST_COUNT * 3)); // Move all sustains one space downward
+		clipBottomSustain(); // If the bottommost SUSTAIN is filled, send its NOTE-OFF prematurely
+		memmove(SUST + 3, SUST, SUST_COUNT * 3); // Move all sustains one space downward
 		memcpy(SUST, buf + bn, 3); // Create a new sustain corresponding to this note
-		SUST[1] ^= 16; // Turn the new sustain's NOTE-ON into a NOTE-OFF preemptively
+		SUST[0] ^= 16; // Turn the new sustain's NOTE-ON into a NOTE-OFF preemptively
 		SUST_COUNT++; // Increase the number of active sustains by 1
 
 	}

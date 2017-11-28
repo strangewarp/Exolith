@@ -190,7 +190,7 @@ byte MOUT[25];
 byte MOUT_COUNT = 0; // Counts the current number of note entries in MOUT
 
 // Note-Sustain data storage
-// (format: SUST[n*3] = duration, channel, pitch)
+// (format: SUST[n*3] = channel, pitch, duration)
 byte SUST[25];
 byte SUST_COUNT = 0; // Counts the current number of sustained notes
 

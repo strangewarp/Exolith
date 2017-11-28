@@ -139,20 +139,14 @@ void parseRecPress(byte col, byte row) {
 		if (CHAN & 16) { return; } // If this was a virtual CC command, forego all SUSTAIN operations
 
 		// Update SUSTAIN buffer in preparation for playing the user-pressed note
-		if (SUST_COUNT == 8) { // If the SUSTAIN buffer is already full...
-			Serial.write(SUST[23]); // Send a premature NOTE-OFF for the oldest active sustain
-			Serial.write(SUST[24]); // ^
-			Serial.write(127); // ^
-			SUST_COUNT--; // Reduce the number of active sustains by 1
-		}
+		clipBottomSustain(); // If the bottommost SUSTAIN is filled, send its NOTE-OFF prematurely
 		memmove(SUST + 3, SUST, SUST_COUNT * 3); // Move all sustains one space downward
-		SUST[0] = DURATION; // Fill the topmost sustain-slot with the user-pressed note
-		SUST[1] = 128 + CHAN; // ^
-		SUST[2] = pitch; // ^
+		SUST[0] = 128 + CHAN; // Fill the topmost sustain-slot with the user-pressed note
+		SUST[1] = pitch; // ^
+		SUST[2] = DURATION; // ^
 		SUST_COUNT++; // Increase the number of active sustains, to accurately reflect the new note
-		Serial.write(144 + CHAN); // Send the user-pressed note to MIDI-OUT immediately, without buffering
-		Serial.write(pitch); // ^
-		Serial.write(velo); // ^
+		byte buf[4] = {byte(144 + CHAN), pitch, velo}; // Build a correctly-formatted NOTE-ON for the user-pressed note
+		Serial.write(buf, 3); // Send the user-pressed note to MIDI-OUT immediately, without buffering
 
 		TO_UPDATE |= 2; // Update sustain-displaying GUI row
 
