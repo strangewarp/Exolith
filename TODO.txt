@@ -26,10 +26,10 @@ Software:
 			-- fixed
 		. fix sustain-system data order: should be channel-pitch-duration, for simpler conversion back into MIDI notes
 			-- ok
-			. re-test sustains to double-check that the routines haveall been updated correctly
-				-- 
+			. re-test sustains to double-check that the routines have all been updated correctly
+				-- seems to work alright
 		. sustain-system has hanging notes after either reaching or exceeding 8 sustains. fix it
-			-- 
+			-- bug has mysteriously vanished. maybe due to a stealth-fix while reorganizing other parts of the sustain-system?
 		. double-check that every memmove is coupled with a routine to clear out any old bytes that should thusly be empty, wherever applicable
 			-- 
 		. test basic sequencing
