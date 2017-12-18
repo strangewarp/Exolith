@@ -14,50 +14,37 @@ Software:
 
 	Current tasks:
 
-		. double-check that every memmove is coupled with a routine to clear out any old bytes that should thusly be emptied, wherever applicable
-			-- afaict yes
-		. simplify INTERVAL system:
-			. move all INTERVAL buttons to the control-button row - they add bad UX-feel to interactions with the note-buttons currently
-				-- ok
-			. only interval types should be:
-				. UP (ctrl-row B00000001)
-				. DOWN (ctrl-row B00000011)
-				. UP-RANDOM (ctrl-row B00000101)
-				. DOWN-RANDOM (ctrl-row B00000111)
-					-- ok
-			. change interval keypress functions
-				-- done
-			. change interval sequencing functions
-				-- done
-			. update all interval-related LED GUI responses
-				-- ok
-		. update the button-chord for the ERASE WHILE HELD command, in assignKey(), parseRecPress(), etc (do a search on ERASE to double-check)
-			-- done
-			. update its LED GUI response too
-				-- done
+		. move LOAD command out of RECORD-MODE somehow
+			. (toggling into RECORD-MODE now requires a seq to be active, so putting LOAD there is bad UI design)
+			. create a gesture-memory system for LOAD and GLOBAL PLAY/STOP
+				. wipe a given keystroke from gesture-memory after 2 seconds
+				. track gestures with bitwise values to save RAM:
+					. bits 0-5: button
+					. bits 6-7: seconds until wiping this entry from memory
+					. add a routine to updateTimer() to clear out expired gesture-memory entries
+				. downward button-swipe: LOAD
+					. after this: click regular button to load savefile
+					. or: tap any ctrl-row button to tab to another page of savefiles
+					. or: repeat LOAD-gesture to exit back to previous mode
+				. upward button-swipe: GLOBAL PLAY/STOP
+		. change the RECORD-MODE UI:
+			. change TOGGLE RECORD-MODE to a button-combination of B00110011
+			. remove the active-seq-chording requirement for toggling into RECORD-MODE
+			. write a system to track the sequence that was most-recently interacted with
+			. when toggling into RECORD-MODE, set the most-recently-interacted sequence to active, and in a position that matches up with the global cue-point
 		. reorganize all chorded commands in RECORD-MODE to have a more intuitive layout
-			-- 
 		. remove "todo: update" markers from button-key.txt
-		. change the TOGGLE RECORD-MODE command so that pressing the six buttons toggles an "are you sure?" state, rather than requiring a 7th button-press
-			-- 
 		. test basic sequencing
 			. regular notes: recording & playback
-				-- 
 			. test note-erasing in RECORD-MODE
-				-- 
 			. intervals
-				-- 
 			. duophony
-				-- 
 			. various QUANTIZE settings
-				-- 
 			. are old notes being knocked out of the sequence by new notes in RECORD-MODE properly?
-				-- 
 		. change func_gui.ino to show currently-active section of the recording-seq in RECORD MODE, in addition to the global cue-point
-		. change func_sequencing.ino to toggle a GUI update whenever the recording-seq in RECORD MODE reaches a new slice of itself
-		. remove all outdated updates for second GUI-row in PAGE and CTRL-BUTTON functions
+			. change func_sequencing.ino to toggle a GUI update whenever the recording-seq in RECORD MODE reaches a new slice of itself
+			. remove all outdated updates for second GUI-row in PAGE and CTRL-BUTTON functions
 		. convert all multi-byte Serial.write() commands into batch Serial.writes with a buffer-array of bytes, for consistency
-		. move LOAD command out of RECORD-MODE somehow: toggling into RECORD-MODE now requires a seq to be active, to putting LOAD there is bad UI design
 		. test all cue-commands
 			. OFF
 			. CUE
