@@ -32,8 +32,9 @@ Software:
 			. update all interval-related LED GUI responses
 				-- ok
 		. update the button-chord for the ERASE WHILE HELD command, in assignKey(), parseRecPress(), etc (do a search on ERASE to double-check)
-			-- 
+			-- done
 			. update its LED GUI response too
+				-- done
 		. reorganize all chorded commands in RECORD-MODE to have a more intuitive layout
 			-- 
 		. remove "todo: update" markers from button-key.txt

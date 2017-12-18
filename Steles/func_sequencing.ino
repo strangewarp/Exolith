@@ -174,7 +174,7 @@ void iterateAll() {
 
 	if (PLAYING) { // If the sequencer is currently in PLAYING mode...
 
-		byte changed = 0;
+		byte changed = 0; // Flag that tracks whether any savefile data gets changed on this iteration
 
 		for (byte i = 47; i != 255; i--) { // For every loaded sequence, in reverse order...
 
@@ -191,7 +191,7 @@ void iterateAll() {
 			// and the ERASE-NOTES command is being held...
 			if ((RECORDSEQ == i) && RECORDMODE && RECORDNOTES && ERASENOTES) {
 				byte buf[9] = {0, 0, 0, 0, 0, 0, 0, 0};
-				file.seekSet(49 + POS[i] + (i * 8192)); // Set position to start of tick's first note
+				file.seekSet(49 + POS[i] + (i * 8192)); // Set position to the start of the tick's first note
 				file.write(buf, 8); // Write in an entire empty tick's worth of bytes
 				changed = 1;
 			} else { // Else, if any other combination of states applies...
