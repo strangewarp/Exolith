@@ -83,14 +83,12 @@ void parsePlayPress(byte col, byte row) {
 // Parse a note-keypress that was generated while in RECORDMODE mode
 void parseRecPress(byte col, byte row) {
 
+	byte key = col + (row * 4); // Get the button-key that corresponds to the given column and row
 	byte ctrl = BUTTONS & B00111111; // Get the control-row buttons' activity
 
-	// Get the interval-buttons' activity, in a format identical to how their save-byte data is stored;
-	// but with an empty 128-bit, since that's where the INTERVAL flag itself is stored,
-	// and the applyIntervalCommand function will require that bit to be stripped anyway
-	byte ibs = ((BUTTONS >> 6) & 64) | ((BUTTONS >> 13) & 32) | ((BUTTONS >> 20) & 16);
-
-	byte key = col + (row * 4); // Get the button-key that corresponds to the given column and row
+	// Get the interval-buttons' activity specifically,
+	// while weeding out any false-positives from commands that don't hold the INTERVAL button (B00000001)
+	byte ibs = (ctrl & 7) * ((ctrl <= 7) && (ctrl & 1));
 
 	if (!ctrl) { // If no CTRL buttons are held...
 
@@ -101,17 +99,15 @@ void parseRecPress(byte col, byte row) {
 		}
 
 		// Get the note's velocity, with a random humanize-offset
-		//byte velo = max(1, min(127, int(VELO) + (char(HUMANIZE >> 1) - random(HUMANIZE + 1))));
-		//byte velo = abs(char(VELO) - random(HUMANIZE + 1));
 		byte velo = VELO - min(VELO - 1, random(HUMANIZE + 1));
-		//if (!velo) { velo = 1; } // Make sure velo is at least 1, since 0 can cause odd behavior in certain synths
 
 		byte rchan = CHAN & 15; // Strip the chan of any special-command flag bits
 
 		if (ibs) { // If any INTERVAL-keys are held...
 			// Make a composite INTERVAL command, as it would appear in data-storage,
 			// and apply the INTERVAL command to the channel's most-recent pitch
-			pitch = applyIntervalCommand(ibs | (pitch & 15), RECENT[rchan]);
+			ibs = ((ibs & 1) << 7) | ((ibs & 2) << 5) | ((ibs & 4) << 3);
+			pitch = applyIntervalCommand(ibs | key, RECENT[rchan]);
 		}
 
 		if (ibs || (rchan == CHAN)) { // If INTERVAL keys are held, or this is a normal NOTE...
@@ -226,17 +222,10 @@ void assignKey(byte col, byte row) {
 
 	//byte key = col + (row * 4); // Get the button-key that corresponds to the given column and row
 
-	// If RECORDMODE is active, and no ctrl-buttons are held,
-	// and the keystroke is on one of the INTERVAL-keys...
-	if (RECORDMODE && (!ctrl) && (!row) && (col >= 2)) {
-		TO_UPDATE |= 252; // Update the lower 6 rows
-		return; // Exit the function, so the INTERVAL keystroke isn't also interpreted as a NOTE keystroke
-	}
-
 	if (col == 0) { // If the keystroke is in the leftmost column...
 
 		if (RECORDMODE) { // If RECORD-MODE is active...
-			if (ctrl == B00000001) { // ERASE WHILE HELD special command...
+			if (ctrl == B00001111) { // ERASE WHILE HELD special command...
 				ERASENOTES = 1; // As the button is held down, start erasing notes
 			}
 			TO_UPDATE |= 253; // Flag the top LED-row, and bottom 6 LED-rows, for updating
@@ -260,7 +249,7 @@ void assignKey(byte col, byte row) {
 }
 
 // Interpret a key-release according to whatever command-mode is active
-void unassignKey(byte col, byte row) {
+void unassignKey(byte col) {
 	byte ctrl = BUTTONS & B00111111; // Get the control-row buttons' activity
 	if (col == 0) { // If this up-keystroke was in the leftmost column...
 		if (RECORDMODE) { // If RECORD MODE is active...
@@ -268,10 +257,6 @@ void unassignKey(byte col, byte row) {
 				ERASENOTES = 0; // Stop erasing notes
 			}
 			TO_UPDATE |= 253; // Flag the top LED-row, and bottom 6 LED-rows, for updating
-		}
-	} else { // Else, if this up-keystroke was in the main button-grid...
-		if (RECORDMODE && (!row) && (col >= 2)) { // If this was an INTERVAL-button in RECORD-mode...
-			TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
 		}
 	}
 }

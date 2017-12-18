@@ -31,9 +31,8 @@ Steles data-file spec
 								0-127: Normal pitch
 								128-255, as bits:
 									128: signals presence of an INTERVAL command
-									64: UP flag
-									32: DOWN flag
-									16: RANDOM flag
-									1-15: Interval distance
+									64: DOWN flag
+									32: RANDOM flag
+									1-31: Interval distance
 						3: Velocity
 

@@ -3,9 +3,9 @@
 byte clamp(byte low, byte high, byte v) {
 	return min(high, max(low, v));
 }
-char clamp(byte low, byte high, char v) {
+char clamp(char low, char high, char v) {
 	return min(high, max(low, v));
 }
-int clamp(byte low, byte high, int v) {
+int clamp(int low, int high, int v) {
 	return min(high, max(low, v));
 }

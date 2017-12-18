@@ -35,25 +35,18 @@ void resetSeq(byte s) {
 // Apply an interval-command to a given pitch, within a given CHANNEL
 byte applyIntervalCommand(byte cmd, byte pitch) {
 
-	byte interv = cmd & 15; // Get the pitch-based interval value
+	byte interv = cmd & 31; // Get the pitch-based interval value
 	char offset = interv; // Default offset: the interval itself
 
-	cmd &= B01110000; // Reduce the INTERVAL-command to its flags, now that its interval has been removed
+	cmd &= B11100000; // Reduce the INTERVAL-command to its flags, now that its interval has been removed
 
-	if (cmd == B01000000) { // If this is a RANDOM-only command...
-		// Get a random offset within a doubled version of the interval-value, with half being negative
-		offset = char(random((interv << 1) + 1)) - interv;
-	} else if (cmd & B01000000) { // Else, if this is a RANDOM-flavored command...
+	if (cmd & B00100000) { // If this is a RANDOM-flavored command...
 		offset = char(random(interv + 1)); // Get a random offset within the bounds of the interval-value
 	}
 
-	if ((cmd & B00110000) == B00110000) { // DOWN-UP or RANDOM-DOWN-UP command
-		offset = random(2) ? offset : (-offset); // Point the offset in a random up-or-down direction
-	} else if (cmd & B00100000) { // DOWN or RANDOM-DOWN command
+	if (cmd & B01000000) { // If this is a DOWN-flavored command...
 		offset = -offset; // Point the offset downwards
-	} //else if (cmd & B00010000) { // UP or RANDOM-UP command
-		// Do nothing here: UP and RANDOM-UP match this function's default behavior
-	//}
+	}
 
 	int shift = int(pitch) + offset; // Get a shifted version of the given pitch
 	while (shift < 0) { shift += 12; } // Increase too-low shift-values
@@ -132,9 +125,7 @@ void getTickNotes(byte s) {
 			buf[bn1] &= 15; // Ensure that this command's CHAN byte is in NOTE format
 			// Apply the byte's INTERVAL command to the channel's most-recent pitch,
 			// and then act like the command's byte was always the resulting pitch.
-			// Note: the INTERVAL flag-byte is removed from the INTERVAL command before it is sent to the function,
-			// because that is the most-efficient way to format the data
-			buf[bn2] = applyIntervalCommand(buf[bn2] & 127, RECENT[buf[bn1]]);
+			buf[bn2] = applyIntervalCommand(buf[bn2], RECENT[buf[bn1]]);
 		}
 
 		if (buf[bn1] <= 15) { // If this is a NOTE command...

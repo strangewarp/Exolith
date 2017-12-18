@@ -16,7 +16,7 @@ Buttons (PLAY MODE):
 
 Buttons (RECORD MODE):
 
-	c n R D U
+	c n n n n
 	c n n n n
 	c n n n n
 	c n n n n
@@ -28,12 +28,6 @@ Buttons (RECORD MODE):
 	n: Note button
 		* Plays a note when no control-chord is held
 		* Changes var values when a control-chord is held
-	R: Random-interval button
-		* When held: notes play a random interval from the channel's most recent note, or record the random-command into the sequence
-	D: Down-interval button
-		* When held: notes play a downward interval from the channel's most recent note, or record the generic-interval command into the sequence
-	U: Up-interval button
-		* When held: notes play an upward interval from the channel's most recent note, or record the generic-interval command into the sequence
 
 
 LEDs (PLAY MODE) (possible design change):

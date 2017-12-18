@@ -88,7 +88,7 @@ Button combinations (RECORD MODE):
 	001000: OCTAVE
 	000100: DURATION
 	000010: SWITCH RECORDING-SEQUENCE
-	000001: ERASE WHILE HELD
+	000001: INTERVAL-UP (todo: update)
 
 	2-keypress:
 	110000: LOAD
@@ -104,9 +104,12 @@ Button combinations (RECORD MODE):
 	001010: SEQ-SIZE
 	001001:
 	000110: BPM
-	000101:
-	000011:
+	000101: INTERVAL-UP-RANDOM (todo: update)
+	000011: INTERVAL-DOWN (todo: update)
 
+	3-keypress:
+	...
+	000111: INTERVAL-DOWN-RANDOM (todo: update)
 	...
 
 	4-keypress:
@@ -124,7 +127,7 @@ Button combinations (RECORD MODE):
 	011101:
 	011011:
 	010111:
-	001111:
+	001111: ERASE WHILE HELD (todo: update)
 
 	...
 
