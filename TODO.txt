@@ -19,13 +19,22 @@ Software:
 			. create a gesture-memory system for LOAD and GLOBAL PLAY/STOP
 				. wipe a given keystroke from gesture-memory after 2 seconds
 				. track gestures with bitwise values to save RAM:
-					. bits 0-5: button
-					. bits 6-7: seconds until wiping this entry from memory
+					. bits 0-2: button
+					. bits 3-7: (seconds/10) until wiping this entry from memory
 					. add a routine to updateTimer() to clear out expired gesture-memory entries
+				. remove old LOAD stuff from button-and-GUI routines
 				. downward button-swipe: LOAD
-					. after this: click regular button to load savefile
-					. or: tap any ctrl-row button to tab to another page of savefiles
-					. or: repeat LOAD-gesture to exit back to previous mode
+					. (after this: click regular button to load savefile)
+					. (or: tap any ctrl-row button to tab to another page of savefiles)
+						. add tracking var for which LOAD-page is being viewed
+							. reset this to page-0 on each LOAD-toggle
+					. (or: repeat LOAD-gesture to exit back to previous mode)
+				. change savefile system to accomodate 144 savefiles (24 per LOAD-page, 6 LOAD-pages total)
+				. add LOAD-mode view to the GUI, with LOAD-page signifiers
+				. make sure LOAD-mode simply overrides the PLAY/RECORD dichotomy in all cases, rather than interacting with them
+					. requires flag at start of iteration routine?
+					. clear sustains whenever LOAD is toggled?
+				. remove old GLOBAL PLAY/STOP stuff from button routines
 				. upward button-swipe: GLOBAL PLAY/STOP
 		. change the RECORD-MODE UI:
 			. change TOGGLE RECORD-MODE to a button-combination of B00110011
