@@ -15,7 +15,6 @@ Software:
 	Current tasks:
 
 		. move LOAD command out of RECORD-MODE somehow
-			. (toggling into RECORD-MODE now requires a seq to be active, so putting LOAD there is bad UI design)
 			. create a gesture-memory system for LOAD and GLOBAL PLAY/STOP
 				. wipe a given keystroke from gesture-memory after 2 seconds
 				. track gestures with bitwise values to save RAM:
