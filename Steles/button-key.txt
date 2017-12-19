@@ -2,6 +2,13 @@
 Rightmost binary digit: top row
 Leftmost binary digit: bottom row
 
+
+Button gestures (ALL MODES):
+
+	0-1-2-3-4-5: GLOBAL PLAY/STOP
+	5-4-3-2-1-0: LOAD
+
+
 Button combinations (PLAY MODE):
 
 	1-keypress:
@@ -87,50 +94,38 @@ Button combinations (RECORD MODE):
 	010000: BASENOTE
 	001000: OCTAVE
 	000100: DURATION
-	000010: SWITCH RECORDING-SEQUENCE
+	000010: CHANNEL (todo: update)
 	000001: INTERVAL-UP (todo: update)
 
 	2-keypress:
-	110000: LOAD
+	110000: SWITCH RECORDING-SEQUENCE (todo: update)
 	101000: CLOCK-MASTER
-	100100: CHAN-LISTEN
-	100010: CONTROL-CHANGE
-	100001:
-	011000: VELO
+	100100: QUANTIZE (todo: update)
+	100010: CHANNEL-LISTEN (todo: update)
+	100001: CONTROL-CHANGE (todo: update)
+	011000: VELOCITY
 	010100: HUMANIZE
-	010010: CHAN
-	010001:
-	001100: QUANTIZE
-	001010: SEQ-SIZE
+	010010: SEQ-SIZE (todo: update)
+	010001: BPM (todo: update)
+	001100:  (todo: update)
+	001010:  (todo: update)
 	001001:
-	000110: BPM
+	000110:  (todo: update)
 	000101: INTERVAL-UP-RANDOM (todo: update)
 	000011: INTERVAL-DOWN (todo: update)
 
 	3-keypress:
 	...
 	000111: INTERVAL-DOWN-RANDOM (todo: update)
-	...
 
 	4-keypress:
-	111100:
-	111010:
-	111001:
-	110110:
-	110101:
-	110011: GLOBAL PLAY/STOP
-	101110:
-	101101:
-	101011:
-	100111:
-	011110:
-	011101:
-	011011:
-	010111:
+	...
 	001111: ERASE WHILE HELD (todo: update)
 
+	5-keypress:
 	...
 
 	6-keypress:
+	...
 	111111: TOGGLE RECORD MODE
 

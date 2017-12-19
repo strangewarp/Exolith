@@ -29,6 +29,7 @@
 //   but will always stay the same at runtime.
 #define FILE_BYTES 393265UL // Number of bytes in each seq-file
 #define SCANRATE 7000 // Amount of time between keystroke-scans, in microseconds
+#define GESTDECAY 200000 // Amount of time between gesture-decay ticks, in microseconds
 
 
 
@@ -125,8 +126,16 @@ const byte GLYPH_UP[] PROGMEM = {B00000110, B00001111, B00000110, B00000110, B00
 
 
 
+// Gesture button-sequences:
+const byte GESTURE_LOAD[] PROGMEM = {5, 4, 3, 2, 1, 0}; // LOAD SAVEFILE gesture
+const byte GESTURE_PLAYSTOP[] PROGMEM = {0, 1, 2, 3, 4, 5}; // GLOBAL PLAY/STOP gesture
+const byte GESTURE_RTOGGLE[] PROGMEM = {0, 5, 0, 5}; // TOGGLE RECORD-MODE gesture
+
+
+
 // UI vars
 unsigned long BUTTONS = 0; // Tracks which of the 30 buttons are currently pressed; each button has an on/off bit
+byte GESTURE[7]; // Tracks currently-active button-gesture events
 byte PAGE = 0; // Tracks currently-active page of sequences
 byte TO_UPDATE = 0; // Tracks which rows of LEDs should be updated at the end of a given tick
 
@@ -134,9 +143,11 @@ byte TO_UPDATE = 0; // Tracks which rows of LEDs should be updated at the end of
 unsigned long ABSOLUTETIME = 0; // Absolute time elapsed: wraps around after reaching its limit
 unsigned long ELAPSED = 0; // Time elapsed since last tick
 word KEYELAPSED = 0; // Time elapsed since last keystroke-scan
+unsigned long GESTELAPSED = 0; // Time elapsed since last gesture-decay
 unsigned long TICKSIZE = 6250; // Size of the current tick, in microseconds; tick = 60000000 / (bpm * 96)
 
 // Recording vars
+byte LOADMODE = 0; // Tracks whether LOAD-MODE is active
 byte RECORDMODE = 0; // Tracks whether RECORD MODE is active
 byte RECORDNOTES = 0; // Tracks whether notes are being recorded into the RECORDSEQ-sequence or not
 byte ERASENOTES = 0; // Tracks whether notes are being erased from the RECORDSEQ-sequence or not

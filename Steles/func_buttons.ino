@@ -168,9 +168,8 @@ void parseRecPress(byte col, byte row) {
 			RECORDSEQ = (PAGE * 24) + key; // Switch to the seq that corresponds to the key-position on the active page
 			TO_UPDATE |= 4 >> row; // Flag the new seq's corresponding LED-row for updating
 			TO_UPDATE |= 1; // Flag the topmost row for updating
-		} else if (ctrl == B00110000) { // If the LOAD command is held...
-			loadSong((PAGE * 24) + key); // Load a save-slot's contents into its tempfile, and start using that file
-			TO_UPDATE |= 1; // Flag the topmost row for updating
+		} else if (ctrl == B00110000) {
+
 		} else if (ctrl == B00101000) { // If the CLOCK-MASTER command is held...
 			CLOCKMASTER ^= 1; // Toggle the CLOCK-MASTER value
 			ABSOLUTETIME = micros(); // Set the ABSOLUTETIME-tracking var to now
@@ -204,11 +203,6 @@ void parseRecPress(byte col, byte row) {
 			updateFileByte(0, BPM); // Update the BPM-byte in the song's savefile
 			updateTickSize(); // Update the internal tick-size (in microseconds) to match the new BPM value
 			TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
-		} else if (ctrl == B00111111) { // If the TOGGLE RECORD-MODE command is held...
-			RECORDMODE = 0; // Untoggle RECORD-MODE
-			RECORDNOTES = 0; // Disable note-recording, to avoid recording new notes automatically on a future toggle cycle
-			ERASENOTES = 0; // Disable note-erasing, to avoid erasing new notes automatically on a future toggle cycle
-			TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
 		}
 
 	}
@@ -224,6 +218,9 @@ void assignKey(byte col, byte row) {
 
 	if (col == 0) { // If the keystroke is in the leftmost column...
 
+		newGestureEntry(row);
+		checkForGestures();
+
 		if (RECORDMODE) { // If RECORD-MODE is active...
 			if (ctrl == B00001111) { // ERASE WHILE HELD special command...
 				ERASENOTES = 1; // As the button-chord is held down, start erasing notes
@@ -232,11 +229,6 @@ void assignKey(byte col, byte row) {
 		}
 
 	} else { // Else, if the keystroke is in any of the other columns...
-
-		if (ctrl == B00110011) { // GLOBAL PLAY/STOP special command, with a regular button-press to signal intent...
-			toggleMidiClock(1); // Toggle the MIDI clock, with "1" for "the user did this, not a device"
-			return; // Exit the function, so the keystroke isn't also interpreted as a note or slice command
-		}
 
 		if (RECORDMODE) { // If RECORD-MODE is active...
 			parseRecPress(col - 1, row); // Parse the RECORD-mode button-press

@@ -43,14 +43,29 @@ void updateTimer() {
 
 	if (micr < ABSOLUTETIME) { // If the micros-value has wrapped around its finite counting-space to be less than the last absolute-time position...
 		unsigned long offset = (4294967295UL - ABSOLUTETIME) + micr; // Get an offset representing time since last check, wrapped around the unsigned long's limit
+		GESTELAPSED += offset; // Put the wrapped-around microseconds into the elapsed-time-for-gesture-decay value
 		KEYELAPSED += offset; // Put the wrapped-around microseconds into the elapsed-time-for-keypad-checks value
 		ELAPSED += offset; // Put the wrapped-around microseconds into the elapsed-time value
 	} else { // Else, if the micros-value is greater than or equal to last loop's absolute-time position...
 		unsigned long offset = micr - ABSOLUTETIME; // Get an offset representing time since last check
+		GESTELAPSED += offset; // Add the difference between the current time and the previous time to the elapsed-time-for-gesture-decay value
 		KEYELAPSED += offset; // Add the difference between the current time and the previous time to the elapsed-time-for-keypad-checks value
 		ELAPSED += offset; // Add the difference between the current time and the previous time to the elapsed-time value
 	}
 	ABSOLUTETIME = micr; // Set the absolute-time to the current time-value
+
+	while (GESTELAPSED >= GESTDECAY) { // While the gesture-decay timer has elapsed by a step or more...
+		for (byte i = 0; i < 6; i++) { // For each active gesture-event...
+			if (!(GESTURE[i] & 128)) { break; } // If the gesture-slot is empty, stop checking
+			if ((GESTURE[i] & 127) >> 3) { // If the gesture has time remaining...
+				GESTURE[i]--; // Reduce its time by 1
+			} else { // Else, if the gesture exists but has no time remaining...
+				GESTURE[i] = 0; // Clear its now-outdated contents
+			}
+		}
+		GESTELAPSED -= GESTDECAY; // Reduce the elapsed gesture-check time by a single unit of gesture-decay
+	}
+
 	if (KEYELAPSED >= SCANRATE) { // If the next keypad-check time has been reached...
 		scanKeypad(); // Scan the keypad for changes in keystroke values
 		KEYELAPSED = 0; // Reset the keypad-check timer
