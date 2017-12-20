@@ -54,17 +54,7 @@ void updateTimer() {
 	}
 	ABSOLUTETIME = micr; // Set the absolute-time to the current time-value
 
-	while (GESTELAPSED >= GESTDECAY) { // While the gesture-decay timer has elapsed by a step or more...
-		for (byte i = 0; i < 6; i++) { // For each active gesture-event...
-			if (!(GESTURE[i] & 128)) { break; } // If the gesture-slot is empty, stop checking
-			if ((GESTURE[i] & 127) >> 3) { // If the gesture has time remaining...
-				GESTURE[i]--; // Reduce its time by 1
-			} else { // Else, if the gesture exists but has no time remaining...
-				GESTURE[i] = 0; // Clear its now-outdated contents
-			}
-		}
-		GESTELAPSED -= GESTDECAY; // Reduce the elapsed gesture-check time by a single unit of gesture-decay
-	}
+	updateGestureKeys(); // Update the tracking-info for all active gesture-keys
 
 	if (KEYELAPSED >= SCANRATE) { // If the next keypad-check time has been reached...
 		scanKeypad(); // Scan the keypad for changes in keystroke values

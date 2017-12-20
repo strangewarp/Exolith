@@ -126,16 +126,9 @@ const byte GLYPH_UP[] PROGMEM = {B00000110, B00001111, B00000110, B00000110, B00
 
 
 
-// Gesture button-sequences:
-const byte GESTURE_LOAD[] PROGMEM = {5, 4, 3, 2, 1, 0}; // LOAD SAVEFILE gesture
-const byte GESTURE_PLAYSTOP[] PROGMEM = {0, 1, 2, 3, 4, 5}; // GLOBAL PLAY/STOP gesture
-const byte GESTURE_RTOGGLE[] PROGMEM = {0, 5, 0, 5}; // TOGGLE RECORD-MODE gesture
-
-
-
 // UI vars
 unsigned long BUTTONS = 0; // Tracks which of the 30 buttons are currently pressed; each button has an on/off bit
-byte GESTURE[7]; // Tracks currently-active button-gesture events
+byte GESTURE[5]; // Tracks currently-active button-gesture events
 byte PAGE = 0; // Tracks currently-active page of sequences
 byte TO_UPDATE = 0; // Tracks which rows of LEDs should be updated at the end of a given tick
 

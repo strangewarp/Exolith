@@ -5,8 +5,9 @@ Leftmost binary digit: bottom row
 
 Button gestures (ALL MODES):
 
-	0-1-2-3-4-5: GLOBAL PLAY/STOP
-	5-4-3-2-1-0: LOAD
+	0-1-4-5: GLOBAL PLAY/STOP
+	5-4-1-0: LOAD
+	0-5-0-5: TOGGLE RECORD-MODE
 
 
 Button combinations (PLAY MODE):
