@@ -31,13 +31,15 @@ Software:
 					-- ok
 				. change all TOGGLE RECORD-MODE stuff to use a gesture instead of a key-chord
 					. implement a RECENT_SEQ var, to track the most-recently-touched sequence
-						-- 
+						-- not necessary: repurposing the RECORDSEQ var instead
 						. change this value whenever a sequence's naked slice button is hit
-							-- 
+							-- ok
 					. finish the record-toggle mechanism in func_gesture.ino
 						. get the sequence to wrap around to match the global cue-position correctly - tick 1 should match on both, regardless of global position
+							-- ok
 				. downward button-swipe: LOAD
 					. create a LOAD-MODE that overrides all other modes:
+						
 						. (click regular button to load savefile)
 						. (tap any ctrl-row button to tab to another page of savefiles)
 							. add tracking var for which LOAD-page is being viewed

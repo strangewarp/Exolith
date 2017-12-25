@@ -20,13 +20,12 @@ void checkForGestures() {
 	} else if (all == 101) { // Else, if this completed a GLOBAL PLAY/STOP gesture...
 		toggleMidiClock(1); // Toggle the MIDI clock, with "1" for "the user did this, not a device"
 	} else if (all == 325) { // Else, if this is a completed TOGGLE RECORD-MODE gesture...
-		resetSeq(RECENT_SEQ); // If the most-recently-touched seq is already playing, reset it to prepare for timing-wrapping
-		SCATTER[RECENT_SEQ] = 0; // Unset the most-recently-touched seq's SCATTER values before starting to record
-
-		// todo: wrap sequence around to global cue-point
-
+		resetSeq(RECORDSEQ); // If the most-recently-touched seq is already playing, reset it to prepare for timing-wrapping
+		SCATTER[RECORDSEQ] = 0; // Unset the most-recently-touched seq's SCATTER values before starting to record
+		word seqsize = (STATS[RECORDSEQ] & B00111111) * 16; // Get sequence's size in 16th-notes
+		POS[RECORDSEQ] = (seqsize > 255) ? CUR16 : (CUR16 % seqsize); // Wrap sequence around to global cue-point
+		STATS[RECORDSEQ] |= 128; // Set the sequence to active
 		RECORDMODE = 1; // Toggle RECORD-MODE
-		RECORDSEQ = seq; // Set the RECORD-SEQ to match the button that was pressed
 		TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
 	} else { // Else, if no matching gesture was found...
 		return; // Exit the function

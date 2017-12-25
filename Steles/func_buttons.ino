@@ -71,6 +71,8 @@ void parsePlayPress(byte col, byte row) {
 		}
 	}
 
+	RECORDSEQ = seq; // Set the most-resent-seq to the seq whose button was pressed
+
 }
 
 // Parse a note-keypress that was generated while in RECORDMODE mode
