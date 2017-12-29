@@ -39,18 +39,16 @@ Software:
 							-- ok
 				. downward button-swipe: LOAD
 					. create a LOAD-MODE that overrides all other modes:
-						
 						. (click regular button to load savefile)
-						. (tap any ctrl-row button to tab to another page of savefiles)
-							. add tracking var for which LOAD-page is being viewed
-								. reset this to page-0 on each LOAD-toggle
+							-- ok
+						. (hold any ctrl-row button to tab to another page of savefiles)
+							-- ok
 						. (or: repeat LOAD-gesture to exit back to previous mode)
-				. put in new load routine -> loadSong((PAGE * 24) + key); // Load a save-slot's contents into its tempfile, and start using that file
-				. change savefile system to accomodate 144 savefiles (24 per LOAD-page, 6 LOAD-pages total)
+							-- 
+				. change savefile system to accomodate 168 savefiles (24 per LOAD-page, 7 LOAD-pages total)
+					-- ok
 				. add LOAD-mode view to the GUI, with LOAD-page signifiers
-				. make sure LOAD-mode simply overrides the PLAY/RECORD dichotomy in all cases, rather than interacting with them
-					. requires flag at start of iteration routine?
-					. clear sustains whenever LOAD is toggled?
+					-- 
 				. remove old GLOBAL PLAY/STOP stuff from button routines
 				. add upward button-swipe gesture for GLOBAL PLAY/STOP
 		. change the RECORD-MODE UI:

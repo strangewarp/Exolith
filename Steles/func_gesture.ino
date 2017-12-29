@@ -14,8 +14,6 @@ void checkForGestures() {
 	}
 	if (all == 2824) { // If this completed a LOAD gesture...
 		LOADMODE = 1; // Toggle LOAD-MODE override
-		RECORDNOTES = 0; // Disable note-recording, to avoid recording new notes automatically on a future toggle cycle
-		ERASENOTES = 0; // Disable note-erasing, to avoid erasing new notes automatically on a future toggle cycle
 		TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
 	} else if (all == 101) { // Else, if this completed a GLOBAL PLAY/STOP gesture...
 		toggleMidiClock(1); // Toggle the MIDI clock, with "1" for "the user did this, not a device"
@@ -30,8 +28,10 @@ void checkForGestures() {
 	} else { // Else, if no matching gesture was found...
 		return; // Exit the function
 	}
-	// At this point in the function, a command was definitely found, so empty out the gesture-button memory
-	memset(GESTURE, 0, 4);
+	// At this point in the function, a command was definitely found, so...
+	memset(GESTURE, 0, 4); // Empty out the gesture-button memory
+	RECORDNOTES = 0; // Disable note-recording, to avoid recording new notes automatically on a future toggle cycle
+	ERASENOTES = 0; // Disable note-erasing, to avoid erasing new notes automatically on a future toggle cycle
 }
 
 // Update the tracking-info for all active gesture-keys

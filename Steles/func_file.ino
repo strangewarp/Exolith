@@ -1,8 +1,8 @@
 
 // Check whether savefiles exist, and create whichever ones don't exist
 void createFiles() {
-	char name[7];
-	for (byte i = 0; i < 48; i++) { // For every song-slot...
+	char name[8];
+	for (byte i = 0; i < 168; i++) { // For every song-slot...
 		getFilename(name, i); // Get the filename that corresponds to this song-slot
 		if (sd.exists(name)) { continue; } // If the file exists, skip the file-creation process for this filename
 		file.createContiguous(sd.vwd(), name, FILE_BYTES); // Create a contiguous file 
@@ -19,15 +19,16 @@ void createFiles() {
 	}
 }
 
-// Get the name of a target song-slot's savefile (format: "00.DAT" etc.)
+// Get the name of a target song-slot's savefile (format: "000.DAT" etc.)
 void getFilename(char source[], byte fnum) {
-	source[0] = char(floor(fnum / 10)) + 48;
-	source[1] = char((fnum % 10) + 48);
-	source[2] = 46;
-	source[3] = 68;
-	source[4] = 65;
-	source[5] = 84;
-	source[6] = 0;
+	source[0] = char(floor(fnum / 100)) + 48;
+	source[1] = char(floor(fnum / 10)) + 48;
+	source[2] = char((fnum % 10) + 48);
+	source[3] = 46;
+	source[4] = 68;
+	source[5] = 65;
+	source[6] = 84;
+	source[7] = 0;
 }
 
 // Update a given byte within a given song-file.
@@ -60,7 +61,7 @@ void loadSong(byte slot) {
 		file.close(); // Close it
 	}
 
-	char name[7];
+	char name[8];
 	getFilename(name, slot); // Get the name of the target song-slot's savefile
 
 	// Put the header-bytes from the savefile into the global BPM and STATS vars

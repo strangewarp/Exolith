@@ -140,19 +140,19 @@ unsigned long GESTELAPSED = 0; // Time elapsed since last gesture-decay
 unsigned long TICKSIZE = 6250; // Size of the current tick, in microseconds; tick = 60000000 / (bpm * 96)
 
 // Recording vars
-byte LOADMODE = 0; // Tracks whether LOAD-MODE is active
+byte LOADMODE = 0; // Tracks whether LOAD MODE is active
 byte RECORDMODE = 0; // Tracks whether RECORD MODE is active
 byte RECORDNOTES = 0; // Tracks whether notes are being recorded into the RECORDSEQ-sequence or not
 byte ERASENOTES = 0; // Tracks whether notes are being erased from the RECORDSEQ-sequence or not
 byte RECORDSEQ = 0; // Sequence currently being recorded into
-byte BASENOTE = 0; // Baseline pitch-offset value for RECORD-mode notes
-byte OCTAVE = 3; // Octave-offset value for RECORD-mode notes
-byte VELO = 127; // Baseline velocity-value for RECORD-mode notes
-byte HUMANIZE = 0; // Maximum velocity-humanize value for RECORD-mode notes
-byte CHAN = 0; // MIDI-CHAN for RECORD-mode notes
-byte LISTEN = 0; // Channel to listen to in RECORD mode, for recording from external MIDI sources
-byte QUANTIZE = B00000010; // Time-quantize value for RECORD-mode notes: bits 0-3: 1, 2, 4, 8 (16th-notes)
-byte DURATION = B00001000; // Duration value for RECORD-mode notes: bits 0-4: 1, 2, 4, 8, 16 (16th-notes)
+byte BASENOTE = 0; // Baseline pitch-offset value for RECORD MODE notes
+byte OCTAVE = 3; // Octave-offset value for RECORD MODE notes
+byte VELO = 127; // Baseline velocity-value for RECORD MODE notes
+byte HUMANIZE = 0; // Maximum velocity-humanize value for RECORD MODE notes
+byte CHAN = 0; // MIDI-CHAN for RECORD MODE notes
+byte LISTEN = 0; // Channel to listen to in RECORD MODE, for recording from external MIDI sources
+byte QUANTIZE = B00000010; // Time-quantize value for RECORD MODE notes: bits 0-3: 1, 2, 4, 8 (16th-notes)
+byte DURATION = B00001000; // Duration value for RECORD MODE notes: bits 0-4: 1, 2, 4, 8, 16 (16th-notes)
 
 // Sequencing vars
 byte SONG = 0; // Current song-slot whose data-files are being played
