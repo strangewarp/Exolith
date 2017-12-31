@@ -227,12 +227,9 @@ void assignKey(byte col, byte row) {
 
 		if (LOADMODE) { // If LOAD-MODE is active...
 			RECORDMODE = 0; // Toggle out of RECORD-MODE to prevent timing-mismatch bugs
-			// Find the highest control-button currently being held,
-			// and convert its bit into a file-page number
-			byte p = (ctrl & 32) ? 6 : ((ctrl & 16) ? 5 : ((ctrl & 8) ? 4 : ((ctrl & 4) ? 3 : ((ctrl & 2) ? 2 : ((ctrl & 1) ? 1 : 0)))));
 			// Load a song whose file corresponds to the button that was pressed,
 			// on a page that corresponds to the highest control-button that is being held
-			loadSong((col - 1) + (row * 4) + (24 * p));
+			loadSong((col - 1) + (row * 4) + (24 * ctrlToButtonIndex(ctrl)));
 			LOADMODE = 0; // Exit LOAD-MODE automatically
 			//return; // Exit the function because anything else would be extraneous
 		} else if (RECORDMODE) { // If RECORD-MODE is active...

@@ -48,8 +48,9 @@ Software:
 				. change savefile system to accomodate 168 savefiles (24 per LOAD-page, 7 LOAD-pages total)
 					-- ok
 				. add LOAD-mode view to the GUI, with LOAD-page signifiers
-					-- 
+					-- done
 				. remove old GLOBAL PLAY/STOP stuff from button routines
+					-- 
 				. add upward button-swipe gesture for GLOBAL PLAY/STOP
 		. change the RECORD-MODE UI:
 			. change TOGGLE RECORD-MODE to a button-combination of B00110011

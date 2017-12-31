@@ -87,7 +87,25 @@ void updateGUI() {
 
 	if (TO_UPDATE & 252) { // If any of the bottom 6 rows are flagged for a GUI update...
 
-		if (RECORDMODE) { // If RECORD MODE is active...
+		if (LOADMODE) { // If LOAD MODE is active...
+
+			for (byte i = 0; i < 6; i++) { // For each of the bottom 6 GUI rows...
+
+				// If the row is not flagged for an update, continue to the next row
+				if ((~TO_UPDATE) & (4 << i)) { continue; }
+
+				lc.setRow( // Set the LED-row based on the current display-row:
+					0, // LED-grid 0 (only LED-grid used)...
+					i, // LED-row corresponding to the current row...
+					pgm_read_byte_near( // Get LED data from PROGMEM:
+						MULTIGLYPH_NUMBERS // Get a number-glyph,
+						+ (6 * ctrlToButtonIndex(ctrl)) // based on the highest pressed control-button,
+						+ i // whose contents correspond to the current row
+					)
+				);
+
+			}
+		} else if (RECORDMODE) { // If RECORD MODE is active...
 
 			for (byte i = 0; i < 6; i++) { // For each of the bottom 6 GUI rows...
 
