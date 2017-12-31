@@ -160,7 +160,9 @@ void parseRecPress(byte col, byte row) {
 			TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
 		} else if (ctrl == B00000010) { // If the SWITCH RECORDING SEQUENCE button is held...
 			TO_UPDATE |= 4 >> (RECORDSEQ >> 2); // Flag the previous seq's corresponding LED-row for updating
+			resetSeq(RECORDSEQ); // Reset the current record-seq, which is about to become inactive
 			RECORDSEQ = (PAGE * 24) + key; // Switch to the seq that corresponds to the key-position on the active page
+			primeRecSeq(); // Prime the newly-entered RECORD-MODE sequence for editing
 			TO_UPDATE |= 4 >> row; // Flag the new seq's corresponding LED-row for updating
 			TO_UPDATE |= 1; // Flag the topmost row for updating
 		} else if (ctrl == B00110000) {
