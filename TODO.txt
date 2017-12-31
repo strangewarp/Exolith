@@ -24,8 +24,9 @@ Software:
 			. change the SWITCH RECORDING SEQUENCE command to do the same series of "tick wrap" commands as the TOGGLE RECORD-MODE command
 				-- done
 		. reorganize all chorded commands in RECORD-MODE to have a more intuitive layout
-			-- 
+			-- done
 		. remove "todo: update" markers from button-key.txt
+			-- done
 		. test basic sequencing
 			. regular notes: recording & playback
 			. test note-erasing in RECORD-MODE
@@ -83,6 +84,7 @@ Software:
 			. make sure this has its virtual PC-bit lopped off by INTERVAL-commands in RECORD mode, just like virtual CC-bits
 			. make sure any button-press global-var changes to the CHAN and CC commands don't interfere with this
 				. this will definitely require a change to the "If the CHAN button is held..." lines
+		. update "reserved for PROGRAM-CHANGE" line in button-key.txt
 		. add GUI prompts for:
 			. current RECORDSEQ value (RECORD MODE)
 		. check whether sequences can actually function with non-multiple-of-2 lengths

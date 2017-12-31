@@ -158,24 +158,29 @@ void parseRecPress(byte col, byte row) {
 		} else if (ctrl == B00000100) { // If the DURATION button is held...
 			DURATION = clamp(0, 255, int(DURATION) + change); // Modify the DURATION value
 			TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
-		} else if (ctrl == B00000010) { // If the SWITCH RECORDING SEQUENCE button is held...
+		} else if (ctrl == B00000010) { // If the CHANNEL button is held...
+			CHAN = (CHAN & 16) | clamp(0, 15, char(CHAN & 15) + change); // Modify the CHAN value, while preserving CC flag
+			TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
+		} else if (ctrl == B00110000) { // If the SWITCH RECORDING SEQUENCE button is held...
 			TO_UPDATE |= 4 >> (RECORDSEQ >> 2); // Flag the previous seq's corresponding LED-row for updating
 			resetSeq(RECORDSEQ); // Reset the current record-seq, which is about to become inactive
 			RECORDSEQ = (PAGE * 24) + key; // Switch to the seq that corresponds to the key-position on the active page
 			primeRecSeq(); // Prime the newly-entered RECORD-MODE sequence for editing
 			TO_UPDATE |= 4 >> row; // Flag the new seq's corresponding LED-row for updating
 			TO_UPDATE |= 1; // Flag the topmost row for updating
-		} else if (ctrl == B00110000) {
-
 		} else if (ctrl == B00101000) { // If the CLOCK-MASTER command is held...
 			CLOCKMASTER ^= 1; // Toggle the CLOCK-MASTER value
 			ABSOLUTETIME = micros(); // Set the ABSOLUTETIME-tracking var to now
 			ELAPSED = 0; // Set the ELAPSED value to show that no time has elapsed since the last tick-check
 			TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
-		} else if (ctrl == B00100100) { // If the CHAN-LISTEN command is held...
-			LISTEN = clamp(0, 15, char(LISTEN) + change); // Modify the CHAN-LISTEN value
+		} else if (ctrl == B00100100) { // If the QUANTIZE button is held...
+			QUANTIZE = clamp(1, 8, abs(change)); // Modify the QUANTIZE value
 			TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
-		} else if (ctrl == B00100010) { // If the CONTROL CHANGE command is held...
+		} else if (ctrl == B00100010) { // If the PROGRAM-CHANGE command is held...
+
+			// todo: add PROGRAM-CHANGE functionality
+
+		} else if (ctrl == B00100001) { // If the CONTROL-CHANGE command is held...
 			CHAN ^= 16; // Flip the CHAN bit that turns all NOTE command-entry into CC command-entry
 			TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
 		} else if (ctrl == B00011000) { // If the VELO button is held...
@@ -184,23 +189,20 @@ void parseRecPress(byte col, byte row) {
 		} else if (ctrl == B00010100) { // If the HUMANIZE button is held...
 			HUMANIZE = clamp(0, 127, int(HUMANIZE) + change); // Modify the HUMANIZE value
 			TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
-		} else if (ctrl == B00001100) { // If the TIME-QUANTIZE button is held...
-			QUANTIZE = clamp(1, 8, abs(change)); // Modify the TIME-QUANTIZE value
-			TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
-		} else if (ctrl == B00010010) { // If the CHAN button is held...
-			CHAN = (CHAN & 16) | clamp(0, 15, char(CHAN & 15) + change); // Modify the CHAN value, while preserving CC flag
-			TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
-		} else if (ctrl == B00001010) { // If the SEQ-SIZE button is held...
+		} else if (ctrl == B00010010) { // If the SEQ-SIZE button is held...
 			// Get the new value for the currently-recording-seq's size
 			byte newsize = byte(clamp(0, 63, char(STATS[RECORDSEQ] & 63) + change));
 			STATS[RECORDSEQ] = (STATS[RECORDSEQ] & 128) | newsize; // Modify the currently-recording seq's size
 			updateFileByte(RECORDSEQ + 1, STATS[RECORDSEQ]); // Update the seq's size-byte in the song's savefile
 			POS[RECORDSEQ] %= newsize << 4; // Wrap around the currently-recording seq's 16th-note-position
 			TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
-		} else if (ctrl == B00000110) { // If the BPM command is held...
+		} else if (ctrl == B00010001) { // If the BPM command is held...
 			BPM = clamp(16, 200, int(BPM) + change); // Change the BPM rate
 			updateFileByte(0, BPM); // Update the BPM-byte in the song's savefile
 			updateTickSize(); // Update the internal tick-size (in microseconds) to match the new BPM value
+			TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
+		} else if (ctrl == B00000110) { // If the CHAN-LISTEN command is held...
+			LISTEN = clamp(0, 15, char(LISTEN) + change); // Modify the CHAN-LISTEN value
 			TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
 		}
 
