@@ -14,50 +14,15 @@ Software:
 
 	Current tasks:
 
-		. move LOAD command out of RECORD-MODE somehow
-			. create a gesture-memory system for LOAD and GLOBAL PLAY/STOP
-				. track gestures with bitwise values to save RAM:
-					. bits 0-2: button
-					. bits 3-6: (seconds/10) until wiping this entry from memory
-					. bit 7: "this entry is active"
-						-- ok
-					. add a routine to updateTimer() to clear out expired gesture-memory entries
-						-- done
-				. wipe a given keystroke from gesture-memory after 2 seconds
-					-- done
-				. remove old LOAD stuff from button-and-GUI routines
-					-- done
-				. update gesture-function to track gestures of varying lengths
-					-- ok
-				. change all TOGGLE RECORD-MODE stuff to use a gesture instead of a key-chord
-					. implement a RECENT_SEQ var, to track the most-recently-touched sequence
-						-- not necessary: repurposing the RECORDSEQ var instead
-						. change this value whenever a sequence's naked slice button is hit
-							-- ok
-					. finish the record-toggle mechanism in func_gesture.ino
-						. get the sequence to wrap around to match the global cue-position correctly - tick 1 should match on both, regardless of global position
-							-- ok
-				. downward button-swipe: LOAD
-					. create a LOAD-MODE that overrides all other modes:
-						. (click regular button to load savefile)
-							-- ok
-						. (hold any ctrl-row button to tab to another page of savefiles)
-							-- ok
-						. (or: repeat LOAD-gesture to exit back to previous mode)
-							-- done
-				. change savefile system to accomodate 168 savefiles (24 per LOAD-page, 7 LOAD-pages total)
-					-- ok
-				. add LOAD-mode view to the GUI, with LOAD-page signifiers
-					-- done
-				. remove old GLOBAL PLAY/STOP stuff from button routines
-					-- already done
-				. add upward button-swipe gesture for GLOBAL PLAY/STOP
-					-- already done
+		. wrap around the sequence's local tick-position whenever SEQ-SIZE is changed, to prevent weird timing errors
+			-- done
 		. change the RECORD-MODE UI:
-			. change TOGGLE RECORD-MODE to a button-combination of B00110011
-			. remove the active-seq-chording requirement for toggling into RECORD-MODE
-			. write a system to track the sequence that was most-recently interacted with
+			. use the RECORDSEQ variable to remove the active-seq-chording requirement for toggling into RECORD-MODE
+				-- done
 			. when toggling into RECORD-MODE, set the most-recently-interacted sequence to active, and in a position that matches up with the global cue-point
+				-- already done
+			. change the SWITCH RECORDING SEQUENCE command to do the same series of "tick wrap" commands as the TOGGLE RECORD-MODE command
+				-- 
 		. reorganize all chorded commands in RECORD-MODE to have a more intuitive layout
 		. remove "todo: update" markers from button-key.txt
 		. test basic sequencing

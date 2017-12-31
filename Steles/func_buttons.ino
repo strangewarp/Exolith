@@ -9,6 +9,8 @@ void parsePlayPress(byte col, byte row) {
 	byte nums = ctrl & B00011100; // Get the NUMBER commands' status
 	byte off = ctrl & B00100000; // Get the OFF command's status
 
+	RECORDSEQ = seq; // Set the most-recent-seq to the seq whose button was pressed, regardless of command
+
 	// Flip the number-values into the expected format for CUE/SLICE operations
 	// (1 in lowest bit, 2 next, then 4)
 	nums = (((nums & 16) >> 2) | ((nums & 4) << 2) | (nums & 8)) >> 2;
@@ -70,8 +72,6 @@ void parsePlayPress(byte col, byte row) {
 
 		}
 	}
-
-	RECORDSEQ = seq; // Set the most-resent-seq to the seq whose button was pressed
 
 }
 
@@ -189,9 +189,11 @@ void parseRecPress(byte col, byte row) {
 			CHAN = (CHAN & 16) | clamp(0, 15, char(CHAN & 15) + change); // Modify the CHAN value, while preserving CC flag
 			TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
 		} else if (ctrl == B00001010) { // If the SEQ-SIZE button is held...
-			// Modify the currently-recording-seq's size
-			STATS[RECORDSEQ] = (STATS[RECORDSEQ] & 128) | clamp(0, 63, char(STATS[RECORDSEQ] & 63) + change);
+			// Get the new value for the currently-recording-seq's size
+			byte newsize = byte(clamp(0, 63, char(STATS[RECORDSEQ] & 63) + change));
+			STATS[RECORDSEQ] = (STATS[RECORDSEQ] & 128) | newsize; // Modify the currently-recording seq's size
 			updateFileByte(RECORDSEQ + 1, STATS[RECORDSEQ]); // Update the seq's size-byte in the song's savefile
+			POS[RECORDSEQ] %= newsize << 4; // Wrap around the currently-recording seq's 16th-note-position
 			TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
 		} else if (ctrl == B00000110) { // If the BPM command is held...
 			BPM = clamp(16, 200, int(BPM) + change); // Change the BPM rate
@@ -246,7 +248,7 @@ void assignKey(byte col, byte row) {
 void unassignKey(byte col, byte row) {
 	byte ctrl = BUTTONS & B00111111; // Get the control-row buttons' activity
 	if (col == 0) { // If this up-keystroke was in the leftmost column...
-		if (RECORDMODE) { // If RECORD MODE is active...
+		if (RECORDMODE) { // If RECORD-MODE is active...
 			byte rb = 1 << row; // Get the bitwise value that corresponds to the control-button's row
 			if ((!(ctrl & rb)) && ((ctrl | rb) == B00001111)) { // If ERASE WHILE HELD was previously held...
 				ERASENOTES = 0; // Stop erasing notes

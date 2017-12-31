@@ -190,10 +190,10 @@ void iterateAll() {
 			// and notes are currently being recorded,
 			// and the ERASE-NOTES command is being held...
 			if ((RECORDSEQ == i) && RECORDMODE && RECORDNOTES && ERASENOTES) {
-				byte buf[9] = {0, 0, 0, 0, 0, 0, 0, 0};
+				byte buf[9] = {0, 0, 0, 0, 0, 0, 0, 0}; // Make a tick-sized buffer of blank data
 				file.seekSet(49 + POS[i] + (i * 8192)); // Set position to the start of the tick's first note
 				file.write(buf, 8); // Write in an entire empty tick's worth of bytes
-				changed = 1;
+				changed = 1; // Flag the fact that data has been changed
 			} else { // Else, if any other combination of states applies...
 				getTickNotes(i); // Get the notes from this tick in a given seq, and add them to the MIDI-OUT buffer
 			}

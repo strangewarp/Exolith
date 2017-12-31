@@ -105,6 +105,7 @@ void updateGUI() {
 				);
 
 			}
+
 		} else if (RECORDMODE) { // If RECORD MODE is active...
 
 			for (byte i = 0; i < 6; i++) { // For each of the bottom 6 GUI rows...
