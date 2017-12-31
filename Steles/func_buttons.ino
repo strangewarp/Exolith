@@ -243,11 +243,12 @@ void assignKey(byte col, byte row) {
 }
 
 // Interpret a key-release according to whatever command-mode is active
-void unassignKey(byte col) {
+void unassignKey(byte col, byte row) {
 	byte ctrl = BUTTONS & B00111111; // Get the control-row buttons' activity
 	if (col == 0) { // If this up-keystroke was in the leftmost column...
 		if (RECORDMODE) { // If RECORD MODE is active...
-			if (ctrl == B00001111) { // If ERASE WHILE HELD was held...
+			byte rb = 1 << row; // Get the bitwise value that corresponds to the control-button's row
+			if ((!(ctrl & rb)) && ((ctrl | rb) == B00001111)) { // If ERASE WHILE HELD was previously held...
 				ERASENOTES = 0; // Stop erasing notes
 			}
 			TO_UPDATE |= 253; // Flag the top LED-row, and bottom 6 LED-rows, for updating

@@ -13,7 +13,7 @@ void checkForGestures() {
 		all |= (GESTURE[i] & 7) << (i * 3); // Add the GESTURE-entry's button-location to the composite var
 	}
 	if (all == 2824) { // If this completed a LOAD gesture...
-		LOADMODE = 1; // Toggle LOAD-MODE override
+		LOADMODE ^= 1; // Toggle or untoggle LOAD-MODE override
 		TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
 	} else if (all == 101) { // Else, if this completed a GLOBAL PLAY/STOP gesture...
 		toggleMidiClock(1); // Toggle the MIDI clock, with "1" for "the user did this, not a device"

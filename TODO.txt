@@ -44,14 +44,15 @@ Software:
 						. (hold any ctrl-row button to tab to another page of savefiles)
 							-- ok
 						. (or: repeat LOAD-gesture to exit back to previous mode)
-							-- 
+							-- done
 				. change savefile system to accomodate 168 savefiles (24 per LOAD-page, 7 LOAD-pages total)
 					-- ok
 				. add LOAD-mode view to the GUI, with LOAD-page signifiers
 					-- done
 				. remove old GLOBAL PLAY/STOP stuff from button routines
-					-- 
+					-- already done
 				. add upward button-swipe gesture for GLOBAL PLAY/STOP
+					-- already done
 		. change the RECORD-MODE UI:
 			. change TOGGLE RECORD-MODE to a button-combination of B00110011
 			. remove the active-seq-chording requirement for toggling into RECORD-MODE
@@ -179,9 +180,15 @@ Hardware:
 				. keep spacing between the edges of LED bulbs at ~3mm, to keep the laser-cut faceplate from being fragile
 			. reduce button-spacing by 1mm, both vertical and horizontal
 		. both boards:
-			. double-check that the stacking-headers on the bottom-board and top-board share their corresponding positions
+			. move to left side:
+				. MIDI-IN port
+				. POWER port
+			. move to right side:
+				. MIDI-THRU port
+				. MIDI-OUT port
 			. move shrouded AVR-ISP jack to edge of bottom-board, to prevent any need to muck around with safety-caps
 				. make a cut through edge of top-board, so AVR-ISP header can be accessed more easily when faceplate is removed
+			. double-check that the stacking-headers on the bottom-board and top-board share their corresponding positions
 			. reduce boards' size, to fit the results of various changes
 			. make sure there's still enough room for all M3 screws & standoffs
 				. move POWER port to right side?
