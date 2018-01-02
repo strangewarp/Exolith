@@ -137,10 +137,12 @@ Hardware:
 			. reduce thermal-plate size to accomodate new smaller heatsinks
 			. use regular-sized capacitors, in a laying-down position, because people replacing capacitors wouldn't have special tiny ones sitting around
 			. socket all capacitors, to futureproof the capacitor-replacement process
+			. move shrouded AVR-ISP jack to front-left edge of bottom-board, to prevent any need to muck around with safety-caps
 			. update R-SET resistor's value based on the new diffused LEDs
 			. socket the R-SET resistor, to futureproof against any possible changes to the top-board LEDs
 			. move POWER-LED to center of bottom-board, and use a high-brightness white LED with a very wide visibility-cone
 		. top-board:
+			. remove AVR-ISP jack from top-board
 			. reduce button-spacing by 1mm, both vertical and horizontal
 		. both boards:
 			. move to left side:
@@ -149,11 +151,10 @@ Hardware:
 			. move to right side:
 				. MIDI-THRU port
 				. MIDI-OUT port
-			. move shrouded AVR-ISP jack to edge of bottom-board, to prevent any need to muck around with safety-caps
-				. make a cut through edge of top-board, so AVR-ISP header can be accessed more easily when faceplate is removed
 			. double-check that the stacking-headers on the bottom-board and top-board share their corresponding positions
 			. change standoff hole-sizes to M3, plus extra kerf to compensate for standoff screws always being slightly over-size due to their threading
 				. make sure there's still enough room for all M3 screws & standoffs
+			. change all stacking headers to occupy a 2x20 horizontal row between the buttons and LEDs, to make the assembly process less fragile
 			. reduce boards' size, to fit the results of various changes
 			. change all edge-cuts to reflect the rearrangement of ports
 			. double-check that ports aren't competing for space with standoffs
