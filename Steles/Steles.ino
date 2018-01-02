@@ -29,7 +29,7 @@
 //   but will always stay the same at runtime.
 #define FILE_BYTES 393265UL // Number of bytes in each seq-file
 #define SCANRATE 7000 // Amount of time between keystroke-scans, in microseconds
-#define GESTDECAY 200000UL // Amount of time between gesture-decay ticks, in microseconds
+#define GESTDECAY 400000UL // Amount of time between gesture-decay ticks, in microseconds
 
 
 

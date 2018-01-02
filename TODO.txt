@@ -16,11 +16,16 @@ Software:
 
 		. test gesture system
 			. test RECORD-MODE TOGGLE
-				-- 
+				-- doesn't work
+				. figure out what's wrong
+					-- fixed: toggle was only one-way assignment; changed it to x ^= 1; works fine now
+					-- also fixed: GESTURE commands were vertically flipped
 				. test updated chord-commands in RECORD MODE
 					-- 
 			. test LOAD-MODE TOGGLE
 			. test GLOBAL PLAY/STOP TOGGLE
+
+		. figure out why the new extended savefile-amount throws a "creating new file" for certain file-slots on every startup
 
 		. test basic sequencing
 			. regular notes: recording & playback
