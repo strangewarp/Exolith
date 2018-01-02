@@ -15,20 +15,38 @@ Software:
 	Current tasks:
 
 		. test gesture system
-			-- 
-		. test updated chord-commands in RECORD MODE
-			-- 
+			. test RECORD-MODE TOGGLE
+				-- 
+				. test updated chord-commands in RECORD MODE
+					-- 
+			. test LOAD-MODE TOGGLE
+			. test GLOBAL PLAY/STOP TOGGLE
+
 		. test basic sequencing
 			. regular notes: recording & playback
-			. test note-erasing in RECORD-MODE
+			. note-erasing in RECORD-MODE
+			. BASENOTE and OCTAVE
 			. intervals
+				. recording them to seq
+				. playing them from seq
 			. duophony
 			. various QUANTIZE settings
 			. are old notes being knocked out of the sequence by new notes in RECORD-MODE properly?
-		. change func_gui.ino to show currently-active section of the recording-seq in RECORD MODE, in addition to the global cue-point
+			. test SEQ-SIZE behavior
+				. does a SEQ-SIZE of "0" correspond to 1 beat?
+			. test CC commands
+			. test file-load
+
+		. test "toggle to next/prev sequence" in RECORD mode
+
+		. change func_gui.ino:
+			. add GUI prompt for current RECORDSEQ value (RECORD MODE)
+			. show currently-active section of the recording-seq in RECORD MODE, in addition to the global cue-point
 			. change func_sequencing.ino to toggle a GUI update whenever the recording-seq in RECORD MODE reaches a new slice of itself
 			. remove all outdated updates for second GUI-row in PAGE and CTRL-BUTTON functions
-		. convert all multi-byte Serial.write() commands into batch Serial.writes with a buffer-array of bytes, for consistency
+
+		. convert all multi-byte Serial.write() commands into batch Serial.writes with a buffer-array of bytes, to totally rule out the possibility of serial lag
+
 		. test all cue-commands
 			. OFF
 			. CUE
@@ -40,51 +58,47 @@ Software:
 			. SCATTER UNSET
 			. PAGE SCATTER UNSET
 			. GLOBAL PLAY/STOP
-		. test behavior of BASENOTE and OCTAVE
+
 		. display SCATTER status only when a SCATTER command is held
-		. reduce sequence-size to 32 whole-notes, to cut down on potential read-lag?
-		. test "toggle to next/prev sequence" in RECORD mode
-		. test INTERVAL commands
-			. recording them to seq
-			. playing them from seq
+
+		. reduce max sequence-size to 32 whole-notes, to cut down on potential read-lag?
+
 		. add a "totally empty out the sequence's contents" command to RECORD-MODE
-		. test SEQ-SIZE behavior
-			. does a SEQ-SIZE of "0" correspond to 1 beat?
-		. test SEQ-SIZE changes in RECORD-MODE
-			. does this mess with the sequence's synchronization to the global cue pattern? if so, fix it
-		. test MIDI CC commands
-		. test file-load
+
 		. test MIDI-IN (notes)
-			. uncomment parseRawMidi() in void loop()
 		. test MIDI-IN (clock)
 			. add a "DO NOT SEND CLOCK SIGNALS" user-flag to the CLOCK MASTER/FOLLOW mechanism
+
+		. replace bloated LedControl with optimized custom functions
+			. replace LedControl with LedControl_HW_SPI???
+				. either a simplified version of LedControl_HW_SPI, or a simplified version of LedControl, but either way, it needs to directly address port-registers
+
 		. double-check all functionality for sequences on the second-page
+
 		. edge-case testing:
 			. does RECORD MODE work right:
 				. when the sequence is loaded with SCATTERs and CUEs?
 				. in MIDI FOLLOW mode?
 				. for sequences with a weird tempo/slice offset from the global cue?
-		. change GUI to work with 32x dual-color LEDs:
-			. glyphs in RECORD-mode must alternate between their two characters, based on global timing
-			. SEQ and SCATTER values should only be shown for the currently active page
-		. replace bloated LedControl with optimized custom functions
-			. replace LedControl with LedControl_HW_SPI???
-				. either a simplified version of LedControl_HW_SPI, or a simplified version of LedControl, but either way, it needs to directly address port-registers
+
 		. survey all TO_UPDATE calls, for superfluous flags
+
 		. add PROGRAM CHANGE functionality (in addition to CONTROL CHANGE)
 			. make sure this has its virtual PC-bit lopped off by INTERVAL-commands in RECORD mode, just like virtual CC-bits
 			. make sure any button-press global-var changes to the CHAN and CC commands don't interfere with this
 				. this will definitely require a change to the "If the CHAN button is held..." lines
-		. update "reserved for PROGRAM-CHANGE" line in button-key.txt
-		. add GUI prompts for:
-			. current RECORDSEQ value (RECORD MODE)
+			. update "reserved for PROGRAM-CHANGE" line in button-key.txt
+
 		. check whether sequences can actually function with non-multiple-of-2 lengths
-		. test GLOBAL PLAY/STOP
-			. test whether haltAllSustains() works correctly, for regular and maximum sustain counts, when a GLOBAL STOP command is issued
+
 		. add SONG POSITION POINTER functionality while in CLOCK FOLLOW mode, to orient the global cue-position correctly?
+
 		. add a command to shift the position of the global cue-point?
+
 		. add a command to change the global cue-point's granularity? (e.g. being 3 beats, or 7 beats, instead of 8 beats, and ignoring the extra LEDs)
+
 		. add a single global "stats" file, to save and store global vars? (duration, basenote, etc)
+
 		. double-check that there are no remaining "todo" or "test" comments in the codebase
 		. remove "THIS CODE IS UNDER DEVELOPMENT AND DOESN'T DO ANYTHING" from license-statement
 		. double-check that everything compiles correctly in the latest version of Arduino
@@ -103,26 +117,21 @@ Hardware:
 		. if this doesn't work:
 			. rewrite LedControl to directly address port-registers, thereby eliminating a lot of lag-time
 		. if this works:
-			. rewrite LedControl_HW_SPI to directly address port-registers, thereby eliminating a lot of lag-time
-			. reroute PCB prototype to reflect the changes
+			. rewrite LedControl_HW_SPI to directly address port-registers, thereby eliminating a lot of lag-time and freeing up two pins
 			. update both KiCad and firmware to reflect the changes
 			. two pins will be freed up by this, so reassign them:
 				. pin 1: digital MIDI-IN indicator (NOTEs only)
 				. pin 2: digital MIDI-OUT indicator (NOTEs only)
-			. if 2 pins are indeed freed-up for MIDI I/O indicators, then only two slots of the 74HC14N Schmitt-trigger will end up being used, so look for a smaller 2-slot alternative to it
-				. or, if 74HC14N ends up with free slots: add another buffering stage to the OUT line, and make the THRU port into a switchable THRU/OUT2 port
-			. put the results of this line of inquiry into the "update KiCad file" task
+			. if 74HC14N ends up with free slots: add another buffering stage to the OUT line, and make the THRU port into a switchable THRU/OUT2 port
+		. put the results of this line of inquiry into the "update KiCad file" task
+
 	. test higher resistor values for POWER-LED to get a matching brightness level
+
 	. note: this task may no longer be necessary, but keeping it until I'm sure:
 		. test MIDI-IO LED circuit with 0.1uF & 1uF capacitors
 			. or with 1k/10k resistor from cap+ to GND
 			. if it's as bright as the current kind, then: change KiCad schematics & PCBs & Mouser order to reflect this
-	. change design so "cap" pieces of the enclosure are on the sides, not top and bottom?
-		. would have to figure out a "bracket" that can fit on the M-screws, to hold on the side-panels with another M-screw per bracket
-		. upside: this would result in a screw-free faceplate, and automatically give clearance for the screws on the underside & protect the LEDs up top
-		. upside: depending on thickness, the brackets would eliminate any need to use washers to get enough clearance for the MIDI ports' height
-		. upside: would allow a "split-level" faceplate, a few mm higher for buttons in front, and a few mm lower for 3mm LEDs in back
-		. downside: if AVR-ISP port is internal, this makes it more annoying to upgrade firmware (removing entire enclosure vs. removing faceplate & one sideplate)
+
 	. update KiCad file:
 		. bottom-board:
 			. reduce thermal-plate size to accomodate new smaller heatsinks
@@ -132,11 +141,6 @@ Hardware:
 			. socket the R-SET resistor, to futureproof against any possible changes to the top-board LEDs
 			. move POWER-LED to center of bottom-board, and use a high-brightness white LED with a very wide visibility-cone
 		. top-board:
-			. use 3mm LEDs instead of 5mm LEDs
-				. look for a variety that has a high luminosity but relatively low price
-				. make sure the LED-variant has enough physical height to poke through the enclosure
-				. check whether a different RSET resistor value is necessary to match the LEDs' voltage/current requirements
-				. keep spacing between the edges of LED bulbs at ~3mm, to keep the laser-cut faceplate from being fragile
 			. reduce button-spacing by 1mm, both vertical and horizontal
 		. both boards:
 			. move to left side:
@@ -148,13 +152,17 @@ Hardware:
 			. move shrouded AVR-ISP jack to edge of bottom-board, to prevent any need to muck around with safety-caps
 				. make a cut through edge of top-board, so AVR-ISP header can be accessed more easily when faceplate is removed
 			. double-check that the stacking-headers on the bottom-board and top-board share their corresponding positions
+			. change standoff hole-sizes to M3, plus extra kerf to compensate for standoff screws always being slightly over-size due to their threading
+				. make sure there's still enough room for all M3 screws & standoffs
 			. reduce boards' size, to fit the results of various changes
-			. make sure there's still enough room for all M3 screws & standoffs
-				. move POWER port to right side?
 			. change all edge-cuts to reflect the rearrangement of ports
 			. double-check that ports aren't competing for space with standoffs
+
 	. make sure to use B3F-5050 buttons in finished unit; these have a longer life than B3F-4050 buttons
+
 	. redo all Inkscape files for enclosure, making sure to retake all measurements & repeat the KiCad-to-Inkscape vector paste process
+
 	. look into rubber adhesive nubs, for protecting the screws on the underside, & preventing any scratching/wear of surfaces
+
 	. make sure that the SD-cards are capable of high-speed transfer, and are shipped in a state identical to what results from the SD Association formatter utility
 
