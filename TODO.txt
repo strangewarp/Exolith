@@ -21,7 +21,11 @@ Software:
 					-- fixed: toggle was only one-way assignment; changed it to x ^= 1; works fine now
 					-- also fixed: GESTURE commands were vertically flipped
 				. test updated chord-commands in RECORD MODE
-					-- 
+					-- forgot to update GUI for them, whoops
+					. update GUI for chord-commands in RECORD MODE
+						-- done
+					. test them again
+						-- 
 			. test LOAD-MODE TOGGLE
 			. test GLOBAL PLAY/STOP TOGGLE
 
