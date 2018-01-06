@@ -15,6 +15,7 @@ Software:
 		. figure out why the new extended savefile-amount throws a "creating new file" for certain file-slots on every startup
 
 		. figure out why only the basenote gets recorded
+			-- 
 
 		. fix "sticking note" problem when the same note is sustained simultaneously on multiple channels
 
