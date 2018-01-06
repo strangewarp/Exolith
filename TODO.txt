@@ -5,14 +5,18 @@ Software:
 
 	Double-back and check later:
 
-		. change second LED-row to display the current number of active sustains
-			-- done afaict, but still needs additional fixes to underlying sustain & note-press systems before being testable
 		. display both pages' sequence-activity simultaneously
 			-- done afaict, but still needs fixes to the sequencing system before being testable
 		. timing system / global cue system look broken? fix them
 			-- seem fixed now, though may require tweaking as the sequencing system comes online
 
 	Current tasks:
+
+		. figure out why the new extended savefile-amount throws a "creating new file" for certain file-slots on every startup
+
+		. figure out why only the basenote gets recorded
+
+		. fix "sticking note" problem when the same note is sustained simultaneously on multiple channels
 
 		. test gesture system
 			. test RECORD-MODE TOGGLE
@@ -25,11 +29,11 @@ Software:
 					. update GUI for chord-commands in RECORD MODE
 						-- done
 					. test them again
-						-- 
+						-- CHANNEL's value doesn't display correctly
+						. fix it
+							-- fixed. also fixed a bunch of other GUI stuff I forgot to change
 			. test LOAD-MODE TOGGLE
 			. test GLOBAL PLAY/STOP TOGGLE
-
-		. figure out why the new extended savefile-amount throws a "creating new file" for certain file-slots on every startup
 
 		. test basic sequencing
 			. regular notes: recording & playback
@@ -107,6 +111,11 @@ Software:
 		. add a command to change the global cue-point's granularity? (e.g. being 3 beats, or 7 beats, instead of 8 beats, and ignoring the extra LEDs)
 
 		. add a single global "stats" file, to save and store global vars? (duration, basenote, etc)
+
+		. re-test problem areas:
+			. GLOBAL PLAY/STOP
+			. MIDI-IN
+			. GLOBAL PLAY/STOP under conditions of complex MIDI-IN
 
 		. double-check that there are no remaining "todo" or "test" comments in the codebase
 		. remove "THIS CODE IS UNDER DEVELOPMENT AND DOESN'T DO ANYTHING" from license-statement
