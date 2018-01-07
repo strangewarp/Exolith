@@ -12,15 +12,18 @@ Software:
 
 	Current tasks:
 
-		. figure out why the new extended savefile-amount throws a "creating new file" for certain file-slots on every startup
-
-		. figure out why only the basenote gets recorded
-			-- this bug didn't actually exist - just a fluke of testing
-
 		. notes aren't being recorded quite correctly
 			. is this a QUANTIZE problem?
+				-- don't think so
 			. is this a note-recording problem?
+				-- type conversion weirdness may have been happening when applying the quantize-offset to notes in the recording process
+				. test the fix for this
+					-- 
 			. is this a note-playback problem?
+				-- 
+
+		. note-erasing doesn't work? double-check that RECORDING is ARMED
+			-- 
 
 		. fix "sticking note" problem when the same note is sustained simultaneously on multiple channels
 
@@ -40,9 +43,11 @@ Software:
 							-- fixed. also fixed a bunch of other GUI stuff I forgot to change
 						-- BPM's value doesn't display correctly
 						. fix it
-							-- 
+							-- done
 			. test LOAD-MODE TOGGLE
 			. test GLOBAL PLAY/STOP TOGGLE
+
+		. figure out why the new extended savefile-amount throws a "creating new file" for certain file-slots on every startup
 
 		. test basic sequencing
 			. regular notes: recording & playback
