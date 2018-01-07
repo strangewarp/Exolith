@@ -15,7 +15,12 @@ Software:
 		. figure out why the new extended savefile-amount throws a "creating new file" for certain file-slots on every startup
 
 		. figure out why only the basenote gets recorded
-			-- 
+			-- this bug didn't actually exist - just a fluke of testing
+
+		. notes aren't being recorded quite correctly
+			. is this a QUANTIZE problem?
+			. is this a note-recording problem?
+			. is this a note-playback problem?
 
 		. fix "sticking note" problem when the same note is sustained simultaneously on multiple channels
 
@@ -33,6 +38,9 @@ Software:
 						-- CHANNEL's value doesn't display correctly
 						. fix it
 							-- fixed. also fixed a bunch of other GUI stuff I forgot to change
+						-- BPM's value doesn't display correctly
+						. fix it
+							-- 
 			. test LOAD-MODE TOGGLE
 			. test GLOBAL PLAY/STOP TOGGLE
 
