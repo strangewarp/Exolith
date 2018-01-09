@@ -49,9 +49,9 @@ void parseRawMidi() {
 				if (b == 248) { // TIMING CLOCK command
 					Serial.write(b); // Send the byte to MIDI-OUT
 					if (!CLOCKMASTER) { // If the clock is in MIDI FOLLOW mode...
-						CUR16 = (CUR16 + 1) % 128; // Since we're sure we're on a new 16th-note, increase the current-16th-note variable
-						if (!(CUR16 % 16)) { // If the global 16th-note is the first within a global cue-section...
-							TO_UPDATE |= 2; // Flag the global-cue row of LEDs for an update
+						CUR16++; // Since we're sure we're on a new 16th-note, increase the current-16th-note variable
+						if (!(CUR16 % 32)) { // If the global 16th-note is the first within a global cue-section...
+							TO_UPDATE |= 1; // Flag the global-cue row of LEDs for an update
 						}
 						iterateAll(); // Iterate through one step of all sequencing processes
 					}

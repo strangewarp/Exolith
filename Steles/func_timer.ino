@@ -77,7 +77,7 @@ void updateTimer() {
 	// Also note: since CUR16 is a byte, it wraps around to 0 automatically after reaching 255
 	CUR16++;
 
-	if (!(CUR16 % 16)) { // If the global 16th-note is the first within a global cue-section...
+	if (!(CUR16 % 32)) { // If the global 16th-note is the first within a global cue-section...
 		TO_UPDATE |= 1; // Flag the global-cue row of LEDs for an update
 	}
 

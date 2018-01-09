@@ -31,6 +31,46 @@ Buttons (RECORD MODE):
 		* Changes var values when a control-chord is held
 
 
+LEDs (PLAY MODE) (possible hardware revision):
+
+	     I   O
+	c c c c c c c c
+	a a a a a a a a
+	q q q q q q q q
+	q q q q q q q q
+	q q q q q q q q
+	q q q q q q q q
+	q q q q q q q q
+	q q q q q q q q
+
+	I: Analog MIDI-IN indicator
+	O: Analog MIDI-OUT indicator
+
+	a: Number of active sustains
+	c: Global cue point
+	q: Seq activity, or SCATTERed seqs when SCATTER is held
+
+
+LEDs (RECORD MODE) (possible hardware revision):
+
+	     I   O
+	c c c c c c c c
+	a a a a a a a a
+	q q q q q q q q
+	q q q q q q q q
+	q q q q q q q q
+	q q q q q q q q
+	q q q q q q q q
+	q q q q q q q q
+
+	I: Analog MIDI-IN indicator
+	O: Analog MIDI-OUT indicator
+
+	a: Number of active sustains
+	c: Global cue point, or quantity related to user activity
+	d: Display glyph related to user activity
+
+
 LEDs (PLAY MODE):
 
 	I  c c c c c c c c  O
@@ -69,4 +109,5 @@ LEDs (RECORD MODE):
 	a: Number of active sustains
 	c: Global cue point, or quantity related to user activity
 	d: Display glyph related to user activity
+
 

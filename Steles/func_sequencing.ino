@@ -36,7 +36,7 @@ void resetSeq(byte s) {
 void primeRecSeq() {
 	resetSeq(RECORDSEQ); // If the most-recently-touched seq is already playing, reset it to prepare for timing-wrapping
 	SCATTER[RECORDSEQ] = 0; // Unset the most-recently-touched seq's SCATTER values before starting to record
-	word seqsize = (STATS[RECORDSEQ] & B00111111) * 16; // Get sequence's size in 16th-notes
+	word seqsize = word(STATS[RECORDSEQ] & B00111111) << 4; // Get sequence's size in 16th-notes
 	POS[RECORDSEQ] = (seqsize > 255) ? CUR16 : (CUR16 % seqsize); // Wrap sequence around to global cue-point
 	STATS[RECORDSEQ] |= 128; // Set the sequence to active
 }
@@ -98,7 +98,7 @@ void getTickNotes(byte s) {
 
 	if (MOUT_COUNT == 8) { return; } // If the MIDI-OUT queue is full, exit the function
 
-	byte readpos = POS[s]; // Get the default read-position for this tick
+	word readpos = POS[s]; // Get the default read-position for this tick
 
 	if (SCATTER[s] & 128) { // If the seq's SCATTER is flagged as active...
 
@@ -111,13 +111,17 @@ void getTickNotes(byte s) {
 		char rnd3 = (ashort >> 4) & 1; // 3rd random: 1 bit
 		rnd2 &= rnd2 >> 1; // Ensure that rnd2 is 1 a quarter of the time, and 0 the rest of the time
 
-		// Add a random scatter-distance (positive or negative) to the read-position,
-		// favoring eighth-notes, quarter-notes, and half-notes
-		readpos = (readpos + (((((char) 2) | rnd2) << rnd) | (128 * rnd3))) % (STATS[s] & 127);
+		word size = (STATS[s] & 63) << 4; // Get the sequence's size, in 16th-notes
+
+		// Get the scatter-read distance, based on weighted semirandom values
+		char dist = ((rnd * 4) + (rnd2 * 2)) * ((rnd3 * 2) - 1);
+
+		// Add the random scatter-distance (positive or negative) to the read-position
+		readpos = word(((int(readpos) + dist) % size) + size) % size;
 
 	}
 
-	file.seekSet(49 + readpos + (s * 8192)); // Navigate to the note's absolute position
+	file.seekSet(49UL + (readpos * 8) + (8192UL * ((unsigned long)s))); // Navigate to the note's absolute position
 	file.read(buf, 8); // Read the data of the tick's notes
 
 	if (!buf[3]) { return; } // If no notes are present, exit the function

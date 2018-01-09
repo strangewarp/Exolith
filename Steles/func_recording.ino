@@ -4,11 +4,15 @@ void recordToSeq(char offset, byte chan, byte b1, byte b2) {
 
 	byte buf[9] = {0, 0, 0, 0, 0, 0, 0, 0}; // SD-card read/write buffer
 
-	// Create a virtual tick-position that compensates for any given tick-offset
-	word tick = word((int(POS[RECORDSEQ]) + offset) % (word(STATS[RECORDSEQ] & 63) << 4));
+	// Get the seq's size, in 16th-notes
+	word size = word(STATS[RECORDSEQ] & 63) * 16;
+
+	// Get the tick-insertion point, compensating for negative or positive offset,
+	// and wrapping around the seq's outer edges if applicable
+	word tick = word(((int(POS[RECORDSEQ]) + offset) % size) + size) % size;
 
 	// Get the position of the first of this tick's bytes in the data-file
-	unsigned long tickstart = (49UL + (8192UL * RECORDSEQ)) + (tick << 3);
+	unsigned long tickstart = (49UL + (8192UL * RECORDSEQ)) + (tick * 8);
 
 	// Get the tick's note-slots, and check whether any of them are empty
 	file.seekSet(tickstart);
@@ -20,7 +24,7 @@ void recordToSeq(char offset, byte chan, byte b1, byte b2) {
 		file.write(buf, 4);
 	}
 
-	// Set the insert-point to the highest unfilled note in the tick,
+	// Set the insert-point to the highest unfilled note in the tick;
 	// or to the first note in the tick, if the contents were shifted downward
 	file.seekSet(tickstart + (((!!buf[3]) ^ (!!buf[7])) << 2));
 
