@@ -94,34 +94,33 @@ void parseCues(byte s, word size) {
 // Get the notes from the current tick in a given seq, and add them to the MIDI-OUT buffer
 void getTickNotes(byte s) {
 
-	byte buf[9]; // Buffer for reading note-events from the datafile
-
 	if (MOUT_COUNT == 8) { return; } // If the MIDI-OUT queue is full, exit the function
 
-	word readpos = POS[s]; // Get the default read-position for this tick
+	byte buf[9]; // Buffer for reading note-events from the datafile
+
+	word readpos = POS[s]; // Get the read-position for this tick, in 16th-notes
 
 	if (SCATTER[s] & 128) { // If the seq's SCATTER is flagged as active...
 
-		// Get a byte-sized truncation of ABSOLUTETIME, for faster(?) bitwise operations
-		byte ashort = ABSOLUTETIME & 255;
+		char rnd = ABSOLUTETIME & 31; // Get 5 almost-random bits from the current ABSOLUTETIME value
+		char rnd2 = ((rnd >> 3) & 2) - 1; // Value for scatter-read direction (back or forward)
 
-		// Get bits from ABSOLUTETIME, to use for pseudo-random values
-		char rnd = ashort & 3; // 1st random: 2 bits
-		char rnd2 = rnd ? ((ashort >> 2) & 3) : 0; // 2nd random: 2 bits, or 0 if rnd is 0
-		char rnd3 = (ashort >> 4) & 1; // 3rd random: 1 bit
-		rnd2 &= rnd2 >> 1; // Ensure that rnd2 is 1 a quarter of the time, and 0 the rest of the time
+		// Limit the note-offset to some combination of 1, 2, and 4,
+		// with 2 and/or 4 being present half the time,
+		// and 1 being present a quarter of the time
+		rnd = (rnd & 7) ^ ((rnd & 8) >> 3);
 
 		word size = (STATS[s] & 63) << 4; // Get the sequence's size, in 16th-notes
-
-		// Get the scatter-read distance, based on weighted semirandom values
-		char dist = ((rnd * 4) + (rnd2 * 2)) * ((rnd3 * 2) - 1);
+		char dist = rnd * rnd2 * 2; // Get the scatter-read distance, in 16th-notes
 
 		// Add the random scatter-distance (positive or negative) to the read-position
 		readpos = word(((int(readpos) + dist) % size) + size) % size;
 
 	}
 
-	file.seekSet(49UL + (readpos * 8) + (8192UL * ((unsigned long)s))); // Navigate to the note's absolute position
+	// Navigate to the note's absolute position,
+	// and compensate for the fact that each tick contains 8 bytes
+	file.seekSet((49UL + (readpos * 8)) + (8192UL * s));
 	file.read(buf, 8); // Read the data of the tick's notes
 
 	if (!buf[3]) { return; } // If no notes are present, exit the function

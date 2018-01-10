@@ -191,6 +191,8 @@ Hardware:
 			. change all edge-cuts to reflect the rearrangement of ports
 			. double-check that ports aren't competing for space with standoffs
 
+	. use different button-cap color for control-row?
+
 	. make sure to use B3F-5050 buttons in finished unit; these have a longer life than B3F-4050 buttons
 
 	. redo all Inkscape files for enclosure, making sure to retake all measurements & repeat the KiCad-to-Inkscape vector paste process
