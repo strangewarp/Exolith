@@ -37,7 +37,7 @@ void primeRecSeq() {
 	resetSeq(RECORDSEQ); // If the most-recently-touched seq is already playing, reset it to prepare for timing-wrapping
 	SCATTER[RECORDSEQ] = 0; // Unset the most-recently-touched seq's SCATTER values before starting to record
 	word seqsize = word(STATS[RECORDSEQ] & B00111111) << 4; // Get sequence's size in 16th-notes
-	POS[RECORDSEQ] = (seqsize > 255) ? CUR16 : (CUR16 % seqsize); // Wrap sequence around to global cue-point
+	POS[RECORDSEQ] = (seqsize > 127) ? CUR16 : (CUR16 % seqsize); // Wrap sequence around to global cue-point
 	STATS[RECORDSEQ] |= 128; // Set the sequence to active
 }
 
@@ -77,7 +77,7 @@ void parseCues(byte s, word size) {
 
 	if (
 		(!CMD[s]) // If the seq has no cued commands...
-		|| (CUR16 != ((CMD[s] & B11100000) >> 1)) // Or the global 16th-note doesn't correspnd to the seq's cue-point...
+		|| (CUR16 != ((CMD[s] & B11100000) >> 1)) // Or the global 16th-note doesn't correspond to the seq's cue-point...
 	) { return; } // ...Exit the function
 
 	// Enable or disable the sequence's playing-bit
@@ -201,7 +201,7 @@ void iterateAll() {
 			// and the ERASE-NOTES command is being held...
 			if ((RECORDSEQ == i) && RECORDMODE && RECORDNOTES && ERASENOTES) {
 				byte buf[9] = {0, 0, 0, 0, 0, 0, 0, 0}; // Make a tick-sized buffer of blank data
-				file.seekSet(49 + POS[i] + (i * 8192)); // Set position to the start of the tick's first note
+				file.seekSet((49UL + (POS[i] * 8)) + (8192UL * i)); // Set position to the start of the tick's first note
 				file.write(buf, 8); // Write in an entire empty tick's worth of bytes
 				file.sync(); // Apply changes to the savefile immediately
 			} else { // Else, if any other combination of states applies...

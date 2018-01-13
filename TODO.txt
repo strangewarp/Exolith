@@ -5,25 +5,37 @@ Software:
 
 	Double-back and check later:
 
+		. notes aren't being recorded quite correctly
+			-- seems fixed but the SUSTAIN system needs repairs before this can be tested thoroughly
+
 		. display both pages' sequence-activity simultaneously
 			-- done afaict, but still needs fixes to the sequencing system before being testable
+
 		. timing system / global cue system look broken? fix them
 			-- seem fixed now, though may require tweaking as the sequencing system comes online
 
 	Current tasks:
 
-		. notes aren't being recorded quite correctly
-			. is this a QUANTIZE problem?
-				-- don't think so
-			. is this a note-recording problem?
-				-- type conversion weirdness may have been happening when applying the quantize-offset to notes in the recording process
-				. test the fix for this
-					-- 
-			. is this a note-playback problem?
-				-- 
+		. need visual response on every quarter-note
+			. change second LED-row:
+				. update func_timer.ino so TO_UPDATE is flagged for the second LED-row on every global quarter-note
+					-- done
+				. display active sustains via binary-counting in leftmost 4 LEDs
+					-- done
+				. display current quarter-note via regular-counting in rightmost 4 LEDs
+					-- done
+				. test this
+					-- ok
 
-		. note-erasing doesn't work? double-check that RECORDING is ARMED
+		. change global cue-point to wrap around at 128 16th-notes, instead of 256
+			-- done
+
+		. SUSTAIN system doesn't end notes correctly when playing back from a sequence. figure out what's wrong
 			-- 
+
+		. note-erasing doesn't work?
+			. double-check that RECORDING is ARMED during the ERASE test
+				-- 
 
 		. fix "sticking note" problem when the same note is sustained simultaneously on multiple channels
 

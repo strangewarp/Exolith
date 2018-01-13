@@ -76,13 +76,17 @@ void updateGUI() {
 				lc.setRow(0, 0, 0); // Clear this row
 			}
 		} else { // Else, if this isn't RECORD-MODE, OR no ctrl-buttons are held...
-			lc.setRow(0, 0, 128 >> (CUR16 >> 5)); // Display the global-tick position
+			byte beat = CUR16 >> 4; // Get the current global beat
+			byte quart = (CUR16 >> 2) & 3; // Get the current global quarter-note
+			// Display the global beat in the 4 leftmost LEDs,
+			// and the global quarter-note in the 4 rightmost LEDs
+			lc.setRow(0, 0, ((beat >= 4) ? (~(255 >> (beat - 3))) : (128 >> beat)) | (8 >> quart));
 		}
 	}
 
 	if (TO_UPDATE & 2) { // If the second row is flagged for a GUI update...
-		// Display the current number of sustains (0-8), leaving a bar of LEDs lit for values >1
-		lc.setRow(0, 1, ~(255 >> SUST_COUNT));
+		// Display the current number of sustains (0-8)
+		lc.setRow(0, 1, 128 >> SUST_COUNT);
 	}
 
 	if (TO_UPDATE & 252) { // If any of the bottom 6 rows are flagged for a GUI update...

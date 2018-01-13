@@ -73,7 +73,7 @@ void loadSong(byte slot) {
 
 	SONG = slot; // Set the currently-active SONG-position to the given save-slot
 
-	CUR16 = 255; // Set the global cue-position to arrive at 1 immediately
+	CUR16 = 127; // Set the global cue-position to arrive at 1 immediately
 	ELAPSED = 0; // Reset the elapsed-time-since-last-16th-note counter
 
 	TO_UPDATE = 255; // Flag entire GUI for an LED-update

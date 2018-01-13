@@ -172,7 +172,7 @@ byte DUMMYTICK = 0; // Tracks whether to expect a dummy MIDI CLOCK tick before s
 byte CLOCKMASTER = 1; // Toggles whether to generate MIDI CLOCK ticks, or respond to incoming CLOCK ticks from an external device
 byte BPM = 100; // Beats-per-minute value: one beat is 96 tempo-ticks
 byte TICKCOUNT = 5; // Current global tick, bounded within the size of a 16th-note
-byte CUR16 = 255; // Current global sixteenth-note (bounded to 256, or 16 beats)
+byte CUR16 = 127; // Current global sixteenth-note (bounded to 128, or 8 beats)
 
 // Beat-scattering flags, one per seq.
 // bits 0-2: scatter chance

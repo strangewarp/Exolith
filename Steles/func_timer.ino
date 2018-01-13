@@ -74,10 +74,9 @@ void updateTimer() {
 	if (TICKCOUNT) { return; } // If the current tick doesn't fall on a 16th-note, exit the function
 
 	// Since we're sure we're on a new 16th-note, increase the global current-16th-note variable
-	// Also note: since CUR16 is a byte, it wraps around to 0 automatically after reaching 255
-	CUR16++;
+	CUR16 = (CUR16 + 1) % 128;
 
-	if (!(CUR16 % 32)) { // If the global 16th-note is the first within a global cue-section...
+	if (!(CUR16 % 4)) { // If the global 16th-note is now on the first tick within a global quarter-note...
 		TO_UPDATE |= 1; // Flag the global-cue row of LEDs for an update
 	}
 
