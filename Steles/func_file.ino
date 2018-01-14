@@ -22,7 +22,7 @@ void createFiles() {
 // Get the name of a target song-slot's savefile (format: "000.DAT" etc.)
 void getFilename(char source[], byte fnum) {
 	source[0] = char(floor(fnum / 100)) + 48;
-	source[1] = char(floor(fnum / 10)) + 48;
+	source[1] = (char(floor(fnum / 10)) % 10) + 48;
 	source[2] = char((fnum % 10) + 48);
 	source[3] = 46;
 	source[4] = 68;
