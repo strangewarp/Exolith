@@ -16,22 +16,15 @@ Software:
 
 	Current tasks:
 
-		. need visual response on every quarter-note
-			. change second LED-row:
-				. update func_timer.ino so TO_UPDATE is flagged for the second LED-row on every global quarter-note
-					-- done
-				. display active sustains via binary-counting in leftmost 4 LEDs
-					-- done
-				. display current quarter-note via regular-counting in rightmost 4 LEDs
-					-- done
-				. test this
-					-- ok
-
-		. change global cue-point to wrap around at 128 16th-notes, instead of 256
-			-- done
-
 		. SUSTAIN system doesn't end notes correctly when playing back from a sequence. figure out what's wrong
-			-- 
+			-- was storing sustain-bytes in "duration, channel, pitch" order, and then computing them like they were in "channel, pitch, duration" order
+			. how immensely stupid
+			. fix it
+				-- ok
+			. wipe test-savefile on SD-card, since data format has been updated
+				-- 
+			. test it
+				-- 
 
 		. note-erasing doesn't work?
 			. double-check that RECORDING is ARMED during the ERASE test
@@ -40,22 +33,6 @@ Software:
 		. fix "sticking note" problem when the same note is sustained simultaneously on multiple channels
 
 		. test gesture system
-			. test RECORD-MODE TOGGLE
-				-- doesn't work
-				. figure out what's wrong
-					-- fixed: toggle was only one-way assignment; changed it to x ^= 1; works fine now
-					-- also fixed: GESTURE commands were vertically flipped
-				. test updated chord-commands in RECORD MODE
-					-- forgot to update GUI for them, whoops
-					. update GUI for chord-commands in RECORD MODE
-						-- done
-					. test them again
-						-- CHANNEL's value doesn't display correctly
-						. fix it
-							-- fixed. also fixed a bunch of other GUI stuff I forgot to change
-						-- BPM's value doesn't display correctly
-						. fix it
-							-- done
 			. test LOAD-MODE TOGGLE
 			. test GLOBAL PLAY/STOP TOGGLE
 
@@ -79,7 +56,7 @@ Software:
 		. test "toggle to next/prev sequence" in RECORD mode
 
 		. change func_gui.ino:
-			. add GUI prompt for current RECORDSEQ value (RECORD MODE)
+			. add GUI prompt for current RECORDSEQ value? (RECORD MODE)
 			. show currently-active section of the recording-seq in RECORD MODE, in addition to the global cue-point
 			. change func_sequencing.ino to toggle a GUI update whenever the recording-seq in RECORD MODE reaches a new slice of itself
 			. remove all outdated updates for second GUI-row in PAGE and CTRL-BUTTON functions

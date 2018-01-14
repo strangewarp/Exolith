@@ -173,6 +173,7 @@ byte CLOCKMASTER = 1; // Toggles whether to generate MIDI CLOCK ticks, or respon
 byte BPM = 100; // Beats-per-minute value: one beat is 96 tempo-ticks
 byte TICKCOUNT = 5; // Current global tick, bounded within the size of a 16th-note
 byte CUR16 = 127; // Current global sixteenth-note (bounded to 128, or 8 beats)
+word GLOBALRAND = 12345; // Global all-purpose semirandom value; gets changed on every tick
 
 // Beat-scattering flags, one per seq.
 // bits 0-2: scatter chance
@@ -277,6 +278,8 @@ void loop() {
 	updateTimer();
 
 	updateGUI();
+
+	updateGlobalRand();
 
 }
 

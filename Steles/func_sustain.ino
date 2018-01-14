@@ -18,7 +18,7 @@ void haltAllSustains() {
 void clipBottomSustain() {
 	if (SUST_COUNT < 8) { return; } // If the SUSTAIN buffer isn't full, exit the function
 	byte obuf[4] = {SUST[21], SUST[22], 127}; // Make a premature NOTE-OFF for the oldest active sustain
-	Serial.write(obuf, 3); // Send the premature NOTE-OFF
+	Serial.write(obuf, 3); // Send the premature NOTE-OFF immediately
 	SUST_COUNT--; // Reduce the number of active sustains by 1
 }
 
@@ -26,7 +26,7 @@ void clipBottomSustain() {
 void processSustains() {
 	byte n = 0; // Value to iterate through each sustain-position
 	while (n < (SUST_COUNT * 3)) { // For every sustain-entry in the SUST array (if there are any)...
-		byte n2 = n + 2;
+		byte n2 = n + 2; // Get the key of the sustain's DURATION byte
 		if (SUST[n2]) { // If any duration remains...
 			SUST[n2]--; // Reduce the duration by 1
 			n += 3; // Move on to the next sustain-position normally

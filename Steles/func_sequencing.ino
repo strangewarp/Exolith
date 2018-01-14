@@ -50,7 +50,8 @@ byte applyIntervalCommand(byte cmd, byte pitch) {
 	cmd &= B11100000; // Reduce the INTERVAL-command to its flags, now that its interval has been removed
 
 	if (cmd & B00100000) { // If this is a RANDOM-flavored command...
-		offset = char(random(interv + 1)); // Get a random offset within the bounds of the interval-value
+		// Get a random offset within the bounds of the interval-value
+		offset = char(GLOBALRAND % (interv + 1));
 	}
 
 	if (cmd & B01000000) { // If this is a DOWN-flavored command...
@@ -102,7 +103,7 @@ void getTickNotes(byte s) {
 
 	if (SCATTER[s] & 128) { // If the seq's SCATTER is flagged as active...
 
-		char rnd = ABSOLUTETIME & 31; // Get 5 almost-random bits from the current ABSOLUTETIME value
+		char rnd = GLOBALRAND & 31; // Get 5 almost-random bits from the current ABSOLUTETIME value
 		char rnd2 = ((rnd >> 3) & 2) - 1; // Value for scatter-read direction (back or forward)
 
 		// Limit the note-offset to some combination of 1, 2, and 4,
@@ -123,38 +124,40 @@ void getTickNotes(byte s) {
 	file.seekSet((49UL + (readpos * 8)) + (8192UL * s));
 	file.read(buf, 8); // Read the data of the tick's notes
 
-	if (!buf[3]) { return; } // If no notes are present, exit the function
+	if (!(buf[0] || buf[2])) { return; } // If no notes or CCs are present, exit the function
 
 	// For either one or both note-slots on this tick, depending on how many are filled...
-	for (byte bn = 0; bn < (((!!buf[7]) + 1) << 2); bn += 4) {
+	for (byte bn = 0; bn < ((buf[4] || buf[6]) + 4); bn += 4) {
 
 		if (MOUT_COUNT == 8) { return; } // If the MIDI buffer is full, exit the function
 
-		byte bn1 = bn + 1; // Get note's CHANNEL index
-		byte bn2 = bn + 2; // Get note's PITCH/SPECIAL index
+		byte bn1 = bn + 1; // Get note's PITCH index
 
-		if (buf[bn2] & 128) { // If this is an INTERVAL command...
-			buf[bn1] &= 15; // Ensure that this command's CHAN byte is in NOTE format
+		if (buf[bn1] & 128) { // If this is an INTERVAL command...
+			buf[bn] &= 15; // Ensure that this command's CHAN byte is in NOTE format
 			// Apply the byte's INTERVAL command to the channel's most-recent pitch,
 			// and then act like the command's byte was always the resulting pitch.
-			buf[bn2] = applyIntervalCommand(buf[bn2], RECENT[buf[bn1]]);
+			buf[bn1] = applyIntervalCommand(buf[bn1], RECENT[buf[bn]]);
 		}
 
-		if (buf[bn1] <= 15) { // If this is a NOTE command...
-			RECENT[buf[bn1]] = buf[bn2]; // Set the channel's most-recent note to this command's pitch
+		if (buf[bn] <= 15) { // If this is a NOTE command...
+			RECENT[buf[bn]] = buf[bn1]; // Set the channel's most-recent note to this command's pitch
 		}
 
-		buf[bn1] += 144 + ((buf[bn1] & 16) << 1); // Convert the note's CHANNEL byte into either a NOTE or CC command
+		// Convert the note's CHANNEL byte into either a NOTE or CC command
+		buf[bn] = 144 + (buf[bn] & 15) + ((buf[bn] & 16) << 1);
 
-		memcpy(MOUT + (MOUT_COUNT * 3), buf + bn1, 3); // Copy the note into the MIDI buffer's lowest empty MOUT location
+		memcpy(MOUT + (MOUT_COUNT * 3), buf + bn, 3); // Copy the note into the MIDI buffer's lowest empty MOUT location
 		MOUT_COUNT++; // Increase the counter that tracks the number of bytes in the MIDI buffer
 
-		if (buf[bn1] >= 16) { continue; } // If this was a proto-MIDI-CC command, forego any sustain mechanisms
+		if (buf[bn] >= 16) { continue; } // If this was a proto-MIDI-CC command, forego any sustain mechanisms
 
-		clipBottomSustain(); // If the bottommost SUSTAIN is filled, send its NOTE-OFF prematurely
+		buf[bn] -= 16; // Turn the NOTE-ON into a NOTE-OFF
+		buf[bn + 2] = buf[bn + 3]; // Move DURATION to the next byte over, for the 3-byte sustain-storage format
+
+		clipBottomSustain(); // If the bottommost SUSTAIN-slot is full, send its NOTE-OFF prematurely
 		memmove(SUST + 3, SUST, SUST_COUNT * 3); // Move all sustains one space downward
 		memcpy(SUST, buf + bn, 3); // Create a new sustain corresponding to this note
-		SUST[0] ^= 16; // Turn the new sustain's NOTE-ON into a NOTE-OFF preemptively
 		SUST_COUNT++; // Increase the number of active sustains by 1
 
 	}
@@ -169,7 +172,7 @@ void getTickNotes(byte s) {
 		if (chance) { // If this seq has scatter-chance bits...
 			// Have a random chance of setting the scatter-active flag,
 			// made more likely if it has been a long time since the last scatter-event (counted by the "count" bits)
-			SCATTER[s] |= ((chance + count) > random(31)) ? 128 : 0;
+			SCATTER[s] |= ((chance + count) > ((GLOBALRAND >> (s % 10)) % 31)) ? 128 : 0;
 			if (count < 15) { // If the count-value hasn't reached its maximum...
 				// Increment it by 1 and put it back into the seq's SCATTER count-bits
 				SCATTER[s] = (SCATTER[s] & B10000111) | ((count + 1) << 3);
