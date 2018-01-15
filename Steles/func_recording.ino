@@ -29,10 +29,10 @@ void recordToSeq(char offset, byte chan, byte b1, byte b2) {
 	file.seekSet(tickstart + (((!!buf[3]) ^ (!!buf[7])) << 2));
 
 	// Construct a virtual MIDI command, with an additional DURATION value, in the write buffer
-	buf[0] = (chan <= 15) * DURATION; // Only include the DURATION if this isn't a flagged special-command
-	buf[1] = chan;
-	buf[2] = b1;
-	buf[3] = b2;
+	buf[0] = chan;
+	buf[1] = b1;
+	buf[2] = b2;
+	buf[3] = (chan <= 15) * DURATION; // Only include the DURATION if this isn't a flagged special-command
 
 	file.write(buf, 4); // Write the note to the current tempdata
 

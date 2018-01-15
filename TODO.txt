@@ -29,6 +29,7 @@ Software:
 				-- done
 			. test it but ONLY AFTER figuring out the savefile bug (detailed elsewhere in TODO list)
 				-- still doesn't work
+				-- fixed data mismatch in recordToSeq but that still didn't fix the sustain problem
 				. figure out what's wrong
 					-- 
 
