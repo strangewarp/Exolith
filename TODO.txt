@@ -5,9 +5,6 @@ Software:
 
 	Double-back and check later:
 
-		. notes aren't being recorded quite correctly
-			-- seems fixed but the SUSTAIN system needs repairs before this can be tested thoroughly
-
 		. display both pages' sequence-activity simultaneously
 			-- done afaict, but still needs fixes to the sequencing system before being testable
 
@@ -21,7 +18,7 @@ Software:
 			. figure out why, and fix it
 				-- ok
 				. test it
-					-- 
+					-- seems to work
 
 		. SUSTAIN system doesn't end notes correctly when playing back from a sequence. figure out what's wrong
 			-- was storing sustain-bytes in "duration, channel, pitch" order, and then computing them like they were in "channel, pitch, duration" order
@@ -31,7 +28,9 @@ Software:
 			. wipe test-savefile on SD-card, since data format has been updated
 				-- done
 			. test it but ONLY AFTER figuring out the savefile bug (detailed elsewhere in TODO list)
-				-- 
+				-- still doesn't work
+				. figure out what's wrong
+					-- 
 
 		. note-erasing doesn't work?
 			. double-check that RECORDING is ARMED during the ERASE test
@@ -189,6 +188,8 @@ Hardware:
 			. reduce boards' size, to fit the results of various changes
 			. change all edge-cuts to reflect the rearrangement of ports, if applicable
 			. double-check that ports aren't competing for space with standoffs
+
+	. buy grounding-bracelets to use while soldering beta prototypes, and while assembling finished units
 
 	. use different button-cap color for control-row?
 

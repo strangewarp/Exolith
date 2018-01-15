@@ -3,6 +3,7 @@
 void createFiles() {
 	char name[8];
 	for (byte i = 0; i < 168; i++) { // For every song-slot...
+		lc.setRow(0, 0, i); // Display how many files have been checked/created so far
 		getFilename(name, i); // Get the filename that corresponds to this song-slot
 		if (sd.exists(name)) { continue; } // If the file exists, skip the file-creation process for this filename
 		file.createContiguous(sd.vwd(), name, FILE_BYTES); // Create a contiguous file 
@@ -15,7 +16,6 @@ void createFiles() {
 			file.write(byte(8)); // Write a default sequence-size value of 8
 		}
 		file.close(); // Close the file
-		lc.setRow(0, 0, i + 1); // Display how many files have been created so far
 	}
 }
 

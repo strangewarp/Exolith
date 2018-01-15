@@ -86,7 +86,7 @@ void updateGUI() {
 
 	if (TO_UPDATE & 2) { // If the second row is flagged for a GUI update...
 		// Display the current number of sustains (0-8)
-		lc.setRow(0, 1, 128 >> SUST_COUNT);
+		lc.setRow(0, 1, (256 >> SUST_COUNT) % 256);
 	}
 
 	if (TO_UPDATE & 252) { // If any of the bottom 6 rows are flagged for a GUI update...
