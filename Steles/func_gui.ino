@@ -1,16 +1,4 @@
 
-// Display the startup-animation
-void startupAnimation() {
-	for (byte i = 0; i < 5; i++) {
-		for (byte row = 0; row < 8; row++) {
-			lc.setRow(0, row, (pgm_read_dword_near(LOGO + row) >> ((i == 4) ? 16 : (8 * (3 - i)))) & 255);
-		}
-		delay(150);
-		lc.clearDisplay(0);
-		delay(35);
-	}
-}
-
 // Get the SEQUENCE-ACTIVITY LED-values for a given GUI row within the lower 6 rows
 byte getRowSeqVals(byte r) {
 	byte ib = r << 2; // Get the row's left-side's global-array position
@@ -80,7 +68,13 @@ void updateGUI() {
 			byte quart = (CUR16 >> 2) & 3; // Get the current global quarter-note
 			// Display the global beat in the 4 leftmost LEDs,
 			// and the global quarter-note in the 4 rightmost LEDs
-			lc.setRow(0, 0, ((beat >= 4) ? (~(255 >> (beat - 3))) : (128 >> beat)) | (8 >> quart));
+			lc.setRow(
+				0,
+				0,
+				(beat >= 4) ?
+					((~(255 >> (beat - 3))) | ((15 << (3 - quart)) & 15))
+					: ((128 >> beat) | (8 >> quart))
+			);
 		}
 	}
 

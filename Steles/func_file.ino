@@ -1,9 +1,17 @@
 
 // Check whether savefiles exist, and create whichever ones don't exist
 void createFiles() {
-	char name[8];
+
+	char name[8]; // Will hold a given filename
+
 	for (byte i = 0; i < 168; i++) { // For every song-slot...
-		lc.setRow(0, 0, i); // Display how many files have been checked/created so far
+		lc.setRow(0, 0, i); // Display how many files have been created so far, if any
+		if (!(i % 42)) { // After a certain amount of files, switch to the next logo letter
+			for (byte row = 0; row < 7; row++) { // For each row in the 7-row-tall logo text...
+				// Set the corresponding row to the corresponding letter slice
+				lc.setRow(0, row + 1, pgm_read_byte_near(LOGO + (row * 4) + byte(floor(i / 42))));
+			}
+		}
 		getFilename(name, i); // Get the filename that corresponds to this song-slot
 		if (sd.exists(name)) { continue; } // If the file exists, skip the file-creation process for this filename
 		file.createContiguous(sd.vwd(), name, FILE_BYTES); // Create a contiguous file 
@@ -17,6 +25,7 @@ void createFiles() {
 		}
 		file.close(); // Close the file
 	}
+
 }
 
 // Get the name of a target song-slot's savefile (format: "000.DAT" etc.)

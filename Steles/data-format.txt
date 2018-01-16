@@ -3,7 +3,7 @@
 Steles data-file spec
 
 	File location:
-		/00.DAT: datafile with song's number
+		/000.DAT: datafile with song's number
 
 	File contents:
 		(393265 total bytes)

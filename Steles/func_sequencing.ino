@@ -153,6 +153,8 @@ void getTickNotes(byte s) {
 		memcpy(SUST, buf + bn, 3); // Create a new sustain corresponding to this note
 		SUST_COUNT++; // Increase the number of active sustains by 1
 
+		TO_UPDATE |= 2; // Flag the sustain-row for a GUI update
+
 	}
 
 	// If the function hasn't exited by this point, then that means this tick contained a note. So...

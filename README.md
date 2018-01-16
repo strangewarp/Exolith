@@ -1,3 +1,3 @@
 
-# Tegne
-Firmware for the ATMEGA328-based Tegne project (in development).
+# Tine
+Firmware for the ATMEGA328-based Tine project (in development).

@@ -2,9 +2,9 @@
 
 /*
 
-		Steles is a MIDI sequencer for the "Tegne" hardware.
+		Steles is a MIDI sequencer for the "Tine" hardware.
 		THIS CODE IS UNDER DEVELOPMENT AND DOESN'T DO ANYTHING!
-		Copyright (C) 2016-2017, C.D.M. Rørmose (sevenplagues@gmail.com).
+		Copyright (C) 2016-2018, C.D.M. Rørmose (sevenplagues@gmail.com).
 
 		This program is free software; you can redistribute it and/or modify
 		it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@
 //   but will always stay the same at runtime.
 #define FILE_BYTES 393265UL // Number of bytes in each seq-file
 #define SCANRATE 7000 // Amount of time between keystroke-scans, in microseconds
-#define GESTDECAY 400000UL // Amount of time between gesture-decay ticks, in microseconds
+#define GESTDECAY 450000UL // Amount of time between gesture-decay ticks, in microseconds
 
 
 
@@ -47,16 +47,15 @@
 
 
 
-// Scrolling glyph: logo to display on startup
-const unsigned long LOGO[] PROGMEM = {
-	4294934211,
-	4294967267,
-	415286259,
-	419414235,
-	419418063,
-	415286215,
-	419430339,
-	419397571
+// Long glyph: logo to display on startup
+const byte LOGO[] PROGMEM = {
+	B01111110, B01111110, B01000110, B01111110,
+	B01111110, B01111110, B01100110, B01111110,
+	B00011000, B00011000, B01110110, B01100000,
+	B00011000, B00011000, B01111110, B01111100,
+	B00011000, B00011000, B01101110, B01100000,
+	B00011000, B01111110, B01100110, B01111110,
+	B00011000, B01111110, B01100010, B01111110
 };
 
 // Glyph: BASENOTE
@@ -170,7 +169,7 @@ byte SONG = 0; // Current song-slot whose data-files are being played
 byte PLAYING = 1; // Controls whether the sequences and global tick-counter are iterating
 byte DUMMYTICK = 0; // Tracks whether to expect a dummy MIDI CLOCK tick before starting to iterate through sequences
 byte CLOCKMASTER = 1; // Toggles whether to generate MIDI CLOCK ticks, or respond to incoming CLOCK ticks from an external device
-byte BPM = 100; // Beats-per-minute value: one beat is 96 tempo-ticks
+byte BPM = 80; // Beats-per-minute value: one beat is 96 tempo-ticks
 byte TICKCOUNT = 5; // Current global tick, bounded within the size of a 16th-note
 byte CUR16 = 127; // Current global sixteenth-note (bounded to 128, or 8 beats)
 word GLOBALRAND = 12345; // Global all-purpose semirandom value; gets changed on every tick
@@ -251,8 +250,6 @@ void setup() {
 		lc.setRow(0, 7, B11101100);
 		sd.initErrorHalt();
 	}
-
-	startupAnimation(); // Display startup-animation
 
 	createFiles(); // Check whether the savefiles exist, and if they don't, then create them
 

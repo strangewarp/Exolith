@@ -1,11 +1,11 @@
 
 Tutorial Outline
-(AKA: things that would need to be explained in a tutorial for Tegne)
+(AKA: things that would need to be explained in a tutorial for Tine)
 
 	HARDWARE:
 
 		SD CARD
-			* Do not remove or insert SD-card while Tegne is powered on: this may cause data corruption
+			* Do not remove or insert SD-card while Tine is powered on: this may cause data corruption
 
 		
 

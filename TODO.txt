@@ -1,5 +1,5 @@
 
-Tegne TODO
+Tine TODO
 
 Software:
 
@@ -12,13 +12,6 @@ Software:
 			-- seem fixed now, though may require tweaking as the sequencing system comes online
 
 	Current tasks:
-
-		. figure out why the new extended savefile-amount throws a "creating new file" for certain file-slots on every startup
-			-- seems like the middle numerical digit of the savefile names ends up leaving numerical space after trying to roll over to 100
-			. figure out why, and fix it
-				-- ok
-				. test it
-					-- seems to work
 
 		. SUSTAIN system doesn't end notes correctly when playing back from a sequence. figure out what's wrong
 			-- was storing sustain-bytes in "duration, channel, pitch" order, and then computing them like they were in "channel, pitch, duration" order
@@ -36,7 +29,7 @@ Software:
 						after having converted the channel-byte to a standard MIDI value,
 						which threw a false positive, and prevented any NOTE-OFFs from being put into the SUSTAIN system
 					. test the fix
-						-- 
+						-- seems to work
 
 		. note-erasing doesn't work?
 			. double-check that RECORDING is ARMED during the ERASE test
