@@ -31,7 +31,7 @@ void processSustains() {
 			SUST[n2]--; // Reduce the duration by 1
 			n += 3; // Move on to the next sustain-position normally
 		} else { // Else, if the remaining duration is 0...
-			byte buf[4] = {SUST[n], SUST[n + 1], 127}; // Create a buffer holding a correctly-formed NOTE-OFF
+			byte buf[4] = {SUST[n], SUST[n + 1], 127, 0}; // Create a buffer holding a correctly-formed NOTE-OFF
 			Serial.write(buf, 3); // Send a NOTE-OFF for the sustain
 			if (n < 21) { // If this isn't the bottom sustain-slot...
 				memmove(SUST + n, SUST + n + 3, 24 - (n + 3)); // Move all lower sustains one slot upwards

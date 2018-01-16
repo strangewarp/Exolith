@@ -279,7 +279,5 @@ void loop() {
 
 	updateGUI();
 
-	updateGlobalRand();
-
 }
 

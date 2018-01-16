@@ -66,13 +66,6 @@ byte applyIntervalCommand(byte cmd, byte pitch) {
 
 }
 
-// Send all outgoing MIDI commands in a single burst
-void flushNoteOns() {
-	if (!MOUT_COUNT) { return; } // If there are no commands in the NOTE-ON buffer, exit the function
-	Serial.write(MOUT, MOUT_COUNT * 3); // Send all outgoing MIDI-command bytes at once
-	MOUT_COUNT = 0; // Clear the MIDI buffer's counting-byte
-}
-
 // Compare a seq's CUE-commands to the global CUE-point, and parse them if the timing is correct
 void parseCues(byte s, word size) {
 
@@ -150,7 +143,7 @@ void getTickNotes(byte s) {
 		memcpy(MOUT + (MOUT_COUNT * 3), buf + bn, 3); // Copy the note into the MIDI buffer's lowest empty MOUT location
 		MOUT_COUNT++; // Increase the counter that tracks the number of bytes in the MIDI buffer
 
-		if (buf[bn] >= 16) { continue; } // If this was a proto-MIDI-CC command, forego any sustain mechanisms
+		if (buf[bn] >= 176) { continue; } // If this was a proto-MIDI-CC command, forego any sustain mechanisms
 
 		buf[bn] -= 16; // Turn the NOTE-ON into a NOTE-OFF
 		buf[bn + 2] = buf[bn + 3]; // Move DURATION to the next byte over, for the 3-byte sustain-storage format
@@ -185,8 +178,6 @@ void getTickNotes(byte s) {
 // Advance global tick, and iterate through all currently-active sequences
 void iterateAll() {
 
-	processSustains(); // Process one 16th-note's worth of duration for all sustained notes
-
 	if (PLAYING) { // If the sequencer is currently in PLAYING mode...
 
 		for (byte i = 47; i != 255; i--) { // For every loaded sequence, in reverse order...
@@ -218,8 +209,12 @@ void iterateAll() {
 
 	}
 
-	if (MOUT_COUNT) { // If any notes are in the MIDI-OUT buffer...
-		flushNoteOns(); // Send them all at once
+	if (MOUT_COUNT) { // If there are any commands in the NOTE-ON buffer...
+		Serial.write(MOUT, MOUT_COUNT * 3); // Send all outgoing MIDI-command bytes at once
+		MOUT_COUNT = 0; // Clear the MIDI buffer's counting-byte
+		updateGlobalRand(); // Update the global semirandom value if and only if notes were sent
 	}
+
+	processSustains(); // Process one 16th-note's worth of duration for all sustained notes
 
 }

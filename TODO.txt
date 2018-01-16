@@ -31,7 +31,12 @@ Software:
 				-- still doesn't work
 				-- fixed data mismatch in recordToSeq but that still didn't fix the sustain problem
 				. figure out what's wrong
-					-- 
+					-- think I found it:
+						getTickNotes() was checking for the internal value for a CC-command,
+						after having converted the channel-byte to a standard MIDI value,
+						which threw a false positive, and prevented any NOTE-OFFs from being put into the SUSTAIN system
+					. test the fix
+						-- 
 
 		. note-erasing doesn't work?
 			. double-check that RECORDING is ARMED during the ERASE test
