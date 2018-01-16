@@ -13,24 +13,6 @@ Software:
 
 	Current tasks:
 
-		. SUSTAIN system doesn't end notes correctly when playing back from a sequence. figure out what's wrong
-			-- was storing sustain-bytes in "duration, channel, pitch" order, and then computing them like they were in "channel, pitch, duration" order
-			. how immensely stupid
-			. fix it
-				-- ok
-			. wipe test-savefile on SD-card, since data format has been updated
-				-- done
-			. test it but ONLY AFTER figuring out the savefile bug (detailed elsewhere in TODO list)
-				-- still doesn't work
-				-- fixed data mismatch in recordToSeq but that still didn't fix the sustain problem
-				. figure out what's wrong
-					-- think I found it:
-						getTickNotes() was checking for the internal value for a CC-command,
-						after having converted the channel-byte to a standard MIDI value,
-						which threw a false positive, and prevented any NOTE-OFFs from being put into the SUSTAIN system
-					. test the fix
-						-- seems to work
-
 		. note-erasing doesn't work?
 			. double-check that RECORDING is ARMED during the ERASE test
 				-- 
