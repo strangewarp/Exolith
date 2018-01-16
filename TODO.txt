@@ -15,7 +15,25 @@ Software:
 
 		. note-erasing doesn't work?
 			. double-check that RECORDING is ARMED during the ERASE test
-				-- 
+				-- it actually does work now. must have forgotten to check if RECORDING was armed
+				. needs a change to its GUI so the global-cue-row is still visible though. do it
+					-- done
+
+		. reduce lag by optimizing LedControl
+			-- 
+
+		. if lag-reduction doesn't work...
+			. make sequences monophonic?
+			. limit maximum BPM to 160?
+			. change max note-granularity to 8th-notes?
+			. remove INTERVAL system?
+			. remove or greatly simplify SCATTER system?
+
+		. CUE-OFF command doesn't seem to work. fix it
+
+		. note-insertion seems to only work some of the time
+
+		. note-insertion has bad timing sometimes
 
 		. test gesture system
 			. test LOAD-MODE TOGGLE
@@ -56,9 +74,8 @@ Software:
 			. SCATTER (amount)
 			. SCATTER UNSET
 			. PAGE SCATTER UNSET
-			. GLOBAL PLAY/STOP
 
-		. display SCATTER status only when a SCATTER command is held
+		. display SCATTER status only when a SCATTER chord is held
 
 		. reduce max sequence-size to 32 whole-notes, to cut down on potential read-lag?
 

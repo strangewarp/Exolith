@@ -1,4 +1,19 @@
 
+// Display the global beat and quarter-note in the topmost row of LEDs
+void displayGlobalBeat() {
+	byte beat = CUR16 >> 4; // Get the current global beat
+	byte quart = (CUR16 >> 2) & 3; // Get the current global quarter-note
+	// Display the global beat in the 4 leftmost LEDs,
+	// and the global quarter-note in the 4 rightmost LEDs
+	lc.setRow(
+		0,
+		0,
+		(beat >= 4) ?
+			((~(255 >> (beat - 3))) | ((15 << (3 - quart)) & 15))
+			: ((128 >> beat) | (8 >> quart))
+	);
+}
+
 // Get the SEQUENCE-ACTIVITY LED-values for a given GUI row within the lower 6 rows
 byte getRowSeqVals(byte r) {
 	byte ib = r << 2; // Get the row's left-side's global-array position
@@ -59,22 +74,12 @@ void updateGUI() {
 			} else if (ctrl == B00000110) { // Else, if CHAN-LISTEN is pressed...
 				lc.setRow(0, 0, LISTEN); // Display the CHAN-LISTEN value
 			} else { // Else...
-				// B00110000: If SWITCH RECORDING-SEQUENCE is held...
+				// If SWITCH RECORDING-SEQUENCE, INTERVAL, or ERASE WHILE HELD is held...
 				// Or some other unassigned button-combination is held...
-				lc.setRow(0, 0, 0); // Clear this row
+				displayGlobalBeat(); // Display the global-beat row
 			}
 		} else { // Else, if this isn't RECORD-MODE, OR no ctrl-buttons are held...
-			byte beat = CUR16 >> 4; // Get the current global beat
-			byte quart = (CUR16 >> 2) & 3; // Get the current global quarter-note
-			// Display the global beat in the 4 leftmost LEDs,
-			// and the global quarter-note in the 4 rightmost LEDs
-			lc.setRow(
-				0,
-				0,
-				(beat >= 4) ?
-					((~(255 >> (beat - 3))) | ((15 << (3 - quart)) & 15))
-					: ((128 >> beat) | (8 >> quart))
-			);
+			displayGlobalBeat(); // Display the global-beat row
 		}
 	}
 
