@@ -92,9 +92,43 @@ void getTickNotes(byte s) {
 
 	byte buf[9]; // Buffer for reading note-events from the datafile
 
-	word readpos = POS[s]; // Get the read-position for this tick, in 16th-notes
+	// If notes are being recorded into this seq,
+	// and RECORD MODE is active, and RECORD-NOTES is armed,
+	// and the ERASE-NOTES command is being held...
+	if ((RECORDSEQ == s) && RECORDMODE && RECORDNOTES && ERASENOTES) {
 
-	if (SCATTER[s] & 128) { // If the seq's SCATTER is flagged as active...
+		unsigned long tpos = (49UL + (POS[s] * 8)) + (8192UL * s); // Get the tick's position in the savefile
+
+		file.seekSet(tpos); // Navigate to the note's absolute position
+		file.read(buf, 8); // Read the data of the tick's notes
+
+		byte full = buf[0] || buf[2]; // Check if the tick's top note is filled
+		if (!full) { return; } // If no notes or CCs are present, exit the function
+
+		// Check if the first and/or second note matches the global CHAN
+		byte pos1 = full && ((buf[0] & 15) == CHAN);
+		byte pos2 = (buf[4] || buf[6]) && ((buf[4] & 15) == CHAN);
+
+		if (pos1 || pos2) { // If either note matches the global chan...
+			byte outbuf[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0}; // Make a tick-sized buffer to send blank data
+			if (!pos1) { // If the first note didn't match global CHAN...
+				file.seekSet(tpos + 4); // Set the write-position to the tick's bottom-note
+			}
+			file.write(outbuf, (pos1 + pos2) * 4); // Clear all ticks in the byte that contain notes matching the global CHAN
+			file.sync(); // Apply changes to the savefile immediately
+			if (pos1 && pos2) { // If both notes matched global CHAN...
+				return; // Exit the function, since there's nothing left to do for this tick of this seq
+			} else { // Else, if only the first or second note matched global CHAN...
+				if (pos1) { // If only the first note matched global CHAN...
+					memmove(buf, buf + 4, 4); // Move the buffer's bottom note to its top slot
+				}
+				memset(buf + 4, 0, 4); // Empty the buffer's bottom note-slot in either case
+			}
+		}
+
+	} else if (SCATTER[s] & 128) { // If NOTE-ERASE isn't happening, and SCATTER is active on this seq...
+
+		word tpos = POS[s]; // Get the tick's position in the savefile
 
 		char rnd = GLOBALRAND & 31; // Get 5 almost-random bits from the current ABSOLUTETIME value
 		char rnd2 = ((rnd >> 3) & 2) - 1; // Value for scatter-read direction (back or forward)
@@ -107,17 +141,16 @@ void getTickNotes(byte s) {
 		word size = (STATS[s] & 63) << 4; // Get the sequence's size, in 16th-notes
 		char dist = rnd * rnd2 * 2; // Get the scatter-read distance, in 16th-notes
 
-		// Add the random scatter-distance (positive or negative) to the read-position
-		readpos = word(((int(readpos) + dist) % size) + size) % size;
+		// Add the random scatter-distance (positive or negative) to the read-position,
+		// while wrapping around the edges of the sequence's size (C requires a "((y % x) + x) % x" formula)
+		tpos = word(((int(tpos) + dist) % size) + size) % size;
+
+		// Navigate to the SCATTER-note's absolute position,
+		// and compensate for the fact that each tick contains 8 bytes
+		file.seekSet(49UL + (((unsigned long)tpos) * 8) + (8192UL * s));
+		file.read(buf, 8); // Read the data of the tick's notes
 
 	}
-
-	// Navigate to the note's absolute position,
-	// and compensate for the fact that each tick contains 8 bytes
-	file.seekSet((49UL + (readpos * 8)) + (8192UL * s));
-	file.read(buf, 8); // Read the data of the tick's notes
-
-	if (!(buf[0] || buf[2])) { return; } // If no notes or CCs are present, exit the function
 
 	// For either one or both note-slots on this tick, depending on how many are filled...
 	for (byte bn = 0; bn < ((buf[4] || buf[6]) + 4); bn += 4) {
@@ -191,18 +224,7 @@ void iterateAll() {
 			// If the seq isn't currently playing, go to the next seq's iteration-routine
 			if (!(STATS[i] & 128)) { continue; }
 
-			// If notes are being recorded into this seq,
-			// and RECORD MODE is active,
-			// and notes are currently being recorded,
-			// and the ERASE-NOTES command is being held...
-			if ((RECORDSEQ == i) && RECORDMODE && RECORDNOTES && ERASENOTES) {
-				byte buf[9] = {0, 0, 0, 0, 0, 0, 0, 0}; // Make a tick-sized buffer of blank data
-				file.seekSet((49UL + (POS[i] * 8)) + (8192UL * i)); // Set position to the start of the tick's first note
-				file.write(buf, 8); // Write in an entire empty tick's worth of bytes
-				file.sync(); // Apply changes to the savefile immediately
-			} else { // Else, if any other combination of states applies...
-				getTickNotes(i); // Get the notes from this tick in a given seq, and add them to the MIDI-OUT buffer
-			}
+			getTickNotes(i); // Get the notes from this tick in a given seq, and add them to the MIDI-OUT buffer
 
 			// Increase the seq's 16th-note position by one increment, wrapping it around its top limit
 			POS[i] = (POS[i] + 1) % (size << 4);

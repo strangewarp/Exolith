@@ -19,15 +19,15 @@ Software:
 				. needs a change to its GUI so the global-cue-row is still visible though. do it
 					-- done
 
-		. reduce lag by optimizing LedControl
+		. ERASE WHILE HELD should only erase notes if they match the global CHAN variable
+			-- done. also refactored surrounding routines for efficiency
+			. test it
+				-- 
+
+		. fill 12 sequences with notes, and check whether lag occurs when connected to a hardware synthesizer
 			-- 
 
-		. if lag-reduction doesn't work...
-			. make sequences monophonic?
-			. limit maximum BPM to 160?
-			. change max note-granularity to 8th-notes?
-			. remove INTERVAL system?
-			. remove or greatly simplify SCATTER system?
+		. CUE only works for first row of seqs. fix it
 
 		. CUE-OFF command doesn't seem to work. fix it
 
@@ -53,6 +53,16 @@ Software:
 				. does a SEQ-SIZE of "0" correspond to 1 beat?
 			. test CC commands
 			. test file-load
+
+		. if lag-reduction is necessary...
+			. try moving the MAX7219 onto the SPI pins and using LedControl_HW_SPI immediately?
+			. make sequences monophonic?
+			. limit maximum BPM to 160?
+			. change max note-granularity to 8th-notes?
+			. remove MIDI CLOCK?
+			. remove MIDI IN?
+			. remove INTERVAL system?
+			. remove or greatly simplify SCATTER system?
 
 		. test "toggle to next/prev sequence" in RECORD mode
 
