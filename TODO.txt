@@ -19,6 +19,19 @@ Software:
 				. needs a change to its GUI so the global-cue-row is still visible though. do it
 					-- done
 
+		. CUE only works for first row of seqs. fix it
+			-- might've been a bad TO_UPDATE call in parseCues()
+			. test it
+				-- works
+
+		. CUE-OFF command doesn't seem to work. figure out what's wrong
+			-- seems to work now
+
+		. test that sequencing still works after that refactor
+			-- nope
+			. figure out why it's broken
+				-- 
+
 		. ERASE WHILE HELD should only erase notes if they match the global CHAN variable
 			-- done. also refactored surrounding routines for efficiency
 			. test it
@@ -27,13 +40,11 @@ Software:
 		. fill 12 sequences with notes, and check whether lag occurs when connected to a hardware synthesizer
 			-- 
 
-		. CUE only works for first row of seqs. fix it
-
-		. CUE-OFF command doesn't seem to work. fix it
-
 		. note-insertion seems to only work some of the time
 
 		. note-insertion has bad timing sometimes
+
+		. need visible GUI for which page is active, now that both are visible simultaneously
 
 		. test gesture system
 			. test LOAD-MODE TOGGLE
@@ -156,14 +167,12 @@ Hardware:
 			. if 74HC14N ends up with free slots: add another buffering stage to the OUT line, and make the THRU port into a switchable THRU/OUT2 port
 		. put the results of this line of inquiry into the "update KiCad file" task
 
-	. test higher resistor values for POWER-LED to get a matching brightness level
-
 	. note: this task may no longer be necessary, but keeping it until I'm sure:
 		. test MIDI-IO LED circuit with 0.1uF & 1uF capacitors
 			. or with 1k/10k resistor from cap+ to GND
 			. if it's as bright as the current kind, then: change KiCad schematics & PCBs & Mouser order to reflect this
 
-	. if still using current standoff lengths, then MIDI ports will require another mm of space
+	. if still using current standoff lengths, then MIDI ports will require another mm of vertical space
 		. therefore: put 1mm-thick spacers on every standoff and compensate for this in all side-panel sizes accordingly
 
 	. update KiCad file:
@@ -181,20 +190,13 @@ Hardware:
 			. move POWER-LED to center of bottom-board, and use a high-brightness white LED with a very wide visibility-cone
 		. top-board:
 			. remove AVR-ISP jack from top-board
-			. reduce button-spacing by 1mm, both vertical and horizontal
 		. both boards:
-			. move to left side:
-				. MIDI-IN port
-				. POWER port
-			. move to right side:
-				. MIDI-THRU port
-				. MIDI-OUT port
 			. double-check that the stacking-headers on the bottom-board and top-board share their corresponding positions
 			. change standoff hole-sizes to M3, plus extra kerf to compensate for standoff screws always being slightly over-size due to their threading
 				. make sure there's still enough room for all M3 screws & standoffs
 			. change all stacking headers to occupy a 2x20 horizontal row between the buttons and LEDs, to make the assembly process less fragile
 			. reduce boards' size, to fit the results of various changes
-			. change all edge-cuts to reflect the rearrangement of ports, if applicable
+			. change all edge-cuts to reflect the rearrangement of ports/standoffs, if applicable
 			. double-check that ports aren't competing for space with standoffs
 
 	. buy grounding-bracelets to use while soldering beta prototypes, and while assembling finished units

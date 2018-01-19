@@ -270,11 +270,13 @@ void setup() {
 
 void loop() {
 
-	parseRawMidi();
+	parseRawMidi(); // Parse incoming MIDI
 
-	updateTimer();
+	updateTimer(); // Update the global timer
 
-	updateGUI();
+	updateGUI(); // Update the GUI, if applicable
+
+	updateGlobalRand(); // Update the global semirandom value
 
 }
 

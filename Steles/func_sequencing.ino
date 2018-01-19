@@ -81,7 +81,7 @@ void parseCues(byte s, word size) {
 	POS[s] = size * ((CMD[s] & B00011100) >> 1);
 
 	// Flag the sequence's corresponding LED-row for an update
-	TO_UPDATE |= 4 >> ((s % 24) >> 2);
+	TO_UPDATE |= 4 << ((s % 24) >> 2);
 
 }
 
@@ -236,7 +236,6 @@ void iterateAll() {
 	if (MOUT_COUNT) { // If there are any commands in the NOTE-ON buffer...
 		Serial.write(MOUT, MOUT_COUNT * 3); // Send all outgoing MIDI-command bytes at once
 		MOUT_COUNT = 0; // Clear the MIDI buffer's counting-byte
-		updateGlobalRand(); // Update the global semirandom value if and only if notes were sent
 	}
 
 	processSustains(); // Process one 16th-note's worth of duration for all sustained notes
