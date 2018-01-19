@@ -27,7 +27,9 @@ Software:
 			. test it
 				-- nope! notes only play when ERASE WHILE HELD is held?
 				. figure out how to fix this
-					-- 
+					-- think it was a logic-flow bug in getTickNotes().
+					. test it
+						-- 
 
 		. fill 12 sequences with notes, and check whether lag occurs when connected to a hardware synthesizer
 			-- 

@@ -128,24 +128,28 @@ void getTickNotes(byte s) {
 			}
 		}
 
-	} else if (SCATTER[s] & 128) { // If NOTE-ERASE isn't happening, and SCATTER is active on this seq...
+	} else { // Else, if ERASE-NOTES isn't currently happening...
 
 		word tpos = POS[s]; // Get the tick's position in the savefile
 
-		char rnd = GLOBALRAND & 31; // Get 5 almost-random bits from the current ABSOLUTETIME value
-		char rnd2 = ((rnd >> 3) & 2) - 1; // Value for scatter-read direction (back or forward)
+		if (SCATTER[s] & 128) { // If SCATTER is active on this seq...
 
-		// Limit the note-offset to some combination of 1, 2, and 4,
-		// with 2 and/or 4 being present half the time,
-		// and 1 being present a quarter of the time
-		rnd = (rnd & 7) ^ ((rnd & 8) >> 3);
+			char rnd = GLOBALRAND & 31; // Get 5 almost-random bits from the current ABSOLUTETIME value
+			char rnd2 = ((rnd >> 3) & 2) - 1; // Value for scatter-read direction (back or forward)
 
-		word size = (STATS[s] & 63) << 4; // Get the sequence's size, in 16th-notes
-		char dist = rnd * rnd2 * 2; // Get the scatter-read distance, in 16th-notes
+			// Limit the note-offset to some combination of 1, 2, and 4,
+			// with 2 and/or 4 being present half the time,
+			// and 1 being present a quarter of the time
+			rnd = (rnd & 7) ^ ((rnd & 8) >> 3);
 
-		// Add the random scatter-distance (positive or negative) to the read-position,
-		// while wrapping around the edges of the sequence's size (C requires a "((y % x) + x) % x" formula)
-		tpos = word(((int(tpos) + dist) % size) + size) % size;
+			word size = (STATS[s] & 63) << 4; // Get the sequence's size, in 16th-notes
+			char dist = rnd * rnd2 * 2; // Get the scatter-read distance, in 16th-notes
+
+			// Add the random scatter-distance (positive or negative) to the read-position,
+			// while wrapping around the edges of the sequence's size (C requires a "((y % x) + x) % x" formula)
+			tpos = word(((int(tpos) + dist) % size) + size) % size;
+
+		}
 
 		// Navigate to the SCATTER-note's absolute position,
 		// and compensate for the fact that each tick contains 8 bytes
