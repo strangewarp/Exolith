@@ -16,17 +16,18 @@ Software:
 		. after having a CUE-OFF command and then a subsequent ON command, sequences repeat the CUE-OFF action erroneously. figure out what's wrong
 			-- parseCues() needed a line to clear the sequence's CUE byte.
 			. test it
-				-- 
+				-- seems fixed
 
 		. test that sequencing still works after that refactor
 			-- nope
 			. figure out why it's broken
-				-- 
-
+				-- (refer to next item in TODO list; convergent issues)
 		. ERASE WHILE HELD should only erase notes if they match the global CHAN variable
 			-- done. also refactored surrounding routines for efficiency
 			. test it
-				-- 
+				-- nope! notes only play when ERASE WHILE HELD is held?
+				. figure out how to fix this
+					-- 
 
 		. fill 12 sequences with notes, and check whether lag occurs when connected to a hardware synthesizer
 			-- 
