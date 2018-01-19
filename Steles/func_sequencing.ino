@@ -80,6 +80,8 @@ void parseCues(byte s, word size) {
 	// Set the sequence's internal tick to a position based on the incoming SLICE bits
 	POS[s] = size * ((CMD[s] & B00011100) >> 1);
 
+	CMD[s] = 0; // Clear the sequence's CUED-COMMANDS byte
+
 	// Flag the sequence's corresponding LED-row for an update
 	TO_UPDATE |= 4 << ((s % 24) >> 2);
 

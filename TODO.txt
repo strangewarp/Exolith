@@ -13,6 +13,11 @@ Software:
 
 	Current tasks:
 
+		. after having a CUE-OFF command and then a subsequent ON command, sequences repeat the CUE-OFF action erroneously. figure out what's wrong
+			-- parseCues() needed a line to clear the sequence's CUE byte.
+			. test it
+				-- 
+
 		. test that sequencing still works after that refactor
 			-- nope
 			. figure out why it's broken
