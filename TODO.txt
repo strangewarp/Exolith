@@ -13,20 +13,6 @@ Software:
 
 	Current tasks:
 
-		. note-erasing doesn't work?
-			. double-check that RECORDING is ARMED during the ERASE test
-				-- it actually does work now. must have forgotten to check if RECORDING was armed
-				. needs a change to its GUI so the global-cue-row is still visible though. do it
-					-- done
-
-		. CUE only works for first row of seqs. fix it
-			-- might've been a bad TO_UPDATE call in parseCues()
-			. test it
-				-- works
-
-		. CUE-OFF command doesn't seem to work. figure out what's wrong
-			-- seems to work now
-
 		. test that sequencing still works after that refactor
 			-- nope
 			. figure out why it's broken
