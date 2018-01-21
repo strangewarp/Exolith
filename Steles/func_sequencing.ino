@@ -29,7 +29,7 @@ void resetSeq(byte s) {
 	CMD[s] = 0;
 	POS[s] = 0;
 	STATS[s] &= 127;
-	//SCATTER[s] &= 7; // Wipe all of the seq's scatter-counting and scatter-flagging bits, but not its scatter-chance bits
+	//SCATTER[s] &= 15; // Wipe all of the seq's scatter-counting and scatter-flagging bits, but not its scatter-chance bits
 }
 
 // Prime a newly-entered RECORD-MODE sequence for editing
@@ -94,6 +94,8 @@ void getTickNotes(byte s) {
 
 	byte buf[9]; // Buffer for reading note-events from the datafile
 
+	byte didscatter = 0; // Flag that tracks whether this tick has had a SCATTER effect
+
 	// If notes are being recorded into this seq,
 	// and RECORD MODE is active, and RECORD-NOTES is armed,
 	// and the ERASE-NOTES command is being held...
@@ -130,33 +132,23 @@ void getTickNotes(byte s) {
 
 	} else { // Else, if ERASE-NOTES isn't currently happening...
 
-		word tpos = POS[s]; // Get the tick's position in the savefile
+		unsigned long tpos = POS[s]; // Get the tick's position in the savefile
 
-		if (SCATTER[s] & 128) { // If SCATTER is active on this seq...
-
-			char rnd = GLOBALRAND & 31; // Get 5 almost-random bits from the current ABSOLUTETIME value
-			char rnd2 = ((rnd >> 3) & 2) - 1; // Value for scatter-read direction (back or forward)
-
-			// Limit the note-offset to some combination of 1, 2, and 4,
-			// with 2 and/or 4 being present half the time,
-			// and 1 being present a quarter of the time
-			rnd = (rnd & 7) ^ ((rnd & 8) >> 3);
-
-			word size = (STATS[s] & 63) << 4; // Get the sequence's size, in 16th-notes
-			char dist = rnd * rnd2 * 2; // Get the scatter-read distance, in 16th-notes
-
-			// Add the random scatter-distance (positive or negative) to the read-position,
-			// while wrapping around the edges of the sequence's size (C requires a "((y % x) + x) % x" formula)
-			tpos = word(((int(tpos) + dist) % size) + size) % size;
-
+		byte sc = (SCATTER[s] & 240) >> 3; // Get the seq's SCATTER-read-distance
+		if (sc) { // If the seq has an active SCATTER-read-distance...
+			didscatter = 1; // Flag this tick as having had a SCATTER effect
+			// Add that distance to the read-point, wrapping around the end of the seq
+			tpos = (tpos + sc) % ((STATS[s] & 127) * 16);
 		}
 
 		// Navigate to the SCATTER-note's absolute position,
 		// and compensate for the fact that each tick contains 8 bytes
-		file.seekSet(49UL + (((unsigned long)tpos) * 8) + (8192UL * s));
+		file.seekSet(49UL + (tpos * 8) + (8192UL * s));
 		file.read(buf, 8); // Read the data of the tick's notes
 
 	}
+
+	if (!(buf[0] || buf[2])) { return; } // If the tick contains no commands, then exit the function
 
 	// For either one or both note-slots on this tick, depending on how many are filled...
 	for (byte bn = 0; bn < ((buf[4] || buf[6]) + 4); bn += 4) {
@@ -198,20 +190,31 @@ void getTickNotes(byte s) {
 
 	// If the function hasn't exited by this point, then that means this tick contained a note. So...
 
-	if (SCATTER[s] >= 128) { // If this was a SCATTER note...
-		SCATTER[s] &= 7; // Remove the seq's scatter-activity flag & note-counting bits
-	} else { // Else, if this wasn't a SCATTER note...
-		byte chance = SCATTER[s] & B00000111; // Get the seq's scatter-chance bits, which are set by the user
-		byte count = (SCATTER[s] & B01111000) >> 3; // Get the note-count since last scatter-event
-		if (chance) { // If this seq has scatter-chance bits...
-			// Have a random chance of setting the scatter-active flag,
-			// made more likely if it has been a long time since the last scatter-event (counted by the "count" bits)
-			SCATTER[s] |= ((chance + count) > ((GLOBALRAND >> (s % 10)) % 31)) ? 128 : 0;
-			if (count < 15) { // If the count-value hasn't reached its maximum...
-				// Increment it by 1 and put it back into the seq's SCATTER count-bits
-				SCATTER[s] = (SCATTER[s] & B10000111) | ((count + 1) << 3);
-			}
+	if (didscatter) { // If this tick was a SCATTER-tick...
+		SCATTER[s] &= 15; // Unset the "distance" side of this seq's SCATTER byte
+	} else { // Else, if this wasn't a SCATTER-tick...
+
+		// If this tick's random-value doesn't exceed the seq's SCATTER-chance value, exit the function
+		if ((GLOBALRAND & 15) >= SCATTER[s]) { return; }
+
+		byte rnd = (GLOBALRAND >> 4) & 255; // Get 8 random bits
+
+		if (!(rnd & 224)) { // If a 1-in-4 chance occurs...
+			SCATTER[s] |= 128; // Set the seq's SCATTER-distance to be a whole-note
+			return; // Exit the function
 		}
+
+		// Set the seq's SCATTER-distance to contain:
+		// Half-note: 1/2 of the time
+		// Quarter-note: 1/2 of the time
+		// Eighth-note: 1/4 of the time
+		byte dist = (rnd & 6) | (!(rnd & 24));
+		if (!dist) { // If the new SCATTER-distance doesn't contain anything...
+			SCATTER[s] |= 32; // Set the SCATTER-distance to a quarter-note
+		} else { // Else, if the new SCATTER-distance contains something...
+			SCATTER[s] |= dist << 4; // Make it into the seq's stored SCATTER-distance value
+		}
+
 	}
 
 }

@@ -30,14 +30,14 @@ byte getRowSeqVals(byte r) {
 // Get the SCATTER-ACTIVITY LED-values for a given GUI row within the lower 6 rows
 byte getRowScatterVals(byte r) {
 	byte ib = r << 2; // Get the row's left-side's global-array position
-	return ((!!(SCATTER[ib] & 7)) << 7) // Return the row's SCATTER info, from both pages, as a row's worth of bits
-		| ((!!(SCATTER[ib + 1] & 7)) << 6)
-		| ((!!(SCATTER[ib + 2] & 7)) << 5)
-		| ((!!(SCATTER[ib + 3] & 7)) << 4)
-		| ((!!(SCATTER[ib + 24] & 7)) << 3)
-		| ((!!(SCATTER[ib + 25] & 7)) << 2)
-		| ((!!(SCATTER[ib + 26] & 7)) << 1)
-		| (!!(SCATTER[ib + 27] & 7));
+	return ((!!(SCATTER[ib] & 15)) << 7) // Return the row's SCATTER info, from both pages, as a row's worth of bits
+		| ((!!(SCATTER[ib + 1] & 15)) << 6)
+		| ((!!(SCATTER[ib + 2] & 15)) << 5)
+		| ((!!(SCATTER[ib + 3] & 15)) << 4)
+		| ((!!(SCATTER[ib + 24] & 15)) << 3)
+		| ((!!(SCATTER[ib + 25] & 15)) << 2)
+		| ((!!(SCATTER[ib + 26] & 15)) << 1)
+		| (!!(SCATTER[ib + 27] & 15));
 }
 
 // Update the GUI based on update-flags that have been set by the current tick's events

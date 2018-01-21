@@ -175,9 +175,8 @@ byte CUR16 = 127; // Current global sixteenth-note (bounded to 128, or 8 beats)
 word GLOBALRAND = 12345; // Global all-purpose semirandom value; gets changed on every tick
 
 // Beat-scattering flags, one per seq.
-// bits 0-2: scatter chance
-// bits 3-6: count of notes since last scatter
-// bit 7: flag for "seq's read-head is in scatter mode"
+// bits 0-3: scatter chance
+// bits 4-7: scatter distance (0=off; 1,2,4,8 = 8th,4th,half,whole [these can stack with each other])
 byte SCATTER[49];
 
 // Cued-command flags, one per seq.
