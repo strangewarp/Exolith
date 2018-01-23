@@ -34,20 +34,25 @@ Software:
 			. break the currently-editing sequence away from global timing when step-by-step mode is toggled?
 			. snap the seq back to the standard realtime-editing mode when step-by-step mode is untoggled?
 			. or: combine this with realtime editing? play sequence in realtime in the background, while doing step-editing in the foreground?
-				. add an "erase step" command, to complement the "erase in realtime" command; or some other solution for erasing
-				. add a "step record" button, to complement realtime recording?
-			. ui:
-				. buttons:
-					. mode-toggle gesture: 1-4-1-4?
-				. leds:
-					. top row: seq's total beats
-					. second row: current beat
-					. third row: current 16th-note within the beat
-					. fourth row: chanvelo composite, note slot 1
-					. fifth row: pitch, note slot 1
-					. sixth row: chanvelo composite, note slot 2
-					. seventh row: pitch, note slot 2
-					. eighth row: displays whether the first or second note is a special-command
+				. set the RECORD-ARMED toggle to have three states: NOT RECORDING, REALTIME RECORDING, and STEP RECORDING
+					. in STEP RECORDING mode, the top row of buttons should turn into extra command-buttons:
+						. 0: copy beat
+						. 1: back by one 16th-note
+						. 2: forward by one 16th-note
+						. 3: paste beat
+						. 0-1: back by one beat
+						. 1-2: forward by one beat
+						. 0-3: erase tick
+					. ui:
+						. leds:
+							. top row: seq's total beats
+							. second row: current beat
+							. third row: current 16th-note within the beat
+							. fourth row: chanvelo composite, note slot 1
+							. fifth row: pitch, note slot 1
+							. sixth row: chanvelo composite, note slot 2
+							. seventh row: pitch, note slot 2
+							. eighth row: displays whether the first or second note is a special-command
 
 		. need visible GUI element for which page is active, now that both are visible simultaneously
 
