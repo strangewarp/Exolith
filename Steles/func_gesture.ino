@@ -34,16 +34,15 @@ void checkForGestures() {
 
 // Update the tracking-info for all active gesture-keys
 void updateGestureKeys() {
-	while (GESTELAPSED >= GESTDECAY) { // While the gesture-decay timer has elapsed by a step or more...
-		for (byte i = 0; i < 4; i++) { // For each active gesture-event...
-			if (!(GESTURE[i] & 128)) { break; } // If the gesture-slot is empty, stop checking
-			byte gest = (GESTURE[i] & 127) >> 3; // Get the gesture-entry's remaining time
-			if (gest) { // If the gesture has time remaining...
-				GESTURE[i] = (gest - 1) | (GESTURE[i] & B10000111); // Reduce its time by 1
-			} else { // Else, if the gesture exists but has no time remaining...
-				GESTURE[i] = 0; // Clear its now-outdated contents
-			}
+	if (GESTELAPSED < GESTDECAY) { return; } // If gesture-decay timer hasn't elapsed by a step or more, exit function
+	for (byte i = 0; i < 4; i++) { // For each active gesture-event...
+		if (!(GESTURE[i] & 128)) { break; } // If the gesture-slot is empty, stop checking
+		byte gest = (GESTURE[i] & 127) >> 3; // Get the gesture-entry's remaining time
+		if (gest) { // If the gesture has time remaining...
+			GESTURE[i] = (gest - 1) | (GESTURE[i] & B10000111); // Reduce its time by 1
+		} else { // Else, if the gesture exists but has no time remaining...
+			GESTURE[i] = 0; // Clear its now-outdated contents
 		}
-		GESTELAPSED -= GESTDECAY; // Reduce the elapsed gesture-check time by a single unit of gesture-decay
 	}
+	GESTELAPSED %= GESTDECAY; // Reduce the elapsed gesture-check time by n units of gesture-decay
 }

@@ -13,11 +13,6 @@ Software:
 
 	Current tasks:
 
-		. after having a CUE-OFF command and then a subsequent ON command, sequences repeat the CUE-OFF action erroneously. figure out what's wrong
-			-- parseCues() needed a line to clear the sequence's CUE byte.
-			. test it
-				-- seems fixed
-
 		. test that sequencing still works after that refactor
 			-- nope
 			. figure out why it's broken
@@ -30,15 +25,33 @@ Software:
 					-- think it was a logic-flow bug in getTickNotes().
 					. test it
 						-- 
+					. re-test ERASE WHILE HELD
+						-- 
 
 		. fill 12 sequences with notes, and check whether lag occurs when connected to a hardware synthesizer
-			-- 
 
-		. note-insertion seems to only work some of the time
+		. add a STEP BY STEP RECORD mode
+			. break the currently-editing sequence away from global timing when step-by-step mode is toggled?
+			. snap the seq back to the standard realtime-editing mode when step-by-step mode is untoggled?
+			. or: combine this with realtime editing? play sequence in realtime in the background, while doing step-editing in the foreground?
+				. add an "erase step" command, to complement the "erase in realtime" command; or some other solution for erasing
+				. add a "step record" button, to complement realtime recording?
+			. ui:
+				. buttons:
+					. mode-toggle gesture: 1-4-1-4?
+				. leds:
+					. top row: seq's total beats
+					. second row: current beat
+					. third row: current 16th-note within the beat
+					. fourth row: chanvelo composite, note slot 1
+					. fifth row: pitch, note slot 1
+					. sixth row: chanvelo composite, note slot 2
+					. seventh row: pitch, note slot 2
+					. eighth row: displays whether the first or second note is a special-command
 
-		. note-insertion has bad timing sometimes
+		. need visible GUI element for which page is active, now that both are visible simultaneously
 
-		. need visible GUI for which page is active, now that both are visible simultaneously
+		. note-insertion has bad timing sometimes?
 
 		. test gesture system
 			. test LOAD-MODE TOGGLE
@@ -94,7 +107,7 @@ Software:
 
 		. reduce max sequence-size to 32 whole-notes, to cut down on potential read-lag?
 
-		. add a "totally empty out the sequence's contents" command to RECORD-MODE
+		. add a "totally empty out the sequence's contents" command to RECORD-MODE?
 
 		. test MIDI-IN (notes)
 		. test MIDI-IN (clock)
