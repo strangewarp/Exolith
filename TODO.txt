@@ -34,16 +34,14 @@ Software:
 			. play sequence in realtime in the background, while doing step-editing in the foreground
 			. QUANTIZE must be changed to represent the distance to skip ahead after recording a note (0-16)			
 			. in STEP RECORDING mode, the top row of buttons should turn into extra command-buttons:
-				. 0: chording key
-				. 1: back by one 16th-note
-				. 2: forward by one 16th-note
-				. 3: chording key
-				. 0-1: back by one beat
-				. 0-2: forward by one beat
-				. 3-0: erase tick
-				. 3-1: copy beat
-				. 3-2: paste beat
-				. 3-0-1: erase beat
+				. 0: move (chord with note-buttons to change relative position within seq)
+				. 1: copy tick (position-based, data itself does not go into RAM)
+				. 2: paste tick
+				. 3: erase tick
+				. 0-1: copy beat (position-based)
+				. 0-2: paste beat
+				. 0-3: erase beat
+				. 0-1-2-3: erase sequence
 			. ui:
 				. leds:
 					. top row: current position within the sequence (in realtime)
