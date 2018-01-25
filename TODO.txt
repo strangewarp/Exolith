@@ -28,31 +28,34 @@ Software:
 					. re-test ERASE WHILE HELD
 						-- 
 
-		. fill 12 sequences with notes, and check whether lag occurs when connected to a hardware synthesizer
-
 		. add a STEP BY STEP RECORD mode
-			. break the currently-editing sequence away from global timing when step-by-step mode is toggled?
-			. snap the seq back to the standard realtime-editing mode when step-by-step mode is untoggled?
-			. or: combine this with realtime editing? play sequence in realtime in the background, while doing step-editing in the foreground?
-				. set the RECORD-ARMED toggle to have three states: NOT RECORDING, REALTIME RECORDING, and STEP RECORDING
-					. in STEP RECORDING mode, the top row of buttons should turn into extra command-buttons:
-						. 0: copy beat
-						. 1: back by one 16th-note
-						. 2: forward by one 16th-note
-						. 3: paste beat
-						. 0-1: back by one beat
-						. 1-2: forward by one beat
-						. 0-3: erase tick
-					. ui:
-						. leds:
-							. top row: seq's total beats
-							. second row: current beat
-							. third row: current 16th-note within the beat
-							. fourth row: chanvelo composite, note slot 1
-							. fifth row: pitch, note slot 1
-							. sixth row: chanvelo composite, note slot 2
-							. seventh row: pitch, note slot 2
-							. eighth row: displays whether the first or second note is a special-command
+			. combine this with realtime editing
+			. notes should only be recorded in realtime from MIDI-IN; keypad is slightly too unreliable
+			. play sequence in realtime in the background, while doing step-editing in the foreground
+			. QUANTIZE must be changed to represent the distance to skip ahead after recording a note (0-16)			
+			. in STEP RECORDING mode, the top row of buttons should turn into extra command-buttons:
+				. 0: chording key
+				. 1: back by one 16th-note
+				. 2: forward by one 16th-note
+				. 3: chording key
+				. 0-1: back by one beat
+				. 0-2: forward by one beat
+				. 3-0: erase tick
+				. 3-1: copy beat
+				. 3-2: paste beat
+				. 3-0-1: erase beat
+			. ui:
+				. leds:
+					. top row: current position within the sequence (in realtime)
+					. second row: current beat (step position)
+					. third row: current 16th-note within the beat (step position)
+					. fourth row: chanvelo composite, note slot 1
+					. fifth row: pitch, note slot 1
+					. sixth row: chanvelo composite, note slot 2
+					. seventh row: pitch, note slot 2
+					. eighth row: displays whether the first or second note is a special-command
+
+		. fill 12 sequences with notes, and check whether lag occurs when connected to a hardware synthesizer
 
 		. need visible GUI element for which page is active, now that both are visible simultaneously
 
