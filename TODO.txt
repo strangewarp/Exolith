@@ -33,12 +33,13 @@ Software:
 			. notes should only be recorded in realtime from MIDI-IN; keypad is slightly too unreliable
 			. play sequence in realtime in the background, while doing step-editing in the foreground
 			. QUANTIZE must be changed to represent the distance to skip ahead after recording a note (0-16)
+				. change QUANTIZE's max value to 16
 				. when RECORDING is ARMED, and a note is pressed, record that note, and then skip ahead by a QUANTIZE-controlled amount of space
 			. in STEP RECORDING mode, when ARM RECORDING is held, the bottom 5 rows of buttons should become MOVE commands:
-				. row 5: move by one 16th/8th note
-				. row 4: move by one quarter/half note
-				. row 3: move by one whole / two whole notes
-				. row 2: copy tick, copy beat, paste tick, paste beat (position-based, data itself does not go into RAM)
+				. row 5: move by one 16th note
+				. row 4: move by one quarter note
+				. row 3: move by one whole note
+				. row 2: set copy-point, paste random amount, paste tick, paste beat (position-based, data itself does not go into RAM)
 				. row 1: erase tick, erase quarter-beat, erase half-beat, erase beat (absolute positions, not relative position)
 				. row 0: disarm ARM RECORDING like normal
 			. ui:
