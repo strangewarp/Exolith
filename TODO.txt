@@ -32,6 +32,10 @@ Software:
 			. combine this with realtime editing
 			. notes should only be recorded in realtime from MIDI-IN; keypad is slightly too unreliable
 			. play sequence in realtime in the background, while doing step-editing in the foreground
+			. need a global var for current step-edit point: STEPPOS
+				. needs to be reset at the following times:
+					. whenever SEQ-SIZE is changed
+					. whenever RECORD-MODE is toggled into from PLAY MODE or LOAD MODE
 			. QUANTIZE must be changed to represent the distance to skip ahead after recording a note (0-16)
 				. change QUANTIZE's max value to 16
 				. when RECORDING is ARMED, and a note is pressed, record that note, and then skip ahead by a QUANTIZE-controlled amount of space
@@ -39,7 +43,7 @@ Software:
 				. row 5: move by one 16th note
 				. row 4: move by one quarter note
 				. row 3: move by one whole note
-				. row 2: set copy-point, paste random amount, paste tick, paste beat (position-based, data itself does not go into RAM)
+				. row 2: move by one slice
 				. row 1: erase tick, erase quarter-beat, erase half-beat, erase beat (absolute positions, not relative position)
 				. row 0: disarm ARM RECORDING like normal
 			. ui:
@@ -179,6 +183,10 @@ Hardware:
 				. pin 2: digital MIDI-OUT indicator (NOTEs only)
 			. if 74HC14N ends up with free slots: add another buffering stage to the OUT line, and make the THRU port into a switchable THRU/OUT2 port
 		. put the results of this line of inquiry into the "update KiCad file" task
+
+	. double-check that the indicators have protection-diodes and protection-resistors on them
+		. protection-resistors in front of each first transistor's base terminal
+		. protection-diodes between the MIDI data-lines and the first protection-resistors
 
 	. note: this task may no longer be necessary, but keeping it until I'm sure:
 		. test MIDI-IO LED circuit with 0.1uF & 1uF capacitors
