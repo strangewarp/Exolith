@@ -135,50 +135,7 @@ void parseRecPress(byte col, byte row) {
 		char change = (32 >> row) * ((col & 2) - 1);
 
 		if (ctrl == B00100000) { // If TOGGLE NOTE-RECORDING is held...
-
-			if (row == 0) { // If this is the ARM RECORDING row...
-				RECORDNOTES ^= 1; // Either arm or disarm recording, by toggling the note-recording flag
-				TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
-			} else if (row == 1) { // If this is the ERASE row...
-				// Get the length of space to be erased:
-				// col 0 = 1 tick; col 1 = 4 ticks; col 2 = 8 ticks; col 3 = 16 ticks
-				byte eraselen = (2 << col) - (!col);
-				byte erbuf[9] = {0, 0, 0, 0, 0, 0, 0, 0}; // Make an empty data-buffer the size of a seq's tick
-				for (word i = 0; i < eraselen; i += 8) { // For every tick that is to be erased...
-					// Navigate to this tick's offset from the current record-position
-					file.seekSet((49UL + (8192UL * RECORDSEQ) + (((unsigned long)RECPOS) * 8)) + i);
-					file.write(erbuf, 8); // Write the blank data into the tick
-				}
-
-			} else if (row == 2) { // If this is the MOVE BY SLICE row...
-
-				byte acol = col >> 1; // Get which direction the column represents
-				char dir = char(acol) - (!acol); // Convert that direction to either -1 or 1
-				byte rawsize = STATS[RECORDSEQ] & 127; // Get the RECORDSEQ's size, in beats
-				word seqsize = word(rawsize) << 4; // Get the RECORDSEQ's total size, in 16th-notes
-				int slicesize = rawsize << 1; // Get the RECORDSEQ's slice-size, in 16th-notes
-				byte recmod = RECPOS % slicesize; // Get the record-position's distance from the start of its current slice
-
-				// Set the offset to point toward the beginning of the nearest slice in the chosen direction
-				char offset = recmod ? (acol ? (slicesize - recmod) : (-recmod)) : (slicesize * dir);
-
-				// todo: remove this draft-chaff
-				//if !recmod and !dir: -slicesize
-				//if !recmod and dir:  slicesize
-				//if recmod and !dir:  -recmod
-				//if recmod and dir:   slicesize - recmod
-
-				// Move the record-position to the start of the chosen slice
-				RECPOS = word(((int(RECPOS) + offset) % seqsize) + seqsize) % seqsize;
-
-			} else { // Else, if this is one of the MOVE BY INTERVAL rows...
-
-
-
-			}
-
-
-
+			parseStepPanel(col, row); // Parse a keypress in the STEP-panel
 		} else if (ctrl == B00010000) { // If the BASENOTE button is held...
 			BASENOTE = clamp(0, 11, char(BASENOTE) + change); // Modify the BASENOTE value
 			TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
@@ -235,6 +192,64 @@ void parseRecPress(byte col, byte row) {
 			LISTEN = clamp(0, 15, char(LISTEN) + change); // Modify the CHAN-LISTEN value
 			TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
 		}
+
+	}
+
+}
+
+// Parse a keypress in the STEP-panel
+void parseStepPanel(byte col, byte row) {
+
+	if (row == 0) { // If this is the ARM RECORDING row...
+
+		RECORDNOTES ^= 1; // Either arm or disarm recording, by toggling the note-recording flag
+		TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
+
+	} else if (row == 1) { // If this is the ERASE row...
+
+		// Get the length of space to be erased:
+		// col 0 = 1 tick; col 1 = 4 ticks; col 2 = 8 ticks; col 3 = 16 ticks
+		byte eraselen = (2 << col) - (!col);
+		byte erbuf[9] = {0, 0, 0, 0, 0, 0, 0, 0}; // Make an empty data-buffer the size of a seq's tick
+
+		for (word i = 0; i < eraselen; i += 8) { // For every tick that is to be erased...
+			// Navigate to this tick's offset from the current record-position
+			file.seekSet((49UL + (8192UL * RECORDSEQ) + (((unsigned long)RECPOS) * 8)) + i);
+			file.write(erbuf, 8); // Write the blank data into the tick
+		}
+
+		TO_UPDATE |= 252; // Flag the bottom 6 rows for updating
+
+	} else { // Else, if this is one of the subsequent rows...
+
+		char offset = 0; // Will hold the offset-amount for movement
+		byte acol = col >> 1; // Get which direction the column represents
+		byte rawsize = STATS[RECORDSEQ] & 127; // Get the RECORDSEQ's size, in beats
+		word seqsize = word(rawsize) << 4; // Get the RECORDSEQ's total size, in 16th-notes
+
+		if (row == 2) { // If this is the MOVE BY SLICE row...
+
+			int slicesize = rawsize << 1; // Get the RECORDSEQ's slice-size, in 16th-notes
+			byte recmod = RECPOS % slicesize; // Get the record-position's distance from the start of its current slice
+
+			// Set the offset to point toward the beginning of the nearest slice in the chosen direction
+			offset = recmod ? (acol ? (slicesize - recmod) : (-recmod)) : (slicesize * (char(acol) - (!acol)));
+
+			// todo: remove this draft-chaff
+			//if !recmod and !dir: -slicesize
+			//if !recmod and dir:  slicesize
+			//if recmod and !dir:  -recmod
+			//if recmod and dir:   slicesize - recmod
+
+		} else { // Else, if this is one of the MOVE BY INTERVAL rows...
+			// Get a direction-multiplier for this button: -32, -16, -8, -4, -1, 1, 4, 8, 16, 32
+			offset = ((char(col) - 2) + (col >> 1)) * ((2 << row) - (!row));
+		}
+
+		// Move the record-position to the selected position
+		RECPOS = word(((int(RECPOS) + offset) % seqsize) + seqsize) % seqsize;
+
+		TO_UPDATE |= 254; // Flag the bottom 7 LED-rows for a GUI update
 
 	}
 
