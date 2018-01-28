@@ -160,7 +160,7 @@ void parseRecPress(byte col, byte row) {
 				byte recmod = RECPOS % slicesize; // Get the record-position's distance from the start of its current slice
 
 				// Set the offset to point toward the beginning of the nearest slice in the chosen direction
-				byte offset = recmod ? (acol ? (slicesize - recmod) : (-recmod)) : (slicesize * dir);
+				char offset = recmod ? (acol ? (slicesize - recmod) : (-recmod)) : (slicesize * dir);
 
 				// todo: remove this draft-chaff
 				//if !recmod and !dir: -slicesize
