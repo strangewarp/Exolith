@@ -32,15 +32,6 @@ void resetSeq(byte s) {
 	//SCATTER[s] &= 15; // Wipe all of the seq's scatter-counting and scatter-flagging bits, but not its scatter-chance bits
 }
 
-// Prime a newly-entered RECORD-MODE sequence for editing
-void primeRecSeq() {
-	resetSeq(RECORDSEQ); // If the most-recently-touched seq is already playing, reset it to prepare for timing-wrapping
-	SCATTER[RECORDSEQ] = 0; // Unset the most-recently-touched seq's SCATTER values before starting to record
-	word seqsize = word(STATS[RECORDSEQ] & B00111111) << 4; // Get sequence's size in 16th-notes
-	POS[RECORDSEQ] = (seqsize > 127) ? CUR16 : (CUR16 % seqsize); // Wrap sequence around to global cue-point
-	STATS[RECORDSEQ] |= 128; // Set the sequence to active
-}
-
 // Apply an interval-command to a given pitch, within a given CHANNEL
 byte applyIntervalCommand(byte cmd, byte pitch) {
 

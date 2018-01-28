@@ -1,4 +1,14 @@
 
+// Prime a newly-entered RECORD-MODE sequence for editing
+void primeRecSeq() {
+	resetSeq(RECORDSEQ); // If the most-recently-touched seq is already playing, reset it to prepare for timing-wrapping
+	SCATTER[RECORDSEQ] = 0; // Unset the most-recently-touched seq's SCATTER values before starting to record
+	word seqsize = word(STATS[RECORDSEQ] & B00111111) << 4; // Get sequence's size in 16th-notes
+	POS[RECORDSEQ] = (seqsize > 127) ? CUR16 : (CUR16 % seqsize); // Wrap sequence around to global cue-point
+	STATS[RECORDSEQ] |= 128; // Set the sequence to active
+	RECPOS = 0; // Reset the STEP-EDIT position
+}
+
 // Record a given MIDI command into the tempdata-file of the current RECORDSEQ sequence
 void recordToSeq(word pos, byte chan, byte b1, byte b2) {
 

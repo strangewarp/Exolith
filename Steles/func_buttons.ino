@@ -113,6 +113,9 @@ void parseRecPress(byte col, byte row) {
 			// Record the note, either natural or modified by INTERVAL, into the current RECORDSEQ slot;
 			// and if this is an INTERVAL-command, then clip off any virtual CC-info from the chan-byte 
 			recordToSeq(RECPOS, ibs ? (CHAN % 16) : CHAN, pitch, velo);
+			// Incerase the record-position by QUANTIZE amount, wrapping around the end of the sequence if applicable
+			RECPOS = (RECPOS + QUANTIZE) % (word(STATS[RECORDSEQ] & 127) * 16);
+			TO_UPDATE |= 254; // Flag the 7 bottommost LED-rows for an update
 		}
 
 		if (CHAN & 16) { return; } // If this was a virtual CC command, forego all SUSTAIN operations
@@ -154,14 +157,14 @@ void parseRecPress(byte col, byte row) {
 			RECORDSEQ = (PAGE * 24) + key; // Switch to the seq that corresponds to the key-position on the active page
 			primeRecSeq(); // Prime the newly-entered RECORD-MODE sequence for editing
 			TO_UPDATE |= 4 >> row; // Flag the new seq's corresponding LED-row for updating
-			TO_UPDATE |= 1; // Flag the topmost row for updating
+			TO_UPDATE |= 3; // Flag the 2 topmost rows for updating
 		} else if (ctrl == B00101000) { // If the CLOCK-MASTER command is held...
 			CLOCKMASTER ^= 1; // Toggle the CLOCK-MASTER value
 			ABSOLUTETIME = micros(); // Set the ABSOLUTETIME-tracking var to now
 			ELAPSED = 0; // Set the ELAPSED value to show that no time has elapsed since the last tick-check
 			TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
 		} else if (ctrl == B00100100) { // If the QUANTIZE button is held...
-			QUANTIZE = clamp(1, 8, abs(change)); // Modify the QUANTIZE value
+			QUANTIZE = clamp(0, 16, abs(change)); // Modify the QUANTIZE value
 			TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
 		} else if (ctrl == B00100010) { // If the PROGRAM-CHANGE command is held...
 
@@ -182,7 +185,8 @@ void parseRecPress(byte col, byte row) {
 			STATS[RECORDSEQ] = (STATS[RECORDSEQ] & 128) | newsize; // Modify the currently-recording seq's size
 			updateFileByte(RECORDSEQ + 1, STATS[RECORDSEQ]); // Update the seq's size-byte in the song's savefile
 			POS[RECORDSEQ] %= newsize << 4; // Wrap around the currently-recording seq's 16th-note-position
-			TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
+			RECPOS = 0; // Reset the STEP-RECORD position
+			TO_UPDATE = 255; // Flag all LED-rows for updating
 		} else if (ctrl == B00010001) { // If the BPM command is held...
 			BPM = clamp(16, 200, int(BPM) + change); // Change the BPM rate
 			updateFileByte(0, BPM); // Update the BPM-byte in the song's savefile
