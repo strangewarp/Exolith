@@ -10,7 +10,7 @@ void parseMidiCommand() {
 					if (cmd == 144) { // If this is a NOTE-ON command...
 						INBYTES[2] += !INBYTES[2]; // Make sure the VELOCITY byte has a value of at least 1
 					}
-					recordToSeq(0, chan, INBYTES[1], INBYTES[2]); // Record the incoming MIDI command
+					recordToSeq(POS[RECORDSEQ], chan, INBYTES[1], INBYTES[2]); // Record the incoming MIDI command
 				}
 			}
 		}

@@ -32,7 +32,7 @@ Software:
 			. combine this with realtime editing
 			. notes should only be recorded in realtime from MIDI-IN; keypad is slightly too unreliable
 			. play sequence in realtime in the background, while doing step-editing in the foreground
-			. need a global var for current step-edit point: STEPPOS
+			. need a global var for current step-edit point: RECPOS
 				. needs to be reset at the following times:
 					. whenever SEQ-SIZE is changed
 					. whenever RECORD-MODE is toggled into from PLAY MODE or LOAD MODE

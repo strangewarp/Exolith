@@ -163,6 +163,7 @@ byte CHAN = 0; // MIDI-CHAN for RECORD MODE notes
 byte LISTEN = 0; // Channel to listen to in RECORD MODE, for recording from external MIDI sources
 byte QUANTIZE = B00000010; // Time-quantize value for RECORD MODE notes: bits 0-3: 1, 2, 4, 8 (16th-notes)
 byte DURATION = B00001000; // Duration value for RECORD MODE notes: bits 0-4: 1, 2, 4, 8, 16 (16th-notes)
+word RECPOS = 0; // Current STEP-EDIT position
 
 // Sequencing vars
 byte SONG = 0; // Current song-slot whose data-files are being played
