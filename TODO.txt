@@ -63,17 +63,17 @@ Software:
 					. row 1: current beat within the sequence (step position, binary)
 						-- ok
 					. row 2: current 16th-note within the beat (step position)
-						-- 
+						-- ok
 					. row 3: pitch, note slot 1
-						-- 
+						-- ok
 					. row 4: velocity-duration composite, note slot 1
-						-- 
+						-- ok
 					. row 5: pitch, note slot 2
-						-- 
+						-- ok
 					. row 6: velocity-duration composite, note slot 2
-						-- 
+						-- ok
 					. row 7: displays whether the first or second note is a special-command
-						-- 
+						-- ok
 			. double-check all TO_UPDATE flags, after LED UI changes
 
 		. test STEP-RECORD mode
