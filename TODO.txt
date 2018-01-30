@@ -28,53 +28,7 @@ Software:
 					. re-test ERASE WHILE HELD
 						-- 
 
-		. add a STEP-RECORD mode
-			. combine this with realtime editing
-				-- am doing
-			. notes should only be recorded in realtime from MIDI-IN; keypad is slightly too unreliable
-				-- ok
-			. play sequence in realtime in the background, while doing step-editing in the foreground
-				-- should still work fine
-			. need a global var for current step-edit point: RECPOS
-				. needs to be reset at the following times:
-					. whenever SEQ-SIZE is changed
-						-- done
-					. whenever RECORD-MODE is toggled into from PLAY MODE or LOAD MODE
-						-- done
-			. QUANTIZE must be changed to represent the distance to skip ahead after recording a note (0-16)
-				. change QUANTIZE's max value to 16
-					-- done. also changed minimum value to 0
-				. when RECORDING is ARMED, and a note is pressed, record that note, and then skip ahead by a QUANTIZE-controlled amount of space
-					-- done
-			. in STEP RECORDING mode, when ARM RECORDING is held, the bottom 5 rows of buttons should become MOVE commands:
-				. row 5: move by one 16th/8th note
-				. row 4: move by one quarter/half note
-				. row 3: move by one whole/double note
-				. row 2: move by one slice
-				. row 1: erase tick, erase quarter-beat, erase half-beat, erase beat (absolute positions, not relative position)
-				. row 0: disarm ARM RECORDING like normal
-					-- all done
-			. ui:
-				. leds:
-					. row 0: current beat within the sequence (in realtime)
-						-- ok
-						. flag this for TO_UPDATE in the iterateAll() routine, when applicable
-							-- done
-					. row 1: current beat within the sequence (step position, binary)
-						-- ok
-					. row 2: current 16th-note within the beat (step position)
-						-- ok
-					. row 3: pitch, note slot 1
-						-- ok
-					. row 4: velocity-duration composite, note slot 1
-						-- ok
-					. row 5: pitch, note slot 2
-						-- ok
-					. row 6: velocity-duration composite, note slot 2
-						-- ok
-					. row 7: displays whether the first or second note is a special-command
-						-- ok
-			. double-check all TO_UPDATE flags, after LED UI changes
+		. double-check all TO_UPDATE flags, in light of the UI changes
 
 		. test STEP-RECORD mode
 
