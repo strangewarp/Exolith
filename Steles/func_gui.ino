@@ -1,19 +1,4 @@
 
-// Display the global beat and quarter-note in the topmost row of LEDs
-void displayGlobalBeat() {
-	byte beat = CUR16 >> 4; // Get the current global beat
-	byte quart = (CUR16 >> 2) & 3; // Get the current global quarter-note
-	// Display the global beat in the 4 leftmost LEDs,
-	// and the global quarter-note in the 4 rightmost LEDs
-	lc.setRow(
-		0,
-		0,
-		(beat >= 4) ?
-			((~(255 >> (beat - 3))) | ((15 << (3 - quart)) & 15))
-			: ((128 >> beat) | (8 >> quart))
-	);
-}
-
 // Get the SEQUENCE-ACTIVITY LED-values for a given GUI row within the lower 6 rows
 byte getRowSeqVals(byte r) {
 	byte ib = r << 2; // Get the row's left-side's global-array position
@@ -38,6 +23,22 @@ byte getRowScatterVals(byte r) {
 		| ((!!(SCATTER[ib + 25] & 15)) << 2)
 		| ((!!(SCATTER[ib + 26] & 15)) << 1)
 		| (!!(SCATTER[ib + 27] & 15));
+}
+
+// Display the global beat and quarter-note in the topmost row of LEDs
+void displayGlobalBeat() {
+	byte beat = CUR16 >> 4; // Get the current global beat
+	byte quart = (CUR16 >> 2) & 3; // Get the current global quarter-note
+	// Display the global beat in the 4 leftmost LEDs,
+	// and the global quarter-note in the 4 rightmost LEDs,
+	// with an extra disambiguation marker on beat 4
+	lc.setRow(
+		0,
+		0,
+		(beat >= 4) ?
+			((~(255 >> (beat - 3))) | ((beat == 4) << 4) | ((15 << (3 - quart)) & 15))
+			: ((128 >> beat) | (8 >> quart))
+	);
 }
 
 // Update the first row of LEDs
@@ -109,15 +110,21 @@ void updateLoadBottomRows(byte ctrl) {
 void updateArmedRecBottomRows() {
 
 	if (TO_UPDATE & 4) { // If the third LED-row is flagged for an update...
-		
+		byte pos = RECPOS % 16; // Get the currently-active 16th-note within the current STEP-RECORDING beat
+		// Display the 16th-note as a dot, or bar, in the row of 8 LEDs, with an additional mark on note 8
+		lc.setRow(0, 2, (pos < 8) ? (128 >> pos) : ((~(255 >> pos)) | (pos == 8)));
 	}
 
-	if (TO_UPDATE & 8) { // If the fourth LED-row is flagged for an update...
-
+	if (TO_UPDATE & 248) { // If the fourth through eighth rows are flagged for an update...
+		byte buf[9]; // Allocate a data-read buffer
+		file.seekSet(49UL + (8192UL * RECORDSEQ) + (((unsigned long)RECPOS) * 8)); // Get the RECPOS-tick
+		file.read(buf, 8); // Read the tick's data
+		lc.setRow(0, 3, buf[1]); // Third LED-row: pitch, note 1
+		lc.setRow(0, 4, ((buf[3] >> 4) << 4) | (buf[2] >> 4)); // Fourth LED-row: velocity-duration composite, note 1
+		lc.setRow(0, 5, buf[5]); // Fifth LED-row: pitch, note 2
+		lc.setRow(0, 6, ((buf[7] >> 4) << 4) | (buf[6] >> 4)); // Sixth LED-row: velocity-duration composite, note 2
+		lc.setRow(0, 7, (128 * (buf[0] > 15)) | (buf[4] > 15)); // Seventh LED-row: is either note a special-command?
 	}
-
-
-
 
 }
 
