@@ -59,7 +59,7 @@ Software:
 					. row 0: current beat within the sequence (in realtime)
 						-- ok
 						. flag this for TO_UPDATE in the iterateAll() routine, when applicable
-							-- 
+							-- done
 					. row 1: current beat within the sequence (step position, binary)
 						-- ok
 					. row 2: current 16th-note within the beat (step position)

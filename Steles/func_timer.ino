@@ -76,8 +76,11 @@ void updateTimer() {
 	// Since we're sure we're on a new 16th-note, increase the global current-16th-note variable
 	CUR16 = (CUR16 + 1) % 128;
 
-	if (!(CUR16 % 4)) { // If the global 16th-note is now on the first tick within a global quarter-note...
-		TO_UPDATE |= 1; // Flag the global-cue row of LEDs for an update
+	if (
+		(RECORDNOTES && (!(POS[RECORDSEQ] % 16))) // If at the start of a new beat of RECORDSEQ in RECORDMODE...
+		|| (!(CUR16 % 4)) // Or if the global 16th-note is on the first tick within a global quarter-note...
+	) {
+		TO_UPDATE |= 1; // Flag the top LED-row for updating
 	}
 
 	iterateAll(); // Iterate through a step of each active sequence
