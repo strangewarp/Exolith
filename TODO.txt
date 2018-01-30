@@ -56,14 +56,25 @@ Software:
 					-- all done
 			. ui:
 				. leds:
-					. top row: current position within the sequence (in realtime)
-					. second row: current beat (step position)
-					. third row: current 16th-note within the beat (step position)
-					. fourth row: chanvelo composite, note slot 1
-					. fifth row: pitch, note slot 1
-					. sixth row: chanvelo composite, note slot 2
-					. seventh row: pitch, note slot 2
-					. eighth row: displays whether the first or second note is a special-command
+					. row 0: current beat within the sequence (in realtime)
+						-- ok
+						. flag this for TO_UPDATE in the iterateAll() routine, when applicable
+							-- 
+					. row 1: current beat within the sequence (step position, binary)
+						-- ok
+					. row 2: current 16th-note within the beat (step position)
+						-- 
+					. row 3: pitch, note slot 1
+						-- 
+					. row 4: velocity-duration composite, note slot 1
+						-- 
+					. row 5: pitch, note slot 2
+						-- 
+					. row 6: velocity-duration composite, note slot 2
+						-- 
+					. row 7: displays whether the first or second note is a special-command
+						-- 
+			. double-check all TO_UPDATE flags, after LED UI changes
 
 		. test STEP-RECORD mode
 
