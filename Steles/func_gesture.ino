@@ -22,7 +22,7 @@ void checkForGestures() {
 			primeRecSeq(); // Prime the newly-entered RECORD-MODE sequence for editing
 		}
 		RECORDMODE ^= 1; // Toggle or untoggle RECORD-MODE
-		TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
+		TO_UPDATE |= 255; // Flag all LED-rows for updating
 	} else { // Else, if no matching gesture was found...
 		return; // Exit the function
 	}

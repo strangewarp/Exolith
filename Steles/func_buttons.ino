@@ -15,12 +15,10 @@ void parsePlayPress(byte col, byte row) {
 	// (1 in lowest bit, 2 next, then 4)
 	nums = (((nums & 16) >> 2) | ((nums & 4) << 2) | (nums & 8)) >> 2;
 
-	if (ctrl == B00010001) { // If PAGE A is held...
+	if (ctrl == B00000101) { // If PAGE A is held...
 		PAGE = 0; // Toggle to page A
-		TO_UPDATE |= 252; // Flag LED-rows 2-7 for updating
 	} else if (ctrl == B00001001) { // If PAGE B is held...
 		PAGE = 1; // Toggle to page B
-		TO_UPDATE |= 252; // Flag LED-rows 2-7 for updating
 	} else if (ctrl == B00100001) { // If PAGE-OFF is held, and a regular button-press was made to signal intent...
 		byte ptop = PAGE * 24; // Get the position of the first seq on the current page
 		for (byte i = ptop; i < (ptop + 24); i++) { // For every seq on this page...
@@ -81,11 +79,11 @@ void parseRecPress(byte col, byte row) {
 	byte key = col + (row * 4); // Get the button-key that corresponds to the given column and row
 	byte ctrl = BUTTONS & B00111111; // Get the control-row buttons' activity
 
-	// Get the interval-buttons' activity specifically,
-	// while weeding out any false-positives from commands that don't hold the INTERVAL button (B00000001)
-	byte ibs = (ctrl & 7) * ((ctrl <= 7) && (ctrl & 1));
-
 	if (!ctrl) { // If no CTRL buttons are held...
+
+		// Get the interval-buttons' activity specifically,
+		// while weeding out any false-positives from commands that don't hold the INTERVAL button (B00000001)
+		byte ibs = (ctrl & 7) * ((ctrl <= 7) && (ctrl & 1));
 
 		// Get a note that corresponds to the key, organized from bottom-left to top-right, with all modifiers applied
 		byte pitch = (OCTAVE * 12) + BASENOTE + ((23 - key) ^ 3);
@@ -130,7 +128,7 @@ void parseRecPress(byte col, byte row) {
 		byte buf[4] = {byte(144 + CHAN), pitch, velo}; // Build a correctly-formatted NOTE-ON for the user-pressed note
 		Serial.write(buf, 3); // Send the user-pressed note to MIDI-OUT immediately, without buffering
 
-		TO_UPDATE |= 2; // Update sustain-displaying GUI row
+		TO_UPDATE |= 2 * (!RECORDNOTES); // If ARMED STEP-RECORD isn't active, flag the sustain-row for a GUI update
 
 	} else { // Else, if CTRL-buttons are held...
 
@@ -141,44 +139,44 @@ void parseRecPress(byte col, byte row) {
 			parseStepPanel(col, row); // Parse a keypress in the STEP-panel
 		} else if (ctrl == B00010000) { // If the BASENOTE button is held...
 			BASENOTE = clamp(0, 11, char(BASENOTE) + change); // Modify the BASENOTE value
-			TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
+			TO_UPDATE |= 1; // Flag the topmost row for updating
 		} else if (ctrl == B00001000) { // If the OCTAVE button is held...
 			OCTAVE = clamp(0, 10, char(OCTAVE) + change); // Modify the OCTAVE value
-			TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
+			TO_UPDATE |= 1; // Flag the topmost row for updating
 		} else if (ctrl == B00000100) { // If the DURATION button is held...
 			DURATION = clamp(0, 255, int(DURATION) + change); // Modify the DURATION value
-			TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
+			TO_UPDATE |= 1; // Flag the topmost row for updating
 		} else if (ctrl == B00000010) { // If the CHANNEL button is held...
 			CHAN = (CHAN & 16) | clamp(0, 15, char(CHAN & 15) + change); // Modify the CHAN value, while preserving CC flag
-			TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
+			TO_UPDATE |= 1; // Flag the topmost row for updating
 		} else if (ctrl == B00110000) { // If the SWITCH RECORDING SEQUENCE button is held...
 			TO_UPDATE |= 4 >> (RECORDSEQ >> 2); // Flag the previous seq's corresponding LED-row for updating
 			resetSeq(RECORDSEQ); // Reset the current record-seq, which is about to become inactive
 			RECORDSEQ = (PAGE * 24) + key; // Switch to the seq that corresponds to the key-position on the active page
 			primeRecSeq(); // Prime the newly-entered RECORD-MODE sequence for editing
 			TO_UPDATE |= 4 >> row; // Flag the new seq's corresponding LED-row for updating
-			TO_UPDATE |= 3; // Flag the 2 topmost rows for updating
+			TO_UPDATE |= 1; // Flag the topmost row for updating
 		} else if (ctrl == B00101000) { // If the CLOCK-MASTER command is held...
 			CLOCKMASTER ^= 1; // Toggle the CLOCK-MASTER value
 			ABSOLUTETIME = micros(); // Set the ABSOLUTETIME-tracking var to now
 			ELAPSED = 0; // Set the ELAPSED value to show that no time has elapsed since the last tick-check
-			TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
+			TO_UPDATE |= 1; // Flag the topmost row for updating
 		} else if (ctrl == B00100100) { // If the QUANTIZE button is held...
 			QUANTIZE = clamp(0, 16, abs(change)); // Modify the QUANTIZE value
-			TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
+			TO_UPDATE |= 1; // Flag the topmost row for updating
 		} else if (ctrl == B00100010) { // If the PROGRAM-CHANGE command is held...
 
 			// todo: add PROGRAM-CHANGE functionality
 
 		} else if (ctrl == B00100001) { // If the CONTROL-CHANGE command is held...
 			CHAN ^= 16; // Flip the CHAN bit that turns all NOTE command-entry into CC command-entry
-			TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
+			TO_UPDATE |= 1; // Flag the topmost row for updating
 		} else if (ctrl == B00011000) { // If the VELO button is held...
 			VELO = clamp(0, 127, int(VELO) + change); // Modify the VELO value
-			TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
+			TO_UPDATE |= 1; // Flag the topmost row for updating
 		} else if (ctrl == B00010100) { // If the HUMANIZE button is held...
 			HUMANIZE = clamp(0, 127, int(HUMANIZE) + change); // Modify the HUMANIZE value
-			TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
+			TO_UPDATE |= 1; // Flag the topmost row for updating
 		} else if (ctrl == B00010010) { // If the SEQ-SIZE button is held...
 			// Get the new value for the currently-recording-seq's size
 			byte newsize = byte(clamp(0, 63, char(STATS[RECORDSEQ] & 63) + change));
@@ -191,10 +189,10 @@ void parseRecPress(byte col, byte row) {
 			BPM = clamp(16, 200, int(BPM) + change); // Change the BPM rate
 			updateFileByte(0, BPM); // Update the BPM-byte in the song's savefile
 			updateTickSize(); // Update the internal tick-size (in microseconds) to match the new BPM value
-			TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
+			TO_UPDATE |= 1; // Flag the topmost row for updating
 		} else if (ctrl == B00000110) { // If the CHAN-LISTEN command is held...
 			LISTEN = clamp(0, 15, char(LISTEN) + change); // Modify the CHAN-LISTEN value
-			TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
+			TO_UPDATE |= 1; // Flag the topmost row for updating
 		}
 
 	}
@@ -207,7 +205,7 @@ void parseStepPanel(byte col, byte row) {
 	if (row == 0) { // If this is the ARM RECORDING row...
 
 		RECORDNOTES ^= 1; // Either arm or disarm recording, by toggling the note-recording flag
-		TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
+		TO_UPDATE = 255; // Flag all LED-rows for updating
 
 	} else if (row == 1) { // If this is the ERASE row...
 
@@ -222,7 +220,7 @@ void parseStepPanel(byte col, byte row) {
 			file.write(erbuf, 8); // Write the blank data into the tick
 		}
 
-		TO_UPDATE |= 252; // Flag the bottom 6 rows for updating
+		TO_UPDATE |= 248; // Flag the bottom 5 rows for updating
 
 	} else { // Else, if this is one of the subsequent rows...
 
@@ -268,8 +266,8 @@ void assignKey(byte col, byte row) {
 
 	if (col == 0) { // If the keystroke is in the leftmost column...
 
-		newGestureEntry(row);
-		checkForGestures();
+		newGestureEntry(row); // Create a new entry in the GESTURE-tracking system for this keypress
+		checkForGestures(); // Check whether any gestures have just been completed
 
 		if (RECORDMODE) { // If RECORD-MODE is active...
 			if (ctrl == B00001111) { // ERASE WHILE HELD special command...

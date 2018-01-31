@@ -3,144 +3,140 @@ Tine TODO
 
 Software:
 
-	Double-back and check later:
+	. test that sequencing still works after that refactor
+		-- nope
+		. figure out why it's broken
+			-- (refer to next item in TODO list; convergent issues)
+	. ERASE WHILE HELD should only erase notes if they match the global CHAN variable
+		-- done. also refactored surrounding routines for efficiency
+		. test it
+			-- nope! notes only play when ERASE WHILE HELD is held?
+			. figure out how to fix this
+				-- think it was a logic-flow bug in getTickNotes().
+				. test it
+					-- 
+				. re-test ERASE WHILE HELD
+					-- 
 
-		. display both pages' sequence-activity simultaneously
-			-- done afaict, but still needs fixes to the sequencing system before being testable
+	. double-check all TO_UPDATE flags, in light of the UI changes
+		-- fixed everything up, afaict
 
-		. timing system / global cue system look broken? fix them
-			-- seem fixed now, though may require tweaking as the sequencing system comes online
+	. test STEP-RECORD mode
+		-- 
 
-	Current tasks:
+	. update gui-key.txt
 
-		. test that sequencing still works after that refactor
-			-- nope
-			. figure out why it's broken
-				-- (refer to next item in TODO list; convergent issues)
-		. ERASE WHILE HELD should only erase notes if they match the global CHAN variable
-			-- done. also refactored surrounding routines for efficiency
-			. test it
-				-- nope! notes only play when ERASE WHILE HELD is held?
-				. figure out how to fix this
-					-- think it was a logic-flow bug in getTickNotes().
-					. test it
-						-- 
-					. re-test ERASE WHILE HELD
-						-- 
+	. fill 12 sequences with notes, and check whether lag occurs when connected to a hardware synthesizer
 
-		. double-check all TO_UPDATE flags, in light of the UI changes
+	. need visible GUI element for which page is active, now that both are visible simultaneously
+		. should blink between all-LEDs-on and regular-LEDs-on when any PAGE command is held, highlighting the active page
+		. should blink one final time on the new page, after the page is selected, using a timer to control how long the ON-block should be OR'ed to regular LEDs
 
-		. test STEP-RECORD mode
+	. test gesture system
+		. test LOAD-MODE TOGGLE
+		. test GLOBAL PLAY/STOP TOGGLE
 
-		. fill 12 sequences with notes, and check whether lag occurs when connected to a hardware synthesizer
+	. test basic sequencing
+		. regular notes: recording & playback
+		. note-erasing in RECORD-MODE
+		. BASENOTE and OCTAVE
+		. intervals
+			. recording them to seq
+			. playing them from seq
+		. duophony
+		. various QUANTIZE settings
+		. are old notes being knocked out of the sequence by new notes in RECORD-MODE properly?
+		. test SEQ-SIZE behavior
+			. does a SEQ-SIZE of "0" correspond to 1 beat?
+		. test CC commands
+		. test file-load
 
-		. need visible GUI element for which page is active, now that both are visible simultaneously
+	. when SCATTER, SCATTER-UNSET, PAGE-SCATTER, or PAGE-SCATTER-UNSET is held, the GUI should show only those sequences that have SCATTER states enabled
 
-		. note-insertion has bad timing sometimes?
+	. if lag-reduction is necessary...
+		. try moving the MAX7219 onto the SPI pins and using LedControl_HW_SPI immediately?
+		. make sequences monophonic?
+		. limit maximum BPM to 160?
+		. change max note-granularity to 8th-notes?
+		. remove MIDI CLOCK?
+		. remove MIDI IN?
+		. remove INTERVAL system?
+		. remove or greatly simplify SCATTER system?
 
-		. test gesture system
-			. test LOAD-MODE TOGGLE
-			. test GLOBAL PLAY/STOP TOGGLE
+	. test "toggle to next/prev sequence" in RECORD mode
 
-		. test basic sequencing
-			. regular notes: recording & playback
-			. note-erasing in RECORD-MODE
-			. BASENOTE and OCTAVE
-			. intervals
-				. recording them to seq
-				. playing them from seq
-			. duophony
-			. various QUANTIZE settings
-			. are old notes being knocked out of the sequence by new notes in RECORD-MODE properly?
-			. test SEQ-SIZE behavior
-				. does a SEQ-SIZE of "0" correspond to 1 beat?
-			. test CC commands
-			. test file-load
+	. change func_gui.ino:
+		. add GUI prompt for current RECORDSEQ value? (RECORD MODE)
+		. show currently-active section of the recording-seq in RECORD MODE, in addition to the global cue-point
+		. change func_sequencing.ino to toggle a GUI update whenever the recording-seq in RECORD MODE reaches a new slice of itself
+		. remove all outdated updates for second GUI-row in PAGE and CTRL-BUTTON functions
 
-		. if lag-reduction is necessary...
-			. try moving the MAX7219 onto the SPI pins and using LedControl_HW_SPI immediately?
-			. make sequences monophonic?
-			. limit maximum BPM to 160?
-			. change max note-granularity to 8th-notes?
-			. remove MIDI CLOCK?
-			. remove MIDI IN?
-			. remove INTERVAL system?
-			. remove or greatly simplify SCATTER system?
+	. convert all multi-byte Serial.write() commands into batch Serial.writes with a buffer-array of bytes, to totally rule out the possibility of serial lag
 
-		. test "toggle to next/prev sequence" in RECORD mode
+	. test all cue-commands
+		. OFF
+		. CUE
+		. SLICE
+		. CUE (with SLICE insertion)
+		. CUE OFF
+		. PAGE OFF
+		. SCATTER (amount)
+		. SCATTER UNSET
+		. PAGE SCATTER UNSET
 
-		. change func_gui.ino:
-			. add GUI prompt for current RECORDSEQ value? (RECORD MODE)
-			. show currently-active section of the recording-seq in RECORD MODE, in addition to the global cue-point
-			. change func_sequencing.ino to toggle a GUI update whenever the recording-seq in RECORD MODE reaches a new slice of itself
-			. remove all outdated updates for second GUI-row in PAGE and CTRL-BUTTON functions
+	. display SCATTER status only when a SCATTER chord is held
 
-		. convert all multi-byte Serial.write() commands into batch Serial.writes with a buffer-array of bytes, to totally rule out the possibility of serial lag
+	. reduce max sequence-size to 32 whole-notes, to cut down on potential read-lag?
 
-		. test all cue-commands
-			. OFF
-			. CUE
-			. SLICE
-			. CUE (with SLICE insertion)
-			. CUE OFF
-			. PAGE OFF
-			. SCATTER (amount)
-			. SCATTER UNSET
-			. PAGE SCATTER UNSET
+	. add a "totally empty out the sequence's contents" command to RECORD-MODE?
 
-		. display SCATTER status only when a SCATTER chord is held
+	. test MIDI-IN (notes)
+	. test MIDI-IN (clock)
+		. add a "DO NOT SEND CLOCK SIGNALS" user-flag to the CLOCK MASTER/FOLLOW mechanism
 
-		. reduce max sequence-size to 32 whole-notes, to cut down on potential read-lag?
+	. replace bloated LedControl with optimized custom functions
+		. replace LedControl with LedControl_HW_SPI???
+			. either a simplified version of LedControl_HW_SPI, or a simplified version of LedControl, but either way, it needs to directly address port-registers
 
-		. add a "totally empty out the sequence's contents" command to RECORD-MODE?
+	. double-check all functionality for sequences on the second-page
 
-		. test MIDI-IN (notes)
-		. test MIDI-IN (clock)
-			. add a "DO NOT SEND CLOCK SIGNALS" user-flag to the CLOCK MASTER/FOLLOW mechanism
+	. edge-case testing:
+		. does RECORD MODE work right:
+			. when the sequence is loaded with SCATTERs and CUEs?
+			. in MIDI FOLLOW mode?
+			. for sequences with a weird tempo/slice offset from the global cue?
 
-		. replace bloated LedControl with optimized custom functions
-			. replace LedControl with LedControl_HW_SPI???
-				. either a simplified version of LedControl_HW_SPI, or a simplified version of LedControl, but either way, it needs to directly address port-registers
+	. survey all TO_UPDATE calls, for superfluous flags
 
-		. double-check all functionality for sequences on the second-page
+	. add PROGRAM CHANGE functionality (in addition to CONTROL CHANGE)
+		. make sure this has its virtual PC-bit lopped off by INTERVAL-commands in RECORD mode, just like virtual CC-bits
+		. make sure any button-press global-var changes to the CHAN and CC commands don't interfere with this
+			. this will definitely require a change to the "If the CHAN button is held..." lines
+		. update "reserved for PROGRAM-CHANGE" line in button-key.txt
 
-		. edge-case testing:
-			. does RECORD MODE work right:
-				. when the sequence is loaded with SCATTERs and CUEs?
-				. in MIDI FOLLOW mode?
-				. for sequences with a weird tempo/slice offset from the global cue?
+	. check whether sequences can actually function with non-multiple-of-2 lengths
 
-		. survey all TO_UPDATE calls, for superfluous flags
+	. add SONG POSITION POINTER functionality while in CLOCK FOLLOW mode, to orient the global cue-position correctly?
 
-		. add PROGRAM CHANGE functionality (in addition to CONTROL CHANGE)
-			. make sure this has its virtual PC-bit lopped off by INTERVAL-commands in RECORD mode, just like virtual CC-bits
-			. make sure any button-press global-var changes to the CHAN and CC commands don't interfere with this
-				. this will definitely require a change to the "If the CHAN button is held..." lines
-			. update "reserved for PROGRAM-CHANGE" line in button-key.txt
+	. add a command to shift the position of the global cue-point?
 
-		. check whether sequences can actually function with non-multiple-of-2 lengths
+	. add a command to change the global cue-point's granularity? (e.g. being 3 beats, or 7 beats, instead of 8 beats, and ignoring the extra LEDs)
 
-		. add SONG POSITION POINTER functionality while in CLOCK FOLLOW mode, to orient the global cue-position correctly?
+	. add a single global "stats" file, to save and store global vars? (duration, basenote, etc)
 
-		. add a command to shift the position of the global cue-point?
+	. re-test problem areas:
+		. GLOBAL PLAY/STOP
+		. MIDI-IN
+		. GLOBAL PLAY/STOP under conditions of complex MIDI-IN
 
-		. add a command to change the global cue-point's granularity? (e.g. being 3 beats, or 7 beats, instead of 8 beats, and ignoring the extra LEDs)
-
-		. add a single global "stats" file, to save and store global vars? (duration, basenote, etc)
-
-		. re-test problem areas:
-			. GLOBAL PLAY/STOP
-			. MIDI-IN
-			. GLOBAL PLAY/STOP under conditions of complex MIDI-IN
-
-		. double-check that there are no remaining "todo" or "test" comments in the codebase
-		. remove "THIS CODE IS UNDER DEVELOPMENT AND DOESN'T DO ANYTHING" from license-statement
-		. double-check that everything compiles correctly in the latest version of Arduino
-		. test overloading the 8-events-per-tick system
-		. test overloading the SUSTAIN system with simultaneous sequencing and notes-from-RECORD-MODE
-		. test overloading the MIDI-IN system
-		. update "VERSION_TEXT" to "1"
-		. soak-test the physical prototype
+	. double-check that there are no remaining "todo" or "test" comments in the codebase
+	. remove "THIS CODE IS UNDER DEVELOPMENT AND DOESN'T DO ANYTHING" from license-statement
+	. double-check that everything compiles correctly in the latest version of Arduino
+	. test overloading the 8-events-per-tick system
+	. test overloading the SUSTAIN system with simultaneous sequencing and notes-from-RECORD-MODE
+	. test overloading the MIDI-IN system
+	. update "VERSION_TEXT" to "1"
+	. soak-test the physical prototype
 
 Hardware:
 

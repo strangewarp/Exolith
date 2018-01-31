@@ -175,7 +175,7 @@ void getTickNotes(byte s) {
 		memcpy(SUST, buf + bn, 3); // Create a new sustain corresponding to this note
 		SUST_COUNT++; // Increase the number of active sustains by 1
 
-		TO_UPDATE |= 2; // Flag the sustain-row for a GUI update
+		TO_UPDATE |= 2 * (!RECORDNOTES); // If ARMED STEP-RECORD isn't active, flag the sustain-row for a GUI update
 
 	}
 
