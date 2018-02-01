@@ -8,6 +8,10 @@ Software:
 	. add REALTIME RECORD back in
 		. ARM RECORDING button should record every note that is struck while the button is held, instead of toggling a mode
 			. RECORDNOTES will no longer be necessary
+			. ERASENOTES can be removed too, in the same way
+			. change INTERVAL keychords to include the RECORD button
+				. only RECORD and INTERVAL keychords should contain ctrl-byte B00100000
+					. move other keychords around to compensate
 		. QUANTIZE should round down - this will help compensate for keystroke lag
 		. re-fix TO_UPDATE calls and func_gui.ino's responses to them
 
