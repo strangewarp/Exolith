@@ -3,25 +3,20 @@ Tine TODO
 
 Software:
 
-	. test that sequencing still works after that refactor
-		-- nope
-		. figure out why it's broken
-			-- (refer to next item in TODO list; convergent issues)
-	. ERASE WHILE HELD should only erase notes if they match the global CHAN variable
-		-- done. also refactored surrounding routines for efficiency
-		. test it
-			-- nope! notes only play when ERASE WHILE HELD is held?
-			. figure out how to fix this
-				-- think it was a logic-flow bug in getTickNotes().
-				. test it
-					-- 
-				. re-test ERASE WHILE HELD
-					-- 
+	. STEP-RECORD is too finnicky, and not immediate enough. remove it
 
-	. double-check all TO_UPDATE flags, in light of the UI changes
-		-- fixed everything up, afaict
+	. add REALTIME RECORD back in
+		. re-fix TO_UPDATE calls and func_gui.ino's responses to them
 
-	. test STEP-RECORD mode
+	. add commands to RECORD MODE:
+		. REPEAT-NOTE (while both armed and unarmed)
+		. COPY CURRENT BEAT / PASTE TO CURRENT BEAT
+		. ERASE CURRENT BEAT
+		. SHIFT CURRENT BEAT POSITION
+			. should use the standard 1-2-4-8-16-32 negative-or-positive key-config
+			. should shift every active sequence, and global cue position, by the given amount
+
+	. re-test ERASE WHILE HELD
 		-- 
 
 	. update gui-key.txt
