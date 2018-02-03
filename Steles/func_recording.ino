@@ -6,16 +6,15 @@ void primeRecSeq() {
 	word seqsize = word(STATS[RECORDSEQ] & B00111111) << 4; // Get sequence's size in 16th-notes
 	POS[RECORDSEQ] = (seqsize > 127) ? CUR16 : (CUR16 % seqsize); // Wrap sequence around to global cue-point
 	STATS[RECORDSEQ] |= 128; // Set the sequence to active
-	RECPOS = 0; // Reset the STEP-EDIT position
 }
 
 // Record a given MIDI command into the tempdata-file of the current RECORDSEQ sequence
-void recordToSeq(word pos, byte chan, byte b1, byte b2) {
+void recordToSeq(word pstn, byte chan, byte b1, byte b2) {
 
-	byte buf[9] = {0, 0, 0, 0, 0, 0, 0, 0}; // SD-card read/write buffer
+	byte buf[9]; // SD-card read/write buffer
 
 	// Get the position of the first of this tick's bytes in the data-file
-	unsigned long tickstart = (49UL + (8192UL * RECORDSEQ)) + (((unsigned long)pos) * 8);
+	unsigned long tickstart = (49UL + (8192UL * RECORDSEQ)) + (((unsigned long)pstn) * 8);
 
 	// Get the tick's note-slots, and check whether any of them are empty
 	file.seekSet(tickstart);
@@ -29,7 +28,7 @@ void recordToSeq(word pos, byte chan, byte b1, byte b2) {
 
 	// Set the insert-point to the highest unfilled note in the tick;
 	// or to the first note in the tick, if the contents were shifted downward
-	file.seekSet(tickstart + (((!!buf[3]) ^ (!!buf[7])) << 2));
+	file.seekSet(tickstart + (((!!(buf[0] | buf[2])) ^ (!!(buf[4] | buf[6]))) * 4));
 
 	// Construct a virtual MIDI command, with an additional DURATION value, in the write buffer
 	buf[0] = chan;

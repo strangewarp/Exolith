@@ -67,7 +67,7 @@ LEDs (RECORD MODE) (possible hardware revision):
 	O: Analog MIDI-OUT indicator
 
 	a: Number of active sustains
-	c: Global cue point, or quantity related to user activity
+	c: Sequence's current beat, in binary
 	d: Display glyph related to user activity
 
 

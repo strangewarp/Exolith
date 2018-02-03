@@ -79,7 +79,7 @@ void parseCues(byte s, word size) {
 }
 
 // Get the notes from the current tick in a given seq, and add them to the MIDI-OUT buffer
-void getTickNotes(byte s) {
+void getTickNotes(byte ctrl, byte s) {
 
 	if (MOUT_COUNT == 8) { return; } // If the MIDI-OUT queue is full, exit the function
 
@@ -87,10 +87,9 @@ void getTickNotes(byte s) {
 
 	byte didscatter = 0; // Flag that tracks whether this tick has had a SCATTER effect
 
-	// If notes are being recorded into this seq,
-	// and RECORD MODE is active, and RECORD-NOTES is armed,
+	// If RECORD MODE is active, and notes are being recorded into this seq,
 	// and the ERASE-NOTES command is being held...
-	if ((RECORDSEQ == s) && RECORDMODE && RECORDNOTES && ERASENOTES) {
+	if (RECORDMODE && (RECORDSEQ == s) && (ctrl == B00001111)) {
 
 		unsigned long tpos = (49UL + (POS[s] * 8)) + (8192UL * s); // Get the tick's position in the savefile
 
@@ -121,7 +120,7 @@ void getTickNotes(byte s) {
 			}
 		}
 
-	} else { // Else, if ERASE-NOTES isn't currently happening...
+	} else { // Else, if ERASE-NOTES isn't currently pressed...
 
 		unsigned long tpos = POS[s]; // Get the tick's position in the savefile
 
@@ -132,7 +131,7 @@ void getTickNotes(byte s) {
 			tpos = (tpos + sc) % ((STATS[s] & 127) * 16);
 		}
 
-		// Navigate to the SCATTER-note's absolute position,
+		// Navigate to the note's absolute position,
 		// and compensate for the fact that each tick contains 8 bytes
 		file.seekSet(49UL + (tpos * 8) + (8192UL * s));
 		file.read(buf, 8); // Read the data of the tick's notes
@@ -175,7 +174,7 @@ void getTickNotes(byte s) {
 		memcpy(SUST, buf + bn, 3); // Create a new sustain corresponding to this note
 		SUST_COUNT++; // Increase the number of active sustains by 1
 
-		TO_UPDATE |= 2 * (!RECORDNOTES); // If ARMED STEP-RECORD isn't active, flag the sustain-row for a GUI update
+		TO_UPDATE |= 2; // Flag the sustain-row for a GUI update
 
 	}
 
@@ -215,6 +214,8 @@ void iterateAll() {
 
 	if (PLAYING) { // If the sequencer is currently in PLAYING mode...
 
+		byte ctrl = BUTTONS & B00111111; // Get the control-row buttons' activity
+
 		for (byte i = 47; i != 255; i--) { // For every loaded sequence, in reverse order...
 
 			word size = STATS[i] & 127; // Get seq's absolute size, in beats
@@ -224,7 +225,7 @@ void iterateAll() {
 			// If the seq isn't currently playing, go to the next seq's iteration-routine
 			if (!(STATS[i] & 128)) { continue; }
 
-			getTickNotes(i); // Get the notes from this tick in a given seq, and add them to the MIDI-OUT buffer
+			getTickNotes(ctrl, i); // Get the notes from this tick in a given seq, and add them to the MIDI-OUT buffer
 
 			// Increase the seq's 16th-note position by one increment, wrapping it around its top limit
 			POS[i] = (POS[i] + 1) % (size << 4);

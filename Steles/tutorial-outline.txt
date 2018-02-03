@@ -41,6 +41,9 @@ Tutorial Outline
 	RECORD MODE:
 
 
+		CHAN
+			* While recording notes via MIDI-IN, you must set CHANNEL to match the MIDI channel you wish to record
+
 
 		HUMANIZE
 			* A random velocity amount, from 0 to the HUMANIZE value, will be subtracted from every VELOCITY as it's recorded

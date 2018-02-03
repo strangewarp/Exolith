@@ -66,27 +66,16 @@ void updateFirstRow(byte ctrl) {
 			lc.setRow(0, 0, STATS[RECORDSEQ] & 127); // Display current record-seq's SIZE value
 		} else if (ctrl == B00010001) { // Else, if BPM is pressed...
 			lc.setRow(0, 0, BPM); // Display BPM value
-		} else if (ctrl == B00000110) { // Else, if CHAN-LISTEN is pressed...
-			lc.setRow(0, 0, LISTEN); // Display the CHAN-LISTEN value
 		} else if (ctrl == B00110000) { // Else, if SWITCH RECORDING-SEQUENCE is held...
 			lc.setRow(0, 0, RECORDSEQ); // Show the currently-active seq
 		} else { // Else...
-			// If STEP-RECORD OPTIONS or INTERVAL or ERASE WHILE HELD is held...
+			// If ARM-RECORDING or INTERVAL or ERASE WHILE HELD is held...
 			// Or some other unassigned button-combination is held...
 			// Or no control-buttons are held...
 			lc.setRow(0, 0, byte(POS[RECORDSEQ] >> 4)); // Display the RECORDSEQ's realtime beat-position, in binary
 		}
 	} else { // Else, if this isn't RECORD-MODE...
 		displayGlobalBeat(); // Display the global-beat row
-	}
-}
-
-// Update the second row of LEDs
-void updateSecondRow() {
-	if (RECORDNOTES) { // If this is RECORDMODE, and RECORDNOTES is ON...
-		lc.setRow(0, 1, RECPOS >> 4); // Display the current RECPOS-beat
-	} else { // Else, if this is RECORDMODE without RECORDNOTES on, or if this isn't RECORDMODE...
-		lc.setRow(0, 1, (256 >> SUST_COUNT) % 256); // Display the current number of sustains (0-8)
 	}
 }
 
@@ -106,30 +95,8 @@ void updateLoadBottomRows(byte ctrl) {
 	}
 }
 
-// Update the bottom LED-rows for ARMED-RECORD-MODE
-void updateArmedRecBottomRows() {
-
-	if (TO_UPDATE & 4) { // If the third LED-row is flagged for an update...
-		byte pos = RECPOS % 16; // Get the currently-active 16th-note within the current STEP-RECORDING beat
-		// Display the 16th-note as a dot, or bar, in the row of 8 LEDs, with an additional mark on note 8
-		lc.setRow(0, 2, (pos < 8) ? (128 >> pos) : ((~(255 >> pos)) | (pos == 8)));
-	}
-
-	if (TO_UPDATE & 248) { // If the fourth through eighth rows are flagged for an update...
-		byte buf[9]; // Allocate a data-read buffer
-		file.seekSet(49UL + (8192UL * RECORDSEQ) + (((unsigned long)RECPOS) * 8)); // Get the RECPOS-tick
-		file.read(buf, 8); // Read the tick's data
-		lc.setRow(0, 3, buf[1]); // Third LED-row: pitch, note 1
-		lc.setRow(0, 4, ((buf[3] >> 4) << 4) | (buf[2] >> 4)); // Fourth LED-row: velocity-duration composite, note 1
-		lc.setRow(0, 5, buf[5]); // Fifth LED-row: pitch, note 2
-		lc.setRow(0, 6, ((buf[7] >> 4) << 4) | (buf[6] >> 4)); // Sixth LED-row: velocity-duration composite, note 2
-		lc.setRow(0, 7, (128 * (buf[0] > 15)) | (buf[4] > 15)); // Seventh LED-row: is either note a special-command?
-	}
-
-}
-
-// Update the bottom LED-rows for UNARMED-RECORD-MODE
-void updateUnarmedRecBottomRows(byte ctrl) {
+// Update the bottom LED-rows for RECORD-MODE
+void updateRecBottomRows(byte ctrl) {
 
 	for (byte i = 0; i < 6; i++) { // For each of the bottom 6 GUI rows...
 
@@ -139,8 +106,8 @@ void updateUnarmedRecBottomRows(byte ctrl) {
 
 		if (!ctrl) { // If no command-buttons are held...
 			row = getRowSeqVals(i); // Get the row's standard SEQ values
-		} else if (ctrl == B00100000) { // If RECORDING OPTIONS is held...
-			row = pgm_read_byte_near(GLYPH_RECORDING + i); // Grab a section of the RECORDING-glyph for display
+		} else if (ctrl == B00100000) { // If ARM-RECORDING is held...
+			row = 255; // Illuminate the row entirely, to signify that something is being recorded
 		} else if (ctrl == B00010000) { // If BASENOTE command is held...
 			row = pgm_read_byte_near(GLYPH_BASENOTE + i); // Grab a section of the BASENOTE glyph for display
 		} else if (ctrl == B00001000) { // If OCTAVE command is held...
@@ -167,8 +134,6 @@ void updateUnarmedRecBottomRows(byte ctrl) {
 			row = pgm_read_byte_near(GLYPH_SIZE + i); // Grab a section of the SEQ-SIZE glyph for display
 		} else if (ctrl == B00010001) { // If BPM command is held...
 			row = pgm_read_byte_near(GLYPH_BPM + i); // Grab a section of the BPM glyph for display
-		} else if (ctrl == B00000110) { // If CHAN-LISTEN command is held...
-			row = pgm_read_byte_near(GLYPH_LISTEN + i); // Grab a section of the CHAN-LISTEN glyph for display
 		} else if (ctrl == B00001111) { // If ERASE WHILE HELD command is held...
 			row = pgm_read_byte_near(GLYPH_ERASE + i); // Grab a section of the ERASE-glyph for display
 		} else if (ctrl == B00000111) { // If INTERVAL-DOWN-RANDOM is held...
@@ -190,7 +155,7 @@ void updateUnarmedRecBottomRows(byte ctrl) {
 }
 
 // Update the bottom LED-rows for PLAYING-MODE
-void updatePlayingBottomRows(byte ctrl) {
+void updatePlayBottomRows(byte ctrl) {
 	byte heldsc = (ctrl & B00000011) == B00000011; // Make sure this is, indeed, a command with SCATTER shape
 	for (byte i = 2; i < 8; i++) { // For each of the bottom 6 GUI rows...
 		if (TO_UPDATE & (1 << i)) { // If the row is flagged for an update...
@@ -205,13 +170,9 @@ void updateBottomRows(byte ctrl) {
 	if (LOADMODE) { // If LOAD MODE is active...
 		updateLoadBottomRows(ctrl); // Update the bottom LED-rows for LOAD-MODE
 	} else if (RECORDMODE) { // If RECORD MODE is active...
-		if (RECORDNOTES) { // If RECORDNOTES is armed...
-			updateArmedRecBottomRows(); // Update the bottom LED-rows for ARMED-RECORD-MODE
-		} else { // Else, if RECORDNOTES isn't armed...
-			updateUnarmedRecBottomRows(ctrl);
-		}
+		updateRecBottomRows(ctrl); // Update the bottom-rows for RECORD-MODE
 	} else { // Else, if PLAYING MODE is actve...
-		updatePlayingBottomRows(ctrl); // Update the bottom LED-rows for PLAYING-MODE
+		updatePlayBottomRows(ctrl); // Update the bottom LED-rows for PLAYING-MODE
 	}
 }
 
@@ -225,7 +186,7 @@ void updateGUI() {
 	}
 
 	if (TO_UPDATE & 2) { // If the second row is flagged for a GUI update...
-		updateSecondRow(); // Update the second row of LEDs
+		lc.setRow(0, 1, (256 >> SUST_COUNT) % 256); // Display the current number of sustains (0-8)
 	}
 
 	if (TO_UPDATE & 252) { // If any of the bottom 6 rows are flagged for a GUI update...

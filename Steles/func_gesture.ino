@@ -28,9 +28,6 @@ void checkForGestures() {
 	}
 	// At this point in the function, a command was definitely found, so...
 	memset(GESTURE, byte(0), 4); // Empty out the gesture-button memory
-	RECORDNOTES = 0; // Disable note-recording, to avoid recording new notes automatically on a future toggle cycle
-	ERASENOTES = 0; // Disable note-erasing, to avoid erasing new notes automatically on a future toggle cycle
-	RECPOS = 0; // Reset the STEP-RECORD position
 }
 
 // Update the tracking-info for all active gesture-keys
