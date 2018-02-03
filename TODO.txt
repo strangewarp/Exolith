@@ -3,31 +3,41 @@ Tine TODO
 
 Software:
 
-	. STEP-RECORD is too finnicky, and not immediate enough. remove it
-		-- done
-
 	. add REALTIME RECORD back in
 		. ARM RECORDING button should record every note that is struck while the button is held, instead of toggling a mode
+			-- ok
 			. RECORDNOTES will no longer be necessary
+				-- removed
 			. ERASENOTES can be removed too, in the same way
+				-- removed
 			. change INTERVAL keychords to include the RECORD button
+				--
 				. only RECORD and INTERVAL keychords should contain ctrl-byte B00100000
+					--
 					. move other keychords around to compensate
+						--
 					. update gui_key.txt to reflect the changes
+						--
 			. CONTROL-CHANGE should be a chord with ARM RECORDING as well
+				--
 		. QUANTIZE should round down - this will help compensate for keystroke lag
+			-- done
 		. re-fix TO_UPDATE calls and func_gui.ino's responses to them
+			-- 
+
+	. re-test everything
 
 	. add commands to RECORD MODE:
 		. REPEAT-NOTE (while both armed and unarmed)
 			. repeats based on the QUANTIZE interval
+			. add GUI response for this
 		. COPY CURRENT BEAT / PASTE TO CURRENT BEAT
 		. ERASE CURRENT BEAT
 		. SHIFT CURRENT BEAT POSITION
 			. should use the standard 1-2-4-8-16-32 negative-or-positive key-config
 			. should shift every active sequence, and global cue position, by the given amount
-
-	. re-test ERASE WHILE HELD
+		. update button-key.txt for all of these
+		. test all of these
 
 	. update gui-key.txt
 		. include button and LED spec for LOADMODE
