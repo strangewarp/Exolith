@@ -4,12 +4,7 @@ Tine TODO
 Software:
 
 	. STEP-RECORD is too finnicky, and not immediate enough. remove it
-		-- 
-
-	. remove CHAN-LISTEN, it is extraneous
 		-- done
-	. CHAN-LISTEN's effects should be controlled by regular CHAN instead
-		-- ok
 
 	. add REALTIME RECORD back in
 		. ARM RECORDING button should record every note that is struck while the button is held, instead of toggling a mode
