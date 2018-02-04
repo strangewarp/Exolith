@@ -33,12 +33,13 @@ Software:
 				. should function as a toggle, like RECORDNOTES
 					-- ok
 				. repeats based on the QUANTIZE interval
-					-- 
+					-- ok
 				. add GUI response for this
 					-- ok
 			. COPY CURRENT BEAT / PASTE TO CURRENT BEAT
 				. copy:
 					. COPY POSITION value, instead of committing notes to memory
+						-- 
 					. COPY LENGTH value, based on the confirmation-button struck: 1, 2, 4, 8, 16, 32
 				. paste:
 					. PASTE LENGTH value, based on the confirmation-button struck: 1, 2, 4, 8, 16, 32
