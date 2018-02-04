@@ -79,7 +79,7 @@ void parseCues(byte s, byte size) {
 }
 
 // Read a tick from a given position, with an offset applied
-void readTick(byte s, byte offset, byte[] buf) {
+void readTick(byte s, byte offset, byte buf[]) {
 	word loc = POS[s]; // Get the sequence's current internal tick-location
 	if (offset) { // If an offset was given...
 		// Apply the offset to the tick-location, wrapping around the sequence's size-boundary
@@ -92,7 +92,7 @@ void readTick(byte s, byte offset, byte[] buf) {
 }
 
 // Parse the contents of a given tick, and add them to the MIDI-OUT buffer and SUSTAIN buffer as appropriate
-void parseTickContents(byte[] buf) {
+void parseTickContents(byte buf[]) {
 
 	// For either one or both note-slots on this tick, depending on how many are filled...
 	for (byte bn = 0; bn < ((buf[4] || buf[6]) + 4); bn += 4) {
@@ -167,21 +167,27 @@ void parseScatter(byte s, byte didscatter) {
 }
 
 // Get the notes from the current tick in a given seq, and add them to the MIDI-OUT buffer
-void getTickNotes(byte ctrl, word held, byte s) {
+void getTickNotes(byte ctrl, word held, byte s, byte buf[]) {
 
 	byte didscatter = 0; // Flag that tracks whether this tick has had a SCATTER effect
-
-	byte buf[9]; // Buffer for reading note-events from the datafile
-	memset(buf, 0, 8); // Clear the buffer's RAM of junk data
 
 	if (RECORDMODE) { // If RECORD MODE is active...
 		if (RECORDNOTES && (RECORDSEQ == s)) { // If notes are being recorded into this seq...
 			if (ctrl == B00111100) { // If the ERASE-NOTES command is being held...
 				eraseTick(buf); // Erase CHAN-matching commands in the current tick
 			} else if (REPEAT && held) { // Else, if REPEAT is toggled, and a note-button is being held...
-				if (isRecCompatible(ctrl)) { // If the current keychord signifies a command is to be recorded...
-					processRecAction(ctrl, held); // Parse all of the possible actions that signal the recording of commands
+				if (
+					(!(POS[s] % QUANTIZE)) // If this tick's position is a multiple of the QUANTIZE value...
+					&& isRecCompatible(ctrl) // And the current keychord signifies a command is to be recorded...
+				) { // Then this is a valid REPEAT-RECORD position. So...
+					for (byte i = 0; i < 24; i++) { // For every note-key...
+						if (!(held & (1 << i))) { continue; } // If the note key is empty, check the next key
+						// For each pressed note, parse all of the possible actions that signal the recording of commands
+						processRecAction(ctrl, i);
+					}
 				}
+				// Read the tick with no offset, regardless of whether a REPEAT-note was recorded or not
+				readTick(s, 0, buf);
 			}
 		} else { // Else, if notes aren't being recorded...
 			readTick(s, 0, buf); // Read the tick with no offset
@@ -208,7 +214,11 @@ void iterateAll() {
 		byte ctrl = BUTTONS & B00111111; // Get the control-row buttons' activity
 		word held = (BUTTONS & (~word(B00111111))) >> 6; // Get the note-buttons that are currently held
 
+		byte buf[9]; // Buffer for reading note-events from the datafile
+
 		for (byte i = 47; i != 255; i--) { // For every loaded sequence, in reverse order...
+
+			memset(buf, 0, 8); // Clear the buffer's RAM of junk data
 
 			byte size = STATS[i] & 127; // Get seq's absolute size, in beats
 
@@ -218,7 +228,7 @@ void iterateAll() {
 			if (!(STATS[i] & 128)) { continue; }
 
 			// Get the notes from this tick in a given seq, and add them to the MIDI-OUT buffer
-			getTickNotes(ctrl, held, i);
+			getTickNotes(ctrl, held, i, buf);
 
 			// Increase the seq's 16th-note position by one increment, wrapping it around its top limit
 			POS[i] = (POS[i] + 1) % (size << 4);

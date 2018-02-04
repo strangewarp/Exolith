@@ -57,7 +57,7 @@ void eraseTick(byte buf[]) {
 }
 
 // Parse all of the possible actions that signal the recording of commands
-void parseRecAction(byte ctrl, word held) {
+void processRecAction(byte ctrl, word key) {
 
 	// Get the interval-buttons' activity specifically,
 	// while weeding out any false-positives from commands that don't hold the INTERVAL button (B00000001)

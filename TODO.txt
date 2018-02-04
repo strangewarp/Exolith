@@ -87,7 +87,14 @@ Software:
 	. does BPM change the savefile correctly?
 		. is it loaded in correctly, on startup, after being changed by the user?
 
-	. test whether very slow BPMs have the expected tick-length
+	. do very slow BPMs have the expected tick-length?
+
+	. when two note-buttons are simultaneously held during ARMED RECORDING, are they recorded simultaneously?
+		. what if they're INTERVALS?
+		. what if more than two are held?
+		. what if they're CONTROL-CHANGES?
+			. two held?
+			. more than two?
 
 	. when SCATTER, SCATTER-UNSET, PAGE-SCATTER, or PAGE-SCATTER-UNSET is held, the GUI should show only those sequences that have SCATTER states enabled
 
