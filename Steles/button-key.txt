@@ -93,38 +93,39 @@ Button combinations (PLAY MODE):
 Button combinations (RECORD MODE):
 
 	1-keypress:
-	000001: RECORD NOTES
+	000001: RECORD NOTES (TOGGLE)
 	000010: BASENOTE
 	000100: OCTAVE
 	001000: VELOCITY todo update
 	010000: CHANNEL
-	100000: REPEAT todo update
+	100000: REPEAT NOTES (TOGGLE) todo update
 
 	2-keypress:
-	110000: SWITCH RECORDING-SEQUENCE
-	101000: CLOCK-MASTER todo update
-	100100: todo update
-	100010: BPM
-	100001:  todo update
-	011000: DURATION todo update
-	010100: HUMANIZE
-	010010:  todo update
+	110000: SHIFT CURRENT POSITION todo update
+	101000:  todo update
+	100100: CLOCK-MASTER todo update
+	100010:  todo update
+	100001: SEQ-SIZE todo update
+	011000: HUMANIZE todo update
+	010100: PASTE BEAT todo update
+	010010: BPM todo update
 	010001: (reserved for PROGRAM-CHANGE) todo update
 	001100: QUANTIZE todo update
-	001010: 
+	001010: COPY BEAT todo update
 	001001: CONTROL-CHANGE todo update
-	000110: SEQ-SIZE todo update
-	000011: INTERVAL-UP todo update
-	000101: INTERVAL-DOWN todo update
+	000110: DURATION todo update
+	000101: INTERVAL-UP todo update
+	000011: INTERVAL-DOWN todo update
 
 	3-keypress:
 	...
-	001011: INTERVAL-UP-RANDOM todo update
-	001101: INTERVAL-DOWN-RANDOM todo update
+	001101: INTERVAL-UP-RANDOM todo update
+	001011: INTERVAL-DOWN-RANDOM todo update
 
 	4-keypress:
 	...
-	001111: ERASE WHILE HELD (todo: update)
+	111100: SWITCH RECORDING SEQUENCE todo update
+	001111: ERASE WHILE HELD todo update
 
 	5-keypress:
 	...

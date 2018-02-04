@@ -1,7 +1,7 @@
 
 // Update the internal tick-size (in microseconds) to match the new BPM value
 void updateTickSize() {
-	TICKSIZE = round(60000000L / (BPM * 96));
+	TICKSIZE = (unsigned long) round(60000000L / (word(BPM) * 96));
 }
 
 // Reset the "most recent note by channel" array
@@ -58,7 +58,7 @@ byte applyIntervalCommand(byte cmd, byte pitch) {
 }
 
 // Compare a seq's CUE-commands to the global CUE-point, and parse them if the timing is correct
-void parseCues(byte s, word size) {
+void parseCues(byte s, byte size) {
 
 	if (
 		(!CMD[s]) // If the seq has no cued commands...
@@ -69,7 +69,7 @@ void parseCues(byte s, word size) {
 	STATS[s] = (STATS[s] & B01111111) | ((CMD[s] & 2) << 6);
 
 	// Set the sequence's internal tick to a position based on the incoming SLICE bits
-	POS[s] = size * ((CMD[s] & B00011100) >> 1);
+	POS[s] = word(size) * ((CMD[s] & B00011100) >> 1);
 
 	CMD[s] = 0; // Clear the sequence's CUED-COMMANDS byte
 
@@ -78,67 +78,21 @@ void parseCues(byte s, word size) {
 
 }
 
-// Get the notes from the current tick in a given seq, and add them to the MIDI-OUT buffer
-void getTickNotes(byte ctrl, byte s) {
-
-	if (MOUT_COUNT == 8) { return; } // If the MIDI-OUT queue is full, exit the function
-
-	byte buf[9]; // Buffer for reading note-events from the datafile
-
-	byte didscatter = 0; // Flag that tracks whether this tick has had a SCATTER effect
-
-	// If RECORD MODE is active, and notes are being recorded into this seq,
-	// and the ERASE-NOTES command is being held...
-	if (RECORDMODE && (RECORDSEQ == s) && (ctrl == B00001111)) {
-
-		unsigned long tpos = (49UL + (POS[s] * 8)) + (8192UL * s); // Get the tick's position in the savefile
-
-		file.seekSet(tpos); // Navigate to the note's absolute position
-		file.read(buf, 8); // Read the data of the tick's notes
-
-		byte full = buf[0] || buf[2]; // Check if the tick's top note is filled
-		if (!full) { return; } // If no notes or CCs are present, exit the function
-
-		// Check if the first and/or second note matches the global CHAN
-		byte pos1 = full && ((buf[0] & 15) == CHAN);
-		byte pos2 = (buf[4] || buf[6]) && ((buf[4] & 15) == CHAN);
-
-		if (pos1 || pos2) { // If either note matches the global chan...
-			byte outbuf[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0}; // Make a tick-sized buffer to send blank data
-			if (!pos1) { // If the first note didn't match global CHAN...
-				file.seekSet(tpos + 4); // Set the write-position to the tick's bottom-note
-			}
-			file.write(outbuf, (pos1 + pos2) * 4); // Clear all ticks in the byte that contain notes matching the global CHAN
-			file.sync(); // Apply changes to the savefile immediately
-			if (pos1 && pos2) { // If both notes matched global CHAN...
-				return; // Exit the function, since there's nothing left to do for this tick of this seq
-			} else { // Else, if only the first or second note matched global CHAN...
-				if (pos1) { // If only the first note matched global CHAN...
-					memmove(buf, buf + 4, 4); // Move the buffer's bottom note to its top slot
-				}
-				memset(buf + 4, 0, 4); // Empty the buffer's bottom note-slot in either case
-			}
-		}
-
-	} else { // Else, if ERASE-NOTES isn't currently pressed...
-
-		unsigned long tpos = POS[s]; // Get the tick's position in the savefile
-
-		byte sc = (SCATTER[s] & 240) >> 3; // Get the seq's SCATTER-read-distance
-		if (sc) { // If the seq has an active SCATTER-read-distance...
-			didscatter = 1; // Flag this tick as having had a SCATTER effect
-			// Add that distance to the read-point, wrapping around the end of the seq
-			tpos = (tpos + sc) % ((STATS[s] & 127) * 16);
-		}
-
-		// Navigate to the note's absolute position,
-		// and compensate for the fact that each tick contains 8 bytes
-		file.seekSet(49UL + (tpos * 8) + (8192UL * s));
-		file.read(buf, 8); // Read the data of the tick's notes
-
+// Read a tick from a given position, with an offset applied
+void readTick(byte s, byte offset, byte[] buf) {
+	word loc = POS[s]; // Get the sequence's current internal tick-location
+	if (offset) { // If an offset was given...
+		// Apply the offset to the tick-location, wrapping around the sequence's size-boundary
+		loc = (loc + offset) % (word(STATS[s] & 127) * 16);
 	}
+	// Navigate to the note's absolute position,
+	// and compensate for the fact that each tick contains 8 bytes
+	file.seekSet((49UL + (loc * 8)) + (8192UL * s));
+	file.read(buf, 8); // Read the data of the tick's notes
+}
 
-	if (!(buf[0] || buf[2])) { return; } // If the tick contains no commands, then exit the function
+// Parse the contents of a given tick, and add them to the MIDI-OUT buffer and SUSTAIN buffer as appropriate
+void parseTickContents(byte[] buf) {
 
 	// For either one or both note-slots on this tick, depending on how many are filled...
 	for (byte bn = 0; bn < ((buf[4] || buf[6]) + 4); bn += 4) {
@@ -178,7 +132,10 @@ void getTickNotes(byte ctrl, byte s) {
 
 	}
 
-	// If the function hasn't exited by this point, then that means this tick contained a note. So...
+}
+
+// Parse any active SCATTER values that might be associated with a given seq
+void parseScatter(byte s, byte didscatter) {
 
 	if (didscatter) { // If this tick was a SCATTER-tick...
 		SCATTER[s] &= 15; // Unset the "distance" side of this seq's SCATTER byte
@@ -209,23 +166,59 @@ void getTickNotes(byte ctrl, byte s) {
 
 }
 
+// Get the notes from the current tick in a given seq, and add them to the MIDI-OUT buffer
+void getTickNotes(byte ctrl, word held, byte s) {
+
+	byte didscatter = 0; // Flag that tracks whether this tick has had a SCATTER effect
+
+	byte buf[9]; // Buffer for reading note-events from the datafile
+	memset(buf, 0, 8); // Clear the buffer's RAM of junk data
+
+	if (RECORDMODE) { // If RECORD MODE is active...
+		if (RECORDNOTES && (RECORDSEQ == s)) { // If notes are being recorded into this seq...
+			if (ctrl == B00111100) { // If the ERASE-NOTES command is being held...
+				eraseTick(buf); // Erase CHAN-matching commands in the current tick
+			} else if (REPEAT && held) { // Else, if REPEAT is toggled, and a note-button is being held...
+				if (isRecCompatible(ctrl)) { // If the current keychord signifies a command is to be recorded...
+					processRecAction(ctrl, held); // Parse all of the possible actions that signal the recording of commands
+				}
+			}
+		} else { // Else, if notes aren't being recorded...
+			readTick(s, 0, buf); // Read the tick with no offset
+		}
+	} else { // Else, if RECORD MODE is inactive...
+		readTick(s, (SCATTER[s] & 240) >> 3, buf); // Read the tick with SCATTER-offset
+		didscatter = 1;
+	}
+
+	// If the MIDI-OUT queue is full, or the tick contains no commands, then exit the function
+	if ((MOUT_COUNT == 8) || (!(buf[0] || buf[2]))) { return; }
+
+	// If the function hasn't exited by this point, then that means this tick contained a note. So...
+	parseTickContents(buf); // Check the tick's contents, and add them to MIDI-OUT and SUSTAIN where appropriate
+	parseScatter(s, didscatter); // Parse any active SCATTER values that might be associated with the seq
+
+}
+
 // Advance global tick, and iterate through all currently-active sequences
 void iterateAll() {
 
 	if (PLAYING) { // If the sequencer is currently in PLAYING mode...
 
 		byte ctrl = BUTTONS & B00111111; // Get the control-row buttons' activity
+		word held = (BUTTONS & (~word(B00111111))) >> 6; // Get the note-buttons that are currently held
 
 		for (byte i = 47; i != 255; i--) { // For every loaded sequence, in reverse order...
 
-			word size = STATS[i] & 127; // Get seq's absolute size, in beats
+			byte size = STATS[i] & 127; // Get seq's absolute size, in beats
 
 			parseCues(i, size); // Parse a sequence's cued commands, if any
 
 			// If the seq isn't currently playing, go to the next seq's iteration-routine
 			if (!(STATS[i] & 128)) { continue; }
 
-			getTickNotes(ctrl, i); // Get the notes from this tick in a given seq, and add them to the MIDI-OUT buffer
+			// Get the notes from this tick in a given seq, and add them to the MIDI-OUT buffer
+			getTickNotes(ctrl, held, i);
 
 			// Increase the seq's 16th-note position by one increment, wrapping it around its top limit
 			POS[i] = (POS[i] + 1) % (size << 4);
@@ -242,3 +235,4 @@ void iterateAll() {
 	processSustains(); // Process one 16th-note's worth of duration for all sustained notes
 
 }
+

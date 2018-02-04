@@ -26,23 +26,31 @@ Software:
 					-- ok
 				. update button_key.txt to reflect the changes
 					-- ok
-				. update func_button and func_gui to reflect the changes
-					-- 
 		. QUANTIZE should round down - this will help compensate for keystroke lag
 			-- done
-
-	. add commands to RECORD MODE:
-		. REPEAT-NOTE (while both armed and unarmed)
-			. should function as a toggle, like RECORDNOTES
-			. repeats based on the QUANTIZE interval
-			. add GUI response for this
-		. COPY CURRENT BEAT / PASTE TO CURRENT BEAT
-		. ERASE CURRENT BEAT
-		. SHIFT CURRENT BEAT POSITION
-			. should use the standard 1-2-4-8-16-32 negative-or-positive key-config
-			. should shift every active sequence, and global cue position, by the given amount
-		. update button-key.txt for all of these
-		. test all of these
+		. add commands to RECORD MODE:
+			. REPEAT-NOTE (while both armed and unarmed)
+				. should function as a toggle, like RECORDNOTES
+					-- ok
+				. repeats based on the QUANTIZE interval
+					-- 
+				. add GUI response for this
+					-- ok
+			. COPY CURRENT BEAT / PASTE TO CURRENT BEAT
+				. copy:
+					. COPY POSITION value, instead of committing notes to memory
+					. COPY LENGTH value, based on the confirmation-button struck: 1, 2, 4, 8, 16, 32
+				. paste:
+					. PASTE LENGTH value, based on the confirmation-button struck: 1, 2, 4, 8, 16, 32
+						. if COPY LENGTH is shorter than PASTE LENGTH, then repeat the COPY-section until the PASTE-section is full
+			. SHIFT CURRENT POSITION
+				. should use the standard 1-2-4-8-16-32 negative-or-positive key-config
+				. should shift every active sequence, and global cue position, by the given amount
+			. update button-key.txt for all of these
+			. test all of these
+		. update func_button and func_gui to reflect all keychord changes and new commands
+			. NOTE: all binary values are flipped in the codebase, compared to how they are depicted in button-key.txt
+				-- 
 
 	. remove all "todo update" lines from button-key.txt
 
@@ -75,6 +83,11 @@ Software:
 			. does a SEQ-SIZE of "0" correspond to 1 beat?
 		. test CC commands
 		. test file-load
+
+	. does BPM change the savefile correctly?
+		. is it loaded in correctly, on startup, after being changed by the user?
+
+	. test whether very slow BPMs have the expected tick-length
 
 	. when SCATTER, SCATTER-UNSET, PAGE-SCATTER, or PAGE-SCATTER-UNSET is held, the GUI should show only those sequences that have SCATTER states enabled
 

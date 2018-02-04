@@ -94,6 +94,12 @@ const byte GLYPH_QUANTIZE[] PROGMEM = {B00000000, B11100000, B10100000, B1010010
 // Glyph: RECORD
 const byte GLYPH_RECORD[] PROGMEM = {B11100000, B10010000, B11100000, B10010000, B10010000, B10010000};
 
+// Glyph: REPEAT
+const byte GLYPH_REPEAT[] PROGMEM = {B01000000, B01000000, B01000000, B01000000, B11000000, B11000000};
+
+// Glyph: REPEAT (ARMED)
+const byte GLYPH_REPEAT_ARMED[] PROGMEM = {B01000000, B01001000, B01001001, B01001001, B11011011, B11011011};
+
 // Glyph: SWITCH RECORDING-SEQUENCE
 const byte GLYPH_RSWITCH[] PROGMEM = {B00000000, B11101110, B10101000, B11000100, B10100010, B10101110};
 
@@ -142,13 +148,14 @@ byte LOADMODE = 0; // Tracks whether LOAD MODE is active
 byte RECORDMODE = 0; // Tracks whether RECORD MODE is active
 byte RECORDSEQ = 0; // Sequence currently being recorded into
 byte RECORDNOTES = 0; // Tracks whether notes are currently being recorded into a sequence
+byte REPEAT = 0; // Toggles whether held-down note-buttons should repeat a NOTE-ON every QUANTIZE ticks, in RECORD-MODE
 byte BASENOTE = 0; // Baseline pitch-offset value for RECORD MODE notes
 byte OCTAVE = 3; // Octave-offset value for RECORD MODE notes
 byte VELO = 127; // Baseline velocity-value for RECORD MODE notes
 byte HUMANIZE = 0; // Maximum velocity-humanize value for RECORD MODE notes
 byte CHAN = 0; // MIDI-CHAN for RECORD MODE notes
 byte QUANTIZE = B00000010; // Time-quantize value for RECORD MODE notes: bits 0-3: 1, 2, 4, 8 (16th-notes)
-byte DURATION = B00001000; // Duration value for RECORD MODE notes: bits 0-4: 1, 2, 4, 8, 16 (16th-notes)
+byte DURATION = B00000100; // Duration value for RECORD MODE notes: bits 0-4: 1, 2, 4, 8, 16 (16th-notes)
 
 // Sequencing vars
 byte SONG = 0; // Current song-slot whose data-files are being played

@@ -81,58 +81,7 @@ void parseRecPress(byte col, byte row) {
 
 	if (!ctrl) { // If no CTRL buttons are held...
 
-		// Get the interval-buttons' activity specifically,
-		// while weeding out any false-positives from commands that don't hold the INTERVAL button (B00000001)
-		byte ibs = (ctrl & 7) * ((ctrl <= 7) && (ctrl & 1));
-
-		// Get a note that corresponds to the key, organized from bottom-left to top-right, with all modifiers applied
-		byte pitch = (OCTAVE * 12) + BASENOTE + ((23 - key) ^ 3);
-		while (pitch > 127) { // If the pitch is above 127, which is the limit for MIDI notes...
-			pitch -= 12; // Reduce it by 12 until it is at or below 127
-		}
-
-		// Get the note's velocity, with a random humanize-offset
-		byte velo = VELO - min(VELO - 1, byte(GLOBALRAND % (HUMANIZE + 1)));
-
-		byte rchan = CHAN & 15; // Strip the chan of any special-command flag bits
-
-		if (ibs) { // If any INTERVAL-keys are held...
-			// Make a composite INTERVAL command, as it would appear in data-storage,
-			// and apply the INTERVAL command to the channel's most-recent pitch
-			ibs = ((ibs & 1) << 7) | ((ibs & 2) << 5) | ((ibs & 4) << 3);
-			pitch = applyIntervalCommand(ibs | key, RECENT[rchan]);
-		}
-
-		if (ibs || (rchan == CHAN)) { // If INTERVAL keys are held, or this is a normal NOTE...
-			RECENT[rchan] = pitch; // Update the channel's most-recent note to the pitch-value
-		}
-
-		if (PLAYING && RECORDNOTES) { // If notes are being recorded into a playing sequence...
-			// Record the note, either natural or modified by INTERVAL, into the current RECORDSEQ slot;
-			// and if this is an INTERVAL-command, then clip off any virtual CC-info from the chan-byte 
-			recordToSeq(
-				POS[RECORDSEQ] - (POS[RECORDSEQ] % QUANTIZE), // Get a rounded-down insert-point, based on QUANTIZE
-				ibs ? (CHAN % 16) : CHAN,
-				pitch,
-				velo
-			);
-			// Incerase the record-position by QUANTIZE amount, wrapping around the end of the sequence if applicable
-			TO_UPDATE |= 254; // Flag the 7 bottommost LED-rows for an update
-		}
-
-		if (CHAN & 16) { return; } // If this was a virtual CC command, forego all SUSTAIN operations
-
-		// Update SUSTAIN buffer in preparation for playing the user-pressed note
-		clipBottomSustain(); // If the bottommost SUSTAIN is filled, send its NOTE-OFF prematurely
-		memmove(SUST + 3, SUST, SUST_COUNT * 3); // Move all sustains one space downward
-		SUST[0] = 128 + CHAN; // Fill the topmost sustain-slot with the user-pressed note
-		SUST[1] = pitch; // ^
-		SUST[2] = DURATION; // ^
-		SUST_COUNT++; // Increase the number of active sustains, to accurately reflect the new note
-		byte buf[4] = {byte(144 + CHAN), pitch, velo}; // Build a correctly-formatted NOTE-ON for the user-pressed note
-		Serial.write(buf, 3); // Send the user-pressed note to MIDI-OUT immediately, without buffering
-
-		TO_UPDATE |= 2; // Flag the sustain-row for a GUI update
+		processRecAction(ctrl, key); // Parse all of the possible actions that signal the recording of commands
 
 	} else { // Else, if CTRL-buttons are being held...
 
@@ -141,7 +90,7 @@ void parseRecPress(byte col, byte row) {
 
 		if (ctrl == B00100000) { // If the ARM RECORDING button is held...
 			RECORDNOTES ^= 1; // Arm or disarm the RECORDNOTES flag
-			TO_UPDATE |= 253; // Flag the top row, and bottom 6 rows, for LED updates
+			TO_UPDATE |= 252; // Flag the bottom 6 rows for LED updates
 		} else if (ctrl == B00010000) { // If the BASENOTE button is held...
 			BASENOTE = clamp(0, 11, char(BASENOTE) + change); // Modify the BASENOTE value
 			TO_UPDATE |= 1; // Flag the topmost row for updating
@@ -154,13 +103,15 @@ void parseRecPress(byte col, byte row) {
 		} else if (ctrl == B00000010) { // If the CHANNEL button is held...
 			CHAN = (CHAN & 16) | clamp(0, 15, char(CHAN & 15) + change); // Modify the CHAN value, while preserving CC flag
 			TO_UPDATE |= 1; // Flag the topmost row for updating
+		} else if (ctrl == B00000001) { // If the REPEAT button is held...
+			REPEAT ^= 1; // Arm or disarm the NOTE-REPEAT flag
+			TO_UPDATE |= 252; // Flag the bottom 6 rows for LED updates
 		} else if (ctrl == B00110000) { // If the SWITCH RECORDING SEQUENCE button is held...
 			TO_UPDATE |= 4 >> (RECORDSEQ >> 2); // Flag the previous seq's corresponding LED-row for updating
 			resetSeq(RECORDSEQ); // Reset the current record-seq, which is about to become inactive
 			RECORDSEQ = (PAGE * 24) + key; // Switch to the seq that corresponds to the key-position on the active page
 			primeRecSeq(); // Prime the newly-entered RECORD-MODE sequence for editing
-			TO_UPDATE |= 4 >> row; // Flag the new seq's corresponding LED-row for updating
-			TO_UPDATE |= 1; // Flag the topmost row for updating
+			TO_UPDATE |= 1 | (4 >> row); // Flag the top row, and the new seq's corresponding LED-row, for updating
 		} else if (ctrl == B00101000) { // If the CLOCK-MASTER command is held...
 			CLOCKMASTER ^= 1; // Toggle the CLOCK-MASTER value
 			ABSOLUTETIME = micros(); // Set the ABSOLUTETIME-tracking var to now
