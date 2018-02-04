@@ -91,6 +91,9 @@ const byte GLYPH_OCTAVE[] PROGMEM = {B00000000, B11100000, B10100000, B10101110,
 // Glyph: QUANTIZE
 const byte GLYPH_QUANTIZE[] PROGMEM = {B00000000, B11100000, B10100000, B10100101, B10100101, B11110111};
 
+// Glyph: RECORD
+const byte GLYPH_RECORD[] PROGMEM = {B11100000, B10010000, B11100000, B10010000, B10010000, B10010000};
+
 // Glyph: SWITCH RECORDING-SEQUENCE
 const byte GLYPH_RSWITCH[] PROGMEM = {B00000000, B11101110, B10101000, B11000100, B10100010, B10101110};
 
@@ -138,6 +141,7 @@ unsigned long TICKSIZE = 6250; // Size of the current tick, in microseconds; tic
 byte LOADMODE = 0; // Tracks whether LOAD MODE is active
 byte RECORDMODE = 0; // Tracks whether RECORD MODE is active
 byte RECORDSEQ = 0; // Sequence currently being recorded into
+byte RECORDNOTES = 0; // Tracks whether notes are currently being recorded into a sequence
 byte BASENOTE = 0; // Baseline pitch-offset value for RECORD MODE notes
 byte OCTAVE = 3; // Octave-offset value for RECORD MODE notes
 byte VELO = 127; // Baseline velocity-value for RECORD MODE notes

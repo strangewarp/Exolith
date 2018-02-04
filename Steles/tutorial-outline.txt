@@ -41,6 +41,10 @@ Tutorial Outline
 	RECORD MODE:
 
 
+		ARM RECORDING
+			* When this button is held, the top LED-row will display the binary value of the sequence that is currently being recorded into
+
+
 		CHAN
 			* While recording notes via MIDI-IN, you must set CHANNEL to match the MIDI channel you wish to record
 

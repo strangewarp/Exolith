@@ -79,7 +79,7 @@ void parseRecPress(byte col, byte row) {
 	byte key = col + (row * 4); // Get the button-key that corresponds to the given column and row
 	byte ctrl = BUTTONS & B00111111; // Get the control-row buttons' activity
 
-	if ((!ctrl) || (ctrl & B00100000)) { // If no CTRL buttons are held, or a RECORDING-based chord is held...
+	if (!ctrl) { // If no CTRL buttons are held...
 
 		// Get the interval-buttons' activity specifically,
 		// while weeding out any false-positives from commands that don't hold the INTERVAL button (B00000001)
@@ -107,7 +107,7 @@ void parseRecPress(byte col, byte row) {
 			RECENT[rchan] = pitch; // Update the channel's most-recent note to the pitch-value
 		}
 
-		if (PLAYING && (ctrl & B00100000)) { // If notes are being recorded into a playing sequence...
+		if (PLAYING && RECORDNOTES) { // If notes are being recorded into a playing sequence...
 			// Record the note, either natural or modified by INTERVAL, into the current RECORDSEQ slot;
 			// and if this is an INTERVAL-command, then clip off any virtual CC-info from the chan-byte 
 			recordToSeq(
@@ -134,12 +134,15 @@ void parseRecPress(byte col, byte row) {
 
 		TO_UPDATE |= 2; // Flag the sustain-row for a GUI update
 
-	} else { // Else, if CTRL-buttons unrelated to RECORDING are held...
+	} else { // Else, if CTRL-buttons are being held...
 
 		// Get the button's var-change value, for when a global var is being changed
 		char change = (32 >> row) * ((col & 2) - 1);
 
-		if (ctrl == B00010000) { // If the BASENOTE button is held...
+		if (ctrl == B00100000) { // If the ARM RECORDING button is held...
+			RECORDNOTES ^= 1; // Arm or disarm the RECORDNOTES flag
+			TO_UPDATE |= 253; // Flag the top row, and bottom 6 rows, for LED updates
+		} else if (ctrl == B00010000) { // If the BASENOTE button is held...
 			BASENOTE = clamp(0, 11, char(BASENOTE) + change); // Modify the BASENOTE value
 			TO_UPDATE |= 1; // Flag the topmost row for updating
 		} else if (ctrl == B00001000) { // If the OCTAVE button is held...
