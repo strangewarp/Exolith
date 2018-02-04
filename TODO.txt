@@ -21,17 +21,15 @@ Software:
 			. ERASENOTES can be removed too, in the same way
 				-- removed
 			. change INTERVAL keychords to include the RECORD button
-				--
+				-- ok
 				. only RECORD, INTERVAL, CONTROL-CHANGE and PROGRAM-CHANGE keychords should contain ctrl-byte B00100000. move other keychords around to compensate
-					--
+					-- ok
 				. update button_key.txt to reflect the changes
-					--
-			. CONTROL-CHANGE should be a chord with ARM RECORDING as well
-				--
+					-- ok
+				. update func_button and func_gui to reflect the changes
+					-- 
 		. QUANTIZE should round down - this will help compensate for keystroke lag
 			-- done
-		. re-fix TO_UPDATE calls and func_gui.ino's responses to them
-			-- 
 
 	. add commands to RECORD MODE:
 		. REPEAT-NOTE (while both armed and unarmed)
