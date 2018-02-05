@@ -40,19 +40,31 @@ void toggleMidiClock(byte usercmd) {
 void updateTimer() {
 
 	unsigned long micr = micros(); // Get the current microsecond-timer value
+	unsigned long offset; // Will hold the time-offset since the last ABSOLUTETIME point
 
 	if (micr < ABSOLUTETIME) { // If the micros-value has wrapped around its finite counting-space to be less than the last absolute-time position...
-		unsigned long offset = (4294967295UL - ABSOLUTETIME) + micr; // Get an offset representing time since last check, wrapped around the unsigned long's limit
+		offset = (4294967295UL - ABSOLUTETIME) + micr; // Get an offset representing time since last check, wrapped around the unsigned long's limit
 		GESTELAPSED += offset; // Put the wrapped-around microseconds into the elapsed-time-for-gesture-decay value
 		KEYELAPSED += offset; // Put the wrapped-around microseconds into the elapsed-time-for-keypad-checks value
 		ELAPSED += offset; // Put the wrapped-around microseconds into the elapsed-time value
 	} else { // Else, if the micros-value is greater than or equal to last loop's absolute-time position...
-		unsigned long offset = micr - ABSOLUTETIME; // Get an offset representing time since last check
+		offset = micr - ABSOLUTETIME; // Get an offset representing time since last check
 		GESTELAPSED += offset; // Add the difference between the current time and the previous time to the elapsed-time-for-gesture-decay value
 		KEYELAPSED += offset; // Add the difference between the current time and the previous time to the elapsed-time-for-keypad-checks value
 		ELAPSED += offset; // Add the difference between the current time and the previous time to the elapsed-time value
 	}
 	ABSOLUTETIME = micr; // Set the absolute-time to the current time-value
+
+	if (BLINK) { // If an LED-BLINK is active...
+		word o2 = offset >> 6; // Get a bit-shifted version of the offset value, to decrement the BLINK counter correctly
+		o2 |= !o2; // If the bit-shifted offset value is empty, set it to 1
+		if (BLINK > o2) { // If the BLINK-counter is greater than the bit-shifted offset value...
+			BLINK -= o2; // Subtract the offset from the BLINK-counter
+		} else { // Else, if the BLINK-counter is lower than the offset...
+			BLINK = 0; // Clear the BLINK-counter
+			TO_UPDATE |= 252; // Flag the bottom 6 rows for LED updates
+		}
+	}
 
 	updateGestureKeys(); // Update the tracking-info for all active gesture-keys
 

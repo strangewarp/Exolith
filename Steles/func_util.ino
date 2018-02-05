@@ -10,6 +10,12 @@ int clamp(int low, int high, int v) {
 	return min(high, max(low, v));
 }
 
+// Convert a column and row into a CHANGE value,
+// which is used when global vars are being changed by the user.
+char toChange(byte col, byte row) {
+	return char(32 >> row) * (char(col & 2) - 1);
+}
+
 // Return a button-number that corresponds to the most-significant pressed control-button's bitwise value
 byte ctrlToButtonIndex(byte ctrl) {
 	return (ctrl & 32) ? 6 : (

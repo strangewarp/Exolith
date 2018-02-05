@@ -57,7 +57,7 @@ void eraseTick(byte buf[]) {
 }
 
 // Parse all of the possible actions that signal the recording of commands
-void processRecAction(byte ctrl, word key) {
+void processRecAction(byte ctrl, byte key) {
 
 	// Get the interval-buttons' activity specifically,
 	// while weeding out any false-positives from commands that don't hold the INTERVAL button (B00000001)
@@ -147,3 +147,4 @@ void recordToSeq(word pstn, byte chan, byte b1, byte b2) {
 	file.sync(); // Force this function's write processes to be committed to the savefile immediately
 
 }
+

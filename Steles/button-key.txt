@@ -107,11 +107,11 @@ Button combinations (RECORD MODE):
 	100010:  todo update
 	100001: SEQ-SIZE todo update
 	011000: HUMANIZE todo update
-	010100: PASTE BEAT todo update
+	010100: PASTE todo update
 	010010: BPM todo update
-	010001: (reserved for PROGRAM-CHANGE) todo update
+	010001: PROGRAM-CHANGE todo update
 	001100: QUANTIZE todo update
-	001010: COPY BEAT todo update
+	001010: COPY todo update
 	001001: CONTROL-CHANGE todo update
 	000110: DURATION todo update
 	000101: INTERVAL-UP todo update
@@ -126,11 +126,4 @@ Button combinations (RECORD MODE):
 	...
 	111100: SWITCH RECORDING SEQUENCE todo update
 	001111: ERASE WHILE HELD todo update
-
-	5-keypress:
-	...
-
-	6-keypress:
-	...
-	111111: TOGGLE RECORD MODE
 
