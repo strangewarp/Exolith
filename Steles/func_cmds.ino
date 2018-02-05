@@ -64,6 +64,13 @@ void humanizeCmd(byte col, byte row) {
 	TO_UPDATE |= 1; // Flag the topmost row for updating
 }
 
+// All INTERVAL commands go directly to the generic note-handler command,
+// and only exist independently because the KEYTAB array holds unique identifiers for each of them for GUI use.
+void iDownCmd(byte col, byte row) { genericCmd(col, row); }
+void iDownRandCmd(byte col, byte row) { genericCmd(col, row); }
+void iUpCmd(byte col, byte row) { genericCmd(col, row); }
+void iUpRandCmd(byte col, byte row) { genericCmd(col, row); }
+
 // Parse an OCTAVE press
 void octaveCmd(byte col, byte row) {
 	char change = toChange(col, row); // Convert a column and row into a CHANGE value

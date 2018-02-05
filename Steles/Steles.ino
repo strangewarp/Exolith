@@ -142,35 +142,8 @@ extern const CmdFunc COMMANDS[]; // Use the list of RECORD-MODE commands from da
 extern const byte KEYTAB[]; // Use the list of binary-to-decimal function-keys from data_cmds.ino
 
 extern const byte LOGO[]; // Use the logo from data_gui.ino
-
-// Use the display-glyphs from data_gui.ino
-extern const byte GLYPH_BASENOTE[];
-extern const byte GLYPH_CHAN[];
-extern const byte GLYPH_BPM[];
-extern const byte GLYPH_CHAN[];
-extern const byte GLYPH_CLOCKMASTER[];
-extern const byte GLYPH_CONTROLCHANGE[];
-extern const byte GLYPH_DURATION[];
-extern const byte GLYPH_ERASE[];
-extern const byte GLYPH_HUMANIZE[];
-extern const byte GLYPH_LOAD[];
-extern const byte GLYPH_OCTAVE[];
-extern const byte GLYPH_QUANTIZE[];
-extern const byte GLYPH_RECORD[];
-extern const byte GLYPH_REPEAT[];
-extern const byte GLYPH_REPEAT_ARMED[];
-extern const byte GLYPH_RSWITCH[];
-extern const byte GLYPH_SD[];
-extern const byte GLYPH_SIZE[];
-extern const byte GLYPH_VELO[];
-
-// Use the interval-glyphs from data_gui.ino
-extern const byte GLYPH_RANDOM[];
-extern const byte GLYPH_DOWN[];
-extern const byte GLYPH_UP[];
-
-// Use the number-multiglyph from data_gui.ino
-extern const byte MULTIGLYPH_NUMBERS[];
+extern const byte GLYPH_ERASE[]; // Use the ERASE-glyph from data_gui.ino
+extern const byte MULTIGLYPH_NUMBERS[]; // Use the number-multiglyph from data_gui.ino
 
 
 

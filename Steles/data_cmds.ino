@@ -20,7 +20,11 @@ const CmdFunc COMMANDS[] PROGMEM = {
 	sizeCmd,          // 16: SEQ-SIZE
 	switchCmd,        // 17: SWITCH RECORDING-SEQUENCE
 	tempoCmd,         // 18: BPM
-	veloCmd           // 19: VELOCITY
+	veloCmd,          // 19: VELOCITY
+	iUpCmd,           // 20: INTERVAL-UP
+	iUpRandCmd,       // 21: INTERVAL-UP-RANDOM
+	iDownCmd,         // 22: INTERVAL-DOWN
+	iDownRandCmd      // 23: INTERVAL-DOWN-RANDOM
 };
 
 // Matches control-row binary button-values to the decimal values that stand for their corresponding functions in COMMANDS
@@ -66,19 +70,19 @@ const byte KEYTAB[] PROGMEM = {
 	0,  // 37, 100101:  0, ignore
 	0,  // 38, 100110:  0, ignore
 	0,  // 39, 100111:  0, ignore
-	8,  // 40, 101000:  8, genericCmd (INTERVAL-UP)
+	20, // 40, 101000: 20, iUpCmd (INTERVAL-UP)
 	0,  // 41, 101001:  0, ignore
 	0,  // 42, 101010:  0, ignore
 	0,  // 43, 101011:  0, ignore
-	8,  // 44, 101100:  8, genericCmd (INTERVAL-UP-RANDOM)
+	21, // 44, 101100: 21, iUpRandCmd (INTERVAL-UP-RANDOM)
 	0,  // 45, 101101:  0, ignore
 	0,  // 46, 101110:  0, ignore
 	0,  // 47, 101111:  0, ignore
-	8,  // 48, 110000:  8, genericCmd (INTERVAL-DOWN)
+	22, // 48, 110000: 22, iDownCmd (INTERVAL-DOWN)
 	0,  // 49, 110001:  0, ignore
 	0,  // 50, 110010:  0, ignore
 	0,  // 51, 110011:  0, ignore
-	8,  // 52, 110100:  8, genericCmd (INTERVAL-DOWN-RANDOM)
+	23, // 52, 110100: 23, iDownRandCmd (INTERVAL-DOWN-RANDOM)
 	0,  // 53, 110101:  0, ignore
 	0,  // 54, 110110:  0, ignore
 	0,  // 55, 110111:  0, ignore
