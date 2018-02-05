@@ -1,7 +1,6 @@
 
 // Arm or disarm RECORDNOTES
-void armCmd(byte col, byte row) { armCmd(); }
-void armCmd() {
+void armCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row) {
 	RECORDNOTES ^= 1; // Arm or disarm the RECORDNOTES flag
 	TO_UPDATE |= 252; // Flag the bottom 6 rows for LED updates
 }
@@ -21,8 +20,7 @@ void chanCmd(byte col, byte row) {
 }
 
 // Parse a CLOCK-MASTER press
-void clockCmd(byte col, byte row) { clockCmd(); }
-void clockCmd() {
+void clockCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row) {
 	CLOCKMASTER ^= 1; // Toggle the CLOCK-MASTER value
 	ABSOLUTETIME = micros(); // Set the ABSOLUTETIME-tracking var to now
 	ELAPSED = 0; // Set the ELAPSED value to show that no time has elapsed since the last tick-check
@@ -30,8 +28,7 @@ void clockCmd() {
 }
 
 // Parse a CONTROL-CHANGE press
-void controlChangeCmd(byte col, byte row) { controlChangeCmd(); }
-void controlChangeCmd() {
+void controlChangeCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row) {
 	CHAN ^= 16; // Flip the CHAN bit that turns all NOTE command-entry into CC command-entry
 	TO_UPDATE |= 1; // Flag the topmost row for updating
 }
@@ -77,15 +74,30 @@ void octaveCmd(byte col, byte row) {
 // Parse a PASTE press
 void pasteCmd(byte col, byte row) {
 
+	(void)(col); // todo remove these after writing the function
+	(void)(row);
+
+
+
 }
 
 // Parse a SHIFT CURRENT POSITION press
 void posCmd(byte col, byte row) {
 
+	(void)(col); // todo remove these after writing the function
+	(void)(row);
+
+
+
 }
 
 // Parse a PROGRAM-CHANGE press
 void programChangeCmd(byte col, byte row) {
+
+	(void)(col); // todo remove these after writing the function
+	(void)(row);
+
+
 
 }
 
@@ -97,8 +109,7 @@ void quantizeCmd(byte col, byte row) {
 }
 
 // Parse a REPEAT press
-void repeatCmd(byte col, byte row) { repeatCmd(); }
-void repeatCmd() {
+void repeatCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row) {
 	REPEAT ^= 1; // Arm or disarm the NOTE-REPEAT flag
 	TO_UPDATE |= 252; // Flag the bottom 6 rows for LED updates
 }
@@ -138,28 +149,4 @@ void veloCmd(byte col, byte row) {
 	VELO = clamp(0, 127, int(VELO) + change); // Modify the VELO value
 	TO_UPDATE |= 1; // Flag the topmost row for updating
 }
-
-// Store pointers to RECORD-MODE functions in PROGMEM
-const CmdFunc COMMANDS[] PROGMEM = {
-	genericCmd,       //  0: Unused duplicate pointer to genericCmd
-	armCmd,           //  1: TOGGLE RECORDNOTES
-	baseCmd,          //  2: BASENOTE
-	chanCmd,          //  3: CHANNEL
-	clockCmd,         //  4: CLOCK-MASTER
-	controlChangeCmd, //  5: CONTROL-CHANGE
-	copyCmd,          //  6: COPY
-	durationCmd,      //  7: DURATION
-	genericCmd,       //  8: All possible note-entry commands
-	humanizeCmd,      //  9: HUMANIZE
-	octaveCmd,        // 10: OCTAVE
-	pasteCmd,         // 11: PASTE
-	posCmd,           // 12: SHIFT CURRENT POSITION
-	programChangeCmd, // 13: PROGRAM-CHANGE
-	quantizeCmd,      // 14: QUANTIZE
-	repeatCmd,        // 15: TOGGLE REPEAT
-	sizeCmd,          // 16: SEQ-SIZE
-	switchCmd,        // 17: SWITCH RECORDING-SEQUENCE
-	tempoCmd,         // 18: BPM
-	veloCmd           // 19: VELOCITY
-};
 

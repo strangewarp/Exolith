@@ -138,165 +138,39 @@ byte SYSIGNORE = 0; // Ignores SYSEX messages when toggled
 // This will be used to select RECORD-MODE functions based on which keychords are active.
 typedef void (*CmdFunc) (byte col, byte row);
 
-// Tell the compiler that the list of RECORD-MODE commands is sitting in another file (func_cmds.ino),
-//   and should be used here too.
-// It has to be in that file so that its associated functions get defined before COMMANDS[] gets defined.
-extern const CmdFunc COMMANDS[];
+extern const CmdFunc COMMANDS[]; // Use the list of RECORD-MODE commands from data_cmds.ino
+extern const byte KEYTAB[]; // Use the list of binary-to-decimal function-keys from data_cmds.ino
 
-// Matches control-row binary button-values to the decimal values that stand for their corresponding functions in COMMANDS
-// Note: These binary values are flipped versions of what are displayed in button-key.txt
-const byte KEYTAB[] PROGMEM = {
-	8,  //  0, 000000:  8, genericCmd (REGULAR NOTE)
-	15, //  1, 000001: 15, repeatCmd
-	3,  //  2, 000010:  3, chanCmd
-	12, //  3, 000011: 12, posCmd
-	19, //  4, 000100: 19, veloCmd
-	0,  //  5, 000101:  0, ignore
-	9,  //  6, 000110:  9, humanizeCmd
-	0,  //  7, 000111:  0, ignore
-	10, //  8, 001000: 10, octaveCmd
-	4,  //  9, 001001:  4, clockCmd
-	11, // 10, 001010: 11, pasteCmd
-	0,  // 11, 001011:  0, ignore
-	14, // 12, 001100: 14, quantizeCmd
-	0,  // 13, 001101:  0, ignore
-	0,  // 14, 001110:  0, ignore
-	17, // 15, 001111: 17, switchCmd
-	2,  // 16, 010000:  2, baseCmd
-	0,  // 17, 010001:  0, ignore
-	18, // 18, 010010: 18, tempoCmd
-	0,  // 19, 010011:  0, ignore
-	6,  // 20, 010100:  6, copyCmd
-	0,  // 21, 010101:  0, ignore
-	0,  // 22, 010110:  0, ignore
-	0,  // 23, 010111:  0, ignore
-	7,  // 24, 011000:  7, durationCmd
-	0,  // 25, 011001:  0, ignore
-	0,  // 26, 011010:  0, ignore
-	0,  // 27, 011011:  0, ignore
-	0,  // 28, 011100:  0, ignore
-	0,  // 29, 011101:  0, ignore
-	0,  // 30, 011110:  0, ignore
-	0,  // 31, 011111:  0, ignore
-	1,  // 32, 100000:  1, armCmd
-	16, // 33, 100001: 16, sizeCmd
-	13, // 34, 100010: 13, programChangeCmd
-	0,  // 35, 100011:  0, ignore
-	5,  // 36, 100100:  5, controlChangeCmd
-	0,  // 37, 100101:  0, ignore
-	0,  // 38, 100110:  0, ignore
-	0,  // 39, 100111:  0, ignore
-	8,  // 40, 101000:  8, genericCmd (INTERVAL-UP)
-	0,  // 41, 101001:  0, ignore
-	0,  // 42, 101010:  0, ignore
-	0,  // 43, 101011:  0, ignore
-	8,  // 44, 101100:  8, genericCmd (INTERVAL-UP-RANDOM)
-	0,  // 45, 101101:  0, ignore
-	0,  // 46, 101110:  0, ignore
-	0,  // 47, 101111:  0, ignore
-	8,  // 48, 110000:  8, genericCmd (INTERVAL-DOWN)
-	0,  // 49, 110001:  0, ignore
-	0,  // 50, 110010:  0, ignore
-	0,  // 51, 110011:  0, ignore
-	8,  // 52, 110100:  8, genericCmd (INTERVAL-DOWN-RANDOM)
-	0,  // 53, 110101:  0, ignore
-	0,  // 54, 110110:  0, ignore
-	0,  // 55, 110111:  0, ignore
-	0,  // 56, 111000:  0, ignore
-	0,  // 57, 111001:  0, ignore
-	0,  // 58, 111010:  0, ignore
-	0,  // 59, 111011:  0, ignore
-	0,  // 60, 111100:  0, ignore (ERASE-WHILE-HELD is handled by other routines)
-	0,  // 61, 111101:  0, ignore
-	0,  // 62, 111110:  0, ignore
-	0,  // 63, 111111:  0, ignore
-};
+extern const byte LOGO[]; // Use the logo from data_gui.ino
 
+// Use the display-glyphs from data_gui.ino
+extern const byte GLYPH_BASENOTE[];
+extern const byte GLYPH_CHAN[];
+extern const byte GLYPH_BPM[];
+extern const byte GLYPH_CHAN[];
+extern const byte GLYPH_CLOCKMASTER[];
+extern const byte GLYPH_CONTROLCHANGE[];
+extern const byte GLYPH_DURATION[];
+extern const byte GLYPH_ERASE[];
+extern const byte GLYPH_HUMANIZE[];
+extern const byte GLYPH_LOAD[];
+extern const byte GLYPH_OCTAVE[];
+extern const byte GLYPH_QUANTIZE[];
+extern const byte GLYPH_RECORD[];
+extern const byte GLYPH_REPEAT[];
+extern const byte GLYPH_REPEAT_ARMED[];
+extern const byte GLYPH_RSWITCH[];
+extern const byte GLYPH_SD[];
+extern const byte GLYPH_SIZE[];
+extern const byte GLYPH_VELO[];
 
+// Use the interval-glyphs from data_gui.ino
+extern const byte GLYPH_RANDOM[];
+extern const byte GLYPH_DOWN[];
+extern const byte GLYPH_UP[];
 
-// Long glyph: logo to display on startup
-const byte LOGO[] PROGMEM = {
-	B01111110, B01111110, B01000110, B01111110,
-	B01111110, B01111110, B01100110, B01111110,
-	B00011000, B00011000, B01110110, B01100000,
-	B00011000, B00011000, B01111110, B01111100,
-	B00011000, B00011000, B01101110, B01100000,
-	B00011000, B01111110, B01100110, B01111110,
-	B00011000, B01111110, B01100010, B01111110
-};
-
-// Glyph: BASENOTE
-const byte GLYPH_BASENOTE[] PROGMEM = {B00000000, B11101001, B10101101, B11001111, B10101011, B11101001};
-
-// Glyph: BPM
-const byte GLYPH_BPM[] PROGMEM = {B00000000, B01010001, B01011011, B01010101, B11010001, B11010001};
-
-// Glyph: CHAN
-const byte GLYPH_CHAN[] PROGMEM = {B00000000, B11101000, B10101000, B10001100, B10101010, B11101010};
-
-// Glyph: CLOCK-MASTER
-const byte GLYPH_CLOCKMASTER[] PROGMEM = {B00000000, B11101000, B10101000, B10001010, B10101100, B11101010};
-
-// Glyph: CONTROL-CHANGE
-const byte GLYPH_CONTROLCHANGE[] PROGMEM = {B00000000, B11101110, B10101010, B10001000, B10101010, B11101110};
-
-// Glyph: DURATION
-const byte GLYPH_DURATION[] PROGMEM = {B00000000, B11000000, B10100000, B10101110, B10101000, B11001000};
-
-// Glyph: ERASING
-const byte GLYPH_ERASE[] PROGMEM = {B00000000, B11101010, B10001010, B11101010, B10000000, B11101010};
-
-// Glyph: HUMANIZE
-const byte GLYPH_HUMANIZE[] PROGMEM = {B00000000, B10100000, B10100000, B11101010, B10101010, B10101110};
-
-// Glyph: LOAD
-const byte GLYPH_LOAD[] PROGMEM = {B00000000, B10001010, B10001010, B10001010, B10000000, B11101010};
-
-// Glyph: OCTAVE
-const byte GLYPH_OCTAVE[] PROGMEM = {B00000000, B11100000, B10100000, B10101110, B10101000, B11101110};
-
-// Glyph: QUANTIZE
-const byte GLYPH_QUANTIZE[] PROGMEM = {B00000000, B11100000, B10100000, B10100101, B10100101, B11110111};
-
-// Glyph: RECORD
-const byte GLYPH_RECORD[] PROGMEM = {B11100000, B10010000, B11100000, B10010000, B10010000, B10010000};
-
-// Glyph: REPEAT
-const byte GLYPH_REPEAT[] PROGMEM = {B01000000, B01000000, B01000000, B01000000, B11000000, B11000000};
-
-// Glyph: REPEAT (ARMED)
-const byte GLYPH_REPEAT_ARMED[] PROGMEM = {B01000000, B01001000, B01001001, B01001001, B11011011, B11011011};
-
-// Glyph: SWITCH RECORDING-SEQUENCE
-const byte GLYPH_RSWITCH[] PROGMEM = {B00000000, B11101110, B10101000, B11000100, B10100010, B10101110};
-
-// Glyph: SD-CARD
-const byte GLYPH_SD[] PROGMEM = {B00000000, B11101100, B10001010, B01001010, B00101010, B11101100};
-
-// Glyph: SEQ-SIZE
-const byte GLYPH_SIZE[] PROGMEM = {B00000000, B11101110, B10000010, B01000100, B00101000, B11101110};
-
-// Glyph: VELO
-const byte GLYPH_VELO[] PROGMEM = {B00000000, B10010000, B10010000, B01010000, B00110000, B00010000};
-
-// Interval button glyphs: RANDOM, DOWN, UP
-const byte GLYPH_RANDOM[] PROGMEM = {B11110000, B10010000, B00110000, B00100000, B00000000, B00100000};
-const byte GLYPH_DOWN[] PROGMEM = {B00000000, B00000000, B00000110, B00000110, B00001111, B00000110};
-const byte GLYPH_UP[] PROGMEM = {B00000110, B00001111, B00000110, B00000110, B00000000, B00000000};
-
-// Number multiglyph: holds all numbers used for file-page display (0-6)
-const byte MULTIGLYPH_NUMBERS[] PROGMEM = {
-	B00111100, B00100100, B00100100, B00100100, B00100100, B00111100, // 0
-	B00001000, B00011000, B00001000, B00001000, B00001000, B00001000, // 1
-	B00111100, B00100100, B00001000, B00010000, B00010000, B00111100, // 2
-	B00111100, B00000100, B00011100, B00000100, B00100100, B00111100, // 3
-	B00100100, B00100100, B00111100, B00000100, B00000100, B00000100, // 4
-	B00111100, B00100000, B00111100, B00000100, B00100100, B00111100, // 5
-	B00111100, B00100000, B00111100, B00100100, B00100100, B00111100  // 6
-};
-
-
-
+// Use the number-multiglyph from data_gui.ino
+extern const byte MULTIGLYPH_NUMBERS[];
 
 
 
