@@ -201,7 +201,6 @@ const byte GLYPHS[] PROGMEM = {
 
 };
 
-
 // Standalone glyph: ERASING NOTES
 const byte GLYPH_ERASE[] PROGMEM = {
 	B00000000,

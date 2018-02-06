@@ -34,11 +34,9 @@ void controlChangeCmd(__attribute__((unused)) byte col, __attribute__((unused)) 
 }
 
 // Parse a COPY press
-void copyCmd(byte col, byte row) {
-	char change = toChange(col, row); // Convert a column and row into a CHANGE value
+void copyCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row) {
 	COPYPOS = POS[RECORDSEQ] - (POS[RECORDSEQ] % 16); // Set the COPY-position to the start of the beat
 	COPYSEQ = RECORDSEQ; // Set the COPY-seq to the curent RECORD-seq
-	COPYSIZE = abs(change); // Set the COPY-size to 1, 2, 4, 8, 16, or 32 beats
 	BLINK = 255; // Start an LED-BLINK that is ~16ms long
 	TO_UPDATE |= 252; // Flag the bottom 6 rows for LED updates
 }
@@ -79,12 +77,37 @@ void octaveCmd(byte col, byte row) {
 }
 
 // Parse a PASTE press
-void pasteCmd(byte col, byte row) {
+void pasteCmd(__attribute__((unused)) byte col, byte row) {
 
-	(void)(col); // todo remove these after writing the function
-	(void)(row);
+	byte buf[33]; // Create a quarter-note-sized data buffer...
+	memset(buf, 0, 32); // ...And clear it of any junk data
 
+	unsigned long copybase = 49UL + (word(COPYSEQ) * 8192); // Get the literal position of the copy-seq
+	unsigned long pastebase = 49UL + (word(RECORDSEQ) * 8192); // Get the literal position of the paste-seq
 
+	byte clen = 128 >> row; // Get the length of the copy/paste, in quarter-notes
+
+	byte csize = STATS[COPYSEQ] & 127; // Get the copy-seq's size, in beats
+	byte psize = STATS[RECORDSEQ] & 127; // Get the paste-seq's size, in beats
+
+	byte pstart = (POS[RECORDSEQ] - (POS[RECORDSEQ] % 16)) >> 4; // Get the start of the paste-location, in beats
+
+	for (byte filled = 0; filled < clen; filled++) { // For every quarter-note in the copypaste's area...
+
+		byte cpos = (COPYPOS + filled) % csize; // Wrap the copy-range around the end of its seq
+		byte ppos = (pstart + filled) % psize; // ^ Same, for paste-range
+
+		file.seekSet(copybase + (word(cpos) * 32)); // Navigate to the current copy-position
+		file.read(buf, 32); // Read the copy-data
+		file.seekSet(pastebase + (word(ppos) * 32)); // Navigate to the current paste-position
+		file.write(buf, 32); // Write the paste-data
+
+		file.sync(); // Sync the SD-card's data after every 32 bytes of read/write
+
+	}
+
+	BLINK = 255; // Start an LED-BLINK that is ~16ms long
+	TO_UPDATE |= 252; // Flag the bottom 6 rows for LED updates
 
 }
 

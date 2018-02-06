@@ -40,8 +40,6 @@ Software:
 				. copy:
 					. COPY POSITION value, instead of committing notes to memory
 						-- ok
-					. COPY LENGTH value, based on the confirmation-button struck: 1, 2, 4, 8, 16, 32
-						-- ok
 					. COPY SEQ value, to record which sequence this was recorded in
 						-- ok
 					. implement button-command for COPY
@@ -55,11 +53,9 @@ Software:
 							-- 
 				. paste:
 					. PASTE LENGTH value, based on the confirmation-button struck: 1, 2, 4, 8, 16, 32
-						-- 
-						. if COPY LENGTH is shorter than PASTE LENGTH, then repeat the COPY-section until the PASTE-section is full
-							-- 
+						-- ok
 					. implement button-command for PASTE
-						-- 
+						-- ok
 					. implement GUI-response: bottom 6 rows
 						-- 
 			. SHIFT CURRENT POSITION

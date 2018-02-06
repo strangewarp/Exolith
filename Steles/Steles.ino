@@ -75,7 +75,6 @@ byte CHAN = 0; // MIDI-CHAN for RECORD MODE notes
 byte QUANTIZE = B00000010; // Time-quantize value for RECORD MODE notes: bits 0-3: 1, 2, 4, 8 (16th-notes)
 byte DURATION = B00000100; // Duration value for RECORD MODE notes: bits 0-4: 1, 2, 4, 8, 16 (16th-notes)
 byte COPYPOS = 0; // Copy-position within the copy-sequence
-byte COPYSIZE = 1; // Number of beats to copy (1, 2, 4, 8, 16, 32)
 byte COPYSEQ = 0; // Sequence from which to copy data
 
 // Sequencing vars
