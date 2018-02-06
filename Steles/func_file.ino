@@ -6,10 +6,10 @@ void createFiles() {
 
 	for (byte i = 0; i < 168; i++) { // For every song-slot...
 		lc.setRow(0, 0, i); // Display how many files have been created so far, if any
-		if (!(i % 42)) { // After a certain amount of files, switch to the next logo letter
+		if (!(i % 32)) { // After a certain amount of files, switch to the next logo letter
 			for (byte row = 0; row < 7; row++) { // For each row in the 7-row-tall logo text...
 				// Set the corresponding row to the corresponding letter slice
-				lc.setRow(0, row + 1, pgm_read_byte_near(LOGO + (row * 4) + byte(floor(i / 42))));
+				lc.setRow(0, row + 1, pgm_read_byte_near(LOGO + (row * 4) + (i >> 5)));
 			}
 		}
 		getFilename(name, i); // Get the filename that corresponds to this song-slot
@@ -18,7 +18,7 @@ void createFiles() {
 		file.close(); // Close the newly-created file
 		file.open(name, O_WRITE); // Open the file explicitly in WRITE mode
 		file.seekSet(0); // Go to byte 0
-		file.write(byte(100)); // Write a default BPM value of 100
+		file.write(byte(80)); // Write a default BPM value of 80
 		for (byte j = 1; j < 49; j++) { // For every header-byte...
 			file.seekSet(j); // Go to that byte's position
 			file.write(byte(8)); // Write a default sequence-size value of 8
@@ -88,3 +88,4 @@ void loadSong(byte slot) {
 	TO_UPDATE = 255; // Flag entire GUI for an LED-update
 
 }
+

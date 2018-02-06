@@ -45,31 +45,29 @@ Software:
 					. implement button-command for COPY
 						-- ok
 					. implement GUI-response: bottom 6 rows
-						-- 
-					. COPY POSITION, LENGTH, and SEQ should be wiped on every:
-						. mode transition
-							-- 
-						. note: seq-data for all possible positions is kept in memory always, so copying from beyond seq-size is okay!
-							-- 
+						-- ok
 				. paste:
 					. PASTE LENGTH value, based on the confirmation-button struck: 1, 2, 4, 8, 16, 32
 						-- ok
 					. implement button-command for PASTE
 						-- ok
 					. implement GUI-response: bottom 6 rows
-						-- 
+						-- ok
 			. SHIFT CURRENT POSITION
 				. should use the standard 1-2-4-8-16-32 negative-or-positive key-config
+					-- ok
 				. should shift every active sequence, and global cue position, by the given amount
-			. update button-key.txt for all of these
-			. test all of these
+					-- ok
 		. update func_button and func_gui to reflect all keychord changes and new commands
 			. move all button-commands' responses to a separate file
-				-- 
-			. set all commands' bitwise button-values in DEFINE statements
-			. NOTE: all binary values are flipped in the codebase, compared to how they are depicted in button-key.txt
+				-- done
 
 	. remove all "todo update" lines from button-key.txt
+
+	. replace every reference to SEQ-SIZE with something that assumes a value from 1 to 32
+		. change all file-creation and file-handling to make each sequence only 4096 bytes large
+		. every reference to "STATS[seq] & 127" should be changed to "STATS[seq] & 63"
+		. wipe the SD-card again, because the old savefiles are now too large
 
 	. replace every clamp() with constrain()?
 
@@ -80,6 +78,7 @@ Software:
 		. intervals
 			. recording them to seq
 			. playing them from seq
+		. SHIFT POSITION
 		. COPY/PASTE:
 			. straightforward standard usge
 			. with COPY size too long for PASTE size (should be discarded)
@@ -87,6 +86,7 @@ Software:
 			. with COPY in another sequence than PASTE
 		. duophony
 		. various QUANTIZE settings
+		. REPEAT
 		. are old notes being knocked out of the sequence by new notes in RECORD-MODE properly?
 		. test SEQ-SIZE behavior
 			. does a SEQ-SIZE of "0" correspond to 1 beat?

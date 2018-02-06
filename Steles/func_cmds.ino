@@ -114,10 +114,20 @@ void pasteCmd(__attribute__((unused)) byte col, byte row) {
 // Parse a SHIFT CURRENT POSITION press
 void posCmd(byte col, byte row) {
 
-	(void)(col); // todo remove these after writing the function
-	(void)(row);
+	char change = toChange(col, row); // Convert a column and row into a CHANGE value
 
+	CUR16 = (((int(CUR16) + change) % 128) + 128) % 128; // Shift the global cue-point, wrapping in either direction
 
+	for (byte seq = 0; seq < 48; seq++) { // For each seq...
+		if (STATS[seq] & 128) { // If the seq is playing...
+			word size = (STATS[seq] & 63) * 16; // Get the seq's size, in 16th-notes
+			// Shift the seq's position, wrapping in either direction
+			POS[seq] = (((int(POS[seq]) + change) % size) + size) % size;
+		}
+	}
+
+	BLINK = 255; // Start an LED-BLINK that is ~16ms long
+	TO_UPDATE |= 252; // Flag the bottom 6 rows for LED updates
 
 }
 
@@ -148,10 +158,10 @@ void repeatCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte ro
 void sizeCmd(byte col, byte row) {
 	char change = toChange(col, row); // Convert a column and row into a CHANGE value
 	// Get the new value for the currently-recording-seq's size
-	byte newsize = byte(clamp(0, 63, char(STATS[RECORDSEQ] & 63) + change));
+	byte newsize = byte(clamp(1, 32, char(STATS[RECORDSEQ] & 63) + change));
 	STATS[RECORDSEQ] = (STATS[RECORDSEQ] & 128) | newsize; // Modify the currently-recording seq's size
 	updateFileByte(RECORDSEQ + 1, STATS[RECORDSEQ]); // Update the seq's size-byte in the song's savefile
-	POS[RECORDSEQ] %= newsize << 4; // Wrap around the currently-recording seq's 16th-note-position
+	POS[RECORDSEQ] %= word(newsize) << 4; // Wrap around the resized seq's 16th-note-position
 	TO_UPDATE = 255; // Flag all LED-rows for updating
 }
 

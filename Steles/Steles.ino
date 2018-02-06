@@ -27,7 +27,7 @@
 // Define statements:
 //   These values may need to be changed in the course of programming/debugging,
 //   but will always stay the same at runtime.
-#define FILE_BYTES 393265UL // Number of bytes in each seq-file
+#define FILE_BYTES 196608UL // Number of bytes in each seq-file
 #define SCANRATE 7000 // Amount of time between keystroke-scans, in microseconds
 #define GESTDECAY 450000UL // Amount of time between gesture-decay ticks, in microseconds
 
@@ -100,7 +100,7 @@ byte SCATTER[49];
 byte CMD[49];
 
 // Holds 48 seqs' sizes and activity-flags
-// bits 0-5: 1, 2, 4, 8, 16, 32 (= size, in beats)
+// bits 0-5: 1, 2, 4, 8, 16, 32 (= size, in beats) (range limits: 1 to 32)
 // bit 6: reserved
 // bit 7: on/off flag
 byte STATS[49];
