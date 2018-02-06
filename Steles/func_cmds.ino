@@ -8,14 +8,14 @@ void armCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row) 
 // Parse a BASENOTE press
 void baseCmd(byte col, byte row) {
 	char change = toChange(col, row); // Convert a column and row into a CHANGE value
-	BASENOTE = clamp(0, 11, char(BASENOTE) + change); // Modify the BASENOTE value
+	BASENOTE = applyChange(BASENOTE, change, 0, 11); // Modify the BASENOTE value
 	TO_UPDATE |= 1; // Flag the topmost row for updating
 }
 
 // Parse a CHAN press
 void chanCmd(byte col, byte row) {
 	char change = toChange(col, row); // Convert a column and row into a CHANGE value
-	CHAN = (CHAN & 48) | clamp(0, 15, char(CHAN & 15) + change); // Modify the CHAN value, while preserving CC & PC flags
+	CHAN = (CHAN & 48) | applyChange(CHAN & 15, change, 0, 15); // Modify the CHAN value, while preserving CC & PC flags
 	TO_UPDATE |= 1; // Flag the topmost row for updating
 }
 
@@ -44,7 +44,7 @@ void copyCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row)
 // Parse a DURATION press
 void durationCmd(byte col, byte row) {
 	char change = toChange(col, row); // Convert a column and row into a CHANGE value
-	DURATION = clamp(0, 255, int(DURATION) + change); // Modify the DURATION value
+	DURATION = applyChange(DURATION, change, 0, 255); // Modify the DURATION value
 	TO_UPDATE |= 1; // Flag the topmost row for updating
 }
 
@@ -58,7 +58,7 @@ void genericCmd(byte col, byte row) {
 // Parse a HUMANIZE press
 void humanizeCmd(byte col, byte row) {
 	char change = toChange(col, row); // Convert a column and row into a CHANGE value
-	HUMANIZE = clamp(0, 127, int(HUMANIZE) + change); // Modify the HUMANIZE value
+	HUMANIZE = applyChange(HUMANIZE, change, 0, 127); // Modify the HUMANIZE value
 	TO_UPDATE |= 1; // Flag the topmost row for updating
 }
 
@@ -72,7 +72,7 @@ void iUpRandCmd(byte col, byte row) { genericCmd(col, row); }
 // Parse an OCTAVE press
 void octaveCmd(byte col, byte row) {
 	char change = toChange(col, row); // Convert a column and row into a CHANGE value
-	OCTAVE = clamp(0, 10, char(OCTAVE) + change); // Modify the OCTAVE value
+	OCTAVE = applyChange(OCTAVE, change, 0, 10); // Modify the OCTAVE value
 	TO_UPDATE |= 1; // Flag the topmost row for updating
 }
 
@@ -144,7 +144,7 @@ void programChangeCmd(byte col, byte row) {
 // Parse a QUANTIZE press
 void quantizeCmd(byte col, byte row) {
 	char change = toChange(col, row); // Convert a column and row into a CHANGE value
-	QUANTIZE = clamp(0, 16, abs(change)); // Modify the QUANTIZE value
+	QUANTIZE = abs(change) >> 2; // Modify the QUANTIZE value
 	TO_UPDATE |= 1; // Flag the topmost row for updating
 }
 
@@ -158,7 +158,7 @@ void repeatCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte ro
 void sizeCmd(byte col, byte row) {
 	char change = toChange(col, row); // Convert a column and row into a CHANGE value
 	// Get the new value for the currently-recording-seq's size
-	byte newsize = byte(clamp(1, 32, char(STATS[RECORDSEQ] & 63) + change));
+	byte newsize = applyChange(STATS[RECORDSEQ] & 63, change, 1, 32);
 	STATS[RECORDSEQ] = (STATS[RECORDSEQ] & 128) | newsize; // Modify the currently-recording seq's size
 	updateFileByte(RECORDSEQ + 1, STATS[RECORDSEQ]); // Update the seq's size-byte in the song's savefile
 	POS[RECORDSEQ] %= word(newsize) << 4; // Wrap around the resized seq's 16th-note-position
@@ -177,7 +177,7 @@ void switchCmd(byte col, byte row) {
 // Parse a BPM-press
 void tempoCmd(byte col, byte row) {
 	char change = toChange(col, row); // Convert a column and row into a CHANGE value
-	BPM = clamp(16, 200, int(BPM) + change); // Change the BPM rate
+	BPM = applyChange(BPM, change, 16, 200); // Change the BPM rate
 	updateFileByte(0, BPM); // Update the BPM-byte in the song's savefile
 	updateTickSize(); // Update the internal tick-size (in microseconds) to match the new BPM value
 	TO_UPDATE |= 1; // Flag the topmost row for updating
@@ -186,7 +186,7 @@ void tempoCmd(byte col, byte row) {
 // Parse a VELOCITY press
 void veloCmd(byte col, byte row) {
 	char change = toChange(col, row); // Convert a column and row into a CHANGE value
-	VELO = clamp(0, 127, int(VELO) + change); // Modify the VELO value
+	VELO = applyChange(VELO, change, 0, 127); // Modify the VELO value
 	TO_UPDATE |= 1; // Flag the topmost row for updating
 }
 

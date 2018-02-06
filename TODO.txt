@@ -3,18 +3,11 @@ Tine TODO
 
 Software:
 
-	. replace every reference to SEQ-SIZE with something that assumes a value from 1 to 32
-		-- ok
-	. replace every "8192 bytes" with "4096 bytes"
-		-- done
-	. change all file-creation and file-handling to make each sequence only 4096 bytes large
-		-- done
-	. every reference to "STATS[seq] & 127" should be changed to "STATS[seq] & 63"
-		-- done
+	. replace every clamp() with constrain()?
+		-- no: replaced it with applyChange() instead
+
 	. wipe the testing SD-card again, because the old savefiles are now in the wrong format
 		-- 
-
-	. replace every clamp() with constrain()?
 
 	. re-test everything
 		. regular notes: recording & playback

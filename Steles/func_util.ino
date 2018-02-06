@@ -1,13 +1,11 @@
 
-// Clamp input v between the low and high values, without any wrap-around, and then return it
-byte clamp(byte low, byte high, byte v) {
-	return min(high, max(low, v));
-}
-char clamp(char low, char high, char v) {
-	return min(high, max(low, v));
-}
-int clamp(int low, int high, int v) {
-	return min(high, max(low, v));
+// Apply a negative or positive "change" value to a given byte,
+// clamping it between the given low and high values.
+byte applyChange(byte n, char change, byte low, byte high) {
+	int n2 = int(n) + change;
+	if (n2 <= low) { return low; }
+	if (n2 >= high) { return high; }
+	return byte(n2);
 }
 
 // Convert a column and row into a CHANGE value,
