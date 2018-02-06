@@ -3,10 +3,12 @@
 Steles data-file spec
 
 	File location:
-		/000.DAT: datafile with song's number
+		(filenames are numbered in decimal)
+		/000.DAT: lowest datafile number
+		/167.DAT: highest datafile number
 
 	File contents:
-		(393265 total bytes)
+		(196657 total bytes)
 		Header bytes:
 			(49 total bytes)
 			0: BPM value
@@ -14,9 +16,9 @@ Steles data-file spec
 				Seq's size, in whole-notes
 				(0-63 = 1-64)
 		Body bytes:
-			48 sequences (393216 total bytes)
+			48 sequences (196608 total bytes)
 			Per sequence (for 48 sequences):
-				1024 tick-slots (8192 total bytes)
+				512 tick-slots (4096 total bytes)
 				Per tick-slot:
 					2 notes (8 total bytes)
 					Per note:

@@ -16,8 +16,8 @@ byte isRecCompatible(byte ctrl) {
 void primeRecSeq() {
 	resetSeq(RECORDSEQ); // If the most-recently-touched seq is already playing, reset it to prepare for timing-wrapping
 	SCATTER[RECORDSEQ] = 0; // Unset the most-recently-touched seq's SCATTER values before starting to record
-	word seqsize = word(STATS[RECORDSEQ] & B00111111) << 4; // Get sequence's size in 16th-notes
-	POS[RECORDSEQ] = (seqsize > 127) ? CUR16 : (CUR16 % seqsize); // Wrap sequence around to global cue-point
+	word seqsize = word(STATS[RECORDSEQ] & 63) << 4; // Get sequence's size in 16th-notes
+	POS[RECORDSEQ] = (seqsize >= 128) ? CUR16 : (CUR16 % seqsize); // Wrap sequence around to global cue-point
 	STATS[RECORDSEQ] |= 128; // Set the sequence to active
 }
 
@@ -25,7 +25,7 @@ void primeRecSeq() {
 void eraseTick(byte buf[]) {
 
 	// Get the tick's position in the savefile
-	unsigned long tpos = (49UL + (POS[RECORDSEQ] * 8)) + (8192UL * RECORDSEQ);
+	unsigned long tpos = (49UL + (POS[RECORDSEQ] * 8)) + (4096UL * RECORDSEQ);
 
 	file.seekSet(tpos); // Navigate to the note's absolute position
 	file.read(buf, 8); // Read the data of the tick's notes
@@ -120,7 +120,7 @@ void recordToSeq(word pstn, byte chan, byte b1, byte b2) {
 	byte buf[9]; // SD-card read/write buffer
 
 	// Get the position of the first of this tick's bytes in the data-file
-	unsigned long tickstart = (49UL + (8192UL * RECORDSEQ)) + (((unsigned long)pstn) * 8);
+	unsigned long tickstart = (49UL + (4096UL * RECORDSEQ)) + (((unsigned long)pstn) * 8);
 
 	// Get the tick's note-slots, and check whether any of them are empty
 	file.seekSet(tickstart);

@@ -14,13 +14,8 @@ void resetAllSeqs() {
 	memset(CMD, 0, sizeof(CMD) - 1);
 	memset(POS, 0, sizeof(POS) - 1);
 	memset(SCATTER, 0, sizeof(SCATTER) - 1);
-	resetAllPlaying();
-}
-
-// Reset all seqs' PLAYING flags in the STATS array
-void resetAllPlaying() {
 	for (byte i = 0; i < 48; i++) {
-		STATS[i] &= 127;
+		STATS[i] &= 63; // Reset all seqs' PLAYING flags
 	}
 }
 
@@ -28,7 +23,7 @@ void resetAllPlaying() {
 void resetSeq(byte s) {
 	CMD[s] = 0;
 	POS[s] = 0;
-	STATS[s] &= 127;
+	STATS[s] &= 63;
 	//SCATTER[s] &= 15; // Wipe all of the seq's scatter-counting and scatter-flagging bits, but not its scatter-chance bits
 }
 
@@ -66,7 +61,7 @@ void parseCues(byte s, byte size) {
 	) { return; } // ...Exit the function
 
 	// Enable or disable the sequence's playing-bit
-	STATS[s] = (STATS[s] & B01111111) | ((CMD[s] & 2) << 6);
+	STATS[s] = (STATS[s] & B00111111) | ((CMD[s] & 2) << 6);
 
 	// Set the sequence's internal tick to a position based on the incoming SLICE bits
 	POS[s] = word(size) * ((CMD[s] & B00011100) >> 1);
@@ -83,11 +78,11 @@ void readTick(byte s, byte offset, byte buf[]) {
 	word loc = POS[s]; // Get the sequence's current internal tick-location
 	if (offset) { // If an offset was given...
 		// Apply the offset to the tick-location, wrapping around the sequence's size-boundary
-		loc = (loc + offset) % (word(STATS[s] & 127) * 16);
+		loc = (loc + offset) % (word(STATS[s] & 63) * 16);
 	}
 	// Navigate to the note's absolute position,
 	// and compensate for the fact that each tick contains 8 bytes
-	file.seekSet((49UL + (loc * 8)) + (8192UL * s));
+	file.seekSet((49UL + (loc * 8)) + (4096UL * s));
 	file.read(buf, 8); // Read the data of the tick's notes
 }
 
@@ -220,7 +215,7 @@ void iterateAll() {
 
 			memset(buf, 0, 8); // Clear the buffer's RAM of junk data
 
-			byte size = STATS[i] & 127; // Get seq's absolute size, in beats
+			byte size = STATS[i] & 63; // Get seq's absolute size, in beats
 
 			parseCues(i, size); // Parse a sequence's cued commands, if any
 

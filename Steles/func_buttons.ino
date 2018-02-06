@@ -52,7 +52,7 @@ void parsePlayPress(byte col, byte row) {
 		} else { // Else, if the sequence has no cued ON value, then this is a pure beatslice, so...
 
 			// Get the number of 16th-notes in one of the seq's slice-chunks
-			byte csize = (STATS[seq] & 127) * 2;
+			byte csize = (STATS[seq] & 63) * 2;
 
 			// Set the sequence's position to:
 			//   A base-position equal to the slice-numbers being held,

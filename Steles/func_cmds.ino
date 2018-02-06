@@ -82,13 +82,13 @@ void pasteCmd(__attribute__((unused)) byte col, byte row) {
 	byte buf[33]; // Create a quarter-note-sized data buffer...
 	memset(buf, 0, 32); // ...And clear it of any junk data
 
-	unsigned long copybase = 49UL + (word(COPYSEQ) * 8192); // Get the literal position of the copy-seq
-	unsigned long pastebase = 49UL + (word(RECORDSEQ) * 8192); // Get the literal position of the paste-seq
+	unsigned long copybase = 49UL + (word(COPYSEQ) * 4096); // Get the literal position of the copy-seq
+	unsigned long pastebase = 49UL + (word(RECORDSEQ) * 4096); // Get the literal position of the paste-seq
 
 	byte clen = 128 >> row; // Get the length of the copy/paste, in quarter-notes
 
-	byte csize = STATS[COPYSEQ] & 127; // Get the copy-seq's size, in beats
-	byte psize = STATS[RECORDSEQ] & 127; // Get the paste-seq's size, in beats
+	byte csize = STATS[COPYSEQ] & 63; // Get the copy-seq's size, in beats
+	byte psize = STATS[RECORDSEQ] & 63; // Get the paste-seq's size, in beats
 
 	byte pstart = (POS[RECORDSEQ] - (POS[RECORDSEQ] % 16)) >> 4; // Get the start of the paste-location, in beats
 
