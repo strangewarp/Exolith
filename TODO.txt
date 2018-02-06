@@ -4,7 +4,7 @@ Tine TODO
 Software:
 
 	. remove all "todo update" lines from button-key.txt
-		-- 
+		-- done
 
 	. replace every reference to SEQ-SIZE with something that assumes a value from 1 to 32
 		. change all file-creation and file-handling to make each sequence only 4096 bytes large
