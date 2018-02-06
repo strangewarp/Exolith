@@ -3,66 +3,8 @@ Tine TODO
 
 Software:
 
-	. add REALTIME RECORD back in
-		. ARM RECORDING button should record every note that is struck while the button is held, instead of toggling a mode
-			-- ok
-			. RECORDNOTES will no longer be necessary
-				-- removed
-				. actually RECORDNOTES is still necessary as a toggle, so that INTERVALs will be ergonomic to play in RECORDMODE
-					-- oops
-					. add RECORDNOTES back in as a button-toggle
-						-- done
-					. replace all "ctrl == B00100000" checks with "RECORDNOTES" checks
-						-- done
-					. set RECORDNOTES to 0 on every mode-transition
-						-- done
-					. give it an LED-GUI element
-						-- done
-			. ERASENOTES can be removed too, in the same way
-				-- removed
-			. change INTERVAL keychords to include the RECORD button
-				-- ok
-				. only RECORD, INTERVAL, CONTROL-CHANGE and PROGRAM-CHANGE keychords should contain ctrl-byte B00100000. move other keychords around to compensate
-					-- ok
-				. update button_key.txt to reflect the changes
-					-- ok
-		. QUANTIZE should round down - this will help compensate for keystroke lag
-			-- done
-		. add commands to RECORD MODE:
-			. REPEAT-NOTE (while both armed and unarmed)
-				. should function as a toggle, like RECORDNOTES
-					-- ok
-				. repeats based on the QUANTIZE interval
-					-- ok
-				. add GUI response for this
-					-- ok
-			. COPY CURRENT BEAT / PASTE TO CURRENT BEAT
-				. copy:
-					. COPY POSITION value, instead of committing notes to memory
-						-- ok
-					. COPY SEQ value, to record which sequence this was recorded in
-						-- ok
-					. implement button-command for COPY
-						-- ok
-					. implement GUI-response: bottom 6 rows
-						-- ok
-				. paste:
-					. PASTE LENGTH value, based on the confirmation-button struck: 1, 2, 4, 8, 16, 32
-						-- ok
-					. implement button-command for PASTE
-						-- ok
-					. implement GUI-response: bottom 6 rows
-						-- ok
-			. SHIFT CURRENT POSITION
-				. should use the standard 1-2-4-8-16-32 negative-or-positive key-config
-					-- ok
-				. should shift every active sequence, and global cue position, by the given amount
-					-- ok
-		. update func_button and func_gui to reflect all keychord changes and new commands
-			. move all button-commands' responses to a separate file
-				-- done
-
 	. remove all "todo update" lines from button-key.txt
+		-- 
 
 	. replace every reference to SEQ-SIZE with something that assumes a value from 1 to 32
 		. change all file-creation and file-handling to make each sequence only 4096 bytes large
