@@ -3,9 +3,6 @@ Tine TODO
 
 Software:
 
-	. replace every clamp() with constrain()?
-		-- no: replaced it with applyChange() instead
-
 	. wipe the testing SD-card again, because the old savefiles are now in the wrong format
 		-- 
 
@@ -31,8 +28,25 @@ Software:
 		. test CC commands
 		. test file-load
 
+	. re-test all cue-commands
+		. OFF
+		. CUE
+		. SLICE
+		. CUE (with SLICE insertion)
+		. CUE OFF
+		. PAGE OFF
+		. SCATTER (amount)
+		. SCATTER UNSET
+		. PAGE SCATTER UNSET
+
+	. test gesture system
+		. test LOAD-MODE TOGGLE
+		. test GLOBAL PLAY/STOP TOGGLE
+
 	. update gui-key.txt
 		. include button and LED spec for LOADMODE
+
+	. convert all multi-byte Serial.write() commands into batch Serial.writes with a buffer-array of bytes, to totally rule out the possibility of serial lag
 
 	. fill 12 sequences with notes, and check whether lag occurs when connected to a hardware synthesizer
 
@@ -40,14 +54,13 @@ Software:
 		. should blink between all-LEDs-on and regular-LEDs-on when any PAGE command is held, highlighting the active page
 		. should blink one final time on the new page, after the page is selected, using a timer to control how long the ON-block should be OR'ed to regular LEDs
 
-	. test gesture system
-		. test LOAD-MODE TOGGLE
-		. test GLOBAL PLAY/STOP TOGGLE
-
 	. does BPM change the savefile correctly?
 		. is it loaded in correctly, on startup, after being changed by the user?
 
-	. do very slow BPMs have the expected tick-length?
+	. add PROGRAM CHANGE functionality (in addition to CONTROL CHANGE)
+		. make sure this has its virtual PC-bit lopped off by INTERVAL-commands in RECORD mode, just like virtual CC-bits
+		. make sure any button-press global-var changes to the CHAN and CC commands don't interfere with this
+		. enabling PC should set the CC bit to 0, and enabling CC should set the PC bit to 0
 
 	. when two note-buttons are simultaneously held during ARMED RECORDING, are they recorded simultaneously?
 		. what if they're INTERVALS?
@@ -59,6 +72,9 @@ Software:
 	. soak-test the sequencer to test whether ABSOLUTETIME wrap-arounds work correctly (these should occur every hour or so)
 
 	. when SCATTER, SCATTER-UNSET, PAGE-SCATTER, or PAGE-SCATTER-UNSET is held, the GUI should show only those sequences that have SCATTER states enabled
+
+	. do very slow BPMs have the expected tick-length?
+	. test whether very fast BPMs have any lag
 
 	. if lag-reduction is necessary...
 		. try moving the MAX7219 onto the SPI pins and using LedControl_HW_SPI immediately?
@@ -73,32 +89,12 @@ Software:
 	. test "toggle to next/prev sequence" in RECORD mode
 
 	. change func_gui.ino:
-		. add GUI prompt for current RECORDSEQ value? (RECORD MODE)
-		. show currently-active section of the recording-seq in RECORD MODE, in addition to the global cue-point
-		. change func_sequencing.ino to toggle a GUI update whenever the recording-seq in RECORD MODE reaches a new slice of itself
-		. remove all outdated updates for second GUI-row in PAGE and CTRL-BUTTON functions
-
-	. convert all multi-byte Serial.write() commands into batch Serial.writes with a buffer-array of bytes, to totally rule out the possibility of serial lag
-
-	. re-test all cue-commands
-		. OFF
-		. CUE
-		. SLICE
-		. CUE (with SLICE insertion)
-		. CUE OFF
-		. PAGE OFF
-		. SCATTER (amount)
-		. SCATTER UNSET
-		. PAGE SCATTER UNSET
+	. add GUI prompt for current RECORDSEQ value? (RECORD MODE)
+	. cue a BLINK whenever the RECORDSEQ reaches its 0th position
 
 	. display SCATTER status only when a SCATTER chord is held
 
 	. reduce max sequence-size to 32 whole-notes, to cut down on potential read-lag?
-
-	. add PROGRAM CHANGE functionality (in addition to CONTROL CHANGE)
-		. make sure this has its virtual PC-bit lopped off by INTERVAL-commands in RECORD mode, just like virtual CC-bits
-		. make sure any button-press global-var changes to the CHAN and CC commands don't interfere with this
-		. enabling PC should set the CC bit to 0, and enabling CC should set the PC bit to 0
 
 	. test MIDI-IN (notes)
 	. test MIDI-IN (clock)
