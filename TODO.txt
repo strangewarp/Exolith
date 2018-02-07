@@ -3,8 +3,11 @@ Tine TODO
 
 Software:
 
-	. wipe the testing SD-card again, because the old savefiles are now in the wrong format
-		-- 
+	!!! upload new firmware before putting the SD-card back in
+		-- ok
+
+	. fix SD-card-formatting screen
+		-- done
 
 	. re-test everything
 		. regular notes: recording & playback
