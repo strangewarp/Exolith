@@ -3,11 +3,11 @@ Tine TODO
 
 Software:
 
-	!!! upload new firmware before putting the SD-card back in
-		-- ok
+	. "RECORD" glyph is one row too tall
+		-- done (also fixed other wrongly-sized glyphs)
 
-	. fix SD-card-formatting screen
-		-- done
+	. "DURATION" doesn't change correctly
+		-- 
 
 	. re-test everything
 		. regular notes: recording & playback
