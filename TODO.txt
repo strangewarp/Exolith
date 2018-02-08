@@ -7,7 +7,9 @@ Software:
 		-- done (also fixed other wrongly-sized glyphs)
 
 	. "DURATION" doesn't change correctly
-		-- 
+		-- it's the GUI for the top row - forgot to change binary values to match new keychords
+		. fix it
+			-- ok
 
 	. re-test everything
 		. regular notes: recording & playback
