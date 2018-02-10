@@ -27,6 +27,7 @@ Steles data-file spec
 							byte values:
 								0-15: Channel
 								16-31: CC Channel 0-15
+								32-47: PC channel 0-15
 						1: Pitch
 							byte values:
 								0-127: Normal pitch

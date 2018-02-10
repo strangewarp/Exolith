@@ -60,8 +60,9 @@ void eraseTick(byte buf[]) {
 void processRecAction(byte ctrl, byte key) {
 
 	// Get the interval-buttons' activity specifically,
-	// while weeding out any false-positives from commands that don't hold the INTERVAL button (B00000001)
-	byte ibs = (ctrl & 7) * ((ctrl <= 7) && (ctrl & 1));
+	// by checking whether an INTERVAL-flavored keychord is currently held
+	// (these keychords have the highest values in the KEYTAB attay for this reason)
+	byte ibs = applyChange(pgm_read_byte_near(KEYTAB + ctrl), -19, 0, 4);
 
 	// Get a note that corresponds to the key, organized from bottom-left to top-right, with all modifiers applied
 	byte pitch = (OCTAVE * 12) + BASENOTE + ((23 - key) ^ 3);
@@ -77,7 +78,7 @@ void processRecAction(byte ctrl, byte key) {
 	if (ibs) { // If any INTERVAL-keys are held...
 		// Make a composite INTERVAL command, as it would appear in data-storage,
 		// and apply the INTERVAL command to the channel's most-recent pitch
-		ibs = ((ibs & 1) << 7) | ((ibs & 2) << 5) | ((ibs & 4) << 3);
+		ibs = 128 | ((ibs - 1) << 5);
 		pitch = applyIntervalCommand(ibs | key, RECENT[rchan]);
 	}
 
@@ -86,6 +87,7 @@ void processRecAction(byte ctrl, byte key) {
 	}
 
 	if (PLAYING && RECORDNOTES) { // If notes are being recorded into a playing sequence...
+
 		// Record the note, either natural or modified by INTERVAL, into the current RECORDSEQ slot;
 		// and if this is an INTERVAL-command, then clip off any virtual CC-info from the chan-byte 
 		recordToSeq(
@@ -94,20 +96,28 @@ void processRecAction(byte ctrl, byte key) {
 			pitch,
 			velo
 		);
-		// Incerase the record-position by QUANTIZE amount, wrapping around the end of the sequence if applicable
+
 		TO_UPDATE |= 254; // Flag the 7 bottommost LED-rows for an update
+
 	}
 
-	if (CHAN & 16) { return; } // If this was a virtual CC command, forego all SUSTAIN operations
+	// If this wasn't a CC or PC command,
+	// update SUSTAIN buffer in preparation for playing the user-pressed note
+	if (CHAN < 16) {
+		clipBottomSustain(); // If the bottommost SUSTAIN is filled, send its NOTE-OFF prematurely
+		memmove(SUST + 3, SUST, SUST_COUNT * 3); // Move all sustains one space downward
+		SUST[0] = 128 + CHAN; // Fill the topmost sustain-slot with the user-pressed note
+		SUST[1] = pitch; // ^
+		SUST[2] = DURATION; // ^
+		SUST_COUNT++; // Increase the number of active sustains, to accurately reflect the new note
+	}
 
-	// Update SUSTAIN buffer in preparation for playing the user-pressed note
-	clipBottomSustain(); // If the bottommost SUSTAIN is filled, send its NOTE-OFF prematurely
-	memmove(SUST + 3, SUST, SUST_COUNT * 3); // Move all sustains one space downward
-	SUST[0] = 128 + CHAN; // Fill the topmost sustain-slot with the user-pressed note
-	SUST[1] = pitch; // ^
-	SUST[2] = DURATION; // ^
-	SUST_COUNT++; // Increase the number of active sustains, to accurately reflect the new note
-	byte buf[4] = {byte(144 + CHAN), pitch, velo}; // Build a correctly-formatted NOTE-ON for the user-pressed note
+	byte offc = CHAN >> 4; // Get an offset-value for the CHAN byte
+	offc = (offc + (!!offc)) * 16; // Convert the offset into a CC or PC offset, or no offset for a NOTE
+
+	// Build a correctly-formatted NOTE-ON for the user-pressed note;
+	// or a correctly-formatted CC or PC command, if applicable.
+	byte buf[4] = {byte(144 + CHAN + offc), pitch, velo};
 	Serial.write(buf, 3); // Send the user-pressed note to MIDI-OUT immediately, without buffering
 
 	TO_UPDATE |= 2; // Flag the sustain-row for a GUI update

@@ -181,12 +181,9 @@ void getTickNotes(byte ctrl, word held, byte s, byte buf[]) {
 						processRecAction(ctrl, i);
 					}
 				}
-				// Read the tick with no offset, regardless of whether a REPEAT-note was recorded or not
-				readTick(s, 0, buf);
 			}
-		} else { // Else, if notes aren't being recorded...
-			readTick(s, 0, buf); // Read the tick with no offset
 		}
+		readTick(s, 0, buf); // Read the tick with no offset
 	} else { // Else, if RECORD MODE is inactive...
 		readTick(s, (SCATTER[s] & 240) >> 3, buf); // Read the tick with SCATTER-offset
 		didscatter = 1;

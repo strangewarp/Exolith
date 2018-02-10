@@ -11,6 +11,19 @@ Software:
 		. fix it
 			-- ok
 
+	. the sequence doesn't play while recording
+		-- might have figured it out: logic-flow problem in getTickNotes()
+		. test it
+			-- 
+
+	. if QUANTIZE is still funky, try a "round"-style quantization again - the original testing may have seemed wrong due to lag in the testing apparatus
+		-- 
+		. if there is slight recording-lag, then this can be compensated for by making the rounding "asymmetrical"
+		. if REPEAT is active, QUANTIZE should round only downwards
+
+	. RECORD MODE needs better visual feedback for timing
+		. make second row show seq's beat-counter, and keep global beat-counter in top row
+
 	. re-test everything
 		. regular notes: recording & playback
 		. note-erasing in RECORD-MODE
