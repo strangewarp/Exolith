@@ -88,10 +88,19 @@ void processRecAction(byte ctrl, byte key) {
 
 	if (PLAYING && RECORDNOTES) { // If notes are being recorded into a playing sequence...
 
+		word qp = POS[RECORDSEQ]; // Will hold a QUANTIZE-modified insertion point (defaults to the seq's current position)
+
+		if (!REPEAT) { // If REPEAT isn't toggled...
+			char down = POS[RECORDSEQ] % QUANTIZE; // Get distance to previous QUANTIZE point
+			byte up = QUANTIZE - down; // Getdistance to next QUANTIZE point
+			qp += (down <= up) ? (-down) : up; // Make the shortest distance into an offset for the note-insertion point
+			qp %= word(STATS[RECORDSEQ] & 63) * 16; // Wrap the insertion-point around the seq's length
+		}
+
 		// Record the note, either natural or modified by INTERVAL, into the current RECORDSEQ slot;
 		// and if this is an INTERVAL-command, then clip off any virtual CC-info from the chan-byte 
 		recordToSeq(
-			POS[RECORDSEQ] - (POS[RECORDSEQ] % QUANTIZE), // Get a rounded-down insert-point, based on QUANTIZE
+			qp, // Current postion in the RECORDSEQ, modified by the current QUANTIZE-distance
 			ibs ? (CHAN % 16) : CHAN,
 			pitch,
 			velo

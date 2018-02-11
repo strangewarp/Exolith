@@ -17,12 +17,21 @@ Software:
 			-- 
 
 	. if QUANTIZE is still funky, try a "round"-style quantization again - the original testing may have seemed wrong due to lag in the testing apparatus
-		-- 
-		. if there is slight recording-lag, then this can be compensated for by making the rounding "asymmetrical"
+		-- ok
+		. (note: it's OK to have extra notes from the tension between QUANTIZE and readTick() - they ought to aid the user's sense of timing)
+			-- seems lazy but fair enough
 		. if REPEAT is active, QUANTIZE should round only downwards
+			-- ok
+		. test this
+			-- 
 
 	. RECORD MODE needs better visual feedback for timing
 		. make second row show seq's beat-counter, and keep global beat-counter in top row
+			-- ok
+		. update GUI-call that flags updates for the seq's beat-counter on beat-changes in RECORDMODE
+			-- ok
+		. test this
+			-- 
 
 	. re-test everything
 		. regular notes: recording & playback
@@ -71,6 +80,9 @@ Software:
 	. need visible GUI element for which page is active, now that both are visible simultaneously
 		. should blink between all-LEDs-on and regular-LEDs-on when any PAGE command is held, highlighting the active page
 		. should blink one final time on the new page, after the page is selected, using a timer to control how long the ON-block should be OR'ed to regular LEDs
+
+	. when the OFF button is used to wipe the cues from a cued seq, does that cued seq refrain from any activity correctly?
+		. if a new cue is set for the same seq, as the seq's first action after such a situation, then does the cue act as expected?
 
 	. does BPM change the savefile correctly?
 		. is it loaded in correctly, on startup, after being changed by the user?
