@@ -3,18 +3,10 @@ Tine TODO
 
 Software:
 
-	. "RECORD" glyph is one row too tall
-		-- done (also fixed other wrongly-sized glyphs)
-
-	. "DURATION" doesn't change correctly
-		-- it's the GUI for the top row - forgot to change binary values to match new keychords
-		. fix it
-			-- ok
-
 	. the sequence doesn't play while recording
 		-- might have figured it out: logic-flow problem in getTickNotes()
 		. test it
-			-- 
+			-- works now
 
 	. if QUANTIZE is still funky, try a "round"-style quantization again - the original testing may have seemed wrong due to lag in the testing apparatus
 		-- ok
@@ -23,7 +15,7 @@ Software:
 		. if REPEAT is active, QUANTIZE should round only downwards
 			-- ok
 		. test this
-			-- 
+			-- seems to work well
 
 	. RECORD MODE needs better visual feedback for timing
 		. make second row show seq's beat-counter, and keep global beat-counter in top row
@@ -31,7 +23,16 @@ Software:
 		. update GUI-call that flags updates for the seq's beat-counter on beat-changes in RECORDMODE
 			-- ok
 		. test this
-			-- 
+			-- seems to work great
+
+	. the top row has no need for its right half to change how it depicts quarter-notes, now that its left half has a clarifying-dot on beat 5
+	. change this
+		-- 
+
+	. the RECORDSEQ, and possibly other seqs, seem to be lagging exactly one 16th-note behind the global cue-point
+	. this implies that there is a deep off-by-one error somewhere in the sequencing/cue system.
+	. find it and fix it
+		-- 
 
 	. re-test everything
 		. regular notes: recording & playback

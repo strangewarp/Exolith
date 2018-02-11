@@ -85,19 +85,10 @@ void updateFirstRow(byte ctrl) {
 // Update the second row of LEDs
 void updateSecondRow() {
 	if (RECORDMODE) { // If RECORDMODE is active...
-
 		byte beat = POS[RECORDSEQ] >> 4; // Get the current beat in the RECORDSEQ
 		byte b2 = beat % 8; // Get the current beat, wrapped by 8
 		byte join = (2 << (POS[RECORDSEQ] >> 7)) - 1; // Light a number of LEDs equal to the number of times the beat has wrapped around
 		byte display = (join << (7 - b2)) | (join >> (b2 + 1)); // Wrap those LED-positions aroud correctly
-
-		/*
-		byte beat = POS[RECORDSEQ] >> 4; // Get the current beat in the RECORDSEQ
-		byte display = 0; // Display for the row: decimal counting of the beat
-		for (byte i = 0; i < (POS[RECORDSEQ] >> 8); i++) { // For every time the value wraps around...
-			display |= 128 >> ((beat - i) % 8); // Add another lit LED to the beat-position, wrapping around the row
-		}
-		*/
 		lc.setRow(0, 1, display); // Display the enhanced beat-value in the RECORDSEQ
 	} else { // Else, if RECORDMODE isn't active...
 		lc.setRow(0, 1, (256 >> SUST_COUNT) % 256); // Display the current number of sustains (0-8)
