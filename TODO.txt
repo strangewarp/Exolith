@@ -7,7 +7,13 @@ Software:
 	. change this
 		-- updated
 		. test it
-			-- 
+			-- doesn't work
+			. fix it
+				-- fixed
+
+	. for some reason, if sequence 0 contains any notes, it will be enabled on startup.
+	. figure out what the hell is causing this
+		-- 
 
 	. the RECORDSEQ, and possibly other seqs, seem to be lagging exactly one 16th-note behind the global cue-point
 	. this implies that there is a deep off-by-one error somewhere in the sequencing/cue system.
