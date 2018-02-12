@@ -13,7 +13,10 @@ Software:
 
 	. for some reason, if sequence 0 contains any notes, it will be enabled on startup.
 	. figure out what the hell is causing this
-		-- 
+		-- when SEQ-SIZE is changed, it could place a malformed STATS byte into the file, which is loaded on startup
+		. figure out whether this is what's going on
+			. check SEQ-SIZE's file-write-associated lines
+				-- 
 
 	. the RECORDSEQ, and possibly other seqs, seem to be lagging exactly one 16th-note behind the global cue-point
 	. this implies that there is a deep off-by-one error somewhere in the sequencing/cue system.
