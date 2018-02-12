@@ -223,7 +223,7 @@ void iterateAll() {
 			getTickNotes(ctrl, held, i, buf);
 
 			// Increase the seq's 16th-note position by one increment, wrapping it around its top limit
-			POS[i] = (POS[i] + 1) % (size << 4);
+			POS[i] = (POS[i] + 1) % (word(size) << 4);
 
 		}
 

@@ -17,7 +17,7 @@ void primeRecSeq() {
 	resetSeq(RECORDSEQ); // If the most-recently-touched seq is already playing, reset it to prepare for timing-wrapping
 	SCATTER[RECORDSEQ] = 0; // Unset the most-recently-touched seq's SCATTER values before starting to record
 	word seqsize = word(STATS[RECORDSEQ] & 63) << 4; // Get sequence's size in 16th-notes
-	POS[RECORDSEQ] = (seqsize >= 128) ? CUR16 : (CUR16 % seqsize); // Wrap sequence around to global cue-point
+	POS[RECORDSEQ] = ((seqsize >= 128) ? CUR16 : (CUR16 % seqsize)) + 1; // Wrap sequence around to global cue-point
 	STATS[RECORDSEQ] |= 128; // Set the sequence to active
 }
 
