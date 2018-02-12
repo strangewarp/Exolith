@@ -30,16 +30,12 @@ void displayGlobalBeat() {
 
 	byte beat = CUR16 >> 4; // Get the current global beat
 	byte b4 = beat % 4; // Get the global beat, wrapped by 4
-	byte quart = (CUR16 >> 2) & 3; // Get the global quarter-note
 	byte join = (beat >> 2) + 1; // Light a number of LEDs equal to the number of times the 8-beat has 4-wrapped
-
-	// Wrap those LED-positions around correctly, and display them alongside the current quarter-note
-	byte display = (((join << (3 - b4)) | (join >> (b4 + 1))) << 4) | quart;
 
 	// Display the global beat in the 4 leftmost LEDs,
 	// and the global quarter-note in the 4 rightmost LEDs,
 	// with an extra disambiguation marker after beat 4
-	lc.setRow(0, 0, display);
+	lc.setRow(0, 0, (((join << (3 - b4)) | (join >> (b4 + 1))) << 4) | ((CUR16 >> 2) & 3));
 
 }
 
