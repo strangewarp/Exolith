@@ -27,7 +27,9 @@ Software:
 
 	. the top row has no need for its right half to change how it depicts quarter-notes, now that its left half has a clarifying-dot on beat 5
 	. change this
-		-- 
+		-- updated
+		. test it
+			-- 
 
 	. the RECORDSEQ, and possibly other seqs, seem to be lagging exactly one 16th-note behind the global cue-point
 	. this implies that there is a deep off-by-one error somewhere in the sequencing/cue system.
