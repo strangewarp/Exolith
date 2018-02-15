@@ -14,9 +14,17 @@ Software:
 		-- seems fixed
 
 	. slow the tempo way down, and check whether the 16th-note offset bug occurs in PLAY MODE as well
-		-- 
-		. also verify that the notes are at the correct positions in the savefile, to rule out e.g. QUANTIZE bugs
-			-- 
+		. verify that the notes are at the correct positions in the savefile, to rule out e.g. QUANTIZE bugs
+			-- yes
+		. for cued seq
+			-- seems fine
+		. for instant-pressed seq
+			-- off by one: too late by a 16th note
+			. fix this
+				-- 
+			-- also seems to have unusual behavior, ending up in the wrong slice when just the naked buttons is pressed, etc
+			. figure out what's going on here
+				-- 
 
 	. re-test everything
 		. regular notes: recording & playback
@@ -54,6 +62,8 @@ Software:
 	. test gesture system
 		. test LOAD-MODE TOGGLE
 		. test GLOBAL PLAY/STOP TOGGLE
+
+	. gestures sometimes have a sloppy response. figure out why
 
 	. update gui-key.txt
 		. include button and LED spec for LOADMODE
@@ -186,7 +196,24 @@ Hardware:
 	. if still using current standoff lengths, then MIDI ports will require another mm of vertical space
 		. therefore: put 1mm-thick spacers on every standoff and compensate for this in all side-panel sizes accordingly
 
-	. update KiCad file:
+	. update KiCad/Inkscape files:
+		. both boards:
+			. should be 4mm to 10mm wider, to better accomodate standoffs and MIDI ports, and to allow a bit more trace space around the new header-position
+			. double-check that the stacking-headers on the bottom-board and top-board share their corresponding positions
+			. change standoff hole-sizes to M3, plus extra kerf to compensate for standoff screws always being slightly over-size due to their threading
+				. make sure there's still enough room for all M3 screws & standoffs
+				. change official parts-list to reflect this decision
+			. change all stacking headers to occupy a 2x20 horizontal row between the buttons and LEDs, to make the assembly process less fragile
+			. move model-number text to bottom-board - if it were still on the top-board, any sort of transparent plexiglas would make it look tacky
+				. model-number text should be in the following format:
+					. basilisk tine sequencer
+					  production run number - production run name
+						. e.g.
+							. basilisk tine sequencer
+							  1 - philosopher's stone
+			. reduce boards' size, to fit the results of various changes
+			. change all edge-cuts to reflect the rearrangement of ports/standoffs, if applicable
+			. double-check that ports aren't competing for space with standoffs
 		. bottom-board:
 			. reduce board-size to use only the two frontmost pairs of screws?
 				. would need to either perfectly compensate for size discrepancies in the backmost standoffs,
@@ -200,15 +227,8 @@ Hardware:
 			. socket the R-SET resistor, to futureproof against any possible changes to the top-board LEDs
 			. move POWER-LED to center of bottom-board, and use a high-brightness white LED with a very wide visibility-cone
 		. top-board:
-			. remove AVR-ISP jack from top-board
-		. both boards:
-			. double-check that the stacking-headers on the bottom-board and top-board share their corresponding positions
-			. change standoff hole-sizes to M3, plus extra kerf to compensate for standoff screws always being slightly over-size due to their threading
-				. make sure there's still enough room for all M3 screws & standoffs
-			. change all stacking headers to occupy a 2x20 horizontal row between the buttons and LEDs, to make the assembly process less fragile
-			. reduce boards' size, to fit the results of various changes
-			. change all edge-cuts to reflect the rearrangement of ports/standoffs, if applicable
-			. double-check that ports aren't competing for space with standoffs
+			. remove AVR-ISP jack and associated headers from top-board
+			. remove POWER-LED from top-board
 
 	. buy grounding-bracelets to use while soldering beta prototypes, and while assembling finished units
 
