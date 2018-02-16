@@ -24,7 +24,9 @@ Software:
 				-- 
 			-- also seems to have unusual behavior, ending up in the wrong slice when just the naked buttons is pressed, etc
 			. figure out what's going on here
-				-- 
+				-- might have been a bad line in parsePlayPress()
+				. test the fix to this
+					-- 
 
 	. re-test everything
 		. regular notes: recording & playback
@@ -52,7 +54,7 @@ Software:
 		. OFF
 		. CUE
 		. SLICE
-		. CUE (with SLICE insertion)
+		. CUE (with SLICE-offset insertion)
 		. CUE OFF
 		. PAGE OFF
 		. SCATTER (amount)

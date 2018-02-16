@@ -54,13 +54,8 @@ void parsePlayPress(byte col, byte row) {
 			// Get the number of 16th-notes in one of the seq's slice-chunks
 			byte csize = (STATS[seq] & 63) * 2;
 
-			// Set the sequence's position to:
-			//   A base-position equal to the slice-numbers being held,
-			//   with an additional tick-offset inside the slice itself,
-			//   (which, depending on whether the sequence is playing,
-			//   either takes the sequence's current tick, or the global absolute tick,
-			//   and wraps said tick to the size of a single chunk)
-			POS[seq] = (csize * nums) + (((STATS[seq] & 128) ? POS[seq] : CUR16) % csize);
+			// Set the seq's given slice-position to correspond with the start of the curent global beat
+			POS[seq] = (csize * nums) + ((CUR16 % 16) % ((csize <= 15) ? csize : 16));
 
 			if (!(STATS[seq] & 128)) { // If the seq was previously turned off...
 				TO_UPDATE |= 4 << row; // Flag the seq's corresponding LED-row for an update
