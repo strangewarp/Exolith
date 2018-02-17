@@ -3,16 +3,6 @@ Tine TODO
 
 Software:
 
-	. the RECORDSEQ, and possibly other seqs, seem to be lagging exactly one 16th-note behind the global cue-point
-	. this implies that there is a deep off-by-one error somewhere in the sequencing/cue system.
-	. find it and fix it
-		-- might have been primeRecSeq() wrapping things around to a tick that had already elapsed
-		. test it
-			-- seems fixed
-
-	. upload new firmware, go into RECORD MODE for seq 0, change its size, power-cycle, and see whether its autoplay-bug is fixed
-		-- seems fixed
-
 	. slow the tempo way down, and check whether the 16th-note offset bug occurs in PLAY MODE as well
 		. verify that the notes are at the correct positions in the savefile, to rule out e.g. QUANTIZE bugs
 			-- yes
@@ -34,6 +24,12 @@ Software:
 					. test for the seq's inner slices
 						-- 
 
+	. toggling into RECORD MODE, for a short seq, places that seq ahead of the global cue by one 16th-note.
+	. this seems to be related to the previous fix, where larger sequences would be a step behind the global cue.
+	. this implies that the seq-position-wrapping mechanism, on toggle-to-record-mode, needs a general solve for all possible cases
+	. find a way to fix it for all cases
+		-- 
+
 	. re-test everything
 		. regular notes: recording & playback
 			-- 
@@ -44,6 +40,7 @@ Software:
 		. intervals
 			. recording them to seq
 			. playing them from seq
+		. REPEAT
 		. SHIFT POSITION
 		. COPY/PASTE:
 			. straightforward standard usge
@@ -52,7 +49,6 @@ Software:
 			. with COPY in another sequence than PASTE
 		. duophony
 		. various QUANTIZE settings
-		. REPEAT
 		. are old notes being knocked out of the sequence by new notes in RECORD-MODE properly?
 		. test SEQ-SIZE behavior
 			. does a SEQ-SIZE of "0" correspond to 1 beat?
