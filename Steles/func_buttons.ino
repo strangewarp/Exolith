@@ -51,11 +51,11 @@ void parsePlayPress(byte col, byte row) {
 			CMD[seq] = (CMD[seq] & B11100011) | (nums << 2); // Add a slice-position to the cued ON command
 		} else { // Else, if the sequence has no cued ON value, then this is a pure beatslice, so...
 
-			// Get the number of 16th-notes in one of the seq's slice-chunks
-			byte csize = (STATS[seq] & 63) * 2;
+			word beats = STATS[seq] & 63; // Get the number of beats in the seq
+			byte slice = beats * 2; // Get the number of 16th-notes in one of the seq's slice-chunks
 
 			// Set the seq's given slice-position to correspond with the start of the curent global beat
-			POS[seq] = (csize * nums) + ((CUR16 % 16) % ((csize <= 15) ? csize : 16));
+			POS[seq] = ((slice * nums) + ((CUR16 % 16) % min(slice, 16)) + 1) % (beats * 16);
 
 			if (!(STATS[seq] & 128)) { // If the seq was previously turned off...
 				TO_UPDATE |= 4 << row; // Flag the seq's corresponding LED-row for an update

@@ -20,18 +20,27 @@ Software:
 			-- seems fine
 		. for instant-pressed seq
 			-- off by one: too late by a 16th note
-			. fix this
-				-- 
+			. fix, upload, test
+				-- seems to work right
 			-- also seems to have unusual behavior, ending up in the wrong slice when just the naked buttons is pressed, etc
 			. figure out what's going on here
 				-- might have been a bad line in parsePlayPress()
 				. test the fix to this
-					-- 
+					-- seems fixed
+					. test for short sequences
+						-- 
+					. test for long sequences
+						-- 
+					. test for the seq's inner slices
+						-- 
 
 	. re-test everything
 		. regular notes: recording & playback
+			-- 
 		. note-erasing in RECORD-MODE
+			-- 
 		. BASENOTE and OCTAVE
+			-- 
 		. intervals
 			. recording them to seq
 			. playing them from seq
