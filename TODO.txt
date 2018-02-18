@@ -18,7 +18,7 @@ Software:
 				. test the fix to this
 					-- seems fixed
 					. test for short sequences
-						-- 
+						-- works
 					. test for long sequences
 						-- 
 					. test for the seq's inner slices
@@ -26,9 +26,11 @@ Software:
 
 	. toggling into RECORD MODE, for a short seq, places that seq ahead of the global cue by one 16th-note.
 	. this seems to be related to the previous fix, where larger sequences would be a step behind the global cue.
-	. this implies that the seq-position-wrapping mechanism, on toggle-to-record-mode, needs a general solve for all possible cases
+	. this implies that the seq-position-wrapping mechanism, on toggle-to-record-mode, needs a general solve for all possible cases.
 	. find a way to fix it for all cases
-		-- 
+		-- potentially fixed
+		. test it
+			-- 
 
 	. re-test everything
 		. regular notes: recording & playback
@@ -182,8 +184,25 @@ Hardware:
 			. rewrite LedControl_HW_SPI to directly address port-registers, thereby eliminating a lot of lag-time and freeing up two pins
 			. update both KiCad and firmware to reflect the changes
 			. two pins will be freed up by this, so reassign them:
-				. pin 1: digital MIDI-IN indicator (NOTEs only)
-				. pin 2: digital MIDI-OUT indicator (NOTEs only)
+				. possibilities:
+					. using both pins with a simple diode-and-resistor circuit to drive a vibration motor
+						. motor will be connected via screw-terminals and epoxied to the left side-panel
+							. make sure the screw-terminals are small enough to fit between the boards, or there's a void cut in the bottom-board for it or something
+						. if each pin has a resistor in series with a diode, then two pins will produce three vibration frequencies
+							. this will give the user better intuitive moment-to-moment feedback about the current beat-subdivision in RECORD MODE
+						. if this is chosen rather than the LEDs, then:
+							. add a two-slot screw-terminal to the bottom-board, within wire-range of the vibration-motor's epoxying position
+							. change the position of the shrouded AVR-ISP header to be set behind the right side-panel,
+								so the user doesn't end up causing metal-fatigue while awkwardly removing the motor's panel for firmware updates
+							. in the codebase:
+								. every vibration-event should have a STRENGTH and a COUNTDOWN TIMER, which could both be stored in a single global byte
+								. should vibrate at the following times:
+									. in time with the tempo, in RECORD-MODE
+									. whenever a button is pressed
+									. whenever a CUE event is processed
+					. OR: using both pins to drive digital LEDs that represent MIDI-IN and MIDI-OUT, thereby reducing the parts count
+						. pin 1: digital MIDI-IN indicator (NOTEs only)
+						. pin 2: digital MIDI-OUT indicator (NOTEs only)
 			. if 74HC14N ends up with free slots: add another buffering stage to the OUT line, and make the THRU port into a switchable THRU/OUT2 port
 		. put the results of this line of inquiry into the "update KiCad file" task
 
@@ -230,6 +249,7 @@ Hardware:
 			. use regular-sized capacitors, in a laying-down position, because people replacing capacitors wouldn't have special tiny ones sitting around
 			. socket all capacitors, to futureproof the capacitor-replacement process
 			. move shrouded AVR-ISP jack to front-left edge of bottom-board, to prevent any need to muck around with safety-caps
+			. SD-card should be on the right side of the front-panel
 			. update R-SET resistor's value based on the new diffused LEDs
 			. socket the R-SET resistor, to futureproof against any possible changes to the top-board LEDs
 			. move POWER-LED to center of bottom-board, and use a high-brightness white LED with a very wide visibility-cone
