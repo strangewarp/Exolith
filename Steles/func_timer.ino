@@ -88,6 +88,11 @@ void updateTimer() {
 	// Since we're sure we're on a new 16th-note, increase the global current-16th-note variable
 	CUR16 = (CUR16 + 1) % 128;
 
+	if (RECORDNOTES && (!(POS[RECORDSEQ] % QUANTIZE))) { // If we are recording notes, and on a QUANTIZE tick...
+		BLINK = 2; // Cue a very short blink
+		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
+	}
+
 	if (!(CUR16 % 4)) { // If we're on the first tick within a global quarter-note...
 		TO_UPDATE |= 1; // Flag the top LED-row for updating
 	}

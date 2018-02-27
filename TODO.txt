@@ -3,6 +3,14 @@ Tine TODO
 
 Software:
 
+	. figure out why ERASE doesn't work again
+		-- 
+
+	. start a new "chaos testing" mode of work:
+		. regular testing procedures are weirdly demoralizing and deterring, for some reason
+		. therefore: it would likely be more productive to simply start treating Tine like an instrument right away, fixing bugs as they are found,
+		. and then do a thorough stress-testing sweep later on, at the very end of alpha / very start of beta
+
 	. slow the tempo way down, and check whether the 16th-note offset bug occurs in PLAY MODE as well
 		. verify that the notes are at the correct positions in the savefile, to rule out e.g. QUANTIZE bugs
 			-- yes
@@ -29,7 +37,11 @@ Software:
 	. this implies that the seq-position-wrapping mechanism, on toggle-to-record-mode, needs a general solve for all possible cases.
 	. find a way to fix it for all cases
 		-- potentially fixed
-		. test it
+		. test with short seqs
+			-- 
+		. test with long seqs
+			-- 
+		. test with 8-beat seq
 			-- 
 
 	. re-test everything
@@ -90,6 +102,8 @@ Software:
 
 	. does BPM change the savefile correctly?
 		. is it loaded in correctly, on startup, after being changed by the user?
+
+	. does HUMANIZE apply to REPEAT notes correctly?
 
 	. add PROGRAM CHANGE functionality (in addition to CONTROL CHANGE)
 		. make sure this has its virtual PC-bit lopped off by INTERVAL-commands in RECORD mode, just like virtual CC-bits
