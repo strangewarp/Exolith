@@ -4,7 +4,7 @@ Tine TODO
 Software:
 
 	. figure out why ERASE doesn't work again
-		-- 
+		-- figured it out: needed to use another file.seekSet() to return to original file-position in eraseTick()
 
 	. start a new "chaos testing" mode of work:
 		. regular testing procedures are weirdly demoralizing and deterring, for some reason
