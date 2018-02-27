@@ -35,23 +35,12 @@ void eraseTick(byte buf[]) {
 	file.seekSet(tpos); // Navigate to the note's absolute position
 	file.read(buf, 8); // Read the data of the tick's notes
 
-
-
-	lc.setRow(0,7,255); // testing code todo remove
-
-
-
 	byte full = buf[0] || buf[2]; // Check if the tick's top note is filled
 	if (!full) { return; } // If no notes or CCs are present, exit the function
 
 	// Check if the first and/or second note matches the global CHAN
 	byte pos1 = full && ((buf[0] & 15) == CHAN);
 	byte pos2 = (buf[4] || buf[6]) && ((buf[4] & 15) == CHAN);
-
-
-	//lc.setRow(0,7,(15 * pos1) | (240 * pos2)); // testing code todo remove
-
-
 
 	if (pos1 || pos2) { // If either note matches the global chan...
 		byte outbuf[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0}; // Make a tick-sized buffer to send blank data
@@ -60,12 +49,6 @@ void eraseTick(byte buf[]) {
 		}
 		file.write(outbuf, (pos1 + pos2) * 4); // Clear all ticks in the byte that contain notes matching the global CHAN
 		file.sync(); // Apply changes to the savefile immediately
-
-
-
-		//lc.setRow(0,7,(15 * pos1) | (240 * pos2)); // testing code todo remove
-
-
 
 		if (pos1 && pos2) { // If both notes matched global CHAN...
 			return; // Exit the function, since there's nothing left to do for this tick of this seq
