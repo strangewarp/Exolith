@@ -3,37 +3,7 @@ Tine TODO
 
 Software:
 
-	. figure out why ERASE doesn't work again
-		-- figured it out: needed to use another file.seekSet() to return to original file-position in eraseTick()
-
-	. start a new "chaos testing" mode of work:
-		. regular testing procedures are weirdly demoralizing and deterring, for some reason
-		. therefore: it would likely be more productive to simply start treating Tine like an instrument right away, fixing bugs as they are found,
-		. and then do a thorough stress-testing sweep later on, at the very end of alpha / very start of beta
-
-	. slow the tempo way down, and check whether the 16th-note offset bug occurs in PLAY MODE as well
-		. verify that the notes are at the correct positions in the savefile, to rule out e.g. QUANTIZE bugs
-			-- yes
-		. for cued seq
-			-- seems fine
-		. for instant-pressed seq
-			-- off by one: too late by a 16th note
-			. fix, upload, test
-				-- seems to work right
-			-- also seems to have unusual behavior, ending up in the wrong slice when just the naked buttons is pressed, etc
-			. figure out what's going on here
-				-- might have been a bad line in parsePlayPress()
-				. test the fix to this
-					-- seems fixed
-					. test for short sequences
-						-- works
-					. test for long sequences
-						-- 
-					. test for the seq's inner slices
-						-- 
-
 	. toggling into RECORD MODE, for a short seq, places that seq ahead of the global cue by one 16th-note.
-	. this seems to be related to the previous fix, where larger sequences would be a step behind the global cue.
 	. this implies that the seq-position-wrapping mechanism, on toggle-to-record-mode, needs a general solve for all possible cases.
 	. find a way to fix it for all cases
 		-- potentially fixed
@@ -43,6 +13,9 @@ Software:
 			-- 
 		. test with 8-beat seq
 			-- 
+
+	. figure out why REPEAT doesn't work
+		-- 
 
 	. re-test everything
 		. regular notes: recording & playback
