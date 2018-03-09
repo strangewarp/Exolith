@@ -15,6 +15,17 @@ Software:
 			-- 
 
 	. figure out why REPEAT doesn't work
+		-- logic flow problem: REPEAT only occurs when RECORDNOTES is toggled
+			. fix it
+				-- ok
+
+	. REPEAT plays notes that don't correspond to the buttons that are held
+		-- 
+
+	. QUANTIZE, when applied to REPEAT values, is at a granularity twice as slow as it should be
+		-- 
+
+	. figure out why HUMANIZE doesn't get applied to test-notes
 		-- 
 
 	. re-test everything
@@ -42,6 +53,10 @@ Software:
 		. test CC commands
 		. test file-load
 
+	. check whether REPEAT-INTERVAL works as intended, when RECORDNOTES is both unarmed and armed
+		. armed:
+		. unarmed:
+
 	. re-test all cue-commands
 		. OFF
 		. CUE
@@ -52,6 +67,9 @@ Software:
 		. SCATTER (amount)
 		. SCATTER UNSET
 		. PAGE SCATTER UNSET
+
+	. add BPM to PLAY MODE?
+		. only write BPM to file when toggling into RECORD MODE
 
 	. test gesture system
 		. test LOAD-MODE TOGGLE
@@ -144,6 +162,8 @@ Software:
 	. add a command to change the global cue-point's granularity? (e.g. being 3 beats, or 7 beats, instead of 8 beats, and ignoring the extra LEDs)
 
 	. add a single global "stats" file, to save and store global vars? (duration, basenote, etc)
+
+	. very rarely, the tempo will be far too fast upon power-up. figure out why
 
 	. re-test problem areas:
 		. GLOBAL PLAY/STOP

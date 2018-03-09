@@ -44,11 +44,7 @@ void eraseTick(byte buf[]) {
 
 	if (pos1 || pos2) { // If either note matches the global chan...
 		byte outbuf[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0}; // Make a tick-sized buffer to send blank data
-		if (pos1) { // If the first note matches global CHAN...
-			file.seekSet(tpos); // Navigate to the note's absolute position again
-		} else { // Else, if the note didn't match global CHAN...
-			file.seekSet(tpos + 4); // Set the write-position to the tick's bottom-note
-		}
+		file.seekSet(tpos + ((!pos1) * 4)); // Set the write-position to whichever note matched
 		file.write(outbuf, (pos1 + pos2) * 4); // Clear all ticks in the byte that contain notes matching the global CHAN
 		file.sync(); // Apply changes to the savefile immediately
 
@@ -69,7 +65,7 @@ void processRecAction(byte ctrl, byte key) {
 
 	// Get the interval-buttons' activity specifically,
 	// by checking whether an INTERVAL-flavored keychord is currently held
-	// (these keychords have the highest values in the KEYTAB attay for this reason)
+	// (these keychords have the highest values in the KEYTAB array for this reason)
 	byte ibs = applyChange(pgm_read_byte_near(KEYTAB + ctrl), -19, 0, 4);
 
 	// Get a note that corresponds to the key, organized from bottom-left to top-right, with all modifiers applied
