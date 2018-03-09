@@ -8,16 +8,11 @@ Software:
 	. find a way to fix it for all cases
 		-- potentially fixed
 		. test with short seqs
-			-- 
+			-- seems to work
 		. test with long seqs
-			-- 
+			-- seems to work
 		. test with 8-beat seq
-			-- 
-
-	. figure out why REPEAT doesn't work
-		-- logic flow problem: REPEAT only occurs when RECORDNOTES is toggled
-			. fix it
-				-- ok
+			-- seems to work
 
 	. REPEAT plays notes that don't correspond to the buttons that are held
 		-- 
@@ -27,6 +22,14 @@ Software:
 
 	. figure out why HUMANIZE doesn't get applied to test-notes
 		-- 
+
+	. REPEAT should be a held-command, not a toggle-command
+		. all INTERVAL commands should be chordable with REPEAT
+		. make sure CC and PC commands still occur during REPEAT
+			. make sure they are overridden by INTERVAL commands
+
+	. BPM should be accessible in both PLAY MODE and RECORD MODE
+		. only write BPM to file when toggling into RECORD MODE, or when changing the value if RECORD MODE is currently active
 
 	. re-test everything
 		. regular notes: recording & playback
@@ -67,9 +70,6 @@ Software:
 		. SCATTER (amount)
 		. SCATTER UNSET
 		. PAGE SCATTER UNSET
-
-	. add BPM to PLAY MODE?
-		. only write BPM to file when toggling into RECORD MODE
 
 	. test gesture system
 		. test LOAD-MODE TOGGLE
