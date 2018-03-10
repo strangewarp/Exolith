@@ -162,34 +162,39 @@ void parseScatter(byte s, byte didscatter) {
 }
 
 // Process a REPEAT or REPEAT-RECORD command, and if applicable to the current time, send it to processRecAction()
-void processRepeats(word held, byte ctrl, byte s) {
+void processRepeats(byte ctrl, unsigned long held, byte s) {
 	if (
 		(!(POS[s] % QUANTIZE)) // If this tick's position is a multiple of the QUANTIZE value...
 		&& isRecCompatible(ctrl) // And the current keychord signifies a command is to be recorded...
 	) { // Then this is a valid REPEAT position. So...
-		for (byte i = 0; i < 24; i++) { // For every note-key...
-			if (!(held & (1 << i))) { continue; } // If the note key is empty, check the next key
-			// For each pressed note, parse all of the possible actions that signal the recording of commands
-			processRecAction(ctrl, i);
+
+		byte i = 0; // Counts the number of BUTTONS-formatted button-bits that have been checked
+		for (byte col = 0; col < 4; col++) { // For every column...
+			for (byte row = 0; row < 6; row++) { // For every row...
+				byte key = (row * 4) + col; // Get the key that corresponds to the column and row
+				if (held & (1UL << i)) { // If the internal BUTTONS-value for this note is held...
+					// For this note, parse all of the possible actions that signal the recording of commands,
+					// using the new "key" position that corresponds to this note's BUTTONS-bit position
+					processRecAction(ctrl, key);
+				}
+				i++; // Increment this loop's BUTTON-bit counter
+			}
 		}
+
 	}
 }
 
 // Get the notes from the current tick in a given seq, and add them to the MIDI-OUT buffer
-void getTickNotes(byte ctrl, word held, byte s, byte buf[]) {
+void getTickNotes(byte ctrl, unsigned long held, byte s, byte buf[]) {
 
 	byte didscatter = 0; // Flag that tracks whether this tick has had a SCATTER effect
 
 	if (RECORDMODE) { // If RECORD MODE is active...
 		if (RECORDSEQ == s) { // If this is the current RECORDSEQ...
-			if (RECORDNOTES) { // If RECORDNOTES is armed, and notes are being recorded into this seq...
-				if (ctrl == B00111100) { // If the ERASE-NOTES command is being held...
-					eraseTick(buf); // Erase CHAN-matching commands in the current tick
-				} else if (REPEAT && held) { // Else, if REPEAT is toggled, and a note-button is being held...
-					processRepeats(held, ctrl, s); // Process a REPEAT-RECORD
-				}
-			} else { // Else, if RECORDNOTES isn't armed...
-				processRepeats(held, ctrl, s); // Process a REPEAT without any note-recording
+			if (REPEAT && held) { // If REPEAT is toggled, and a note-button is being held...
+				processRepeats(ctrl, held, s); // Process a REPEAT-RECORD
+			} else if (RECORDNOTES && (ctrl == B00111100)) { // Else, if RECORDNOTES is armed, and ERASE-NOTES is held...
+				eraseTick(buf); // Erase CHAN-matching commands in the current tick
 			}
 		}
 		readTick(s, 0, buf); // Read the tick with no offset
@@ -213,7 +218,7 @@ void iterateAll() {
 	if (PLAYING) { // If the sequencer is currently in PLAYING mode...
 
 		byte ctrl = BUTTONS & B00111111; // Get the control-row buttons' activity
-		word held = (BUTTONS & (~word(B00111111))) >> 6; // Get the note-buttons that are currently held
+		unsigned long held = BUTTONS >> 6; // Get the note-buttons that are currently held
 
 		byte buf[9]; // Buffer for reading note-events from the datafile
 

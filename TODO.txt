@@ -3,19 +3,12 @@ Tine TODO
 
 Software:
 
-	. toggling into RECORD MODE, for a short seq, places that seq ahead of the global cue by one 16th-note.
-	. this implies that the seq-position-wrapping mechanism, on toggle-to-record-mode, needs a general solve for all possible cases.
-	. find a way to fix it for all cases
-		-- potentially fixed
-		. test with short seqs
-			-- seems to work
-		. test with long seqs
-			-- seems to work
-		. test with 8-beat seq
-			-- seems to work
-
 	. REPEAT plays notes that don't correspond to the buttons that are held
-		-- 
+		-- might have been a type mismatch error in getTickNotes() and processRepeats()
+		. test it
+			-- fixed dead notes, but not the underlying problem
+			. figure out why "held" notes seem to be rotated 90 degrees in relation to the keys that should represent them
+				-- fixed: mismatch between BUTTONS-bit values and the column-by-row key that was expected by processRecAction()
 
 	. QUANTIZE, when applied to REPEAT values, is at a granularity twice as slow as it should be
 		-- 
@@ -25,6 +18,7 @@ Software:
 
 	. REPEAT should be a held-command, not a toggle-command
 		. all INTERVAL commands should be chordable with REPEAT
+			. these will also need their own GUI elements, and calls inside func_gui.ino
 		. make sure CC and PC commands still occur during REPEAT
 			. make sure they are overridden by INTERVAL commands
 
@@ -33,11 +27,8 @@ Software:
 
 	. re-test everything
 		. regular notes: recording & playback
-			-- 
 		. note-erasing in RECORD-MODE
-			-- 
 		. BASENOTE and OCTAVE
-			-- 
 		. intervals
 			. recording them to seq
 			. playing them from seq
