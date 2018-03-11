@@ -171,11 +171,10 @@ void processRepeats(byte ctrl, unsigned long held, byte s) {
 		byte i = 0; // Counts the number of BUTTONS-formatted button-bits that have been checked
 		for (byte col = 0; col < 4; col++) { // For every column...
 			for (byte row = 0; row < 6; row++) { // For every row...
-				byte key = (row * 4) + col; // Get the key that corresponds to the column and row
 				if (held & (1UL << i)) { // If the internal BUTTONS-value for this note is held...
 					// For this note, parse all of the possible actions that signal the recording of commands,
 					// using the new "key" position that corresponds to this note's BUTTONS-bit position
-					processRecAction(ctrl, key);
+					processRecAction(ctrl, (row * 4) + col);
 				}
 				i++; // Increment this loop's BUTTON-bit counter
 			}

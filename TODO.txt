@@ -3,14 +3,20 @@ Tine TODO
 
 Software:
 
+	. QUANTIZE should be allowed to be any value, not just multiples of 2
+		-- ok
+
 	. QUANTIZE, when applied to REPEAT values, is at a granularity twice as slow as it should be
+		-- turns out this was a bug in the testing apparatus, not Tine itself
+
+	. when REPEAT is enabled, a keystroke's note should not be recorded upon its initial keypress
 		-- 
 
-	. QUANTIZE should be allowed to be any value, not just multiples of 2
-		-- 
+	. when a REPEAT-note is held, the GLOBAL CUE row desyncs from the SEQ BEAT row by one 16th-note
+		. is there a lack of a TO_UPDATE call somewhere?
+		. or does REPEAT desync the local and global tempos temporarily? (this seems unlikely)
 
 	. figure out why HUMANIZE doesn't get applied to test-notes
-		-- 
 
 	. REPEAT should be a held-command, not a toggle-command
 		. all INTERVAL commands should be chordable with REPEAT
@@ -120,6 +126,8 @@ Software:
 	. cue a BLINK whenever the RECORDSEQ reaches its 0th position
 
 	. display SCATTER status only when a SCATTER chord is held
+
+	. make sure that, when a deeper savefile is loaded, there's no extra lag for whatever reason
 
 	. reduce max sequence-size to 32 whole-notes, to cut down on potential read-lag?
 
