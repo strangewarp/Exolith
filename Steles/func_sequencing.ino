@@ -224,14 +224,14 @@ void iterateAll() {
 
 		for (byte i = 47; i != 255; i--) { // For every loaded sequence, in reverse order...
 
-			memset(buf, 0, 8); // Clear the buffer's RAM of junk data
-
 			byte size = STATS[i] & 63; // Get seq's absolute size, in beats
 
 			parseCues(i, size); // Parse a sequence's cued commands, if any
 
 			// If the seq isn't currently playing, go to the next seq's iteration-routine
 			if (!(STATS[i] & 128)) { continue; }
+
+			memset(buf, 0, 8); // Clear the buffer's RAM of junk data
 
 			// Get the notes from this tick in a given seq, and add them to the MIDI-OUT buffer
 			getTickNotes(ctrl, held, i, buf);

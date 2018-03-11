@@ -144,7 +144,7 @@ void programChangeCmd(byte col, byte row) {
 // Parse a QUANTIZE press
 void quantizeCmd(byte col, byte row) {
 	char change = toChange(col, row); // Convert a column and row into a CHANGE value
-	QUANTIZE = min(16, abs(change)); // Modify the QUANTIZE value
+	QUANTIZE = applyChange(QUANTIZE, change, 1, 16); // Modify the QUANTIZE value
 	TO_UPDATE |= 1; // Flag the topmost row for updating
 }
 

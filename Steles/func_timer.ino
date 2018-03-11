@@ -89,7 +89,7 @@ void updateTimer() {
 	CUR16 = (CUR16 + 1) % 128;
 
 	if (RECORDNOTES && (!(POS[RECORDSEQ] % QUANTIZE))) { // If we are recording notes, and on a QUANTIZE tick...
-		BLINK = 2; // Cue a very short blink
+		BLINK = 3; // Cue a very short blink
 		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
 	}
 

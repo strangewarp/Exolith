@@ -3,14 +3,10 @@ Tine TODO
 
 Software:
 
-	. REPEAT plays notes that don't correspond to the buttons that are held
-		-- might have been a type mismatch error in getTickNotes() and processRepeats()
-		. test it
-			-- fixed dead notes, but not the underlying problem
-			. figure out why "held" notes seem to be rotated 90 degrees in relation to the keys that should represent them
-				-- fixed: mismatch between BUTTONS-bit values and the column-by-row key that was expected by processRecAction()
-
 	. QUANTIZE, when applied to REPEAT values, is at a granularity twice as slow as it should be
+		-- 
+
+	. QUANTIZE should be allowed to be any value, not just multiples of 2
 		-- 
 
 	. figure out why HUMANIZE doesn't get applied to test-notes
@@ -18,6 +14,7 @@ Software:
 
 	. REPEAT should be a held-command, not a toggle-command
 		. all INTERVAL commands should be chordable with REPEAT
+			. will require updates to isRecCompatible()
 			. these will also need their own GUI elements, and calls inside func_gui.ino
 		. make sure CC and PC commands still occur during REPEAT
 			. make sure they are overridden by INTERVAL commands
