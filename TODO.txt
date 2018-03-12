@@ -3,26 +3,20 @@ Tine TODO
 
 Software:
 
-	. QUANTIZE should be allowed to be any value, not just multiples of 2
-		-- ok
-
-	. QUANTIZE, when applied to REPEAT values, is at a granularity twice as slow as it should be
-		-- turns out this was a bug in the testing apparatus, not Tine itself
-
-	. figure out why HUMANIZE doesn't get applied to test-notes
-		-- seems to work now
-
-	. when REPEAT is enabled, a keystroke's note should not be recorded upon its initial keypress
-		-- fixed
+	. in RECORD-MODE, the short-time counter in the right half of the top row should change at the rate of QUANTIZE, rather than being hardwired to quarter-notes
+		-- done
 
 	. when a REPEAT-note is held, the GLOBAL CUE row desyncs from the SEQ BEAT row by one 16th-note
 		. is there a lack of a TO_UPDATE call somewhere?
+			. this seems to be related to whether the current tick has a clean modulo with the QUANTIZE value. figure out why
+				-- 
 		. or does REPEAT desync the local and global tempos temporarily? (this seems unlikely)
 
 	. REPEAT should be a held-command, not a toggle-command
 		. all INTERVAL commands should be chordable with REPEAT
 			. will require updates to isRecCompatible()
 			. these will also need their own GUI elements, and calls inside func_gui.ino
+			. update button-key.txt to document the additional chord-commands
 		. make sure CC and PC commands still occur during REPEAT
 			. make sure they are overridden by INTERVAL commands
 

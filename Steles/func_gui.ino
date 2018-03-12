@@ -25,21 +25,35 @@ byte getRowScatterVals(byte r) {
 		| (!!(SCATTER[ib + 27] & 15));
 }
 
-// Display the global beat and quarter-note in the topmost row of LEDs
-void displayGlobalBeat() {
-
+// Get the half of the top row that contains the current global beat position
+// (returns the value in bits 4-7 of a byte)
+byte getGlobalBeatLEDs() {
 	byte beat = CUR16 >> 4; // Get the current global beat
 	byte b4 = beat % 4; // Get the global beat, wrapped by 4
-	byte quart = 8 >> ((CUR16 >> 2) & 3); // Get the global quarter-note display
 	byte join = (2 << (beat >> 2)) - 1; // Light a number of LEDs equal to the number of times the 8-beat has 4-wrapped
+	return (((join << (3 - b4)) | (join >> (b4 + 1))) << 4); // Return the global beat's wrapped LED-positions
+}
 
-	// Wrap those LED-positions around correctly, and display them alongside the current quarter-note
-	byte display = (((join << (3 - b4)) | (join >> (b4 + 1))) << 4) | quart;
+// Display the global beat and a QUANTIZE-based interval in the topmost row of LEDs
+void displayQuantizeBeat() {
+
+	byte cmod = CUR16 % (QUANTIZE * 4);
+	for (byte i = 0; i < 4; i++) {
+		if ((QUANTIZE * (i + 1)) > cmod) {
+			lc.setRow(0, 0, getGlobalBeatLEDs() | (8 >> i));
+			break;
+		}
+	}
+
+}
+
+// Display the global beat and quarter-note in the topmost row of LEDs
+void displayGlobalBeat() {
 
 	// Display the global beat in the 4 leftmost LEDs,
 	// and the global quarter-note in the 4 rightmost LEDs,
 	// with an extra disambiguation marker after beat 4
-	lc.setRow(0, 0, display);
+	lc.setRow(0, 0, getGlobalBeatLEDs() | (8 >> ((CUR16 >> 2) & 3)));
 
 }
 
@@ -76,7 +90,7 @@ void updateFirstRow(byte ctrl) {
 			// If ARM-RECORDING or INTERVAL or ERASE WHILE HELD is held...
 			// Or some other unassigned button-combination is held...
 			// Or no control-buttons are held...
-			displayGlobalBeat(); // Display the global beat-row
+			displayQuantizeBeat(); // Display the global beat-row with a QUANTIZE-based interval
 			//lc.setRow(0, 0, byte(POS[RECORDSEQ] >> 4)); // Display the RECORDSEQ's realtime beat-position, in binary
 		}
 	} else { // Else, if this isn't RECORD-MODE...
@@ -120,11 +134,11 @@ void updateRecBottomRows(byte ctrl) {
 	// Get a key that will be used to match the ctrl-row buttons to a glyph in the GUI-GLYPHS table
 	word kt = pgm_read_byte_near(KEYTAB + ctrl) * 6;
 
+	byte row = 0; // Will hold the binary value to be sent to the row's LEDs
+
 	for (byte i = 0; i < 6; i++) { // For each of the bottom 6 GUI rows...
 
 		if (!(TO_UPDATE & (4 << i))) { continue; } // If the row is not flagged for an update, continue to the next row
-
-		byte row; // Will hold the binary value to be sent to the row's LEDs
 
 		if (BLINK) { // If a BLINK is active...
 			row = 255; // Fill in the LED-row completely
@@ -135,9 +149,9 @@ void updateRecBottomRows(byte ctrl) {
 		} else { // Else, if control-buttons are held...
 			row = pgm_read_byte_near(GLYPHS + kt + i); // Read the given row, in the given glyph
 			if (ctrl == B00100000) { // If RECORDNOTES is held...
-				row |= 7 * RECORDNOTES; // Add a blaze to the RECORDNOTES glyph, if RECORDNOTES is ARMED
+				row |= 15 * RECORDNOTES; // Add a blaze to the RECORDNOTES glyph, if RECORDNOTES is ARMED
 			} else if (ctrl == B00000001) { // If REPEAT is held...
-				row |= 7 * REPEAT; // Add a blaze to the REPEAT glyph, if REPEAT is ARMED
+				row |= 15 * REPEAT; // Add a blaze to the REPEAT glyph, if REPEAT is ARMED
 			}
 		}
 
