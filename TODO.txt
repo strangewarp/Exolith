@@ -9,14 +9,15 @@ Software:
 	. QUANTIZE, when applied to REPEAT values, is at a granularity twice as slow as it should be
 		-- turns out this was a bug in the testing apparatus, not Tine itself
 
+	. figure out why HUMANIZE doesn't get applied to test-notes
+		-- seems to work now
+
 	. when REPEAT is enabled, a keystroke's note should not be recorded upon its initial keypress
-		-- 
+		-- fixed
 
 	. when a REPEAT-note is held, the GLOBAL CUE row desyncs from the SEQ BEAT row by one 16th-note
 		. is there a lack of a TO_UPDATE call somewhere?
 		. or does REPEAT desync the local and global tempos temporarily? (this seems unlikely)
-
-	. figure out why HUMANIZE doesn't get applied to test-notes
 
 	. REPEAT should be a held-command, not a toggle-command
 		. all INTERVAL commands should be chordable with REPEAT

@@ -75,7 +75,7 @@ void processRecAction(byte ctrl, byte key) {
 	}
 
 	// Get the note's velocity, with a random humanize-offset
-	byte velo = VELO - min(VELO - 1, byte(GLOBALRAND % (HUMANIZE + 1)));
+	byte velo = VELO - min(VELO - 1, byte(GLOBALRAND & 255) % (HUMANIZE + 1));
 
 	byte rchan = CHAN & 15; // Strip the chan of any special-command flag bits
 

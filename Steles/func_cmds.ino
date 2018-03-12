@@ -50,6 +50,7 @@ void durationCmd(byte col, byte row) {
 
 // Parse all of the possible actions that signal the recording of commands
 void genericCmd(byte col, byte row) {
+	if (REPEAT) { return; } // If REPEAT is held, don't send any commands instantly
 	byte key = col + (row * 4); // Get the key at the intersection of the column and row
 	byte ctrl = BUTTONS & B00111111; // Get the control-row buttons' activity
 	processRecAction(ctrl, key); // Parse all of the possible actions that signal the recording of commands
