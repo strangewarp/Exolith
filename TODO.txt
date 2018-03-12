@@ -3,8 +3,7 @@ Tine TODO
 
 Software:
 
-	. in RECORD-MODE, the short-time counter in the right half of the top row should change at the rate of QUANTIZE, rather than being hardwired to quarter-notes
-		-- done
+	-- found and fixed a bug where the top row wasn't updating in RECORD-MODE when QUANTIZE was a non-multiple-of-2
 
 	. when a REPEAT-note is held, the GLOBAL CUE row desyncs from the SEQ BEAT row by one 16th-note
 		. is there a lack of a TO_UPDATE call somewhere?
