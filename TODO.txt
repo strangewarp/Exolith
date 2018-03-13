@@ -8,8 +8,15 @@ Software:
 	. when a REPEAT-note is held, the GLOBAL CUE row desyncs from the SEQ BEAT row by one 16th-note
 		. is there a lack of a TO_UPDATE call somewhere?
 			. this seems to be related to whether the current tick has a clean modulo with the QUANTIZE value. figure out why
-				-- 
+				-- not a quantize thing
 		. or does REPEAT desync the local and global tempos temporarily? (this seems unlikely)
+			-- no
+		. so what is it?
+			-- think I found it:
+			-- outdated TO_UPDATE calls in processRecAction() and parseTickContents().
+			-- these caused the RECORDSEQ's position to be displayed as off by one 16th-note under certain circumstances
+			-- (e.g. on any tick that contained a note).
+			-- it's fixed now.
 
 	. REPEAT should be a held-command, not a toggle-command
 		. all INTERVAL commands should be chordable with REPEAT

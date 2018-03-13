@@ -110,7 +110,7 @@ void processRecAction(byte ctrl, byte key) {
 			velo
 		);
 
-		TO_UPDATE |= 254; // Flag the 7 bottommost LED-rows for an update
+		TO_UPDATE |= 252; // Flag the 6 bottommost LED-rows for an update
 
 	}
 
@@ -132,8 +132,6 @@ void processRecAction(byte ctrl, byte key) {
 	// or a correctly-formatted CC or PC command, if applicable.
 	byte buf[4] = {byte(144 + CHAN + offc), pitch, velo, 0};
 	Serial.write(buf, 3); // Send the user-pressed note to MIDI-OUT immediately, without buffering
-
-	TO_UPDATE |= 2; // Flag the sustain-row for a GUI update
 
 }
 

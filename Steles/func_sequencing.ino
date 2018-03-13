@@ -123,7 +123,9 @@ void parseTickContents(byte buf[]) {
 		memcpy(SUST, buf + bn, 3); // Create a new sustain corresponding to this note
 		SUST_COUNT++; // Increase the number of active sustains by 1
 
-		TO_UPDATE |= 2; // Flag the sustain-row for a GUI update
+		if (!RECORDMODE) { // If we're in PLAY-MODE...
+			TO_UPDATE |= 2; // Flag the sustain-row for a GUI update
+		}
 
 	}
 
