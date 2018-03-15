@@ -3,36 +3,49 @@ Tine TODO
 
 Software:
 
-	-- found and fixed a bug where the top row wasn't updating in RECORD-MODE when QUANTIZE was a non-multiple-of-2
+	. add a single global "prefs" file, to save and store global vars (duration, basenote, etc)
+		-- ok
+	. create a new documentation-file for the PRF.DAT format
+		-- done
+	. could also store the most-recent savefile number, to be loaded on startup
+		-- done
+	. save all relevant global vars to the PREFS file whenever RECORD MODE is untoggled
+		-- ok
+	. test this stuff
+		-- 
 
-	. when a REPEAT-note is held, the GLOBAL CUE row desyncs from the SEQ BEAT row by one 16th-note
-		. is there a lack of a TO_UPDATE call somewhere?
-			. this seems to be related to whether the current tick has a clean modulo with the QUANTIZE value. figure out why
-				-- not a quantize thing
-		. or does REPEAT desync the local and global tempos temporarily? (this seems unlikely)
-			-- no
-		. so what is it?
-			-- think I found it:
-			-- outdated TO_UPDATE calls in processRecAction() and parseTickContents().
-			-- these caused the RECORDSEQ's position to be displayed as off by one 16th-note under certain circumstances
-			-- (e.g. on any tick that contained a note).
-			-- it's fixed now.
+	. need to display which file is being loaded on startup, somehow
+		-- 
 
-	. REPEAT should be a held-command, not a toggle-command
-		. all INTERVAL commands should be chordable with REPEAT
-			. will require updates to isRecCompatible()
-			. these will also need their own GUI elements, and calls inside func_gui.ino
-			. update button-key.txt to document the additional chord-commands
-		. make sure CC and PC commands still occur during REPEAT
-			. make sure they are overridden by INTERVAL commands
-
-	. BPM should be accessible in both PLAY MODE and RECORD MODE
-		. only write BPM to file when toggling into RECORD MODE, or when changing the value if RECORD MODE is currently active
+	. definitely need a "clear all notes in the current sequence that correspond to the current CHAN" command in RECORD MODE
+		-- yes
+	. figure out a name for it
+		-- its name will be CLEAR NOTES
+	. needs a CLEAR NOTES keychord:
+		. 4 keys, to signal that this is a serious function and stop any accidental mashing from activating it?
+		. 011110 key-combo
+		-- 
+	. needs a command-function where it actually wipes the notes en masse
+		-- 
+	. needs a GUI glyph
+		-- 
+	. needs a top-row call in func_gui
+		-- 
+	. needs a bottom-rows call in func_gui
+		-- 
 
 	. re-test everything
 		. regular notes: recording & playback
+			-- works
 		. note-erasing in RECORD-MODE
+			. regular erasing
+				-- 
+			. only erases notes from the current CHAN?
+				-- 
 		. BASENOTE and OCTAVE
+			-- yes
+			. does BASENOTE clamp at B?
+				-- 
 		. intervals
 			. recording them to seq
 			. playing them from seq
@@ -136,6 +149,9 @@ Software:
 	. test MIDI-IN (clock)
 		. add a "DO NOT SEND CLOCK SIGNALS" user-flag to the CLOCK MASTER/FOLLOW mechanism
 
+	. BPM should be accessible in both PLAY MODE and RECORD MODE?
+		. only write BPM to file when toggling into RECORD MODE, or when changing the value if RECORD MODE is currently active
+
 	. replace bloated LedControl with optimized custom functions
 		. replace LedControl with LedControl_HW_SPI???
 			. either a simplified version of LedControl_HW_SPI, or a simplified version of LedControl, but either way, it needs to directly address port-registers
@@ -157,8 +173,6 @@ Software:
 	. add a command to shift the position of the global cue-point?
 
 	. add a command to change the global cue-point's granularity? (e.g. being 3 beats, or 7 beats, instead of 8 beats, and ignoring the extra LEDs)
-
-	. add a single global "stats" file, to save and store global vars? (duration, basenote, etc)
 
 	. very rarely, the tempo will be far too fast upon power-up. figure out why
 

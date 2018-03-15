@@ -86,9 +86,6 @@ Button combinations (PLAY MODE):
 	101111: reserved (type: "page-cue-6-off")
 	011111: SCATTER 7
 
-	6-keypress:
-	111111: TOGGLE RECORD MODE
-
 
 Button combinations (RECORD MODE):
 

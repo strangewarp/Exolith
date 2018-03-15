@@ -1,0 +1,22 @@
+
+
+Steles prefs-file spec
+
+	File location:
+		/PRF.DAT
+
+	File contents:
+		(12 total bytes)
+		byte 0:  PAGE
+		byte 1:  BASENOTE
+		byte 2:  OCTAVE
+		byte 3:  VELO
+		byte 4:  HUMANIZE
+		byte 5:  CHAN
+		byte 6:  QUANTIZE
+		byte 7:  DURATION
+		byte 8:  COPYPOS
+		byte 9:  COPYSEQ
+		byte 10: SONG
+		byte 11: CLOCKMASTER
+

@@ -178,7 +178,9 @@ void setup() {
 
 	createFiles(); // Check whether the savefiles exist, and if they don't, then create them
 
-	loadSong(SONG); // Load the default song-slot
+	loadPrefs(); // Load whatever prefsarein PRF.DAT, or create PRF.DAT if it doesn't exist yet
+
+	loadSong(SONG); // Load whatever song-slot was in PRF.DAT, or the default song-slot if PRF.DAT didn't exist
 
 	TO_UPDATE = 255; // Cue all GUI rows for an initial update
 

@@ -14,7 +14,7 @@ void createFiles() {
 		}
 		getFilename(name, i); // Get the filename that corresponds to this song-slot
 		if (sd.exists(name)) { continue; } // If the file exists, skip the file-creation process for this filename
-		file.createContiguous(sd.vwd(), name, FILE_BYTES); // Create a contiguous file 
+		file.createContiguous(sd.vwd(), name, FILE_BYTES); // Create a contiguous file
 		file.close(); // Close the newly-created file
 		file.open(name, O_WRITE); // Open the file explicitly in WRITE mode
 		file.seekSet(0); // Go to byte 0
@@ -46,6 +46,80 @@ void updateFileByte(byte pos, byte b) {
 	file.seekSet(pos); // Go to the given insert-point
 	file.write(b); // Write the new byte into the file
 	file.sync(); // Make sure the changes are recorded
+}
+
+// Put the current prefs-related global vars into a given buffer
+void makePrefBuf(byte buf[]) {
+	buf[0] = PAGE;
+	buf[1] = BASENOTE;
+	buf[2] = OCTAVE;
+	buf[3] = VELO;
+	buf[4] = HUMANIZE;
+	buf[5] = CHAN;
+	buf[6] = QUANTIZE;
+	buf[7] = DURATION;
+	buf[8] = COPYPOS;
+	buf[9] = COPYSEQ;
+	buf[10] = SONG;
+	buf[11] = CLOCKMASTER;
+}
+
+// Write the current relevant global vars into PRF.DAT
+void writePrefs() {
+
+	file.close(); // Temporarily close the current song-file
+
+	byte buf[13]; // Make a buffer that will contain all the prefs
+	makePrefBuf(buf); // Fill it with all the relevant pref values
+	file.open(PSTR("PRF.DAT"), O_WRITE); // Open the prefs-file in write-mode
+	file.write(buf, 12); // Write the pref vars into the file
+	file.close(); // Close the prefs-file
+
+	char name[8];
+	getFilename(name, SONG); // Get the name of the current song-file
+
+	file.open(name, O_RDWR); // Reopen the current song-file before exiting the function
+
+}
+
+// Load the contents of the preferences file ("PRF.DAT"), and put its contents into global variables
+void loadPrefs() {
+
+	byte buf[13]; // Make a buffer that will contain all the prefs
+
+	if (!sd.exists(PSTR("PRF.DAT"))) { // If the prefs-file doesn't exist, create the file
+
+		makePrefBuf(buf); // Fill the buffer with all the relevant pref values
+
+		file.createContiguous(sd.vwd(), PSTR("PRF.DAT"), 12); // Create a contiguous prefs-file
+		file.close(); // Close the newly-created file
+
+		file.open(PSTR("PRF.DAT"), O_WRITE); // Create a prefs file and open it in write-mode
+		file.write(buf, 12); // Write the pref vars into the file
+
+	} else { // Else, if the prefs-file does exist...
+
+		file.open(PSTR("PRF.DAT"), O_READ); // Open the prefs-file in read-mode
+		file.read(buf, 12); // Read all the prefs-bytes into the buffer
+
+		// Assign the buffer's-worth of pref-bytes to their respective global-vars
+		PAGE = buf[0];
+		BASENOTE = buf[1];
+		OCTAVE = buf[2];
+		VELO = buf[3];
+		HUMANIZE = buf[4];
+		CHAN = buf[5];
+		QUANTIZE = buf[6];
+		DURATION = buf[7];
+		COPYPOS = buf[8];
+		COPYSEQ = buf[9];
+		SONG = buf[10];
+		CLOCKMASTER = buf[11];
+
+	}
+
+	file.close(); // Close the prefs file, regardless of whether it already exists or was just created
+
 }
 
 // Load a given song, or create its savefile if it doesn't exist
