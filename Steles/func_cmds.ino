@@ -19,6 +19,29 @@ void chanCmd(byte col, byte row) {
 	TO_UPDATE |= 1; // Flag the topmost row for updating
 }
 
+// Parse a CLEAR NOTES press
+void clearCmd(byte col, byte row) {
+
+	byte len = STATS[RECORDSEQ] & 63; // Get the RECORDSEQ's length, in beats
+	word flen = word(len) * 16; // Get the RECORDSEQ's length, in 16th-notes
+
+	// Convert a column and row into a CHANGE value (positive values only), bounded to the seq's size (in 16th-notes)
+	word amount = min(abs(toChange(col, row)), len) * 16;
+
+	byte buf[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0}; // Create a blanked-out buffer for use with eraseTick()
+
+	word pos = (POS[RECORDSEQ] >> 4) << 4; // Get the bottom-point of the current beat in RECORDSEQ
+	while (amount) { // While there is still some amount of space left to clear...
+		eraseTick(buf, pos); // Erase all notes within this tick that correspond to the global CHAN
+		pos = (pos + 1) % flen; // Increase the tick-position by 1, wrapped around the RECORDSEQ's size
+		amount--; // Reduce the amount-of-ticks-remaining-value by 1
+	}
+
+	BLINK = 255; // Start an LED-BLINK that is ~16ms long
+	TO_UPDATE |= 252; // Flag the bottom 6 rows for LED updates
+
+}
+
 // Parse a CLOCK-MASTER press
 void clockCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row) {
 	CLOCKMASTER ^= 1; // Toggle the CLOCK-MASTER value

@@ -26,11 +26,11 @@ void primeRecSeq() {
 
 }
 
-// Erase all commands that match the global CHAN, in the current tick of the current RECORDSEQ
-void eraseTick(byte buf[]) {
+// Erase all commands that match the global CHAN, in a given tick-position within the RECORDSEQ
+void eraseTick(byte buf[], byte p) {
 
 	// Get the tick's position in the savefile
-	unsigned long tpos = (49UL + (POS[RECORDSEQ] * 8)) + (4096UL * RECORDSEQ);
+	unsigned long tpos = (49UL + (p * 8)) + (4096UL * RECORDSEQ);
 
 	file.seekSet(tpos); // Navigate to the note's absolute position
 	file.read(buf, 8); // Read the data of the tick's notes

@@ -195,7 +195,7 @@ void getTickNotes(byte ctrl, unsigned long held, byte s, byte buf[]) {
 			if (REPEAT && held) { // If REPEAT is toggled, and a note-button is being held...
 				processRepeats(ctrl, held, s); // Process a REPEAT-RECORD
 			} else if (RECORDNOTES && (ctrl == B00111100)) { // Else, if RECORDNOTES is armed, and ERASE-NOTES is held...
-				eraseTick(buf); // Erase CHAN-matching commands in the current tick
+				eraseTick(buf, POS[RECORDSEQ]); // Erase CHAN-matching commands in the current tick
 			}
 		}
 		readTick(s, 0, buf); // Read the tick with no offset
