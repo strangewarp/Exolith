@@ -3,7 +3,7 @@
 Steles prefs-file spec
 
 	File location:
-		/PRF.DAT
+		/P.DAT
 
 	File contents:
 		(12 total bytes)

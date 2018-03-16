@@ -146,6 +146,10 @@ extern const byte NUMBER_GLYPHS[]; // Use the number-multiglyph from data_gui.in
 
 
 
+const char PREFS_FILENAME[] PROGMEM = {80, 46, 68, 65, 84, 0}; // Filename of the preferences-file, in PROGMEM to save RAM
+
+
+
 SdFat sd; // Initialize SdFat object
 SdFile file; // Initialize an SdFile File object, to control default data read/write processes
 

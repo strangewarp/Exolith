@@ -11,13 +11,12 @@ Software:
 		-- done
 	. save all relevant global vars to the PREFS file whenever RECORD MODE is untoggled
 		-- ok
-	. test this stuff
-		-- 
-
-	. need to display which file is being loaded on startup, somehow
-		-- ok
-		. test the new GUI element
-			-- seems to work
+	. test that preferences are persisting correctly
+		-- nope - prefs file isn't even being made
+		. fix it
+			-- replaced weird prefs-filename calls with a PROGMEM-retrieval function
+			. test this
+				-- 
 
 	. definitely need a "clear all notes in the current sequence that correspond to the current CHAN" command in RECORD MODE
 		-- yes

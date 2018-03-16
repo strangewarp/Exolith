@@ -64,6 +64,13 @@ void makePrefBuf(byte buf[]) {
 	buf[11] = CLOCKMASTER;
 }
 
+// Get the prefs-file's filename out of PROGMEM
+void getPrefsFilename(char pn[]) {
+	for (byte i = 0; i < 6; i++) { // For each letter in the filename...
+		pn[i] = pgm_read_byte_near(PREFS_FILENAME + i); // Get that letter out of PROGMEM
+	}
+}
+
 // Write the current relevant global vars into PRF.DAT
 void writePrefs() {
 
@@ -72,7 +79,11 @@ void writePrefs() {
 	byte buf[13]; // Make a buffer that will contain all the prefs
 	makePrefBuf(buf); // Fill it with all the relevant pref values
 
-	file.open(PSTR("PRF.DAT"), O_WRITE); // Open the prefs-file in write-mode
+	char pn[6]; // Will contain the prefs-file's filename
+	getPrefsFilename(pn); // Get the prefs-file's filename out of PROGMEM
+
+	file.open(pn, O_WRITE); // Open the prefs-file in write-mode
+	file.seekSet(0); // Ensure we're on the first byte of the file
 	file.write(buf, 12); // Write the pref vars into the file
 	file.close(); // Close the prefs-file
 
@@ -88,19 +99,22 @@ void loadPrefs() {
 
 	byte buf[13]; // Make a buffer that will contain all the prefs
 
-	if (!sd.exists(PSTR("PRF.DAT"))) { // If the prefs-file doesn't exist, create the file
+	char pn[6]; // Will contain the prefs-file's filename
+	getPrefsFilename(pn); // Get the prefs-file's filename out of PROGMEM
+
+	if (!sd.exists(pn)) { // If the prefs-file doesn't exist, create the file
 
 		makePrefBuf(buf); // Fill the buffer with all the relevant pref values
 
-		file.createContiguous(sd.vwd(), PSTR("PRF.DAT"), 12); // Create a contiguous prefs-file
+		file.createContiguous(sd.vwd(), pn, 12); // Create a contiguous prefs-file
 		file.close(); // Close the newly-created file
 
-		file.open(PSTR("PRF.DAT"), O_WRITE); // Create a prefs file and open it in write-mode
+		file.open(pn, O_WRITE); // Create a prefs file and open it in write-mode
 		file.write(buf, 12); // Write the pref vars into the file
 
 	} else { // Else, if the prefs-file does exist...
 
-		file.open(PSTR("PRF.DAT"), O_READ); // Open the prefs-file in read-mode
+		file.open(pn, O_READ); // Open the prefs-file in read-mode
 		file.read(buf, 12); // Read all the prefs-bytes into the buffer
 
 		// Assign the buffer's-worth of pref-bytes to their respective global-vars
