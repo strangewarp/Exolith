@@ -1,4 +1,23 @@
 
+// Display the number of a newly-loaded savefile
+void displayLoadNumber() {
+	byte c1 = SONG % 10; // Get the ones digit
+	byte c2 = byte(floor(SONG / 10)) % 10; // Get the tens digit
+	byte c3 = SONG >= 100; // Get the hundreds digit (only 0 or 1)
+	lc.setRow(0, 0, 0); // Blank out top row
+	lc.setRow(0, 1, 0); // Blank out second row
+	for (byte i = 0; i < 6; i++) { // For each of the bottom 6 rows of the GUI...
+		lc.setRow(
+			0,
+			i + 2, // Set this row...
+			(pgm_read_byte_near(NUMBER_GLYPHS + (c1 * 6) + i) >> 5) // To a composite of all three digits, shifted in position accordingly
+				| (pgm_read_byte_near(NUMBER_GLYPHS + (c2 * 6) + i) >> 1)
+				| (pgm_read_byte_near(NUMBER_GLYPHS + (c3 * 6) + i) * c3)
+		);
+	}
+	delay(750); // Pause the program for 3/4 of a second while the number is displayed
+}
+
 // Get the SEQUENCE-ACTIVITY LED-values for a given GUI row within the lower 6 rows
 byte getRowSeqVals(byte r) {
 	byte ib = r << 2; // Get the row's left-side's global-array position
@@ -119,10 +138,11 @@ void updateLoadBottomRows(byte ctrl) {
 			0, // LED-grid 0 (only LED-grid used)...
 			i, // LED-row corresponding to the current row...
 			pgm_read_byte_near( // Get LED data from PROGMEM:
-				MULTIGLYPH_NUMBERS // Get a number-glyph,
+				NUMBER_GLYPHS // Get a number-glyph,
 				+ (6 * ind) // based on the highest pressed control-button,
 				+ i // whose contents correspond to the current row
 			)
+			>> 3 // Shifted 3 LEDs to the right from its default left-border-hugging position
 		);
 	}
 }

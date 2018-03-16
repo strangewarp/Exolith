@@ -15,7 +15,9 @@ Software:
 		-- 
 
 	. need to display which file is being loaded on startup, somehow
-		-- 
+		-- ok
+		. test the new GUI element
+			-- seems to work
 
 	. definitely need a "clear all notes in the current sequence that correspond to the current CHAN" command in RECORD MODE
 		-- yes
@@ -46,13 +48,17 @@ Software:
 			-- yes
 			. does BASENOTE clamp at B?
 				-- 
+		. REPEAT
+			-- 
+		. SHIFT POSITION
+			-- 
+		. SHIFT RECORD-SEQ
+			-- 
 		. intervals
 			. recording them to seq
 			. playing them from seq
-		. REPEAT
-		. SHIFT POSITION
 		. COPY/PASTE:
-			. straightforward standard usge
+			. straightforward standard usage
 			. with COPY size too long for PASTE size (should be discarded)
 			. with COPY size too short for PASTE size (should repeat until the end of the PASTE area)
 			. with COPY in another sequence than PASTE

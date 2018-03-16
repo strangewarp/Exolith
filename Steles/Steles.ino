@@ -142,7 +142,7 @@ extern const byte KEYTAB[]; // Use the list of binary-to-decimal function-keys f
 
 extern const byte LOGO[]; // Use the logo from data_gui.ino
 extern const byte GLYPH_ERASE[]; // Use the ERASE-glyph from data_gui.ino
-extern const byte MULTIGLYPH_NUMBERS[]; // Use the number-multiglyph from data_gui.ino
+extern const byte NUMBER_GLYPHS[]; // Use the number-multiglyph from data_gui.ino
 
 
 

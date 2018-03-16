@@ -5,7 +5,7 @@ void createFiles() {
 	char name[8]; // Will hold a given filename
 
 	for (byte i = 0; i < 168; i++) { // For every song-slot...
-		lc.setRow(0, 0, i); // Display how many files have been created so far, if any
+		//lc.setRow(0, 0, i); // Display how many files have been created so far, if any
 		if (!(i % 42)) { // After a certain amount of files, switch to the next logo letter
 			for (byte row = 0; row < 7; row++) { // For each row in the 7-row-tall logo text...
 				// Set the corresponding row to the corresponding letter slice
@@ -30,7 +30,7 @@ void createFiles() {
 
 // Get the name of a target song-slot's savefile (format: "000.DAT" etc.)
 void getFilename(char source[], byte fnum) {
-	source[0] = char(floor(fnum / 100)) + 48;
+	source[0] = char(fnum >= 100) + 48;
 	source[1] = (char(floor(fnum / 10)) % 10) + 48;
 	source[2] = char((fnum % 10) + 48);
 	source[3] = 46;
@@ -71,6 +71,7 @@ void writePrefs() {
 
 	byte buf[13]; // Make a buffer that will contain all the prefs
 	makePrefBuf(buf); // Fill it with all the relevant pref values
+
 	file.open(PSTR("PRF.DAT"), O_WRITE); // Open the prefs-file in write-mode
 	file.write(buf, 12); // Write the pref vars into the file
 	file.close(); // Close the prefs-file
@@ -158,6 +159,8 @@ void loadSong(byte slot) {
 
 	CUR16 = 127; // Set the global cue-position to arrive at 1 immediately
 	ELAPSED = 0; // Reset the elapsed-time-since-last-16th-note counter
+
+	displayLoadNumber(); // Display the number of the newly-loaded savefile
 
 	TO_UPDATE = 255; // Flag entire GUI for an LED-update
 
