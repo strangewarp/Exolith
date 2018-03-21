@@ -143,7 +143,6 @@ void loadSong(byte slot) {
 
 	haltAllSustains(); // Clear all currently-sustained notes
 	resetAllSeqs(); // Reset all seqs' internal activity variables of all kinds
-	clearRecentNotes(); // Reset the "most recent note by channel" array
 
 	// Display a fully-lit screen while loading data
 	lc.setRow(0, 0, 255);

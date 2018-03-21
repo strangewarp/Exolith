@@ -58,7 +58,7 @@ void eraseTick(byte buf[], byte p) {
 }
 
 // Parse all of the possible actions that signal the recording of commands
-void processRecAction(byte ctrl, byte key) {
+void processRecAction(byte key) {
 
 	// Get a note that corresponds to the key, organized from bottom-left to top-right, with all modifiers applied
 	byte pitch = (OCTAVE * 12) + BASENOTE + ((23 - key) ^ 3);
@@ -68,8 +68,6 @@ void processRecAction(byte ctrl, byte key) {
 
 	// Get the note's velocity, with a random humanize-offset
 	byte velo = VELO - min(VELO - 1, byte(GLOBALRAND & 255) % (HUMANIZE + 1));
-
-	byte rchan = CHAN & 15; // Strip the chan of any special-command flag bits
 
 	if (PLAYING && RECORDNOTES) { // If notes are being recorded into a playing sequence...
 

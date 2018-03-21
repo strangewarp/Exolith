@@ -134,7 +134,7 @@ void processRepeats(byte ctrl, unsigned long held, byte s) {
 				if (held & (1UL << i)) { // If the internal BUTTONS-value for this note is held...
 					// For this note, parse all of the possible actions that signal the recording of commands,
 					// using the new "key" position that corresponds to this note's BUTTONS-bit position
-					processRecAction(ctrl, (row * 4) + col);
+					processRecAction((row * 4) + col);
 				}
 				i++; // Increment this loop's BUTTON-bit counter
 			}

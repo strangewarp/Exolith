@@ -5,8 +5,6 @@ void toggleMidiClock(byte usercmd) {
 
 	PLAYING = !PLAYING; // Toggle/untoggle the var that tracks whether the MIDI CLOCK is playing
 
-	clearRecentNotes(); // Reset the "most recent note by channel" array
-
 	if (CLOCKMASTER) { // If in CLOCK MASTER mode...
 		if (PLAYING) { // If playing has just been enabled...
 			ELAPSED = TICKSIZE; // Cue the next tick-update to occur on the next timer-check

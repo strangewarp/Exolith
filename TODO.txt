@@ -3,21 +3,6 @@ Tine TODO
 
 Software:
 
-	. reconsider INTERVAL system
-		. will it actually be used by most people?
-			-- probably not
-		. too gimmicky?
-			-- mostly
-		. too much cognitive load?
-			-- mostly
-		. too much UI clutter?
-			-- sort of
-	. in light of this:
-	. remove the INTERVAL system
-		-- done
-	. remove INTERVAL-related tasks from TODO list
-		-- done
-
 	. reassign commands in RECORD-MODE to occupy former INTERVAL keys where applicable
 		-- 
 
