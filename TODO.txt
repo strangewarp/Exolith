@@ -3,38 +3,36 @@ Tine TODO
 
 Software:
 
-	. add a single global "prefs" file, to save and store global vars (duration, basenote, etc)
-		-- ok
-	. create a new documentation-file for the PRF.DAT format
-		-- done
-	. could also store the most-recent savefile number, to be loaded on startup
-		-- done
-	. save all relevant global vars to the PREFS file whenever RECORD MODE is untoggled
-		-- ok
-	. test that preferences are persisting correctly
-		-- nope - prefs file isn't even being made
-		. fix it
-			-- replaced weird prefs-filename calls with a PROGMEM-retrieval function
-			. test this
-				-- seems to work
-
 	. definitely need a "clear all notes in the current sequence that correspond to the current CHAN" command in RECORD MODE
 		-- yes
 	. figure out a name for it
 		-- its name will be CLEAR NOTES
 	. needs a CLEAR NOTES keychord:
-		. 4 keys, to signal that this is a serious function and stop any accidental mashing from activating it?
+		. 4 keys, to signal that this is a serious function and stop any accidental mashing from activating it
 		. 011110 key-combo
 			-- ok
 	. needs a command-function where it actually wipes the notes en masse
 		-- done
 	. needs a GUI glyph
 		-- done
-	. needs a top-row call in func_gui
-		-- 
 	. needs a bottom-rows call in func_gui
-		-- 
+		-- ok
 	. test this command
+		-- 
+
+	. reconsider INTERVAL system
+		. will it actually be used by most people?
+			-- probably not
+		. too gimmicky?
+			-- mostly
+		. too much cognitive load?
+			-- mostly
+		. too much UI clutter?
+			-- sort of
+	. in light of this:
+	. remove the INTERVAL system
+		-- 
+	. reassign commands in RECORD-MODE to occupy INTERVAL keys where applicable
 		-- 
 
 	. re-test everything
