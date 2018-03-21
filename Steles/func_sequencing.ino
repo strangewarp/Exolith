@@ -1,12 +1,8 @@
 
+
 // Update the internal tick-size (in microseconds) to match the new BPM value
 void updateTickSize() {
 	TICKSIZE = (unsigned long) round(60000000L / (word(BPM) * 96));
-}
-
-// Reset the "most recent note by channel" array
-void clearRecentNotes() {
-	memset(RECENT, 60, 16);
 }
 
 // Reset every sequence, including SCATTER values
@@ -25,31 +21,6 @@ void resetSeq(byte s) {
 	POS[s] = 0;
 	STATS[s] &= 63;
 	//SCATTER[s] &= 15; // Wipe all of the seq's scatter-counting and scatter-flagging bits, but not its scatter-chance bits
-}
-
-// Apply an interval-command to a given pitch, within a given CHANNEL
-byte applyIntervalCommand(byte cmd, byte pitch) {
-
-	byte interv = cmd & 31; // Get the pitch-based interval value
-	char offset = interv; // Default offset: the interval itself
-
-	cmd &= B11100000; // Reduce the INTERVAL-command to its flags, now that its interval has been removed
-
-	if (cmd & B00100000) { // If this is a RANDOM-flavored command...
-		// Get a random offset within the bounds of the interval-value
-		offset = char(GLOBALRAND % (interv + 1));
-	}
-
-	if (cmd & B01000000) { // If this is a DOWN-flavored command...
-		offset = -offset; // Point the offset downwards
-	}
-
-	int shift = int(pitch) + offset; // Get a shifted version of the given pitch
-	while (shift < 0) { shift += 12; } // Increase too-low shift-values
-	while (shift > 127) { shift -= 12; } // Decrease too-high shift-values
-
-	return byte(shift); // Return a MIDI-style pitch-byte
-
 }
 
 // Compare a seq's CUE-commands to the global CUE-point, and parse them if the timing is correct
@@ -93,19 +64,6 @@ void parseTickContents(byte buf[]) {
 	for (byte bn = 0; bn < ((buf[4] || buf[6]) + 4); bn += 4) {
 
 		if (MOUT_COUNT == 8) { return; } // If the MIDI buffer is full, exit the function
-
-		byte bn1 = bn + 1; // Get note's PITCH index
-
-		if (buf[bn1] & 128) { // If this is an INTERVAL command...
-			buf[bn] &= 15; // Ensure that this command's CHAN byte is in NOTE format
-			// Apply the byte's INTERVAL command to the channel's most-recent pitch,
-			// and then act like the command's byte was always the resulting pitch.
-			buf[bn1] = applyIntervalCommand(buf[bn1], RECENT[buf[bn]]);
-		}
-
-		if (buf[bn] <= 15) { // If this is a NOTE command...
-			RECENT[buf[bn]] = buf[bn1]; // Set the channel's most-recent note to this command's pitch
-		}
 
 		// Convert the note's CHANNEL byte into either a NOTE or CC command
 		buf[bn] = 144 + (buf[bn] & 15) + ((buf[bn] & 16) << 1);

@@ -1,4 +1,5 @@
 
+
 // Create a new entry in the gesture-tracking array
 void newGestureEntry(byte row) {
 	memmove(GESTURE, GESTURE + 1, 3); // Move all previous GESTURE values downward
@@ -48,3 +49,4 @@ void updateGestureKeys() {
 	}
 	GESTELAPSED %= GESTDECAY; // Reduce the elapsed gesture-check time by n units of gesture-decay
 }
+

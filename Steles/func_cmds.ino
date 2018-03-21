@@ -1,4 +1,5 @@
 
+
 // Arm or disarm RECORDNOTES
 void armCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row) {
 	RECORDNOTES ^= 1; // Arm or disarm the RECORDNOTES flag
@@ -85,13 +86,6 @@ void humanizeCmd(byte col, byte row) {
 	HUMANIZE = applyChange(HUMANIZE, change, 0, 127); // Modify the HUMANIZE value
 	TO_UPDATE |= 1; // Flag the topmost row for updating
 }
-
-// All INTERVAL commands go directly to the generic note-handler command,
-// and only exist independently because the KEYTAB array holds unique identifiers for each of them for GUI use.
-void iDownCmd(byte col, byte row) { genericCmd(col, row); }
-void iDownRandCmd(byte col, byte row) { genericCmd(col, row); }
-void iUpCmd(byte col, byte row) { genericCmd(col, row); }
-void iUpRandCmd(byte col, byte row) { genericCmd(col, row); }
 
 // Parse an OCTAVE press
 void octaveCmd(byte col, byte row) {

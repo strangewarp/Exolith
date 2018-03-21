@@ -1,4 +1,5 @@
 
+
 // Apply a negative or positive "change" value to a given byte,
 // clamping it between the given low and high values.
 byte applyChange(byte n, char change, byte low, byte high) {

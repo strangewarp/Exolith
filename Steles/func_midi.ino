@@ -1,4 +1,5 @@
 
+
 // Parse a given MIDI command
 void parseMidiCommand() {
 	if (RECORDMODE) { // If RECORD-MODE is active...

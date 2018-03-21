@@ -1,4 +1,5 @@
 
+
 // Scan all buttons in a given column, checking for changes in state and then reacting to any that are found
 void scanColumn(byte col) {
 	for (byte row = 0; row < 6; row++) { // For each keypad row...
@@ -36,3 +37,4 @@ void scanKeypad() {
 		}
 	}
 }
+

@@ -1,14 +1,11 @@
 
+
 // Check whether a given RECORD-MODE keychord is NOTE-RECORDING compatible
 byte isRecCompatible(byte ctrl) {
 	// Return 1 if:
 	return (!ctrl) // No command-buttons are held...
-		|| (ctrl == B00110000) // Or INTERVAL-DOWN is held...
-		|| (ctrl == B00101000) // Or INTERVAL-UP is held...
 		|| (ctrl == B00100100) // Or CONTROL-CHANGE is held...
-		|| (ctrl == B00100010) // Or PROGRAM-CHANGE is held...
-		|| (ctrl == B00110100) // Or INTERVAL-DOWN-RANDOM is held...
-		|| (ctrl == B00101100); // Or INTERVAL-UP-RANDOM is held
+		|| (ctrl == B00100010); // Or PROGRAM-CHANGE is held
 	// ...Otherwise, return 0
 }
 
@@ -63,11 +60,6 @@ void eraseTick(byte buf[], byte p) {
 // Parse all of the possible actions that signal the recording of commands
 void processRecAction(byte ctrl, byte key) {
 
-	// Get the interval-buttons' activity specifically,
-	// by checking whether an INTERVAL-flavored keychord is currently held
-	// (these keychords have the highest values in the KEYTAB array for this reason)
-	byte ibs = applyChange(pgm_read_byte_near(KEYTAB + ctrl), -19, 0, 4);
-
 	// Get a note that corresponds to the key, organized from bottom-left to top-right, with all modifiers applied
 	byte pitch = (OCTAVE * 12) + BASENOTE + ((23 - key) ^ 3);
 	while (pitch > 127) { // If the pitch is above 127, which is the limit for MIDI notes...
@@ -79,36 +71,19 @@ void processRecAction(byte ctrl, byte key) {
 
 	byte rchan = CHAN & 15; // Strip the chan of any special-command flag bits
 
-	if (ibs) { // If any INTERVAL-keys are held...
-		// Make a composite INTERVAL command, as it would appear in data-storage,
-		// and apply the INTERVAL command to the channel's most-recent pitch
-		ibs = 128 | ((ibs - 1) << 5);
-		pitch = applyIntervalCommand(ibs | key, RECENT[rchan]);
-	}
-
-	if (ibs || (rchan == CHAN)) { // If INTERVAL keys are held, or this is a normal NOTE...
-		RECENT[rchan] = pitch; // Update the channel's most-recent note to the pitch-value
-	}
-
 	if (PLAYING && RECORDNOTES) { // If notes are being recorded into a playing sequence...
 
 		word qp = POS[RECORDSEQ]; // Will hold a QUANTIZE-modified insertion point (defaults to the seq's current position)
 
 		if (!REPEAT) { // If REPEAT isn't toggled...
 			char down = POS[RECORDSEQ] % QUANTIZE; // Get distance to previous QUANTIZE point
-			byte up = QUANTIZE - down; // Getdistance to next QUANTIZE point
+			byte up = QUANTIZE - down; // Get distance to next QUANTIZE point
 			qp += (down <= up) ? (-down) : up; // Make the shortest distance into an offset for the note-insertion point
 			qp %= word(STATS[RECORDSEQ] & 63) * 16; // Wrap the insertion-point around the seq's length
 		}
 
-		// Record the note, either natural or modified by INTERVAL, into the current RECORDSEQ slot;
-		// and if this is an INTERVAL-command, then clip off any virtual CC-info from the chan-byte 
-		recordToSeq(
-			qp, // Current postion in the RECORDSEQ, modified by the current QUANTIZE-distance
-			ibs ? (CHAN % 16) : CHAN,
-			pitch,
-			velo
-		);
+		// Record the note into the current RECORDSEQ slot
+		recordToSeq(qp, CHAN, pitch, velo);
 
 		TO_UPDATE |= 252; // Flag the 6 bottommost LED-rows for an update
 

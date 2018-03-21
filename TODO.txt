@@ -3,6 +3,24 @@ Tine TODO
 
 Software:
 
+	. reconsider INTERVAL system
+		. will it actually be used by most people?
+			-- probably not
+		. too gimmicky?
+			-- mostly
+		. too much cognitive load?
+			-- mostly
+		. too much UI clutter?
+			-- sort of
+	. in light of this:
+	. remove the INTERVAL system
+		-- done
+	. remove INTERVAL-related tasks from TODO list
+		-- done
+
+	. reassign commands in RECORD-MODE to occupy former INTERVAL keys where applicable
+		-- 
+
 	. definitely need a "clear all notes in the current sequence that correspond to the current CHAN" command in RECORD MODE
 		-- yes
 	. figure out a name for it
@@ -18,21 +36,6 @@ Software:
 	. needs a bottom-rows call in func_gui
 		-- ok
 	. test this command
-		-- 
-
-	. reconsider INTERVAL system
-		. will it actually be used by most people?
-			-- probably not
-		. too gimmicky?
-			-- mostly
-		. too much cognitive load?
-			-- mostly
-		. too much UI clutter?
-			-- sort of
-	. in light of this:
-	. remove the INTERVAL system
-		-- 
-	. reassign commands in RECORD-MODE to occupy INTERVAL keys where applicable
 		-- 
 
 	. re-test everything
@@ -53,9 +56,6 @@ Software:
 			-- 
 		. SHIFT RECORD-SEQ
 			-- 
-		. intervals
-			. recording them to seq
-			. playing them from seq
 		. COPY/PASTE:
 			. straightforward standard usage
 			. with COPY size too long for PASTE size (should be discarded)
@@ -71,10 +71,6 @@ Software:
 		. test auto-loading of most recent savefile on startup
 		. test that the number of the savefile is displayed correctly on startup
 			. also for savefiles in file-slots >= 100
-
-	. check whether REPEAT-INTERVAL works as intended, when RECORDNOTES is both unarmed and armed
-		. armed:
-		. unarmed:
 
 	. re-test all cue-commands
 		. OFF
@@ -113,14 +109,15 @@ Software:
 	. does HUMANIZE apply to REPEAT notes correctly?
 
 	. add PROGRAM CHANGE functionality (in addition to CONTROL CHANGE)
-		. make sure this has its virtual PC-bit lopped off by INTERVAL-commands in RECORD mode, just like virtual CC-bits
 		. make sure any button-press global-var changes to the CHAN and CC commands don't interfere with this
 		. enabling PC should set the CC bit to 0, and enabling CC should set the PC bit to 0
 
 	. when two note-buttons are simultaneously held during ARMED RECORDING, are they recorded simultaneously?
-		. what if they're INTERVALS?
 		. what if more than two are held?
 		. what if they're CONTROL-CHANGES?
+			. two held?
+			. more than two?
+		. what if they're PROGRAM-CHANGES?
 			. two held?
 			. more than two?
 
@@ -138,7 +135,6 @@ Software:
 		. change max note-granularity to 8th-notes?
 		. remove MIDI CLOCK?
 		. remove MIDI IN?
-		. remove INTERVAL system?
 		. remove or greatly simplify SCATTER system?
 
 	. test "toggle to next/prev sequence" in RECORD mode

@@ -121,10 +121,6 @@ byte MOUT_COUNT = 0; // Counts the current number of note entries in MOUT
 byte SUST[25];
 byte SUST_COUNT = 0; // Counts the current number of sustained notes
 
-// Keeps a record of the most recent note-pitch sent to each MIDI channel
-// Default value is 60 (middle C), which is replaced when the channel receives its first note
-byte RECENT[17] = {60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60};
-
 // MIDI-IN vars
 byte INBYTES[4]; // Buffer for incoming MIDI commands
 byte INCOUNT = 0; // Number of MIDI bytes received from current incoming command
@@ -185,12 +181,6 @@ void setup() {
 	loadPrefs(); // Load whatever prefsarein PRF.DAT, or create PRF.DAT if it doesn't exist yet
 
 	loadSong(SONG); // Load whatever song-slot was in PRF.DAT, or the default song-slot if PRF.DAT didn't exist
-
-	TO_UPDATE = 255; // Cue all GUI rows for an initial update
-
-	// updateGUI(); // ...And perform the update right now
-	// Note: this would lead the cue-row to briefly flash its 8th LED,
-	// so keep it commented out, and just wait for the first call to updateGUI() from within loop().
 
 	Serial.begin(31250); // Start serial comms at the MIDI baud rate
 	

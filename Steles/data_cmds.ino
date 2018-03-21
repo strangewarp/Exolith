@@ -1,4 +1,5 @@
 
+
 // Store pointers to RECORD-MODE functions in PROGMEM
 const CmdFunc COMMANDS[] PROGMEM = {
 	genericCmd,       //  0: Unused duplicate pointer to genericCmd
@@ -21,11 +22,7 @@ const CmdFunc COMMANDS[] PROGMEM = {
 	sizeCmd,          // 17: SEQ-SIZE
 	switchCmd,        // 18: SWITCH RECORDING-SEQUENCE
 	tempoCmd,         // 19: BPM
-	veloCmd,          // 20: VELOCITY
-	iUpCmd,           // 21: INTERVAL-UP
-	iUpRandCmd,       // 22: INTERVAL-UP-RANDOM
-	iDownCmd,         // 23: INTERVAL-DOWN
-	iDownRandCmd      // 24: INTERVAL-DOWN-RANDOM
+	veloCmd           // 20: VELOCITY
 };
 
 // Matches control-row binary button-values to the decimal values that stand for their corresponding functions in COMMANDS
@@ -71,19 +68,19 @@ const byte KEYTAB[] PROGMEM = {
 	0,  // 37, 100101:  0, ignore
 	0,  // 38, 100110:  0, ignore
 	0,  // 39, 100111:  0, ignore
-	21, // 40, 101000: 21, iUpCmd (INTERVAL-UP)
+	0,  // 40, 101000:  0, ignore
 	0,  // 41, 101001:  0, ignore
 	0,  // 42, 101010:  0, ignore
 	0,  // 43, 101011:  0, ignore
-	22, // 44, 101100: 22, iUpRandCmd (INTERVAL-UP-RANDOM)
+	0,  // 44, 101100:  0, ignore
 	0,  // 45, 101101:  0, ignore
 	0,  // 46, 101110:  0, ignore
 	0,  // 47, 101111:  0, ignore
-	23, // 48, 110000: 23, iDownCmd (INTERVAL-DOWN)
+	0,  // 48, 110000:  0, ignore
 	0,  // 49, 110001:  0, ignore
 	0,  // 50, 110010:  0, ignore
 	0,  // 51, 110011:  0, ignore
-	24, // 52, 110100: 24, iDownRandCmd (INTERVAL-DOWN-RANDOM)
+	0,  // 52, 110100:  0, ignore
 	0,  // 53, 110101:  0, ignore
 	0,  // 54, 110110:  0, ignore
 	0,  // 55, 110111:  0, ignore

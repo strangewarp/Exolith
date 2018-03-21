@@ -1,4 +1,5 @@
 
+
 // Toggle whether the MIDI CLOCK is playing, provided that this unit is in CLOCK MASTER mode
 void toggleMidiClock(byte usercmd) {
 
@@ -113,3 +114,4 @@ void updateTimer() {
 	iterateAll(); // Iterate through a step of each active sequence
 
 }
+

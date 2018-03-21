@@ -1,4 +1,5 @@
 
+
 // Display the number of a newly-loaded savefile
 void displayLoadNumber() {
 	byte c1 = SONG % 10; // Get the ones digit
@@ -105,7 +106,7 @@ void updateFirstRow(byte ctrl) {
 		} else if (ctrl == B00001111) { // Else, if SWITCH RECORDING-SEQUENCE is held...
 			lc.setRow(0, 0, RECORDSEQ); // Show the currently-active seq
 		} else { // Else...
-			// If ARM-RECORDING or INTERVAL or ERASE WHILE HELD is held...
+			// If ARM-RECORDING or ERASE WHILE HELD is held...
 			// Or some other unassigned button-combination is held...
 			// Or no control-buttons are held...
 			displayQuantizeBeat(); // Display the global beat-row with a QUANTIZE-based interval
@@ -222,3 +223,4 @@ void updateGUI() {
 	TO_UPDATE = 0; // Unset the GUI-row-update flags
 
 }
+
