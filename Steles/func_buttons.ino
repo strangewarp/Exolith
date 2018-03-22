@@ -1,6 +1,6 @@
 
 
-// Parse a slice-keypress that was generated while in SLICE or OVERRVIEW mode
+// Parse a slice-keypress that was generated while in PLAY mode
 void parsePlayPress(byte col, byte row) {
 
 	byte seq = col + (row * 4) + (PAGE * 24); // Get the sequence that corresponds to the given column and row
