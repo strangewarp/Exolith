@@ -3,8 +3,10 @@ Tine TODO
 
 Software:
 
-	. reassign commands in RECORD-MODE to occupy former INTERVAL keys where applicable
-		-- 
+	. change around key-commands for better ergonomics again
+		-- ok
+		. re-test these commands
+			-- 
 
 	. definitely need a "clear all notes in the current sequence that correspond to the current CHAN" command in RECORD MODE
 		-- yes
