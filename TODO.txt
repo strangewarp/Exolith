@@ -6,7 +6,7 @@ Software:
 	. change around key-commands for better ergonomics again
 		-- ok
 		. re-test these commands
-			-- 
+			-- seem okay
 
 	. definitely need a "clear all notes in the current sequence that correspond to the current CHAN" command in RECORD MODE
 		-- yes
@@ -24,6 +24,10 @@ Software:
 		-- ok
 	. test this command
 		-- 
+
+	. all currently-playing sequences, and the global cue, should be reset when SEQ-SIZE is changed
+		. there are already functions that perform parts of this process - consolidate and refactor them
+		. this should also occur on SWITCH RECORDING-SEQUENCE events
 
 	. re-test everything
 		. regular notes: recording & playback

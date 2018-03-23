@@ -7,10 +7,10 @@ void createFiles() {
 
 	for (byte i = 0; i < 168; i++) { // For every song-slot...
 		//lc.setRow(0, 0, i); // Display how many files have been created so far, if any
-		if (!(i % 42)) { // After a certain amount of files, switch to the next logo letter
+		if (!(i % 21)) { // After a certain amount of files, switch to the next logo letter
 			for (byte row = 0; row < 7; row++) { // For each row in the 7-row-tall logo text...
 				// Set the corresponding row to the corresponding letter slice
-				lc.setRow(0, row + 1, pgm_read_byte_near(LOGO + (row * 4) + (i / 42)));
+				lc.setRow(0, row + 1, pgm_read_byte_near(LOGO + (row * 4) + ((i / 21) % 4)));
 			}
 		}
 		getFilename(name, i); // Get the filename that corresponds to this song-slot
