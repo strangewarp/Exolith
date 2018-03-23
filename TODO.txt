@@ -20,17 +20,9 @@ Software:
 	. test this command
 		-- 
 
-	. SHIFT CURRENT POSITION doesn't change anything. figure out why
-		-- posCmd() didn't shift the seq-position by the right value: forgot to multiply the change-amount by 16
-		. test it
-			-- nope:
-			. global cue doesn't move. fix it
-				-- "change" var in posCmd() needed to be multiplied by 16 for the global cue as well
-			. sequence comes desynced from global cue by 1 or 2 16th-notes. fix it
-				-- fixed
-
 	. SHIFT CURRENT POSITION hangs the sequencing engine when used on sequences longer than 8 beats some of the time. figure out why
-		-- 
+		-- seems to have been a type-conversion error in posCmd() that threw CUR16 and/or POS[seq] into a weird place
+		-- also found and fixed a bug where posCmd() wasn't wrapping POS[seq] around correctly when moving backwards around the seq's wrap-point
 
 	. all currently-playing sequences, and the global cue, should be reset when SEQ-SIZE is changed
 		-- 

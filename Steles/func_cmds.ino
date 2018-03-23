@@ -131,15 +131,15 @@ void pasteCmd(__attribute__((unused)) byte col, byte row) {
 // Parse a SHIFT CURRENT POSITION press
 void posCmd(byte col, byte row) {
 
-	int change = toChange(col, row) * 16; // Convert a column and row into a CHANGE value, in 16th-notes
+	int change = int(toChange(col, row)) * 16; // Convert a column and row into a CHANGE value, in 16th-notes
 
-	CUR16 = (((int(CUR16) + change) % 128) + 128) % 128; // Shift the global cue-point, wrapping in either direction
+	CUR16 = byte(word(((int(CUR16) + change) % 128) + 128) % 128); // Shift the global cue-point, wrapping in either direction
 
 	for (byte seq = 0; seq < 48; seq++) { // For each seq...
 		if (STATS[seq] & 128) { // If the seq is playing...
 			word size = (STATS[seq] & 63) * 16; // Get the seq's size, in 16th-notes
 			// Shift the seq's position, wrapping in either direction
-			POS[seq] = (((long(POS[seq]) + change) % size) + size) % size;
+			POS[seq] = word(((long(POS[seq]) + change) % size) + size) % size;
 		}
 	}
 
