@@ -131,7 +131,7 @@ void pasteCmd(__attribute__((unused)) byte col, byte row) {
 // Parse a SHIFT CURRENT POSITION press
 void posCmd(byte col, byte row) {
 
-	char change = toChange(col, row); // Convert a column and row into a CHANGE value
+	int change = toChange(col, row); // Convert a column and row into a CHANGE value
 
 	CUR16 = (((int(CUR16) + change) % 128) + 128) % 128; // Shift the global cue-point, wrapping in either direction
 
@@ -139,12 +139,16 @@ void posCmd(byte col, byte row) {
 		if (STATS[seq] & 128) { // If the seq is playing...
 			word size = (STATS[seq] & 63) * 16; // Get the seq's size, in 16th-notes
 			// Shift the seq's position, wrapping in either direction
-			POS[seq] = (((int(POS[seq]) + change) % size) + size) % size;
+			POS[seq] = (((int(POS[seq]) + (change * 16)) % size) + size) % size;
 		}
 	}
 
+	/*
 	BLINK = 255; // Start an LED-BLINK that is ~16ms long
-	TO_UPDATE |= 252; // Flag the bottom 6 rows for LED updates
+	TO_UPDATE = 255; // Flag all rows for LED updates
+	*/
+
+	TO_UPDATE |= 3; // Flag the top two rows for LED updates
 
 }
 
