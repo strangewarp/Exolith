@@ -23,7 +23,11 @@ Software:
 	. SHIFT CURRENT POSITION doesn't change anything. figure out why
 		-- posCmd() didn't shift the seq-position by the right value: forgot to multiply the change-amount by 16
 		. test it
-			-- 
+			-- nope:
+			. sequence comes desynced from global cue by 1 or 2 16th-notes. fix it
+				-- 
+			. global cue doesn't move. fix it
+				-- 
 
 	. all currently-playing sequences, and the global cue, should be reset when SEQ-SIZE is changed
 		-- 
