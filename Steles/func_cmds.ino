@@ -182,7 +182,7 @@ void sizeCmd(byte col, byte row) {
 	byte newsize = applyChange(STATS[RECORDSEQ] & 63, change, 1, 32);
 	STATS[RECORDSEQ] = (STATS[RECORDSEQ] & 128) | newsize; // Modify the currently-recording seq's size
 	updateFileByte(RECORDSEQ + 1, newsize); // Update the seq's size-byte in the song's savefile
-	POS[RECORDSEQ] %= word(newsize) << 4; // Wrap around the resized seq's 16th-note-position
+	POS[RECORDSEQ] %= word(newsize) * 16; // Wrap around the resized seq's 16th-note-position
 	TO_UPDATE = 3; // Flag top two LED-rows for updating
 }
 

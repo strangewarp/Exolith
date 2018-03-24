@@ -23,11 +23,7 @@ Software:
 	. SHIFT CURRENT POSITION hangs the sequencing engine when used on sequences longer than 8 beats some of the time. figure out why
 		-- seems to have been a type-conversion error in posCmd() that threw CUR16 and/or POS[seq] into a weird place
 		-- also found and fixed a bug where posCmd() wasn't wrapping POS[seq] around correctly when moving backwards around the seq's wrap-point
-
-	. all currently-playing sequences, and the global cue, should be reset when SEQ-SIZE is changed
-		-- 
-	. this should also occur on SWITCH RECORDING-SEQUENCE events
-		-- 
+			-- (this bug was specifically in sequences larger than 8 beats)
 
 	. re-test everything
 		. regular notes: recording & playback
