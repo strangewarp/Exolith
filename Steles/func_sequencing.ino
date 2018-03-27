@@ -121,26 +121,38 @@ void parseScatter(byte s, byte didscatter) {
 
 }
 
-// Process a REPEAT or REPEAT-RECORD command, and if applicable to the current time, send it to processRecAction()
+// Process a REPEAT or REPEAT-RECORD command, and send its resulting button-key to processRecAction()
 void processRepeats(byte ctrl, unsigned long held, byte s) {
+
 	if (
 		(!(POS[s] % QUANTIZE)) // If this tick's position is a multiple of the QUANTIZE value...
 		&& isRecCompatible(ctrl) // And the current keychord signifies a command is to be recorded...
 	) { // Then this is a valid REPEAT position. So...
 
+		byte notes[25]; // Allocate an array to hold up to 8 button-values
+		memset(notes, 0, 25); // Clear the array of any junk data
+		byte ncount = 0; // Will count the number of array-slots filled by button-values
+
 		byte i = 0; // Counts the number of BUTTONS-formatted button-bits that have been checked
 		for (byte col = 0; col < 4; col++) { // For every column...
 			for (byte row = 0; row < 6; row++) { // For every row...
 				if (held & (1UL << i)) { // If the internal BUTTONS-value for this note is held...
-					// For this note, parse all of the possible actions that signal the recording of commands,
-					// using the new "key" position that corresponds to this note's BUTTONS-bit position
-					processRecAction((row * 4) + col);
+					notes[ncount] = (row * 4) + col; // Put the button-value into the current array slot
+					ncount++; // Increment the array-size counter
 				}
 				i++; // Increment this loop's BUTTON-bit counter
 			}
 		}
 
+		if (ARPDIR) { // If arpeggiating upwards...
+			processRecAction(notes[ARPLAST]); // Process the arpeggio-key normally
+		} else { // Else, if arpeggiating downwards...
+			processRecAction(notes[(ncount - 1) - ARPLAST]); // Process the arpeggio-key in reverse
+		}
+		ARPLAST = (ARPLAST + 1) % ncount; // Increase the arpeggio-key position, wrapping it around the number of held keys
+
 	}
+
 }
 
 // Get the notes from the current tick in a given seq, and add them to the MIDI-OUT buffer

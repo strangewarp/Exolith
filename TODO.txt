@@ -3,6 +3,18 @@ Tine TODO
 
 Software:
 
+	. change REPEAT so that when multiple note-keys are being held, they will alternate, rather than playing all at once
+		-- ok
+		. when the REPEAT button is released, this var should get reset
+			-- alright
+	. test this
+		-- mostly works now
+	. remove commented-out draft-code from the body of the function
+		-- ok
+
+	. REPEAT skips an arpeggiation cycle when a button is released, under certain circumstances. figure out what's up
+		-- 
+
 	. definitely need a "clear all notes in the current sequence that correspond to the current CHAN" command in RECORD MODE
 		-- yes
 	. figure out a name for it
@@ -17,13 +29,11 @@ Software:
 		-- done
 	. needs a bottom-rows call in func_gui
 		-- ok
-	. test this command
-		-- 
-
-	. SHIFT CURRENT POSITION hangs the sequencing engine when used on sequences longer than 8 beats some of the time. figure out why
-		-- seems to have been a type-conversion error in posCmd() that threw CUR16 and/or POS[seq] into a weird place
-		-- also found and fixed a bug where posCmd() wasn't wrapping POS[seq] around correctly when moving backwards around the seq's wrap-point
-			-- (this bug was specifically in sequences larger than 8 beats)
+	. test CLEAR ALL NOTES:
+		. seq with one channel
+			-- 
+		. seq with multiple channels
+			-- 
 
 	. re-test everything
 		. regular notes: recording & playback

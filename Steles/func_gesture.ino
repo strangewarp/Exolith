@@ -32,7 +32,7 @@ void checkForGestures() {
 	// At this point in the function, a command was definitely found, so...
 	memset(GESTURE, byte(0), 4); // Empty out the gesture-button memory
 	RECORDNOTES = 0; // Clear the ARMED RECORDING flag
-	
+	ARPLAST = 0; // Clear the ARPEGGIATE BUTTONS counter
 }
 
 // Update the tracking-info for all active gesture-keys
