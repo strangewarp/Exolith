@@ -74,13 +74,8 @@ void durationCmd(byte col, byte row) {
 
 // Parse all of the possible actions that signal the recording of commands
 void genericCmd(byte col, byte row) {
-	byte key = (row * 4) + col; // Get the key at the intersection of the column and row
-	if (REPEAT) { // If REPEAT is held...
-		ARPDIR = key >= ARPBUTTON; // Set arpeggio-direction based on whether the new key is above or below the previous key
-		ARPBUTTON = key; // Update the previous-key-tracking var
-		return; // Exit the function, since no commands should be sent instantly
-	}
-	processRecAction(key); // Parse the key as a recording-action
+	if (REPEAT) { return; } // If REPEAT is held, exit the function, since no commands should be sent instantly
+	processRecAction((row * 4) + col); // Parse the key as a recording-action
 }
 
 // Parse a HUMANIZE press

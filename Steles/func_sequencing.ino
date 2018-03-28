@@ -129,27 +129,15 @@ void processRepeats(byte ctrl, unsigned long held, byte s) {
 		&& isRecCompatible(ctrl) // And the current keychord signifies a command is to be recorded...
 	) { // Then this is a valid REPEAT position. So...
 
-		byte notes[25]; // Allocate an array to hold up to 8 button-values
-		memset(notes, 0, 25); // Clear the array of any junk data
-		byte ncount = 0; // Will count the number of array-slots filled by button-values
-
-		byte i = 0; // Counts the number of BUTTONS-formatted button-bits that have been checked
-		for (byte col = 0; col < 4; col++) { // For every column...
-			for (byte row = 0; row < 6; row++) { // For every row...
+		for (byte row = 0; row < 6; row++) { // For every row...
+			byte i = row; // Create a new value that will check all BUTTONS-formatted button-bits in order
+			for (byte col = 0; col < 4; col++) { // For every column...
 				if (held & (1UL << i)) { // If the internal BUTTONS-value for this note is held...
-					notes[ncount] = (row * 4) + col; // Put the button-value into the current array slot
-					ncount++; // Increment the array-size counter
+					processRecAction((row * 4) + col); // Process the note-key
 				}
-				i++; // Increment this loop's BUTTON-bit counter
+				i += 6; // Increment this row-loop's BUTTON-bit counter to the next note
 			}
 		}
-
-		if (ARPDIR) { // If arpeggiating upwards...
-			processRecAction(notes[ARPLAST]); // Process the arpeggio-key normally
-		} else { // Else, if arpeggiating downwards...
-			processRecAction(notes[(ncount - 1) - ARPLAST]); // Process the arpeggio-key in reverse
-		}
-		ARPLAST = (ARPLAST + 1) % ncount; // Increase the arpeggio-key position, wrapping it around the number of held keys
 
 	}
 

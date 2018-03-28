@@ -3,16 +3,7 @@ Tine TODO
 
 Software:
 
-	. change REPEAT so that when multiple note-keys are being held, they will alternate, rather than playing all at once
-		-- ok
-		. when the REPEAT button is released, this var should get reset
-			-- alright
-	. test this
-		-- mostly works now
-	. remove commented-out draft-code from the body of the function
-		-- ok
-
-	. REPEAT skips an arpeggiation cycle when a button is released, under certain circumstances. figure out what's up
+	. dynamic arpeggiation on REPEAT was a mistake. remove it
 		-- 
 
 	. definitely need a "clear all notes in the current sequence that correspond to the current CHAN" command in RECORD MODE
