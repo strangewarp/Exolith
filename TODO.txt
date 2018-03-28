@@ -4,7 +4,7 @@ Tine TODO
 Software:
 
 	. dynamic arpeggiation on REPEAT was a mistake. remove it
-		-- 
+		-- done
 
 	. definitely need a "clear all notes in the current sequence that correspond to the current CHAN" command in RECORD MODE
 		-- yes
