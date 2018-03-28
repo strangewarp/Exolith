@@ -22,24 +22,24 @@ Software:
 		-- ok
 	. test CLEAR ALL NOTES:
 		. seq with one channel
-			-- 
+			-- seems to work
 		. seq with multiple channels
-			-- 
+			-- seems to work
 
 	. re-test everything
 		. regular notes: recording & playback
 			-- works
 		. note-erasing in RECORD-MODE
 			. regular erasing
-				-- 
+				-- seems to work
 			. only erases notes from the current CHAN?
-				-- 
+				-- yes
 		. BASENOTE and OCTAVE
 			-- yes
 			. does BASENOTE clamp at B?
-				-- 
+				-- yes
 		. REPEAT
-			-- 
+			-- works
 		. SHIFT RECORD-SEQ
 			-- 
 		. COPY/PASTE:
