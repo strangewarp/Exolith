@@ -67,7 +67,6 @@ byte RECORDMODE = 0; // Tracks whether RECORD MODE is active
 byte RECORDSEQ = 0; // Sequence currently being recorded into
 byte RECORDNOTES = 0; // Tracks whether notes are currently being recorded into a sequence
 byte REPEAT = 0; // Toggles whether held-down note-buttons should repeat a NOTE-ON every QUANTIZE ticks, in RECORD-MODE
-byte BASENOTE = 0; // Baseline pitch-offset value for RECORD MODE notes
 byte OCTAVE = 3; // Octave-offset value for RECORD MODE notes
 byte VELO = 127; // Baseline velocity-value for RECORD MODE notes
 byte HUMANIZE = 0; // Maximum velocity-humanize value for RECORD MODE notes

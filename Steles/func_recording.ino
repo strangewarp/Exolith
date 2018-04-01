@@ -61,7 +61,7 @@ void eraseTick(byte buf[], byte p) {
 void processRecAction(byte key) {
 
 	// Get a note that corresponds to the key, organized from bottom-left to top-right, with all modifiers applied
-	byte pitch = (OCTAVE * 12) + BASENOTE + ((23 - key) ^ 3);
+	byte pitch = (OCTAVE * 12) + ((23 - key) ^ 3);
 	while (pitch > 127) { // If the pitch is above 127, which is the limit for MIDI notes...
 		pitch -= 12; // Reduce it by 12 until it is at or below 127
 	}

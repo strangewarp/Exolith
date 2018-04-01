@@ -3,28 +3,21 @@ Tine TODO
 
 Software:
 
-	. dynamic arpeggiation on REPEAT was a mistake. remove it
+	. get rid of BASENOTE: not enough utility for the complexity it adds
+		-- am doing
+	. get rid of BASENOTE's GUI-glyph, command-function, CmdFunc entry, and global var
+		-- done, done, done, done
+	. change around other commands' keychords to compensate for this
+		-- fixed
+	. wipe P.DAT from the testing SD-card, as its contents are now outdated
+		-- done
+	. change the function that constructs P.DAT, as its total number of bytes has changed
+		-- done
+	. remove "todo update" notes from button-key.txt again
 		-- done
 
-	. definitely need a "clear all notes in the current sequence that correspond to the current CHAN" command in RECORD MODE
-		-- yes
-	. figure out a name for it
-		-- its name will be CLEAR NOTES
-	. needs a CLEAR NOTES keychord:
-		. 4 keys, to signal that this is a serious function and stop any accidental mashing from activating it
-		. 011110 key-combo
-			-- ok
-	. needs a command-function where it actually wipes the notes en masse
-		-- done
-	. needs a GUI glyph
-		-- done
-	. needs a bottom-rows call in func_gui
-		-- ok
-	. test CLEAR ALL NOTES:
-		. seq with one channel
-			-- seems to work
-		. seq with multiple channels
-			-- seems to work
+	. re-test and verify record-mode keychords, in light of how everything was changed by BASENOTE-removal
+		-- 
 
 	. re-test everything
 		. regular notes: recording & playback
@@ -44,9 +37,13 @@ Software:
 			-- 
 		. COPY/PASTE:
 			. straightforward standard usage
+				-- 
 			. with COPY size too long for PASTE size (should be discarded)
+				-- 
 			. with COPY size too short for PASTE size (should repeat until the end of the PASTE area)
+				-- 
 			. with COPY in another sequence than PASTE
+				-- 
 		. duophony
 		. various QUANTIZE settings
 		. are old notes being knocked out of the sequence by new notes in RECORD-MODE properly?
@@ -270,6 +267,8 @@ Hardware:
 	. use different button-cap color for control-row?
 
 	. make sure to use B3F-5050 buttons in finished unit; these have a longer life than B3F-4050 buttons
+
+	. use different-color button caps on the note-keys, to differentiate between "white notes" and "black notes" like on a piano
 
 	. redo all Inkscape files for enclosure, making sure to retake all measurements & repeat the KiCad-to-Inkscape vector paste process
 

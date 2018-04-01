@@ -6,13 +6,6 @@ void armCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row) 
 	TO_UPDATE |= 252; // Flag the bottom 6 rows for LED updates
 }
 
-// Parse a BASENOTE press
-void baseCmd(byte col, byte row) {
-	char change = toChange(col, row); // Convert a column and row into a CHANGE value
-	BASENOTE = applyChange(BASENOTE, change, 0, 11); // Modify the BASENOTE value
-	TO_UPDATE |= 1; // Flag the topmost row for updating
-}
-
 // Parse a CHAN press
 void chanCmd(byte col, byte row) {
 	char change = toChange(col, row); // Convert a column and row into a CHANGE value

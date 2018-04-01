@@ -6,17 +6,16 @@ Steles prefs-file spec
 		/P.DAT
 
 	File contents:
-		(12 total bytes)
+		(11 total bytes)
 		byte 0:  PAGE
-		byte 1:  BASENOTE
-		byte 2:  OCTAVE
-		byte 3:  VELO
-		byte 4:  HUMANIZE
-		byte 5:  CHAN
-		byte 6:  QUANTIZE
-		byte 7:  DURATION
-		byte 8:  COPYPOS
-		byte 9:  COPYSEQ
-		byte 10: SONG
-		byte 11: CLOCKMASTER
+		byte 1:  OCTAVE
+		byte 2:  VELO
+		byte 3:  HUMANIZE
+		byte 4:  CHAN
+		byte 5:  QUANTIZE
+		byte 6:  DURATION
+		byte 7:  COPYPOS
+		byte 8:  COPYSEQ
+		byte 9:  SONG
+		byte 10: CLOCKMASTER
 

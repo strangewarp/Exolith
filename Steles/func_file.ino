@@ -52,17 +52,16 @@ void updateFileByte(byte pos, byte b) {
 // Put the current prefs-related global vars into a given buffer
 void makePrefBuf(byte buf[]) {
 	buf[0] = PAGE;
-	buf[1] = BASENOTE;
-	buf[2] = OCTAVE;
-	buf[3] = VELO;
-	buf[4] = HUMANIZE;
-	buf[5] = CHAN;
-	buf[6] = QUANTIZE;
-	buf[7] = DURATION;
-	buf[8] = COPYPOS;
-	buf[9] = COPYSEQ;
-	buf[10] = SONG;
-	buf[11] = CLOCKMASTER;
+	buf[1] = OCTAVE;
+	buf[2] = VELO;
+	buf[3] = HUMANIZE;
+	buf[4] = CHAN;
+	buf[5] = QUANTIZE;
+	buf[6] = DURATION;
+	buf[7] = COPYPOS;
+	buf[8] = COPYSEQ;
+	buf[9] = SONG;
+	buf[10] = CLOCKMASTER;
 }
 
 // Get the prefs-file's filename out of PROGMEM
@@ -77,7 +76,7 @@ void writePrefs() {
 
 	file.close(); // Temporarily close the current song-file
 
-	byte buf[13]; // Make a buffer that will contain all the prefs
+	byte buf[12]; // Make a buffer that will contain all the prefs
 	makePrefBuf(buf); // Fill it with all the relevant pref values
 
 	char pn[6]; // Will contain the prefs-file's filename
@@ -85,7 +84,7 @@ void writePrefs() {
 
 	file.open(pn, O_WRITE); // Open the prefs-file in write-mode
 	file.seekSet(0); // Ensure we're on the first byte of the file
-	file.write(buf, 12); // Write the pref vars into the file
+	file.write(buf, 11); // Write the pref vars into the file
 	file.close(); // Close the prefs-file
 
 	char name[8];
@@ -111,26 +110,25 @@ void loadPrefs() {
 		file.close(); // Close the newly-created file
 
 		file.open(pn, O_WRITE); // Create a prefs file and open it in write-mode
-		file.write(buf, 12); // Write the pref vars into the file
+		file.write(buf, 11); // Write the pref vars into the file
 
 	} else { // Else, if the prefs-file does exist...
 
 		file.open(pn, O_READ); // Open the prefs-file in read-mode
-		file.read(buf, 12); // Read all the prefs-bytes into the buffer
+		file.read(buf, 11); // Read all the prefs-bytes into the buffer
 
 		// Assign the buffer's-worth of pref-bytes to their respective global-vars
 		PAGE = buf[0];
-		BASENOTE = buf[1];
-		OCTAVE = buf[2];
-		VELO = buf[3];
-		HUMANIZE = buf[4];
-		CHAN = buf[5];
-		QUANTIZE = buf[6];
-		DURATION = buf[7];
-		COPYPOS = buf[8];
-		COPYSEQ = buf[9];
-		SONG = buf[10];
-		CLOCKMASTER = buf[11];
+		OCTAVE = buf[1];
+		VELO = buf[2];
+		HUMANIZE = buf[3];
+		CHAN = buf[4];
+		QUANTIZE = buf[5];
+		DURATION = buf[6];
+		COPYPOS = buf[7];
+		COPYSEQ = buf[8];
+		SONG = buf[9];
+		CLOCKMASTER = buf[10];
 
 	}
 
