@@ -1,22 +1,13 @@
 
+
 Tine TODO
 
 Software:
 
-	. get rid of BASENOTE: not enough utility for the complexity it adds
-		-- am doing
-	. get rid of BASENOTE's GUI-glyph, command-function, CmdFunc entry, and global var
-		-- done, done, done, done
-	. change around other commands' keychords to compensate for this
-		-- fixed
-	. wipe P.DAT from the testing SD-card, as its contents are now outdated
-		-- done
-	. change the function that constructs P.DAT, as its total number of bytes has changed
-		-- done
-	. remove "todo update" notes from button-key.txt again
-		-- done
-
 	. re-test and verify record-mode keychords, in light of how everything was changed by BASENOTE-removal
+		-- seems okay
+
+	. sometimes hitting the SWITCH RECORD-SEQUENCE command twice in succession will toggle out of RECORD MODE. tweak the timing to prevent this
 		-- 
 
 	. re-test everything
