@@ -172,19 +172,19 @@ void sizeCmd(byte col, byte row) {
 	char change = toChange(col, row); // Convert a column and row into a CHANGE value
 	// Get the new value for the currently-recording-seq's size
 	byte newsize = applyChange(STATS[RECORDSEQ] & 63, change, 1, 32);
-	STATS[RECORDSEQ] = (STATS[RECORDSEQ] & 128) | newsize; // Modify the currently-recording seq's size
+	STATS[RECORDSEQ] = 128 | newsize; // Modify the currently-recording seq's size
 	updateFileByte(RECORDSEQ + 1, newsize); // Update the seq's size-byte in the song's savefile
-	POS[RECORDSEQ] %= word(newsize) * 16; // Wrap around the resized seq's 16th-note-position
-	TO_UPDATE = 3; // Flag top two LED-rows for updating
+	resetAllTiming(); // Reset the timing of all seqs and the global cue-point
+	TO_UPDATE |= 3; // Flag top two rows for updating
 }
 
 // Parse a SWITCH RECORDSEQ press
 void switchCmd(byte col, byte row) {
 	TO_UPDATE |= 4 >> (RECORDSEQ >> 2); // Flag the previous seq's corresponding LED-row for updating
 	resetSeq(RECORDSEQ); // Reset the current record-seq, which is about to become inactive
-	RECORDSEQ = (PAGE * 24) + (col + (row * 4)); // Switch to the seq that corresponds to the key-position on the active page
-	primeRecSeq(); // Prime the newly-entered RECORD-MODE sequence for editing
-	TO_UPDATE |= 1 | (4 << row); // Flag the top row, and the new seq's corresponding LED-row, for updating
+	RECORDSEQ = (PAGE * 24) + col + (row * 4); // Switch to the seq that corresponds to the key-position on the active page
+	resetAllTiming(); // Reset the timing of all seqs and the global cue-point
+	TO_UPDATE |= 3; // Flag the top two rows for updating
 }
 
 // Parse a BPM-press

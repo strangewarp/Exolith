@@ -163,6 +163,7 @@ void loadSong(byte slot) {
 	// Put the header-bytes from the savefile into the global BPM and STATS vars
 	file.open(name, O_RDWR);
 	BPM = file.read();
+	file.seekSet(1); // Go to the start of the SEQ-SIZE block
 	file.read(STATS, 48);
 
 	updateTickSize(); // Update the internal tick-size (in microseconds) to match the new BPM value

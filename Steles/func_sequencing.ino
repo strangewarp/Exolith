@@ -23,6 +23,12 @@ void resetSeq(byte s) {
 	//SCATTER[s] &= 15; // Wipe all of the seq's scatter-counting and scatter-flagging bits, but not its scatter-chance bits
 }
 
+// Reset the timing of all seqs and the global cue-point
+void resetAllTiming() {
+	CUR16 = 127; // Reset the global cue-point
+	memset(POS, 0, 96); // Reset each seq's internal tick-position
+}
+
 // Compare a seq's CUE-commands to the global CUE-point, and parse them if the timing is correct
 void parseCues(byte s, byte size) {
 

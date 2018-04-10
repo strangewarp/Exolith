@@ -19,6 +19,7 @@ void checkForGestures() {
 	} else if (all == 101) { // Else, if this completed a GLOBAL PLAY/STOP gesture...
 		toggleMidiClock(1); // Toggle the MIDI clock, with "1" for "the user did this, not a device"
 	} else if (all == 325) { // Else, if this is a completed TOGGLE RECORD-MODE gesture...
+		resetAllTiming(); // Reset the timing of all seqs and the global cue-point
 		if (RECORDMODE) { // If RECORDMODE is about to be untoggled...
 			writePrefs(); // Write the current relevant global vars into PRF.DAT
 		} else { // Else, if RECORD-MODE is about to be toggled...
@@ -30,7 +31,7 @@ void checkForGestures() {
 		return; // Exit the function
 	}
 	// At this point in the function, a command was definitely found, so...
-	memset(GESTURE, byte(0), 4); // Empty out the gesture-button memory
+	memset(GESTURE, 0, 4); // Empty out the gesture-button memory
 	RECORDNOTES = 0; // Clear the ARMED RECORDING flag
 }
 

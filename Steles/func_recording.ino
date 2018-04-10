@@ -17,7 +17,7 @@ void primeRecSeq() {
 
 	// Set the seq's position to correspond with the current global 16th-note,
 	// wrapped to either the seq's size, or the global cue's size, whichever is smaller
-	POS[RECORDSEQ] = (CUR16 + 1) % (min(STATS[RECORDSEQ] & 63, 16) * 16);
+	POS[RECORDSEQ] = (CUR16 + 1) % (word(min(STATS[RECORDSEQ] & 63, 8)) * 16);
 
 	STATS[RECORDSEQ] |= 128; // Set the sequence to active, if it isn't already
 
