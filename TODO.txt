@@ -4,6 +4,23 @@ Tine TODO
 
 Software:
 
+	. remove the P.DAT system - it encourages too many damaging writes to SD-memory
+		-- 
+
+	. change COPY/PASTE so that, during PASTE, data is checked for duplicates rather than being wholly overwritten. this will save on SD-card wear
+		-- 
+		. also do this for ERASE WHILE HELD
+			-- 
+
+	. for every pref-change in RECORD MODE that changes memory, a new system is needed to "defer" the change until its button-chord is released
+		. this needs to apply to:
+			. BPM
+			. SEQ-SIZE
+
+	. reduce total number of savefiles, so a THEMIS-A-series 128MB SD-card could be used with some swap-space to spare
+		. change filesystem functions
+		. change LOADMODE GUI functions
+
 	. re-test everything
 		. regular notes: recording & playback
 			-- works
@@ -50,7 +67,6 @@ Software:
 		. SCATTER (amount)
 		. SCATTER UNSET
 		. PAGE SCATTER UNSET
-
 
 	. test gesture system
 		. test LOAD-MODE TOGGLE
