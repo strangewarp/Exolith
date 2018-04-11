@@ -159,7 +159,14 @@ void getTickNotes(byte ctrl, unsigned long held, byte s, byte buf[]) {
 			if (REPEAT && held) { // If REPEAT is toggled, and a note-button is being held...
 				processRepeats(ctrl, held, s); // Process a REPEAT-RECORD
 			} else if (RECORDNOTES && (ctrl == B00111100)) { // Else, if RECORDNOTES is armed, and ERASE-NOTES is held...
-				eraseTick(buf, POS[RECORDSEQ]); // Erase CHAN-matching commands in the current tick
+				byte b[9]; // Make a buffer the size of a duophonic tick...
+				memset(b, 0, 8); // ...And fill it with empty bytes
+				writeData( // Write data to the savefile:
+					(49UL + (POS[RECORDSEQ] * 8)) + (4096UL * RECORDSEQ), // Write at the RECORDSEQ's current position
+					8, // Write 8 bytes of data
+					b, // Use the empty buffer that was just created
+					1 // Only overwrite notes that match the global CHAN
+				);
 			}
 		}
 		readTick(s, 0, buf); // Read the tick with no offset

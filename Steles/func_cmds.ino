@@ -22,6 +22,9 @@ void clearCmd(byte col, byte row) {
 	// Convert a column and row into a CHANGE value (positive values only), bounded to the seq's size (in 16th-notes)
 	word amount = min(abs(toChange(col, row)), len) * 16;
 
+	byte buf[33];
+	memset(buf, 0, 32);
+
 	byte buf[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0}; // Create a blanked-out buffer for use with eraseTick()
 
 	word pos = (POS[RECORDSEQ] >> 4) << 4; // Get the bottom-point of the current beat in RECORDSEQ
@@ -88,8 +91,8 @@ void octaveCmd(byte col, byte row) {
 // Parse a PASTE press
 void pasteCmd(__attribute__((unused)) byte col, byte row) {
 
-	byte buf[33]; // Create a quarter-note-sized data buffer...
-	memset(buf, 0, 32); // ...And clear it of any junk data
+	byte b1[33]; // Create a quarter-note-sized copy-data buffer...
+	memset(b1, 0, 32); // ...And clear it of any junk-data
 
 	unsigned long copybase = 49UL + (word(COPYSEQ) * 4096); // Get the literal position of the copy-seq
 	unsigned long pastebase = 49UL + (word(RECORDSEQ) * 4096); // Get the literal position of the paste-seq
@@ -103,15 +106,14 @@ void pasteCmd(__attribute__((unused)) byte col, byte row) {
 
 	for (byte filled = 0; filled < clen; filled++) { // For every quarter-note in the copypaste's area...
 
-		byte cpos = (COPYPOS + filled) % csize; // Wrap the copy-range around the end of its seq
-		byte ppos = (pstart + filled) % psize; // ^ Same, for paste-range
+		file.seekSet(copybase + (word((COPYPOS + filled) % csize) * 32)); // Navigate to the current copy-position
+		file.read(b1, 32); // Read the copy-data
 
-		file.seekSet(copybase + (word(cpos) * 32)); // Navigate to the current copy-position
-		file.read(buf, 32); // Read the copy-data
-		file.seekSet(pastebase + (word(ppos) * 32)); // Navigate to the current paste-position
-		file.write(buf, 32); // Write the paste-data
-
-		file.sync(); // Sync the SD-card's data after every 32 bytes of read/write
+		writeData( // Write this chunk of copy-data to the corresponding paste-area of the file
+			pastebase + (word((pstart + filled) % psize) * 32), // Bitwise file-position for quarter-note's paste-location
+			32, // Size of the data-buffer, in bytes
+			b1 // The data-buffer itself
+		);
 
 	}
 

@@ -4,13 +4,26 @@ Tine TODO
 
 Software:
 
-	. remove the P.DAT system - it encourages too many damaging writes to SD-memory
-		-- 
+	. on every note-write, check the note-data's bytes against the new-note's bytes, and only replace the bytes that don't match
+		-- am doing
+		. make a generic "writeData()" function that does this
+			-- ok
+		. use writeData() instead of every raw data-write in RECORD MODE
+			-- 
+
+	. change duophonic note-storage so that, when a given note is stored, it doesn't require the other note to be shifted one position downward
+		-- this would result in the first note of a tick staying there until erasure
+		-- but, that's necessary for any system that's trying to minimize writes-to-SD
+		. so, implement this
+			-- 
 
 	. change COPY/PASTE so that, during PASTE, data is checked for duplicates rather than being wholly overwritten. this will save on SD-card wear
 		-- 
 		. also do this for ERASE WHILE HELD
 			-- 
+
+	. remove the P.DAT system - it encourages too many damaging writes to SD-memory
+		-- 
 
 	. for every pref-change in RECORD MODE that changes memory, a new system is needed to "defer" the change until its button-chord is released
 		. this needs to apply to:
