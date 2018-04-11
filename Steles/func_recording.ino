@@ -23,40 +23,6 @@ void primeRecSeq() {
 
 }
 
-// Erase all commands that match the global CHAN, in a given tick-position within the RECORDSEQ
-void eraseTick(byte buf[], byte p) {
-
-	// Get the tick's position in the savefile
-	unsigned long tpos = (49UL + (p * 8)) + (4096UL * RECORDSEQ);
-
-	file.seekSet(tpos); // Navigate to the note's absolute position
-	file.read(buf, 8); // Read the data of the tick's notes
-
-	byte full = buf[0] || buf[2]; // Check if the tick's top note is filled
-	if (!full) { return; } // If no notes or CCs are present, exit the function
-
-	// Check if the first and/or second note matches the global CHAN
-	byte pos1 = full && ((buf[0] & 15) == CHAN);
-	byte pos2 = (buf[4] || buf[6]) && ((buf[4] & 15) == CHAN);
-
-	if (pos1 || pos2) { // If either note matches the global chan...
-		byte outbuf[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0}; // Make a tick-sized buffer to send blank data
-		file.seekSet(tpos + ((!pos1) * 4)); // Set the write-position to whichever note matched
-		file.write(outbuf, (pos1 + pos2) * 4); // Clear all ticks in the byte that contain notes matching the global CHAN
-		file.sync(); // Apply changes to the savefile immediately
-
-		if (pos1 && pos2) { // If both notes matched global CHAN...
-			return; // Exit the function, since there's nothing left to do for this tick of this seq
-		} else { // Else, if only the first or second note matched global CHAN...
-			if (pos1) { // If only the first note matched global CHAN...
-				memmove(buf, buf + 4, 4); // Move the buffer's bottom note to its top slot
-			}
-			memset(buf + 4, 0, 4); // Empty the buffer's bottom note-slot in either case
-		}
-	}
-
-}
-
 // Parse all of the possible actions that signal the recording of commands
 void processRecAction(byte key) {
 

@@ -19,19 +19,23 @@ void clearCmd(byte col, byte row) {
 	byte len = STATS[RECORDSEQ] & 63; // Get the RECORDSEQ's length, in beats
 	word flen = word(len) * 16; // Get the RECORDSEQ's length, in 16th-notes
 
-	// Convert a column and row into a CHANGE value (positive values only), bounded to the seq's size (in 16th-notes)
-	word amount = min(abs(toChange(col, row)), len) * 16;
+	// Convert a column and row into a CHANGE value (positive values only), bounded to the seq-data's size (in quarter-notes)
+	byte amount = min(abs(toChange(col, row)), len) * 4;
 
-	byte buf[33];
-	memset(buf, 0, 32);
-
-	byte buf[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0}; // Create a blanked-out buffer for use with eraseTick()
+	byte buf[33]; // Create a quarter-note-sized data buffer...
+	memset(buf, 0, 32); // ...And clear it of any junk-data
 
 	word pos = (POS[RECORDSEQ] >> 4) << 4; // Get the bottom-point of the current beat in RECORDSEQ
+
 	while (amount) { // While there is still some amount of space left to clear...
-		eraseTick(buf, pos); // Erase all notes within this tick that correspond to the global CHAN
+		writeData( // Write data to the sequence...
+			(49UL + (pos * 32)) + (4096UL * RECORDSEQ), // Current quarter-note's data position
+			32, // Size of the data to replace
+			b, // The empty data-buffer
+			1 // Only clear notes that match the global CHAN
+		);
 		pos = (pos + 1) % flen; // Increase the tick-position by 1, wrapped around the RECORDSEQ's size
-		amount--; // Reduce the amount-of-ticks-remaining-value by 1
+		amount--; // Reduce the amount-of-quarter-notes-remaining-value by 1
 	}
 
 	BLINK = 255; // Start an LED-BLINK that is ~16ms long
@@ -112,7 +116,8 @@ void pasteCmd(__attribute__((unused)) byte col, byte row) {
 		writeData( // Write this chunk of copy-data to the corresponding paste-area of the file
 			pastebase + (word((pstart + filled) % psize) * 32), // Bitwise file-position for quarter-note's paste-location
 			32, // Size of the data-buffer, in bytes
-			b1 // The data-buffer itself
+			b1, // The data-buffer itself
+			0 // Apply this to notes on all channels
 		);
 
 	}

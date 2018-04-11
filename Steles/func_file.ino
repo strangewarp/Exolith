@@ -71,7 +71,7 @@ byte wdSince(
 // only committing actual writes when the data doesn't match, in order to reduce SD-card wear.
 void writeData(
 	unsigned long pos, // Note's bitwise position in the savefile (NOTE: (pos + amt) must be <= bytes in savefile!)
-	byte amt, // Amount of data to read for comparison (NOTE: must be in the range of 1 to 32)
+	byte amt, // Amount of data to read for comparison
 	byte b[], // Array of bytes to compare against the data, and write into the file where discrepancies are found
 	byte onchan // Flag: only replace a given note if its channel matches the global CHAN
 ) {
