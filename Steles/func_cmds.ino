@@ -13,29 +13,22 @@ void chanCmd(byte col, byte row) {
 	TO_UPDATE |= 1; // Flag the topmost row for updating
 }
 
-// Parse a CLEAR NOTES press
+// Parse a CLEAR NOTES press:
+// Clear a given number of beats' worth of notes, from the currently-active track in the current RECORDSEQ.
 void clearCmd(byte col, byte row) {
 
+	byte buf[5]; // Create a note-sized data buffer...
+	memset(buf, 0, 4); // ...And clear it of any junk-data
+
 	byte len = STATS[RECORDSEQ] & 63; // Get the RECORDSEQ's length, in beats
-	word flen = word(len) * 16; // Get the RECORDSEQ's length, in 16th-notes
+	word blen = word(len) * 128; // Get the RECORDSEQ's length, in bytes
 
-	// Convert a column and row into a CHANGE value (positive values only), bounded to the seq-data's size (in quarter-notes)
-	byte amount = min(abs(toChange(col, row)), len) * 4;
-
-	byte buf[33]; // Create a quarter-note-sized data buffer...
-	memset(buf, 0, 32); // ...And clear it of any junk-data
-
+	unsigned long rspos = 49UL + (4096UL * RECORDSEQ); // Get the RECORDSEQ's absolute data-position
 	word pos = (POS[RECORDSEQ] >> 4) << 4; // Get the bottom-point of the current beat in RECORDSEQ
+	byte t4 = TRACK * 4; // Get a bitwise offset based on whether track 1 or 2 is active
 
-	while (amount) { // While there is still some amount of space left to clear...
-		writeData( // Write data to the sequence...
-			(49UL + (pos * 32)) + (4096UL * RECORDSEQ), // Current quarter-note's data position
-			32, // Size of the data to replace
-			b, // The empty data-buffer
-			1 // Only clear notes that match the global CHAN
-		);
-		pos = (pos + 1) % flen; // Increase the tick-position by 1, wrapped around the RECORDSEQ's size
-		amount--; // Reduce the amount-of-quarter-notes-remaining-value by 1
+	for (word i = 0; i < (min(abs(toChange(col, row)), len) * 128); i += 8) { // For every 16th-note in the clear-area...
+		writeData(rspos + ((pos + i + t4) % blen), 4, buf, 1); // Overwrite it if it matches the TRACK and CHAN
 	}
 
 	BLINK = 255; // Start an LED-BLINK that is ~16ms long

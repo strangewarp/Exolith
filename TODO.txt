@@ -30,11 +30,11 @@ Software:
 			. ERASE WHILE HELD
 				-- done
 			. COPY/PASTE
-				-- 
+				-- decided not to change this - simpler for both programmer and user if COPY/PASTE applies to both tracks
 			. CLEAR SEQ
-				-- 
+				-- done
 		. remove "todo update" tags from button-key.txt
-			-- 
+			-- done
 
 	. change the P.DAT system so that P.DAT only holds a number representing the most-recently-loaded sequence
 		-- 

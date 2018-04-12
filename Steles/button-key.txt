@@ -94,7 +94,7 @@ Button combinations (RECORD MODE):
 	000010: QUANTIZE
 	000100: OCTAVE
 	001000: VELOCITY
-	010000: TRACK (toggle) todo update
+	010000: TRACK (toggle)
 	100000: REPEAT (toggle)
 
 	2-keypress:
@@ -111,7 +111,7 @@ Button combinations (RECORD MODE):
 	001010: COPY
 	001001: CONTROL-CHANGE
 	000110: DURATION
-	000101: CHANNEL todo update
+	000101: CHANNEL
 	000011: SEQ-SIZE
 
 	3-keypress:
