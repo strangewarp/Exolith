@@ -1,5 +1,69 @@
 
 
+// Helper function for writeData:
+// Write a number of buffered bytes to the file, based on the value of an iterator,
+//     and how many bytes it's been since the last matching byte
+byte wdSince(
+	unsigned long pos, // Base position for the write
+	byte since, // Number of bytes that have elapsed since the last matching-byte
+	byte i, // Current iterator value
+	byte b[] // Buffer of bytes to write
+) {
+	if (since) { // If it has been at least 1 byte since the last matching byte...
+		byte wbot = i - since; // Get the bottom byte for the write-position
+		file.seekSet(pos + wbot); // Navigate to the byte-cluster's position in the savefile
+		file.write(b + wbot, since + 1); // Write the data-bytes into their corresponding savefile positions
+		return 0; // Return a reset since-flag, since it has been 0 bytes since the last data-replacement
+	}
+	return since; // Return the same since-value
+}
+
+// Write a given series of bytes into a given point in the savefile,
+// only committing actual writes when the data doesn't match, in order to reduce SD-card wear.
+void writeData(
+	unsigned long pos, // Note's bitwise position in the savefile (NOTE: (pos + amt) must be <= bytes in savefile!)
+	byte amt, // Amount of data to read for comparison
+	byte b[], // Array of bytes to compare against the data, and write into the file where discrepancies are found
+	byte onchan // Flag: only replace a given note if its channel matches the global CHAN
+) {
+
+	byte* buf = NULL; // Create a pointer to a dynamically-allocated buffer...
+	buf = new byte[amt + 1]; // Allocate that buffer's memory based on the given size...
+	memset(buf, 0, amt); // ...And clear it of any junk-data
+
+	file.seekSet(pos); // Navigate to the data's position
+	file.read(buf, amt); // Read the already-existing data from the savefile into the data-buffer
+
+	byte since = 0; // Will count the number of bytes that have been checked since the last matching-byte
+	for (byte i = 0; i < amt; i++) { // For every byte in the data...
+
+		// If replace-on-chan-match is flagged, and this is a note's first byte, and the channels don't match...
+		if (onchan && (!(i % 4)) && ((buf[i] & 15) != CHAN)) {
+			since = wdSince(pos, since, i, b); // Write bytes to the file, based on iterator and since-bytes
+			i += 3; // Increment the iterator to skip to the next note in the data
+			continue; // Skip this iteration of the loop
+		}
+
+		if (buf[i] == b[i]) { // If the byte in the savefile is the same as the given byte...
+			since = wdSince(pos, since, i, b); // Write bytes to the file, based on iterator and since-bytes
+		} else { // Else, if the byte in the savefile doesn't match the given byte...
+			since++; // Flag that it has been an additional byte since any matching bytes were found
+		}
+
+		if (since && (i == (amt - 1))) { // If this is the last buffer-byte, and it didn't match its corresponding savefile-byte...
+			file.seekSet(pos + i); // Go to the savefile-byte's position
+			file.write(b[i]); // Replace it with the buffer-byte
+		}
+
+	}
+
+	file.sync(); // Sync the data immediately, to prevent any unusual behavior between multiple conflicting note-writes
+
+	delete [] buf; // Free the buffer's dynamically-allocated memory
+	buf = NULL; // Unset the buffer's pointer
+
+}
+
 // Check whether a given RECORD-MODE keychord is NOTE-RECORDING compatible
 byte isRecCompatible(byte ctrl) {
 	// Return 1 if:
@@ -20,6 +84,26 @@ void primeRecSeq() {
 	POS[RECORDSEQ] = (CUR16 + 1) % (word(min(STATS[RECORDSEQ] & 63, 8)) * 16);
 
 	STATS[RECORDSEQ] |= 128; // Set the sequence to active, if it isn't already
+
+}
+
+// Record a given MIDI command into the tempdata-file of the current RECORDSEQ sequence
+void recordToSeq(word pstn, byte chan, byte b1, byte b2) {
+
+	// Get the position of the first of this tick's bytes within the active track in the data-file
+	unsigned long tickstart = (49UL + (4096UL * RECORDSEQ)) + (((unsigned long)pstn) * 8) + (TRACK * 4);
+
+	// Construct a virtual MIDI command, with an additional DURATION value
+	byte note[5] = {
+		chan, // Channel-byte
+		b1, // Pitch-byte
+		b2, // Velocity-byte
+		(chan <= 15) * DURATION // Only include the DURATION if this isn't a flagged special-command
+	};
+
+	writeData(tickstart, 4, note, 0); // Write the note to its corresponding savefile position
+
+	file.sync(); // Force this function's write-process to be committed to the savefile immediately
 
 }
 
@@ -71,40 +155,6 @@ void processRecAction(byte key) {
 	// or a correctly-formatted CC or PC command, if applicable.
 	byte buf[4] = {byte(144 + CHAN + offc), pitch, velo, 0};
 	Serial.write(buf, 3); // Send the user-pressed note to MIDI-OUT immediately, without buffering
-
-}
-
-// Record a given MIDI command into the tempdata-file of the current RECORDSEQ sequence
-void recordToSeq(word pstn, byte chan, byte b1, byte b2) {
-
-	byte buf[9]; // SD-card read/write buffer
-
-	// Get the position of the first of this tick's bytes in the data-file
-	unsigned long tickstart = (49UL + (4096UL * RECORDSEQ)) + (((unsigned long)pstn) * 8);
-
-	// Get the tick's note-slots, and check whether any of them are empty
-	file.seekSet(tickstart);
-	file.read(buf, 8);
-
-	// If none of the note-slots are empty, then shift their contents downward by one note, deleting the lowest item
-	if (buf[7]) {
-		file.seekSet(tickstart + 4);
-		file.write(buf, 4);
-	}
-
-	// Set the insert-point to the highest unfilled note in the tick;
-	// or to the first note in the tick, if the contents were shifted downward
-	file.seekSet(tickstart + (((!!(buf[0] | buf[2])) ^ (!!(buf[4] | buf[6]))) * 4));
-
-	// Construct a virtual MIDI command, with an additional DURATION value, in the write buffer
-	buf[0] = chan;
-	buf[1] = b1;
-	buf[2] = b2;
-	buf[3] = (chan <= 15) * DURATION; // Only include the DURATION if this isn't a flagged special-command
-
-	file.write(buf, 4); // Write the note to the current tempdata
-
-	file.sync(); // Force this function's write processes to be committed to the savefile immediately
 
 }
 

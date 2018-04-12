@@ -21,7 +21,8 @@ const CmdFunc COMMANDS[] PROGMEM = {
 	sizeCmd,          // 16: SEQ-SIZE
 	switchCmd,        // 17: SWITCH RECORDING-SEQUENCE
 	tempoCmd,         // 18: BPM
-	veloCmd           // 19: VELOCITY
+	trackCmd,         // 19: TRACK
+	veloCmd           // 20: VELOCITY
 };
 
 // Matches control-row binary button-values to the decimal values that stand for their corresponding functions in COMMANDS
@@ -29,9 +30,9 @@ const CmdFunc COMMANDS[] PROGMEM = {
 const byte KEYTAB[] PROGMEM = {
 	8,  //  0, 000000:  8, genericCmd (REGULAR NOTE)
 	15, //  1, 000001: 15, repeatCmd
-	2,  //  2, 000010:  2, chanCmd
+	19, //  2, 000010: 19, trackCmd
 	12, //  3, 000011: 12, posCmd
-	19, //  4, 000100: 19, veloCmd
+	20, //  4, 000100: 20, veloCmd
 	0,  //  5, 000101:  0, ignore
 	18, //  6, 000110: 18, tempoCmd
 	0,  //  7, 000111:  0, ignore
@@ -67,7 +68,7 @@ const byte KEYTAB[] PROGMEM = {
 	0,  // 37, 100101:  0, ignore
 	0,  // 38, 100110:  0, ignore
 	0,  // 39, 100111:  0, ignore
-	0,  // 40, 101000:  0, ignore
+	2,  // 40, 101000:  2, chanCmd
 	0,  // 41, 101001:  0, ignore
 	0,  // 42, 101010:  0, ignore
 	0,  // 43, 101011:  0, ignore

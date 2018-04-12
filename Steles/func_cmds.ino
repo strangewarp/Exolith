@@ -203,6 +203,12 @@ void tempoCmd(byte col, byte row) {
 	TO_UPDATE |= 1; // Flag the topmost row for updating
 }
 
+// Parse a TRACK-press
+void trackCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row) {
+	TRACK = !TRACK; // Toggle between tracks 1 and 2
+	TO_UPDATE |= 1; // Flag the topmost row for updating
+}
+
 // Parse a VELOCITY press
 void veloCmd(byte col, byte row) {
 	char change = toChange(col, row); // Convert a column and row into a CHANGE value
