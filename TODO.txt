@@ -9,39 +9,13 @@ Software:
 		. make a generic "writeData()" function that does this
 			-- ok
 		. use writeData() instead of every raw data-write in RECORD MODE
-			-- 
-
-	. change sequences so that, instead of being duophonic, they contain two distinct monophonic "tracks", which play in unison
-		. add a CURRENT TRACK variable
-			-- done
-		. add a TRACK entry for RECORD-MODE in button-key.txt
-			-- done
-		. add a CmdFunc for TRACK TOGGLE
-			-- done
-		. revise the CmdFunc lists for TRACK and CHANNEL
-			-- done
-		. add GUI glyph for TRACK TOGGLE
-			-- done
-		. add GUI top-row response for TRACK TOGGLE
-			-- done
-		. change functions to allow for TRACK functionality:
-			. all note-record functions
-				-- done
-			. ERASE WHILE HELD
-				-- done
-			. COPY/PASTE
-				-- decided not to change this - simpler for both programmer and user if COPY/PASTE applies to both tracks
-			. CLEAR SEQ
-				-- done
-		. remove "todo update" tags from button-key.txt
 			-- done
 
-	. change the P.DAT system so that P.DAT only holds a number representing the most-recently-loaded sequence
+	. change the P.DAT system so that P.DAT occupies an entire block, and checks for changes before writing them, to save on SD-wear
+		-- done
+
+	. figure out why the compiler is rejecting writeData() wherever it gets called in func_cmd.ino
 		-- 
-		. remove updateFileByte() from every other function that does this
-			-- 
-		. delete prefs-format.txt
-			-- 
 
 	. reduce total number of savefiles, so a THEMIS-A-series 128MB SD-card could be used with some space to spare
 		. change filesystem functions

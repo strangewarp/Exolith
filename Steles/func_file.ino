@@ -79,12 +79,22 @@ void writePrefs() {
 	byte buf[12]; // Make a buffer that will contain all the prefs
 	makePrefBuf(buf); // Fill it with all the relevant pref values
 
+	byte cbuf[12]; // Make a buffer for checking the old prefs-contents
+
 	char pn[6]; // Will contain the prefs-file's filename
 	getPrefsFilename(pn); // Get the prefs-file's filename out of PROGMEM
 
-	file.open(pn, O_WRITE); // Open the prefs-file in write-mode
+	file.open(pn, O_RDWR); // Open the prefs-file in read-write mode
 	file.seekSet(0); // Ensure we're on the first byte of the file
-	file.write(buf, 11); // Write the pref vars into the file
+
+	file.read(cbuf, 11); // Read the old prefs-values
+	for (byte i = 0; i < 11; i++) { // For every byte in the prefs-file...
+		if (buf[i] != cbuf[i]) { // If the new byte doesn't match the old byte...
+			file.seekSet(i); // Go to the byte's location
+			file.write(buf[i]); // Replace the old byte
+		}
+	}
+
 	file.close(); // Close the prefs-file
 
 	char name[8];
@@ -97,16 +107,14 @@ void writePrefs() {
 // Load the contents of the preferences file ("PRF.DAT"), and put its contents into global variables
 void loadPrefs() {
 
-	byte buf[13]; // Make a buffer that will contain all the prefs
+	byte buf[12]; // Make a buffer that will contain all the prefs
 
 	char pn[6]; // Will contain the prefs-file's filename
 	getPrefsFilename(pn); // Get the prefs-file's filename out of PROGMEM
 
 	if (!sd.exists(pn)) { // If the prefs-file doesn't exist, create the file
 
-		makePrefBuf(buf); // Fill the buffer with all the relevant pref values
-
-		file.createContiguous(sd.vwd(), pn, 12); // Create a contiguous prefs-file
+		file.createContiguous(sd.vwd(), pn, 512); // Create a contiguous prefs-file, with a sector of fallow wear-leveling space
 		file.close(); // Close the newly-created file
 
 		file.open(pn, O_WRITE); // Create a prefs file and open it in write-mode

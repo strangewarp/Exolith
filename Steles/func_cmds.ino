@@ -27,7 +27,7 @@ void clearCmd(byte col, byte row) {
 	word pos = (POS[RECORDSEQ] >> 4) << 4; // Get the bottom-point of the current beat in RECORDSEQ
 	byte t4 = TRACK * 4; // Get a bitwise offset based on whether track 1 or 2 is active
 
-	for (word i = 0; i < (min(abs(toChange(col, row)), len) * 128); i += 8) { // For every 16th-note in the clear-area...
+	for (word i = 0; i < (word(min(abs(toChange(col, row)), len)) * 128); i += 8) { // For every 16th-note in the clear-area...
 		writeData(rspos + ((pos + i + t4) % blen), 4, buf, 1); // Overwrite it if it matches the TRACK and CHAN
 	}
 

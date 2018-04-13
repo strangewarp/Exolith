@@ -98,7 +98,7 @@ void recordToSeq(word pstn, byte chan, byte b1, byte b2) {
 		chan, // Channel-byte
 		b1, // Pitch-byte
 		b2, // Velocity-byte
-		(chan <= 15) * DURATION // Only include the DURATION if this isn't a flagged special-command
+		byte((chan <= 15) * DURATION) // Only include the DURATION if this isn't a flagged special-command
 	};
 
 	writeData(tickstart, 4, note, 0); // Write the note to its corresponding savefile position
