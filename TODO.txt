@@ -4,29 +4,23 @@ Tine TODO
 
 Software:
 
-	. figure out why the compiler is rejecting writeData() wherever it gets called in func_cmd.ino
-		-- fixed: put an extern call to a generic writeData() in Steles.ino
-		. ridiculous
-		. figure out why this fixed the problem
-			-- the Arduino compiler has trouble linking functions under certain conditions where they are called by other functions that are in turn called by an array of function-pointers. this can be fixed by using an "extern" command to link any problem-functions manually
+	. prove I'm not a dipshit: actually finish the project
 
-	. re-test everything
-		. regular notes: recording & playback
-			-- works
-		. note-erasing in RECORD-MODE
-			. regular erasing
-				-- seems to work
-			. only erases notes from the current CHAN?
-				-- yes
-		. BASENOTE and OCTAVE
-			-- yes
-			. does BASENOTE clamp at B?
-				-- yes
-		. REPEAT
-			-- works
-		. SHIFT RECORD-SEQ
-			-- works
-		. COPY/PASTE:
+	. re-test all recording mechanisms
+		. note-recording
+			. TRACK 1
+				-- 
+			. TRACK 2
+				-- 
+		. ERASE WHILE HELD
+			. TRACK 1
+				-- 
+			. TRACK 2
+				-- 
+		. CLEAR SEQ
+			. clears both tracks simultaneously?
+				-- 
+		. COPY/PASTE
 			. straightforward standard usage
 				-- 
 			. with COPY size too long for PASTE size (should be discarded)
@@ -35,11 +29,11 @@ Software:
 				-- 
 			. with COPY in another sequence than PASTE
 				-- 
-		. duophony
+
+	. re-test things
 		. various QUANTIZE settings
 		. are old notes being knocked out of the sequence by new notes in RECORD-MODE properly?
 		. test SEQ-SIZE behavior
-			. does a SEQ-SIZE of "0" correspond to 1 beat?
 		. test CC commands
 		. test file-load
 		. test auto-loading of most recent savefile on startup
