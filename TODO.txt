@@ -15,7 +15,10 @@ Software:
 		-- done
 
 	. figure out why the compiler is rejecting writeData() wherever it gets called in func_cmd.ino
-		-- 
+		-- fixed: put an extern call to a generic writeData() in Steles.ino
+		. ridiculous
+		. figure out why this fixed the problem
+			-- 
 
 	. reduce total number of savefiles, so a THEMIS-A-series 128MB SD-card could be used with some space to spare
 		. change filesystem functions

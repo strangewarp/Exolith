@@ -129,6 +129,10 @@ byte SYSIGNORE = 0; // Ignores SYSEX messages when toggled
 
 
 
+extern void writeData(unsigned long pos, byte amt, byte b[], byte onchan);
+
+
+
 // Typedef for a generic function that takes "column" and "row" arguments.
 // This will be used to select RECORD-MODE functions based on which keychords are active.
 typedef void (*CmdFunc) (byte col, byte row);
