@@ -10,10 +10,6 @@ Software:
 		. figure out why this fixed the problem
 			-- the Arduino compiler has trouble linking functions under certain conditions where they are called by other functions that are in turn called by an array of function-pointers. this can be fixed by using an "extern" command to link any problem-functions manually
 
-	. reduce total number of savefiles, so a THEMIS-A-series 128MB SD-card could be used with some space to spare
-		. change filesystem functions
-		. change LOADMODE GUI functions
-
 	. re-test everything
 		. regular notes: recording & playback
 			-- works
