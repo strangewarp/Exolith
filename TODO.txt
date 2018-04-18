@@ -6,6 +6,15 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
+	. add PROGRAM CHANGE functionality (in addition to CONTROL CHANGE)
+		-- 
+		. make sure any button-press global-var changes to the CHAN and CC commands don't interfere with this
+			-- 
+		. enabling PC should set the CC bit to 0, and enabling CC should set the PC bit to 0
+			-- 
+
+	. convert all multi-byte Serial.write() commands into batch Serial.writes with a buffer-array of bytes, to totally rule out the possibility of serial lag
+
 	. re-test all recording mechanisms
 		. note-recording
 			. TRACK 1
@@ -60,8 +69,6 @@ Software:
 	. update gui-key.txt
 		. include button and LED spec for LOADMODE
 
-	. convert all multi-byte Serial.write() commands into batch Serial.writes with a buffer-array of bytes, to totally rule out the possibility of serial lag
-
 	. fill 12 sequences with notes, and check whether lag occurs when connected to a hardware synthesizer
 
 	. need visible GUI element for which page is active, now that both are visible simultaneously
@@ -75,10 +82,6 @@ Software:
 		. is it loaded in correctly, on startup, after being changed by the user?
 
 	. does HUMANIZE apply to REPEAT notes correctly?
-
-	. add PROGRAM CHANGE functionality (in addition to CONTROL CHANGE)
-		. make sure any button-press global-var changes to the CHAN and CC commands don't interfere with this
-		. enabling PC should set the CC bit to 0, and enabling CC should set the PC bit to 0
 
 	. when two note-buttons are simultaneously held during ARMED RECORDING, are they recorded simultaneously?
 		. what if more than two are held?
@@ -252,6 +255,7 @@ Hardware:
 		. top-board:
 			. remove AVR-ISP jack and associated headers from top-board
 			. remove POWER-LED from top-board
+			. increase distance between LEDs by 1 or 1.5 mm, to allow more wiggle-room in the faceplate's laser-cutting
 
 	. buy grounding-bracelets to use while soldering beta prototypes, and while assembling finished units
 
@@ -262,8 +266,8 @@ Hardware:
 	. use different-color button caps on the note-keys, to differentiate between "white notes" and "black notes" like on a piano
 
 	. redo all Inkscape files for enclosure, making sure to retake all measurements & repeat the KiCad-to-Inkscape vector paste process
-
-	. look into rubber adhesive nubs, for protecting the screws on the underside, & preventing any scratching/wear of surfaces
+		. make the tabs and slots for the bottom half of the side-panels wider
+		. elongate the bottom side-panel tabs, to act as bottom-spacers for the device, to keep the screws from scratching tables
 
 	. make sure that the SD-cards are capable of high-speed transfer, and are shipped in a state identical to what results from the SD Association formatter utility
 
