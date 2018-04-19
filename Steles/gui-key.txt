@@ -31,83 +31,62 @@ Buttons (RECORD MODE):
 		* Changes var values when a control-chord is held
 
 
-LEDs (PLAY MODE) (possible hardware revision):
-
-	     I   O
-	c c c c c c c c
-	a a a a a a a a
-	q q q q q q q q
-	q q q q q q q q
-	q q q q q q q q
-	q q q q q q q q
-	q q q q q q q q
-	q q q q q q q q
-
-	I: Analog MIDI-IN indicator
-	O: Analog MIDI-OUT indicator
-
-	a: Number of active sustains
-	c: Global cue point
-	q: Seq activity, or SCATTERed seqs when SCATTER is held
-
-
-LEDs (RECORD MODE) (possible hardware revision):
-
-	     I   O
-	c c c c c c c c
-	a a a a a a a a
-	q q q q q q q q
-	q q q q q q q q
-	q q q q q q q q
-	q q q q q q q q
-	q q q q q q q q
-	q q q q q q q q
-
-	I: Analog MIDI-IN indicator
-	O: Analog MIDI-OUT indicator
-
-	a: Number of active sustains
-	c: Sequence's current beat, in binary
-	d: Display glyph related to user activity
-
-
 LEDs (PLAY MODE):
 
-	I  c c c c c c c c  O
-	   a a a a a a a a
-	   q q q q q q q q
-	   q q q q q q q q
-	   q q q q q q q q
-	   q q q q q q q q
-	P  q q q q q q q q  P
-	   q q q q q q q q
+	 I           O
+	b b b b q q q q
+	s s s s s s s s
+	x x x x x x x x
+	x x x x x x x x
+	x x x x x x x x
+	x x x x x x x x
+	x x x x x x x x
+	x x x x x x x x
 
 	I: Analog MIDI-IN indicator
 	O: Analog MIDI-OUT indicator
-	P: Currently active page
 
-	a: Number of active sustains
-	c: Global cue point
-	q: Seq activity, or SCATTERed seqs when SCATTER is held
+	b: Current global cue-point
+	q: Current global quarter-note
+	s: Number of active sustains
+	x: Seq activity, or SCATTERed seqs when SCATTER is held
 
 
 LEDs (RECORD MODE):
 
-	I  c c c c c c c c  O
-	   a a a a a a a a
-	   d d d d d d d d
-	   d d d d d d d d
-	   d d d d d d d d
-	   d d d d d d d d
-	P  d d d d d d d d  P
-	   d d d d d d d d
+	 I           O
+	b b b b q q q q
+	r r r r r r r r
+	x x x x x x x x
+	x x x x x x x x
+	x x x x x x x x
+	x x x x x x x x
+	x x x x x x x x
+	x x x x x x x x
 
 	I: Analog MIDI-IN indicator
 	O: Analog MIDI-OUT indicator
-	P: Currently active page
 
-	a: Number of active sustains
-	c: Global cue point, or quantity related to user activity
-	d: Display glyph related to user activity
+	b: Current global cue-point
+	q: Current global quarter-note
+	r: Current beat in the recording-seq
+	x: Display glyph related to user activity
 
+
+LEDs (LOAD MODE):
+
+	 I           O
+	b b b b q q q q
+	s s s s s s s s
+	x x x x x x x x
+	x x x x x x x x
+	x x x x x x x x
+	x x x x x x x x
+	x x x x x x x x
+	x x x x x x x x
+
+	b: Current global cue-point
+	q: Current global quarter-note
+	s: Number of active sustains
+	x: Display glyph: current page of loadfiles
 

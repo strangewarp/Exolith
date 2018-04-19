@@ -21,11 +21,18 @@ Software:
 		. make sure the sequencing mechanism parses PC and CC correctly
 			-- done
 
+	. update button-key.txt for LOADMODE
+		-- done
+	. update gui-key.txt in general
+		-- am doing
+		. include LED spec for LOADMODE
+			-- done
+
 	. check whether a PC is always sent as 2 bytes, or 3, and change iterateAll()'s "if (MOUT_COUNT)..." accordingly
 		-- 
 
-	. update gui-key.txt
-		. include button and LED spec for LOADMODE
+	. add PITCH BEND command
+		-- 
 
 	. need visible GUI element for which page is active, now that both are visible simultaneously
 		. should blink between all-LEDs-on and regular-LEDs-on when any PAGE command is held, highlighting the active page
@@ -258,6 +265,8 @@ Hardware:
 			. remove AVR-ISP jack and associated headers from top-board
 			. remove POWER-LED from top-board
 			. increase distance between LEDs by 1 or 1.5 mm, to allow more wiggle-room in the faceplate's laser-cutting
+
+	. double-check that the text diagrams in button-key.txt accurately reflect the finalized LED-placement
 
 	. buy grounding-bracelets to use while soldering beta prototypes, and while assembling finished units
 

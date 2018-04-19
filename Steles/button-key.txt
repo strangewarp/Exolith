@@ -123,3 +123,14 @@ Button combinations (RECORD MODE):
 	...
 	001111: ERASE WHILE HELD
 
+
+	Button combinations (LOAD MODE):
+
+		1-keypress:
+		100000: PAGE 0
+		010000: PAGE 1
+		001000: PAGE 2
+		000100: PAGE 3
+		000010: PAGE 4
+		000001: PAGE 5
+
