@@ -28,15 +28,20 @@ Software:
 		. include LED spec for LOADMODE
 			-- done
 
+	. need visible GUI element for which page is active, now that both are visible simultaneously
+		-- am doing
+		. top row should be: b b b b, q q, p p, where "p" is the current page, and "q" is alight on quarter-notes 1 and 3
+			-- 
+		. should blink between all-LEDs-on and regular-LEDs-on when any PAGE command is held, highlighting the active page
+			-- 
+		. should blink one final time on the new page, after the page is changed
+			-- 
+
 	. check whether a PC is always sent as 2 bytes, or 3, and change iterateAll()'s "if (MOUT_COUNT)..." accordingly
 		-- 
 
 	. add PITCH BEND command
 		-- 
-
-	. need visible GUI element for which page is active, now that both are visible simultaneously
-		. should blink between all-LEDs-on and regular-LEDs-on when any PAGE command is held, highlighting the active page
-		. should blink one final time on the new page, after the page is selected, using a timer to control how long the ON-block should be OR'ed to regular LEDs
 
 	. when SCATTER, SCATTER-UNSET, PAGE-SCATTER, or PAGE-SCATTER-UNSET is held, the GUI should show only those sequences that have SCATTER states enabled
 
