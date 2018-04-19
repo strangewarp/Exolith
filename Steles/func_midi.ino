@@ -16,9 +16,7 @@ void parseMidiCommand() {
 			}
 		}
 	}
-	for (byte i = 0; i < INTARGET; i++) { // Having parsed the command, send its bytes onward to MIDI-OUT
-		Serial.write(INBYTES[i]);
-	}
+	Serial.write(INBYTES, INTARGET); // Having parsed the command, send its bytes onward to MIDI-OUT
 }
 
 // Parse all incoming raw MIDI bytes

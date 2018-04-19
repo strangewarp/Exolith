@@ -71,13 +71,13 @@ void parseTickContents(byte buf[]) {
 
 		if (MOUT_COUNT == 8) { return; } // If the MIDI buffer is full, exit the function
 
-		// Convert the note's CHANNEL byte into either a NOTE or CC command
-		buf[bn] = 144 + (buf[bn] & 15) + ((buf[bn] & 16) << 1);
+		// Convert the note's CHANNEL byte into either a NOTE, CC, or PC command
+		buf[bn] = 144 + (buf[bn] & 15) + ((buf[bn] & 48) << 1);
 
 		memcpy(MOUT + (MOUT_COUNT * 3), buf + bn, 3); // Copy the note into the MIDI buffer's lowest empty MOUT location
 		MOUT_COUNT++; // Increase the counter that tracks the number of bytes in the MIDI buffer
 
-		if (buf[bn] >= 176) { continue; } // If this was a proto-MIDI-CC command, forego any sustain mechanisms
+		if (buf[bn] >= 176) { continue; } // If this was a CC or PC command, forego any sustain mechanisms
 
 		buf[bn] -= 16; // Turn the NOTE-ON into a NOTE-OFF
 		buf[bn + 2] = buf[bn + 3]; // Move DURATION to the next byte over, for the 3-byte sustain-storage format

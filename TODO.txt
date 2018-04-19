@@ -6,14 +6,36 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	. add PROGRAM CHANGE functionality (in addition to CONTROL CHANGE)
-		-- 
-		. make sure any button-press global-var changes to the CHAN and CC commands don't interfere with this
-			-- 
-		. enabling PC should set the CC bit to 0, and enabling CC should set the PC bit to 0
-			-- 
-
 	. convert all multi-byte Serial.write() commands into batch Serial.writes with a buffer-array of bytes, to totally rule out the possibility of serial lag
+		-- done
+
+	. reduce max sequence-size to 32 whole-notes, to cut down on potential read-lag?
+		-- already did this
+
+	. add PROGRAM CHANGE functionality (in addition to CONTROL CHANGE)
+		-- am doing
+		. make sure any button-press global-var changes to the CHAN and CC commands don't interfere with this
+			-- done
+		. enabling PC should set the CC bit to 0, and enabling CC should set the PC bit to 0
+			-- done
+		. make sure the sequencing mechanism parses PC and CC correctly
+			-- done
+
+	. check whether a PC is always sent as 2 bytes, or 3, and change iterateAll()'s "if (MOUT_COUNT)..." accordingly
+		-- 
+
+	. update gui-key.txt
+		. include button and LED spec for LOADMODE
+
+	. need visible GUI element for which page is active, now that both are visible simultaneously
+		. should blink between all-LEDs-on and regular-LEDs-on when any PAGE command is held, highlighting the active page
+		. should blink one final time on the new page, after the page is selected, using a timer to control how long the ON-block should be OR'ed to regular LEDs
+
+	. when SCATTER, SCATTER-UNSET, PAGE-SCATTER, or PAGE-SCATTER-UNSET is held, the GUI should show only those sequences that have SCATTER states enabled
+
+	. BPM should be accessible in both PLAY MODE and RECORD MODE
+		. remove BPM-file-write from tempoCmd()
+		. only write BPM to file when toggling RECORD MODE
 
 	. re-test all recording mechanisms
 		. note-recording
@@ -66,14 +88,9 @@ Software:
 
 	. gestures sometimes have a sloppy response. figure out why
 
-	. update gui-key.txt
-		. include button and LED spec for LOADMODE
-
 	. fill 12 sequences with notes, and check whether lag occurs when connected to a hardware synthesizer
 
-	. need visible GUI element for which page is active, now that both are visible simultaneously
-		. should blink between all-LEDs-on and regular-LEDs-on when any PAGE command is held, highlighting the active page
-		. should blink one final time on the new page, after the page is selected, using a timer to control how long the ON-block should be OR'ed to regular LEDs
+	==== SOFTWARE BETA THRESHOLD ====
 
 	. when the OFF button is used to wipe the cues from a cued seq, does that cued seq refrain from any activity correctly?
 		. if a new cue is set for the same seq, as the seq's first action after such a situation, then does the cue act as expected?
@@ -92,12 +109,10 @@ Software:
 			. two held?
 			. more than two?
 
-	. soak-test the sequencer to test whether ABSOLUTETIME wrap-arounds work correctly (these should occur every hour or so)
-
-	. when SCATTER, SCATTER-UNSET, PAGE-SCATTER, or PAGE-SCATTER-UNSET is held, the GUI should show only those sequences that have SCATTER states enabled
-
 	. do very slow BPMs have the expected tick-length?
 	. test whether very fast BPMs have any lag
+
+	. make sure that, when a deeper savefile is loaded, there's no extra lag for whatever reason
 
 	. if lag-reduction is necessary...
 		. try moving the MAX7219 onto the SPI pins and using LedControl_HW_SPI immediately?
@@ -108,24 +123,9 @@ Software:
 		. remove MIDI IN?
 		. remove or greatly simplify SCATTER system?
 
-	. test "toggle to next/prev sequence" in RECORD mode
-
-	. change func_gui.ino:
-	. add GUI prompt for current RECORDSEQ value? (RECORD MODE)
-	. cue a BLINK whenever the RECORDSEQ reaches its 0th position
-
-	. display SCATTER status only when a SCATTER chord is held
-
-	. make sure that, when a deeper savefile is loaded, there's no extra lag for whatever reason
-
-	. reduce max sequence-size to 32 whole-notes, to cut down on potential read-lag?
-
 	. test MIDI-IN (notes)
 	. test MIDI-IN (clock)
-		. add a "DO NOT SEND CLOCK SIGNALS" user-flag to the CLOCK MASTER/FOLLOW mechanism
-
-	. BPM should be accessible in both PLAY MODE and RECORD MODE?
-		. only write BPM to file when toggling into RECORD MODE, or when changing the value if RECORD MODE is currently active
+		. add a "DO NOT SEND CLOCK SIGNALS" user-flag to the CLOCK MASTER/FOLLOW mechanism?
 
 	. replace bloated LedControl with optimized custom functions
 		. replace LedControl with LedControl_HW_SPI???
@@ -172,6 +172,7 @@ Hardware:
 
 	. use "industrial-grade" SD-cards, to prevent the hotspots in the savefiles from wearing out the cards over the course of 10,000 writes
 		. something like "128MB THEMIS-A" in here: http://www.psism.com/industrialsd.htm
+	. make sure that the SD-cards are shipped in a state identical to what results from the SD Association formatter utility
 
 	. test breadboarded prototype with shared-SPI-line layout (and two digital SPI-select pins), for LedControl_HW_SPI lag-reduction
 		. remember, when rebuilding breadboard, to follow this error-prevention process:
@@ -223,6 +224,7 @@ Hardware:
 
 	. update KiCad/Inkscape files:
 		. both boards:
+			. use connection-labels in the schematic, instead of having to make tangles of connections. faster revisions & reduces chance of overlooked errors
 			. should be 4mm to 10mm wider, to better accomodate standoffs and MIDI ports, and to allow a bit more trace space around the new header-position
 			. double-check that the stacking-headers on the bottom-board and top-board share their corresponding positions
 			. change standoff hole-sizes to M3, plus extra kerf to compensate for standoff screws always being slightly over-size due to their threading
@@ -259,15 +261,14 @@ Hardware:
 
 	. buy grounding-bracelets to use while soldering beta prototypes, and while assembling finished units
 
+	. use different-color button-caps on the note-keys, to differentiate between "white notes" and "black notes" like on a piano
 	. use different button-cap color for control-row?
 
 	. make sure to use B3F-5050 buttons in finished unit; these have a longer life than B3F-4050 buttons
-
-	. use different-color button caps on the note-keys, to differentiate between "white notes" and "black notes" like on a piano
 
 	. redo all Inkscape files for enclosure, making sure to retake all measurements & repeat the KiCad-to-Inkscape vector paste process
 		. make the tabs and slots for the bottom half of the side-panels wider
 		. elongate the bottom side-panel tabs, to act as bottom-spacers for the device, to keep the screws from scratching tables
 
-	. make sure that the SD-cards are capable of high-speed transfer, and are shipped in a state identical to what results from the SD Association formatter utility
+	==== HARDWARE BETA THRESHOLD ====
 

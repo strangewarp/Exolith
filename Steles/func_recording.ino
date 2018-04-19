@@ -154,7 +154,7 @@ void processRecAction(byte key) {
 	// Build a correctly-formatted NOTE-ON for the user-pressed note;
 	// or a correctly-formatted CC or PC command, if applicable.
 	byte buf[4] = {byte(144 + CHAN + offc), pitch, velo, 0};
-	Serial.write(buf, 3); // Send the user-pressed note to MIDI-OUT immediately, without buffering
+	Serial.write(buf, 3); // Send the user-pressed note to MIDI-OUT immediately
 
 }
 

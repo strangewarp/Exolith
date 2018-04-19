@@ -9,7 +9,7 @@ void armCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row) 
 // Parse a CHAN press
 void chanCmd(byte col, byte row) {
 	char change = toChange(col, row); // Convert a column and row into a CHANGE value
-	CHAN = (CHAN & 48) | applyChange(CHAN & 15, change, 0, 15); // Modify the CHAN value, while preserving CC & PC flags
+	CHAN = (CHAN & 48) | applyChange(CHAN & 15, change, 0, 15); // Modify the CHAN value, while preserving any CC/PC flag
 	TO_UPDATE |= 1; // Flag the topmost row for updating
 }
 
@@ -46,7 +46,7 @@ void clockCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row
 
 // Parse a CONTROL-CHANGE press
 void controlChangeCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row) {
-	CHAN ^= 16; // Flip the CHAN bit that turns all NOTE command-entry into CC command-entry
+	CHAN = (CHAN & 31) ^ 16; // Togggle CHAN's CC-bit, clear its PC-bit, and retain its channel-bits
 	TO_UPDATE |= 1; // Flag the topmost row for updating
 }
 
@@ -135,23 +135,14 @@ void posCmd(byte col, byte row) {
 		}
 	}
 
-	/*
-	BLINK = 255; // Start an LED-BLINK that is ~16ms long
-	TO_UPDATE = 255; // Flag all rows for LED updates
-	*/
-
 	TO_UPDATE |= 3; // Flag the top two rows for LED updates
 
 }
 
 // Parse a PROGRAM-CHANGE press
-void programChangeCmd(byte col, byte row) {
-
-	(void)(col); // todo remove these after writing the function
-	(void)(row);
-
-
-
+void programChangeCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row) {
+	CHAN = (CHAN & 47) ^ 32; // Togggle CHAN's PC-bit, clear its CC-bit, and retain its channel-bits
+	TO_UPDATE |= 1; // Flag the topmost row for updating
 }
 
 // Parse a QUANTIZE press
