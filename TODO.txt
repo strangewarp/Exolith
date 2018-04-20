@@ -31,11 +31,15 @@ Software:
 	. need visible GUI element for which page is active, now that both are visible simultaneously
 		-- am doing
 		. top row should be: b b b b, q q, p p, where "p" is the current page, and "q" is alight on quarter-notes 1 and 3
-			-- 
-		. should blink between all-LEDs-on and regular-LEDs-on when any PAGE command is held, highlighting the active page
-			-- 
-		. should blink one final time on the new page, after the page is changed
-			-- 
+			-- done
+		. should blink whenever the page is changed
+			-- fixed
+
+	-- changed PAGE-OFF and PAGE-SCATTER-UNSET so that they act on PAGE A for keypress-columns 0-1, or PAGE B for keypress-columns 2-3, rather than the currently active page
+
+	-- added BLINK behavior for PAGE-OFF and PAGE-SCATTER-UNSET
+
+	-- added BLINK behavior on any tick where CUEd commands are processed
 
 	. check whether a PC is always sent as 2 bytes, or 3, and change iterateAll()'s "if (MOUT_COUNT)..." accordingly
 		-- 

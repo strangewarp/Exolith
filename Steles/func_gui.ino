@@ -70,10 +70,12 @@ void displayQuantizeBeat() {
 
 // Display the global beat and quarter-note in the topmost row of LEDs
 void displayGlobalBeat() {
-	// Display the global beat in the 4 leftmost LEDs,
-	// and the global quarter-note in the 4 rightmost LEDs,
-	// with an extra disambiguation marker after beat 4
-	lc.setRow(0, 0, getGlobalBeatLEDs() | (8 >> ((CUR16 >> 2) & 3)));
+
+	// Display the global beat in the 4 leftmost LEDs, with an extra disambiguation marker after beat 4;
+	// and blink the 5th and 6th LEDs when a new global quarter-note occurs;
+	// and also display the current PAGE in the 7th and 8th LEDs
+	lc.setRow(0, 0, getGlobalBeatLEDs() | ((!((CUR16 >> 2) % 2)) * 12) | ((!PAGE) + 1));
+
 }
 
 // Update the first row of LEDs
@@ -188,6 +190,10 @@ void updatePlayBottomRows(byte ctrl) {
 	byte heldsc = (ctrl & B00000011) == B00000011; // Make sure this is, indeed, a command with SCATTER shape
 	for (byte i = 2; i < 8; i++) { // For each of the bottom 6 GUI rows...
 		if (TO_UPDATE & (1 << i)) { // If the row is flagged for an update...
+			if (BLINK) { // If a BLINK is active within PLAY-mode...
+				lc.setRow(0, i, 255); // Illuminate the entire row
+				continue; // Skip to the next row
+			}
 			// If a SCATTER-related command is held, display a row of SCATTER info; else display a row of SEQ info
 			lc.setRow(0, i, heldsc ? getRowScatterVals(i - 2) : getRowSeqVals(i - 2));
 		}

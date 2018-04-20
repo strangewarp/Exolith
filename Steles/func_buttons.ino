@@ -16,24 +16,26 @@ void parsePlayPress(byte col, byte row) {
 	// (1 in lowest bit, 2 next, then 4)
 	nums = (((nums & 16) >> 2) | ((nums & 4) << 2) | (nums & 8)) >> 2;
 
-	if (ctrl == B00000101) { // If PAGE A is held...
-		PAGE = 0; // Toggle to page A
-	} else if (ctrl == B00001001) { // If PAGE B is held...
-		PAGE = 1; // Toggle to page B
+	if (ctrl == B00000001) { // If PAGE is held, and a regular button-press was made to signal intent...
+		PAGE ^= 1; // Toggle between page A and page B
+		BLINK = 255; // Cue a ~16ms LED-blink
+		TO_UPDATE = 253; // Flag LED-rows 0 and 2-7 for updates
 	} else if (ctrl == B00100001) { // If PAGE-OFF is held, and a regular button-press was made to signal intent...
-		byte ptop = PAGE * 24; // Get the position of the first seq on the current page
+		byte ptop = (col >> 1) * 24; // Get the position of the first seq on the user-selected page
 		for (byte i = ptop; i < (ptop + 24); i++) { // For every seq on this page...
 			resetSeq(i); // Reset the seq's contents
 		}
+		BLINK = 255; // Cue a ~16ms LED-blink
 		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for an update
 	} else if (ctrl == B00000011) { // If SCATTER UNSET is held...
 		SCATTER[seq] = 0; // Unset the seq's SCATTER flags
 		TO_UPDATE |= 4 << row; // Flag the seq's corresponding LED-row for an update
 	} else if (ctrl == B00100011) { // If PAGE-SCATTER-UNSET is held, and a regular button-press was made to signal intent...
-		byte ptop = PAGE * 24; // Get the position of the first seq on the current page
+		byte ptop = (col >> 1) * 24; // Get the position of the first seq on the user-selected page
 		for (byte i = ptop; i < (ptop + 24); i++) { // For every seq on this page...
 			SCATTER[i] = 0; // Unset the seq's SCATTER flags
 		}
+		BLINK = 255; // Cue a ~16ms LED-blink
 		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for an update
 	} else if (pg && cue && nums && (!off)) { // If this is a SCATTER command of any kind...
 		SCATTER[seq] = nums; // Turn this command's numeric value into the seq's SCATTER-chance flags
