@@ -67,18 +67,17 @@ void readTick(byte s, byte offset, byte buf[]) {
 // Parse the contents of a given tick, and add them to the MIDI-OUT buffer and SUSTAIN buffer as appropriate
 void parseTickContents(byte buf[]) {
 
-	// For either one or both note-slots on this tick, depending on how many are filled...
-	for (byte bn = 0; bn < ((buf[4] || buf[6]) + 4); bn += 4) {
+	for (byte bn = 0; bn < 8; bn += 4) { // For both event-slots on this tick...
 
-		if (MOUT_COUNT == 8) { return; } // If the MIDI buffer is full, exit the function
+		if (!buf[bn]) { continue; } // If this slot doesn't contain a command, either check the next slot or exit the loop
 
-		// Convert the note's CHANNEL byte into either a NOTE, CC, or PC command
-		buf[bn] = 144 + (buf[bn] & 15) + ((buf[bn] & 48) << 1);
+		byte cmd = buf[bn] >> 4; // Get this event's MIDI-command-type
+		byte cbytes = 3 - ((cmd % 14) >= 12); // Get the number of bytes in this event's MIDI-command-type
 
-		memcpy(MOUT + (MOUT_COUNT * 3), buf + bn, 3); // Copy the note into the MIDI buffer's lowest empty MOUT location
-		MOUT_COUNT++; // Increase the counter that tracks the number of bytes in the MIDI buffer
+		memcpy(MOUT + MOUT_BYTES, buf + bn, cbytes); // Copy the event into the MIDI buffer's lowest empty MOUT location
+		MOUT_BYTES += cbytes; // Increase the counter that tracks the number of bytes in the MIDI buffer
 
-		if (buf[bn] >= 176) { continue; } // If this was a CC or PC command, forego any sustain mechanisms
+		if (cmd != 9) { continue; } // If this wasn't a NOTE-ON, forego any sustain mechanisms
 
 		buf[bn] -= 16; // Turn the NOTE-ON into a NOTE-OFF
 		buf[bn + 2] = buf[bn + 3]; // Move DURATION to the next byte over, for the 3-byte sustain-storage format
@@ -88,7 +87,7 @@ void parseTickContents(byte buf[]) {
 		memcpy(SUST, buf + bn, 3); // Create a new sustain corresponding to this note
 		SUST_COUNT++; // Increase the number of active sustains by 1
 
-		if (!RECORDMODE) { // If we're in PLAY-MODE...
+		if (!RECORDMODE) { // If we're not in RECORD-MODE...
 			TO_UPDATE |= 2; // Flag the sustain-row for a GUI update
 		}
 
@@ -160,7 +159,7 @@ void getTickNotes(byte ctrl, unsigned long held, byte s, byte buf[]) {
 			if (REPEAT && held) { // If REPEAT is toggled, and a note-button is being held...
 				processRepeats(ctrl, held, s); // Process a REPEAT-RECORD
 			} else if (RECORDNOTES && (ctrl == B00111100)) { // Else, if RECORDNOTES is armed, and ERASE-NOTES is held...
-				byte b[5]; // Make a buffer the size of a tick...
+				byte b[5]; // Make a buffer the size of a note...
 				memset(b, 0, 4); // ...And clear it of any junk-data
 				writeData( // Write the blank note to the savefile
 					(49UL + (POS[RECORDSEQ] * 8)) + (4096UL * RECORDSEQ) + (TRACK * 4), // Write at the RECORDSEQ's current position
@@ -176,10 +175,10 @@ void getTickNotes(byte ctrl, unsigned long held, byte s, byte buf[]) {
 		didscatter = 1;
 	}
 
-	// If the MIDI-OUT queue is full, or the tick contains no commands, then exit the function
-	if ((MOUT_COUNT == 8) || (!(buf[0] || buf[2]))) { return; }
-
 	// If the function hasn't exited by this point, then that means this tick contained a note. So...
+
+	if (MOUT_BYTES >= 22) { return; } // If any command would overflow the MIDI-OUT buffer, exit the function
+
 	parseTickContents(buf); // Check the tick's contents, and add them to MIDI-OUT and SUSTAIN where appropriate
 	parseScatter(s, didscatter); // Parse any active SCATTER values that might be associated with the seq
 
@@ -195,7 +194,7 @@ void iterateAll() {
 
 		byte buf[9]; // Buffer for reading note-events from the datafile
 
-		for (byte i = 47; i != 255; i--) { // For every loaded sequence, in reverse order...
+		for (byte i = 47; i != 255; i--) { // For every sequence in the song, in reverse order...
 
 			byte size = STATS[i] & 63; // Get seq's absolute size, in beats
 
@@ -216,9 +215,9 @@ void iterateAll() {
 
 	}
 
-	if (MOUT_COUNT) { // If there are any commands in the NOTE-ON buffer...
-		Serial.write(MOUT, MOUT_COUNT * 3); // Send all outgoing MIDI-command bytes at once
-		MOUT_COUNT = 0; // Clear the MIDI buffer's counting-byte
+	if (MOUT_BYTES) { // If there are any commands in the MIDI-command buffer...
+		Serial.write(MOUT, MOUT_BYTES); // Send all outgoing MIDI-command bytes at once
+		MOUT_BYTES = 0; // Clear the MIDI buffer's counting-byte
 	}
 
 	processSustains(); // Process one 16th-note's worth of duration for all sustained notes

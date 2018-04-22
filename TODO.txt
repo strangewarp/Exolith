@@ -6,46 +6,48 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	. convert all multi-byte Serial.write() commands into batch Serial.writes with a buffer-array of bytes, to totally rule out the possibility of serial lag
-		-- done
-
-	. reduce max sequence-size to 32 whole-notes, to cut down on potential read-lag?
-		-- already did this
-
-	. add PROGRAM CHANGE functionality (in addition to CONTROL CHANGE)
-		-- am doing
-		. make sure any button-press global-var changes to the CHAN and CC commands don't interfere with this
-			-- done
-		. enabling PC should set the CC bit to 0, and enabling CC should set the PC bit to 0
-			-- done
-		. make sure the sequencing mechanism parses PC and CC correctly
-			-- done
-
-	. update button-key.txt for LOADMODE
-		-- done
-	. update gui-key.txt in general
-		-- am doing
-		. include LED spec for LOADMODE
-			-- done
-
-	. need visible GUI element for which page is active, now that both are visible simultaneously
-		-- am doing
-		. top row should be: b b b b, q q, p p, where "p" is the current page, and "q" is alight on quarter-notes 1 and 3
-			-- done
-		. should blink whenever the page is changed
-			-- fixed
-
-	-- changed PAGE-OFF and PAGE-SCATTER-UNSET so that they act on PAGE A for keypress-columns 0-1, or PAGE B for keypress-columns 2-3, rather than the currently active page
-
-	-- added BLINK behavior for PAGE-OFF and PAGE-SCATTER-UNSET
-
-	-- added BLINK behavior on any tick where CUEd commands are processed
-
 	. check whether a PC is always sent as 2 bytes, or 3, and change iterateAll()'s "if (MOUT_COUNT)..." accordingly
-		-- 
+		-- it's 2
+		. generalize MOUT behavior wrt next few tasks
+			-- am doing
 
-	. add PITCH BEND command
+	. change MOUT behavior:
+		-- am doing
+		. MOUT_COUNT becomes MOUT_EVENTS, and counts the number of events in MOUT
+			-- 
+		. new var: MOUT_BYTES, which counts the number of bytes in MOUT, since events can have varying bytes now
+			-- 
+	. change all note-presence-checks to only check a note's first byte, now that it no longer risks being 0
+		-- am doing
+		. check the SUSTAIN system
+			-- 
+		. check the MIDI-OUT system
+			-- 
+	. VELOCITY's lower bound should be changed to 0
 		-- 
+	. change how notes are stored in the savefile and internally: the CHAN+CMD byte should be exactly the same as its MIDI equivalent
+		. in savefile
+			-- 
+		. internally
+			-- 
+			. writeData() needs changes, to generalize its treatment of advanced MIDI-commands?
+				-- 
+			. calls to writeData() need changes, to the number of bytes they specify for a given command-type's write?
+				. or maybe they don't, because the entire previous event needs to be overwritten
+	. change UI/CmdFunc behavior:
+		. change CONTROL-CHANGE command into a TOGGLE UPPER MIDI BITS command
+			. change its CmdFunc
+			. change the CmdFunc-related data lists to compensate for its new position
+			. change its GUI responses
+				. first row
+				. bottom rows
+		. remove PROGRAM-CHANGE command
+			. remove its CmdFunc
+			. remove it from CmdFunc-related data lists, and reorganize their contents to patch the gap
+			. remove its GUI responses
+				. first row
+				. bottom rows
+	. update button-key.txt
 
 	. when SCATTER, SCATTER-UNSET, PAGE-SCATTER, or PAGE-SCATTER-UNSET is held, the GUI should show only those sequences that have SCATTER states enabled
 

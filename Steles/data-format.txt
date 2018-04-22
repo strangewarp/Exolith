@@ -23,12 +23,26 @@ Steles data-file spec
 					2 notes (8 total bytes)
 					Per note:
 						(4 total bytes)
-						0: Channel
+						0: Channel/Command
 							byte values:
-								0-15: Channel 0-15
-								16: CC command
-								32: PC command
-						1: Pitch (0-127)
-						2: Velocity (1-127)
+								lower bits:
+									0-15: MIDI channel
+								higher bits:
+									128: NOTE-OFF
+										(3-byte command)
+									144: NOTE-ON
+										(3-byte command)
+									160: POLY-KEY PRESSURE
+										(3-byte command)
+									176: CONTROL CHANGE
+										(3-byte command)
+									192: PROGRAM CHANGE
+										(2-byte command)
+									208: CHANNEL PRESSURE
+										(2-byte command)
+									224: PITCH BEND
+										(3-byte command)
+						1: Command byte 1 (0-127)
+						2: Command byte 2 (0-127)
 						3: Duration (0-255)
 
