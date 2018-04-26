@@ -13,14 +13,12 @@ Software:
 
 	. change MOUT behavior:
 		-- am doing
-		. MOUT_COUNT becomes MOUT_EVENTS, and counts the number of events in MOUT
-			-- 
 		. new var: MOUT_BYTES, which counts the number of bytes in MOUT, since events can have varying bytes now
-			-- 
+			-- done
 	. change all note-presence-checks to only check a note's first byte, now that it no longer risks being 0
 		-- am doing
 		. check the SUSTAIN system
-			-- 
+			-- don't think anything needs changed here
 		. check the MIDI-OUT system
 			-- 
 	. VELOCITY's lower bound should be changed to 0

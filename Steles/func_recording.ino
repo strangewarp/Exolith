@@ -64,15 +64,6 @@ void writeData(
 
 }
 
-// Check whether a given RECORD-MODE keychord is NOTE-RECORDING compatible
-byte isRecCompatible(byte ctrl) {
-	// Return 1 if:
-	return (!ctrl) // No command-buttons are held...
-		|| (ctrl == B00100100) // Or CONTROL-CHANGE is held...
-		|| (ctrl == B00100010); // Or PROGRAM-CHANGE is held
-	// ...Otherwise, return 0
-}
-
 // Prime a newly-entered RECORD-MODE sequence for editing
 void primeRecSeq() {
 
@@ -103,7 +94,7 @@ void recordToSeq(word pstn, byte chan, byte b1, byte b2) {
 
 	writeData(tickstart, 4, note, 0); // Write the note to its corresponding savefile position
 
-	file.sync(); // Force this function's write-process to be committed to the savefile immediately
+	file.sync(); // Force the write-process to be committed to the savefile immediately
 
 }
 
@@ -120,41 +111,29 @@ void processRecAction(byte key) {
 	byte velo = VELO - min(VELO - 1, byte(GLOBALRAND & 255) % (HUMANIZE + 1));
 
 	if (PLAYING && RECORDNOTES) { // If notes are being recorded into a playing sequence...
-
 		word qp = POS[RECORDSEQ]; // Will hold a QUANTIZE-modified insertion point (defaults to the seq's current position)
-
 		if (!REPEAT) { // If REPEAT isn't toggled...
 			char down = POS[RECORDSEQ] % QUANTIZE; // Get distance to previous QUANTIZE point
 			byte up = QUANTIZE - down; // Get distance to next QUANTIZE point
 			qp += (down <= up) ? (-down) : up; // Make the shortest distance into an offset for the note-insertion point
 			qp %= word(STATS[RECORDSEQ] & 63) * 16; // Wrap the insertion-point around the seq's length
 		}
-
-		// Record the note into the current RECORDSEQ slot
-		recordToSeq(qp, CHAN, pitch, velo);
-
+		recordToSeq(qp, CHAN, pitch, velo); // Record the note into the current RECORDSEQ slot
 		TO_UPDATE |= 252; // Flag the 6 bottommost LED-rows for an update
-
 	}
 
-	// If this wasn't a CC or PC command,
-	// update SUSTAIN buffer in preparation for playing the user-pressed note
-	if (CHAN < 16) {
+	// If this was a NOTE-ON command, update the SUSTAIN buffer in preparation for playing the user-pressed note
+	if ((CHAN & 240) == 144) {
 		clipBottomSustain(); // If the bottommost SUSTAIN is filled, send its NOTE-OFF prematurely
 		memmove(SUST + 3, SUST, SUST_COUNT * 3); // Move all sustains one space downward
-		SUST[0] = 128 + CHAN; // Fill the topmost sustain-slot with the user-pressed note
+		SUST[0] = CHAN - 16; // Fill the topmost sustain-slot with the user-pressed note's corresponding OFF command
 		SUST[1] = pitch; // ^
 		SUST[2] = DURATION; // ^
 		SUST_COUNT++; // Increase the number of active sustains, to accurately reflect the new note
 	}
 
-	byte offc = CHAN >> 4; // Get an offset-value for the CHAN byte
-	offc = (offc + (!!offc)) * 16; // Convert the offset into a CC or PC offset, or no offset for a NOTE
-
-	// Build a correctly-formatted NOTE-ON for the user-pressed note;
-	// or a correctly-formatted CC or PC command, if applicable.
-	byte buf[4] = {byte(144 + CHAN + offc), pitch, velo, 0};
-	Serial.write(buf, 3); // Send the user-pressed note to MIDI-OUT immediately
+	byte buf[4] = {CHAN, pitch, velo, 0}; // Build a correctly-formatted MIDI command
+	Serial.write(buf, 3); // Send the command to MIDI-OUT immediately
 
 }
 
