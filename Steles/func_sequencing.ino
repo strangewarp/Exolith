@@ -216,7 +216,9 @@ void iterateAll() {
 	}
 
 	if (MOUT_BYTES) { // If there are any commands in the MIDI-command buffer...
-		Serial.write(MOUT, MOUT_BYTES); // Send all outgoing MIDI-command bytes at once
+		for (byte i = 0; i < MOUT_BYTES; i += 3) { // For every command in the MIDI-OUT queue...
+			Serial.write(MOUT + i, 2 + ((MOUT[i] >= 192) && (MOUT[i] <= 223))); // Send that command's number of bytes
+		}
 		MOUT_BYTES = 0; // Clear the MIDI buffer's counting-byte
 	}
 

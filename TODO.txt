@@ -20,7 +20,9 @@ Software:
 		. check the SUSTAIN system
 			-- don't think anything needs changed here
 		. check the MIDI-OUT system
-			-- 
+			-- am doing
+			. change writeData() and associated functions so that commands of varying size can also be sent
+				-- 
 	. VELOCITY's lower bound should be changed to 0
 		-- 
 	. change how notes are stored in the savefile and internally: the CHAN+CMD byte should be exactly the same as its MIDI equivalent
