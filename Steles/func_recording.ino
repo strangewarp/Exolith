@@ -40,7 +40,8 @@ void writeData(
 		// If replace-on-chan-match is flagged, and this is a note's first byte, and the channels don't match...
 		if (onchan && (!(i % 4)) && ((buf[i] & 15) != CHAN)) {
 			since = wdSince(pos, since, i, b); // Write bytes to the file, based on iterator and since-bytes
-			i += 3; // Increment the iterator to skip to the next note in the data
+			i += 3
+			i += 2 + ((buf[i] <= 191) || (buf[i] >= 224)); // Increment the iterator to skip to the next note in the data
 			continue; // Skip this iteration of the loop
 		}
 
@@ -133,7 +134,7 @@ void processRecAction(byte key) {
 	}
 
 	byte buf[4] = {CHAN, pitch, velo, 0}; // Build a correctly-formatted MIDI command
-	Serial.write(buf, 3); // Send the command to MIDI-OUT immediately
+	Serial.write(buf, 2 + ((CHAN % 224) <= 191)); // Send the command to MIDI-OUT, with the correct number of bytes
 
 }
 

@@ -48,6 +48,11 @@ Software:
 				. first row
 				. bottom rows
 	. update button-key.txt
+	. update P.DAT on the SD-card again, with a new valid CHAN-value
+
+	. only change BPM and SEQ-SIZE in the savefile itself when RECORDMODE is toggled, in order to reduce SD-card wear
+		. check BPM's file-byte against BPM's local-byte, and only update its file-byte on mismatch
+		. check each SEQ-SIZE's file-byte against each SEQ-SIZE's local-byte, and only update a given file-byte on mismatch
 
 	. when SCATTER, SCATTER-UNSET, PAGE-SCATTER, or PAGE-SCATTER-UNSET is held, the GUI should show only those sequences that have SCATTER states enabled
 
