@@ -43,7 +43,7 @@ void writeData(
 		) {
 			wdSince(pos, since, i, b); // Write bytes to the file, based on iterator and since-bytes
 			i += 3; // Increment the iterator to skip to the start of the next note in the data
-			continue; // Skip this iteration of the loop
+			continue; // Skip the rest of this iteration of the loop
 		}
 
 		if (buf[i] == b[i]) { // If the byte in the savefile is the same as the given byte...
