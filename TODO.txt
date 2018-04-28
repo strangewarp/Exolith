@@ -22,8 +22,10 @@ Software:
 		. check the MIDI-OUT system
 			-- am doing
 			. change writeData() and associated functions so that commands of varying size can also be sent
-				-- 
-	. VELOCITY's lower bound should be changed to 0
+				-- writeData() fixed
+				. check all the rest of the relevant code to make sure nothing else needs to be changed here
+					-- 
+	. VELOCITY's lower bound should be changed to 0, now that there are other ways to check note-presence
 		-- 
 	. change how notes are stored in the savefile and internally: the CHAN+CMD byte should be exactly the same as its MIDI equivalent
 		. in savefile

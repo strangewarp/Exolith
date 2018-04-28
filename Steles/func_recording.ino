@@ -3,19 +3,18 @@
 // Helper function for writeData:
 // Write a number of buffered bytes to the file, based on the value of an iterator,
 //     and how many bytes it's been since the last matching byte
-byte wdSince(
+void wdSince(
 	unsigned long pos, // Base position for the write
-	byte since, // Number of bytes that have elapsed since the last matching-byte
+	byte *since, // Number of bytes that have elapsed since the last matching-byte
 	byte i, // Current iterator value
 	byte b[] // Buffer of bytes to write
 ) {
 	if (since) { // If it has been at least 1 byte since the last matching byte...
 		byte wbot = i - since; // Get the bottom byte for the write-position
 		file.seekSet(pos + wbot); // Navigate to the byte-cluster's position in the savefile
-		file.write(b + wbot, since + 1); // Write the data-bytes into their corresponding savefile positions
-		return 0; // Return a reset since-flag, since it has been 0 bytes since the last data-replacement
+		file.write(b + wbot, since); // Write the data-bytes into their corresponding savefile positions
+		since = 0; // Reset the bytes-since-last-matching-byte variable
 	}
-	return since; // Return the same since-value
 }
 
 // Write a given series of bytes into a given point in the savefile,
@@ -37,23 +36,24 @@ void writeData(
 	byte since = 0; // Will count the number of bytes that have been checked since the last matching-byte
 	for (byte i = 0; i < amt; i++) { // For every byte in the data...
 
-		// If replace-on-chan-match is flagged, and this is a note's first byte, and the channels don't match...
-		if (onchan && (!(i % 4)) && ((buf[i] & 15) != CHAN)) {
-			since = wdSince(pos, since, i, b); // Write bytes to the file, based on iterator and since-bytes
-			i += 3
-			i += 2 + ((buf[i] <= 191) || (buf[i] >= 224)); // Increment the iterator to skip to the next note in the data
+		if (
+			onchan // If replace-on-chan-match is flagged...
+			&& (!(i % 4)) // And this is a note's first byte...
+			&& ((buf[i] & 15) != (CHAN & 15)) // And the channels don't match...
+		) {
+			wdSince(pos, &since, i, b); // Write bytes to the file, based on iterator and since-bytes
+			i += 3; // Increment the iterator to skip to the start of the next note in the data
 			continue; // Skip this iteration of the loop
 		}
 
 		if (buf[i] == b[i]) { // If the byte in the savefile is the same as the given byte...
-			since = wdSince(pos, since, i, b); // Write bytes to the file, based on iterator and since-bytes
+			wdSince(pos, &since, i, b); // Write bytes to the file, based on iterator and since-bytes
 		} else { // Else, if the byte in the savefile doesn't match the given byte...
 			since++; // Flag that it has been an additional byte since any matching bytes were found
-		}
-
-		if (since && (i == (amt - 1))) { // If this is the last buffer-byte, and it didn't match its corresponding savefile-byte...
-			file.seekSet(pos + i); // Go to the savefile-byte's position
-			file.write(b[i]); // Replace it with the buffer-byte
+			if (i == (amt - 1)) { // If this is the last buffer-byte, and it didn't match its corresponding savefile-byte...
+				file.seekSet(pos + i); // Go to the savefile-byte's position
+				file.write(b[i]); // Replace it with the buffer-byte
+			}
 		}
 
 	}
@@ -62,20 +62,6 @@ void writeData(
 
 	delete [] buf; // Free the buffer's dynamically-allocated memory
 	buf = NULL; // Unset the buffer's pointer
-
-}
-
-// Prime a newly-entered RECORD-MODE sequence for editing
-void primeRecSeq() {
-
-	resetSeq(RECORDSEQ); // If the most-recently-touched seq is already playing, reset it to prepare for timing-wrapping
-	SCATTER[RECORDSEQ] = 0; // Unset the most-recently-touched seq's SCATTER values before starting to record
-
-	// Set the seq's position to correspond with the current global 16th-note,
-	// wrapped to either the seq's size, or the global cue's size, whichever is smaller
-	POS[RECORDSEQ] = (CUR16 + 1) % (word(min(STATS[RECORDSEQ] & 63, 8)) * 16);
-
-	STATS[RECORDSEQ] |= 128; // Set the sequence to active, if it isn't already
 
 }
 
@@ -89,8 +75,8 @@ void recordToSeq(word pstn, byte chan, byte b1, byte b2) {
 	byte note[5] = {
 		chan, // Channel-byte
 		b1, // Pitch-byte
-		b2, // Velocity-byte
-		byte((chan <= 15) * DURATION) // Only include the DURATION if this isn't a flagged special-command
+		byte(b2 * ((CHAN % 224) <= 191)), // Velocity-byte, or 0 if this is a 2-byte command
+		byte((chan <= 15) * DURATION) // Duration-byte, or 0 if this is a non-NOTE-ON command
 	};
 
 	writeData(tickstart, 4, note, 0); // Write the note to its corresponding savefile position
@@ -105,7 +91,7 @@ void processRecAction(byte key) {
 	// Get a note that corresponds to the key, organized from bottom-left to top-right, with all modifiers applied
 	byte pitch = (OCTAVE * 12) + ((23 - key) ^ 3);
 	while (pitch > 127) { // If the pitch is above 127, which is the limit for MIDI notes...
-		pitch -= 12; // Reduce it by 12 until it is at or below 127
+		pitch -= 12; // Reduce it by an octave until it is at or below 127
 	}
 
 	// Get the note's velocity, with a random humanize-offset

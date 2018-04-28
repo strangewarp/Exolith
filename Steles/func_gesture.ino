@@ -23,7 +23,9 @@ void checkForGestures() {
 		if (RECORDMODE) { // If RECORDMODE is about to be untoggled...
 			writePrefs(); // Write the current relevant global vars into PRF.DAT
 		} else { // Else, if RECORD-MODE is about to be toggled...
-			primeRecSeq(); // Prime the newly-entered RECORD-MODE sequence for editing
+			resetSeq(RECORDSEQ); // If the most-recently-touched seq is already playing, reset it to prepare for timing-wrapping
+			SCATTER[RECORDSEQ] = 0; // Unset the most-recently-touched seq's SCATTER values before starting to record
+			STATS[RECORDSEQ] |= 128; // Set the sequence to active, if it isn't already
 		}
 		RECORDMODE ^= 1; // Toggle or untoggle RECORD-MODE
 		TO_UPDATE |= 255; // Flag all LED-rows for updating
