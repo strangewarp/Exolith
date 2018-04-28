@@ -5,7 +5,7 @@
 //     and how many bytes it's been since the last matching byte
 void wdSince(
 	unsigned long pos, // Base position for the write
-	byte *since, // Number of bytes that have elapsed since the last matching-byte
+	byte &since, // Number of bytes that have elapsed since the last matching-byte
 	byte i, // Current iterator value
 	byte b[] // Buffer of bytes to write
 ) {
@@ -41,13 +41,13 @@ void writeData(
 			&& (!(i % 4)) // And this is a note's first byte...
 			&& ((buf[i] & 15) != (CHAN & 15)) // And the channels don't match...
 		) {
-			wdSince(pos, &since, i, b); // Write bytes to the file, based on iterator and since-bytes
+			wdSince(pos, since, i, b); // Write bytes to the file, based on iterator and since-bytes
 			i += 3; // Increment the iterator to skip to the start of the next note in the data
 			continue; // Skip this iteration of the loop
 		}
 
 		if (buf[i] == b[i]) { // If the byte in the savefile is the same as the given byte...
-			wdSince(pos, &since, i, b); // Write bytes to the file, based on iterator and since-bytes
+			wdSince(pos, since, i, b); // Write bytes to the file, based on iterator and since-bytes
 		} else { // Else, if the byte in the savefile doesn't match the given byte...
 			since++; // Flag that it has been an additional byte since any matching bytes were found
 			if (i == (amt - 1)) { // If this is the last buffer-byte, and it didn't match its corresponding savefile-byte...
