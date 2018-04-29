@@ -30,22 +30,21 @@ Software:
 			. change its CmdFunc
 				-- done
 			. change the CmdFunc-related data lists to compensate for its new position
-				-- 
+				-- done
 			. change its GUI responses
-				-- am doing
-				. first row
-					-- 
-				. bottom rows
-					-- 
+				-- done
 		. remove PROGRAM-CHANGE command
+			-- am doing
 			. remove its CmdFunc
+				-- done
 			. remove it from CmdFunc-related data lists, and reorganize their contents to patch the gap
+				-- done
 			. remove its GUI responses
-				. first row
-				. bottom rows
+				-- done
 
 	. update button-key.txt
-		-- 
+		-- done
+
 	. update P.DAT on the SD-card again, with a new valid CHAN-value
 		-- 
 

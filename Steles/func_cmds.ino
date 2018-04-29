@@ -182,9 +182,10 @@ void trackCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row
 
 // Parse an UPPER COMMAND BITS press
 void upperBitsCmd(byte col, byte row) {
-	// Convert a column and row into a positive CHANGE value, bounded to 16...64,
-	//   and toggle its corresponding bit within the CHAN var
-	CHAN ^= max(4, abs(toChange(col, row))) << 4;
+	byte ch = CHAN & 15; // Get the current MIDI channel, without the current upper command-bits
+	char change = max(-8, min(8, toChange(col, row))) << 4; // Convert col/row into a CHANGE val, bounded to +/- 16, 32, 64
+	CHAN = applyChange(CHAN & 240, change, 128, 224); // Apply that change-interval to the CHAN value, bounded to valid commands
+	CHAN += ch; // Add the MIDI channel back to the newly-updated command-bits
 	TO_UPDATE |= 1; // Flag the topmost row for updating
 }
 
