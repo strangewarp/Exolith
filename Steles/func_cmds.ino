@@ -43,12 +43,6 @@ void clockCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row
 	TO_UPDATE |= 1; // Flag the topmost row for updating
 }
 
-// Parse a CONTROL-CHANGE press
-void controlChangeCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row) {
-	CHAN = (CHAN & 31) ^ 16; // Togggle CHAN's CC-bit, clear its PC-bit, and retain its channel-bits
-	TO_UPDATE |= 1; // Flag the topmost row for updating
-}
-
 // Parse a COPY press
 void copyCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row) {
 	COPYPOS = POS[RECORDSEQ] - (POS[RECORDSEQ] % 16); // Set the COPY-position to the start of the beat
@@ -138,12 +132,6 @@ void posCmd(byte col, byte row) {
 
 }
 
-// Parse a PROGRAM-CHANGE press
-void programChangeCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row) {
-	CHAN = (CHAN & 47) ^ 32; // Togggle CHAN's PC-bit, clear its CC-bit, and retain its channel-bits
-	TO_UPDATE |= 1; // Flag the topmost row for updating
-}
-
 // Parse a QUANTIZE press
 void quantizeCmd(byte col, byte row) {
 	char change = toChange(col, row); // Convert a column and row into a CHANGE value
@@ -189,6 +177,14 @@ void tempoCmd(byte col, byte row) {
 // Parse a TRACK-press
 void trackCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row) {
 	TRACK = !TRACK; // Toggle between tracks 1 and 2
+	TO_UPDATE |= 1; // Flag the topmost row for updating
+}
+
+// Parse an UPPER COMMAND BITS press
+void upperBitsCmd(byte col, byte row) {
+	// Convert a column and row into a positive CHANGE value, bounded to 16...64,
+	//   and toggle its corresponding bit within the CHAN var
+	CHAN ^= max(4, abs(toChange(col, row))) << 4;
 	TO_UPDATE |= 1; // Flag the topmost row for updating
 }
 

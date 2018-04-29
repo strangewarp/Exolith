@@ -6,10 +6,8 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	. check whether a PC is always sent as 2 bytes, or 3, and change iterateAll()'s "if (MOUT_COUNT)..." accordingly
-		-- it's 2
-		. generalize MOUT behavior wrt next few tasks
-			-- am doing
+	. VELOCITY's lower bound should be changed to 0, now that there are other ways to check note-presence
+		-- done
 
 	. change MOUT behavior:
 		-- am doing
@@ -24,33 +22,32 @@ Software:
 			. change writeData() and associated functions so that commands of varying size can also be sent
 				-- writeData() fixed
 				. check all the rest of the relevant code to make sure nothing else needs to be changed here
-					-- 
-	. VELOCITY's lower bound should be changed to 0, now that there are other ways to check note-presence
-		-- 
-	. change how notes are stored in the savefile and internally: the CHAN+CMD byte should be exactly the same as its MIDI equivalent
-		. in savefile
-			-- 
-		. internally
-			-- 
-			. writeData() needs changes, to generalize its treatment of advanced MIDI-commands?
-				-- 
-			. calls to writeData() need changes, to the number of bytes they specify for a given command-type's write?
-				. or maybe they don't, because the entire previous event needs to be overwritten
+					-- seems okay now
+
 	. change UI/CmdFunc behavior:
 		. change CONTROL-CHANGE command into a TOGGLE UPPER MIDI BITS command
+			-- am doing
 			. change its CmdFunc
+				-- done
 			. change the CmdFunc-related data lists to compensate for its new position
+				-- 
 			. change its GUI responses
+				-- am doing
 				. first row
+					-- 
 				. bottom rows
+					-- 
 		. remove PROGRAM-CHANGE command
 			. remove its CmdFunc
 			. remove it from CmdFunc-related data lists, and reorganize their contents to patch the gap
 			. remove its GUI responses
 				. first row
 				. bottom rows
+
 	. update button-key.txt
+		-- 
 	. update P.DAT on the SD-card again, with a new valid CHAN-value
+		-- 
 
 	. only change BPM and SEQ-SIZE in the savefile itself when RECORDMODE is toggled, in order to reduce SD-card wear
 		. check BPM's file-byte against BPM's local-byte, and only update its file-byte on mismatch
