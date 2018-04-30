@@ -6,57 +6,21 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	. VELOCITY's lower bound should be changed to 0, now that there are other ways to check note-presence
-		-- done
-
-	. change MOUT behavior:
+	. only change BPM and SEQ-SIZE in the savefile itself when RECORDMODE is toggled, in order to reduce SD-card wear
 		-- am doing
-		. new var: MOUT_BYTES, which counts the number of bytes in MOUT, since events can have varying bytes now
+		. check BPM's file-byte against BPM's local-byte, and only update its file-byte on mismatch
 			-- done
-	. change all note-presence-checks to only check a note's first byte, now that it no longer risks being 0
-		-- am doing
-		. check the SUSTAIN system
-			-- don't think anything needs changed here
-		. check the MIDI-OUT system
-			-- am doing
-			. change writeData() and associated functions so that commands of varying size can also be sent
-				-- writeData() fixed
-				. check all the rest of the relevant code to make sure nothing else needs to be changed here
-					-- seems okay now
+		. check each SEQ-SIZE's file-byte against each SEQ-SIZE's local-byte, and only update a given file-byte on mismatch
+			-- done
 
-	. change UI/CmdFunc behavior:
-		. change CONTROL-CHANGE command into a TOGGLE UPPER MIDI BITS command
-			-- am doing
-			. change its CmdFunc
-				-- done
-			. change the CmdFunc-related data lists to compensate for its new position
-				-- done
-			. change its GUI responses
-				-- done
-		. remove PROGRAM-CHANGE command
-			-- am doing
-			. remove its CmdFunc
-				-- done
-			. remove it from CmdFunc-related data lists, and reorganize their contents to patch the gap
-				-- done
-			. remove its GUI responses
-				-- done
-
-	. update button-key.txt
-		-- done
+	. when SCATTER, SCATTER-UNSET, PAGE-SCATTER, or PAGE-SCATTER-UNSET is held:
+		. the GUI should show sequences that have SCATTER states enabled
+			-- this code was actually already written at some point
+		. the second row should show the most-recently-touched seq's SCATTER info
+			-- done
 
 	. update P.DAT on the SD-card again, with a new valid CHAN-value
-		-- 
-
-	. only change BPM and SEQ-SIZE in the savefile itself when RECORDMODE is toggled, in order to reduce SD-card wear
-		. check BPM's file-byte against BPM's local-byte, and only update its file-byte on mismatch
-		. check each SEQ-SIZE's file-byte against each SEQ-SIZE's local-byte, and only update a given file-byte on mismatch
-
-	. when SCATTER, SCATTER-UNSET, PAGE-SCATTER, or PAGE-SCATTER-UNSET is held, the GUI should show only those sequences that have SCATTER states enabled
-
-	. BPM should be accessible in both PLAY MODE and RECORD MODE
-		. remove BPM-file-write from tempoCmd()
-		. only write BPM to file when toggling RECORD MODE
+		-- done
 
 	. re-test all recording mechanisms
 		. note-recording

@@ -49,6 +49,15 @@ void updateFileByte(byte pos, byte b) {
 	file.sync(); // Make sure the changes are recorded
 }
 
+// Update the sequence's size-byte in the savefile, if it has been changed
+void updateSeqSize() {
+	byte newsize = STATS[RECORDSEQ] & 63; // Get the RECORDSEQ's current size
+	file.seekSet(RECORDSEQ + 1); // Go to the RECORDSEQ's corresponding size-byte in the savefile
+	if (file.read() != newsize) { // Read the size-byte. If it isn't the same as the seq-size held within local vars...
+		updateFileByte(RECORDSEQ + 1, newsize); // Put the RECORDSEQ's local size-byte into its corresponding savefile size-byte
+	}
+}
+
 // Put the current prefs-related global vars into a given buffer
 void makePrefBuf(byte buf[]) {
 	buf[0] = PAGE;
@@ -100,7 +109,12 @@ void writePrefs() {
 	char name[8];
 	getFilename(name, SONG); // Get the name of the current song-file
 
-	file.open(name, O_RDWR); // Reopen the current song-file before exiting the function
+	file.open(name, O_RDWR); // Reopen the current song-file
+
+	file.seekSet(0); // Go to the BPM-byte's location
+	if (file.read() != BPM) { // If the BPM-byte doesn't match the current BPM...
+		updateFileByte(0, BPM); // Update the BPM-byte in the song's savefile
+	}
 
 }
 

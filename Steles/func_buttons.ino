@@ -29,7 +29,8 @@ void parsePlayPress(byte col, byte row) {
 		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for an update
 	} else if (ctrl == B00000011) { // If SCATTER UNSET is held...
 		SCATTER[seq] = 0; // Unset the seq's SCATTER flags
-		TO_UPDATE |= 4 << row; // Flag the seq's corresponding LED-row for an update
+		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for an update
+		//TO_UPDATE |= 4 << row; // Flag the seq's corresponding LED-row for an update
 	} else if (ctrl == B00100011) { // If PAGE-SCATTER-UNSET is held, and a regular button-press was made to signal intent...
 		byte ptop = (col >> 1) * 24; // Get the position of the first seq on the user-selected page
 		for (byte i = ptop; i < (ptop + 24); i++) { // For every seq on this page...

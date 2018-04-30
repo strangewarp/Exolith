@@ -151,25 +151,23 @@ void sizeCmd(byte col, byte row) {
 	// Get the new value for the currently-recording-seq's size
 	byte newsize = applyChange(STATS[RECORDSEQ] & 63, change, 1, 32);
 	STATS[RECORDSEQ] = 128 | newsize; // Modify the currently-recording seq's size
-	updateFileByte(RECORDSEQ + 1, newsize); // Update the seq's size-byte in the song's savefile
 	resetAllTiming(); // Reset the timing of all seqs and the global cue-point
 	TO_UPDATE |= 3; // Flag top two rows for updating
 }
 
 // Parse a SWITCH RECORDSEQ press
 void switchCmd(byte col, byte row) {
-	TO_UPDATE |= 4 >> (RECORDSEQ >> 2); // Flag the previous seq's corresponding LED-row for updating
+	updateSeqSize(); // Update the current seq's size-byte in the savefile, if applicable
+	TO_UPDATE |= 3 | (4 >> (RECORDSEQ >> 2)); // Flag the old seq's LED-row for updating, plus the top two rows
 	resetSeq(RECORDSEQ); // Reset the current record-seq, which is about to become inactive
 	RECORDSEQ = (PAGE * 24) + col + (row * 4); // Switch to the seq that corresponds to the key-position on the active page
 	resetAllTiming(); // Reset the timing of all seqs and the global cue-point
-	TO_UPDATE |= 3; // Flag the top two rows for updating
 }
 
 // Parse a BPM-press
 void tempoCmd(byte col, byte row) {
 	char change = toChange(col, row); // Convert a column and row into a CHANGE value
 	BPM = applyChange(BPM, change, 16, 200); // Change the BPM rate
-	updateFileByte(0, BPM); // Update the BPM-byte in the song's savefile
 	updateTickSize(); // Update the internal tick-size (in microseconds) to match the new BPM value
 	TO_UPDATE |= 1; // Flag the topmost row for updating
 }

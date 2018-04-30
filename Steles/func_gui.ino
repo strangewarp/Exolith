@@ -125,7 +125,11 @@ void updateSecondRow() {
 		byte display = (join << (7 - b2)) | (join >> (b2 + 1)); // Wrap those LED-positions around correctly
 		lc.setRow(0, 1, display); // Display the enhanced beat-value in the RECORDSEQ
 	} else { // Else, if RECORDMODE isn't active...
-		lc.setRow(0, 1, (256 >> SUST_COUNT) % 256); // Display the current number of sustains (0-8)
+		if ((BUTTONS & B00000011) == 3) { // If any SCATTER-shaped command is held...
+			lc.setRow(0, 1, SCATTER[RECORDSEQ]); // Display the most-recently-touched seq's SCATTER value
+		} else { // Else, if a SCATTER-shaped command isn't being held...
+			lc.setRow(0, 1, (256 >> SUST_COUNT) % 256); // Display the current number of sustains (0-8)
+		}
 	}
 }
 
