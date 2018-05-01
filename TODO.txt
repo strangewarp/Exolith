@@ -14,6 +14,14 @@ Software:
 				. this means wear-reduction should be prioritized in extremis, and a 1GB industrial-grade SD-card is basically mandatory
 					-- ok
 
+	. writeData() doesn't actually do much, as all read/writes are 512 bytes large anyway
+		. remove the finnicky byte-by-byte replacement code: this actually does nothing and is worse than useless
+			-- 
+		. remove file.sync() from writeData()
+			-- 
+		. place file.sync() into every command that calls writeData()
+			-- 
+
 	. wear reduction:
 		. remove COPY/PASTE - mindlessly mashing this command a bunch could greatly reduce SD lifespan over time
 		. ERASE WHILE HELD: only call file.sync() when command is released
@@ -21,10 +29,6 @@ Software:
 	. figure out whether Sdfat conducts internal caching on unsynced write-actions already, with automatic sync() calls
 		-- think so
 		. if so: only call file.sync() at the end of a given entire command
-			-- 
-		. remove file.sync() from writeData()
-			-- 
-		. place file.sync() into every command that calls writeData()
 			-- 
 
 	. re-test all recording mechanisms
