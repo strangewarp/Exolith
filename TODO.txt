@@ -25,6 +25,8 @@ Software:
 	. wear reduction:
 		. remove COPY/PASTE - mindlessly mashing this command a bunch could greatly reduce SD lifespan over time
 		. ERASE WHILE HELD: only call file.sync() when command is released
+		. RECORDING:
+			. only call file.sync() when the last note-key is released (this will, theoretically, lead to fewer SD-writes when REPEAT is toggled)
 
 	. figure out whether Sdfat conducts internal caching on unsynced write-actions already, with automatic sync() calls
 		-- think so
