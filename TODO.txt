@@ -14,11 +14,22 @@ Software:
 		. place file.sync() into every command that calls writeData()
 			-- 
 
+	. P.DAT: the attempt at only flipping individual bytes doesn't actually work, and in fact causes more wear than before
+		-- jinkies
+		. fix this by replacing the byte-by-byte checker with something that writes all the prefs at once
+			-- 
+		. P.DAT should reserve a space of 1024 bytes upon creation, for any future data additions
+			-- 
+		. delete the P.DAT on the SD-card, so that Tine writes a new P.DAT of the correct size
+			-- 
+
 	. wear reduction:
 		. remove COPY/PASTE - mindlessly mashing this command a bunch could greatly reduce SD lifespan over time
-		. ERASE WHILE HELD: only call file.sync() when command is released
-		. RECORDING:
-			. only call file.sync() when the last note-key is released (this will, theoretically, lead to fewer SD-writes when REPEAT is toggled)
+			-- 
+		. ERASE WHILE HELD: only call file.sync() when command is released (this will lead to fewer SD-writes when multiple adjacent notes are erased)
+			-- 
+		. RECORDING: only call file.sync() when the last note-key is released (this will lead to fewer SD-writes when REPEAT is toggled)
+			-- 
 
 	. figure out whether Sdfat conducts internal caching on unsynced write-actions already, with automatic sync() calls
 		-- think so
