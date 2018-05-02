@@ -6,14 +6,6 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	. can Sdfat even actually write small series of bytes, or is that an abstraction for the writing of 512-byte blocks?
-		-- the latter
-		. if the latter:
-			. when unchanged bytes are overwritten within a 512-byte write, does that cause wear?
-				-- probably
-				. this means wear-reduction should be prioritized in extremis, and a 1GB industrial-grade SD-card is basically mandatory
-					-- ok
-
 	. writeData() doesn't actually do much, as all read/writes are 512 bytes large anyway
 		. remove the finnicky byte-by-byte replacement code: this actually does nothing and is worse than useless
 			-- 
@@ -32,6 +24,12 @@ Software:
 		-- think so
 		. if so: only call file.sync() at the end of a given entire command
 			-- 
+
+	. research how to back-up the contents of the SD-card in a manner that recombines the savefiles without losing their contiguous nature
+		-- files could be copied off the disk manually, and then transferred back onto the disk file-by-file using XVI32 to paste their contents into blank files
+		-- files could be copied en masse as a disk-image, and then reapplied en masse with a disk-imager
+			. write a tutorial on both of these methods
+				-- 
 
 	. re-test all recording mechanisms
 		. note-recording
