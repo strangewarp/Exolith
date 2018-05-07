@@ -158,12 +158,13 @@ void getTickNotes(byte ctrl, unsigned long held, byte s, byte buf[]) {
 			} else if (RECORDNOTES && (ctrl == B00111100)) { // Else, if RECORDNOTES is armed, and ERASE-NOTES is held...
 				byte b[5]; // Make a buffer the size of a note...
 				memset(b, 0, 4); // ...And clear it of any junk-data
-				writeData( // Write the blank note to the savefile
+				writeCommands( // Write the blank note to the savefile
 					(49UL + (POS[RECORDSEQ] * 8)) + (4096UL * RECORDSEQ) + (TRACK * 4), // Write at the RECORDSEQ's current position
 					4, // Write 4 bytes of data
 					b, // Use the empty buffer that was just created
 					1 // Only overwrite notes that match the global CHAN
 				);
+				file.sync(); // Sync any still-buffered data to the savefile
 			}
 		}
 		readTick(s, 0, buf); // Read the tick with no offset

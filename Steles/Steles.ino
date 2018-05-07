@@ -129,11 +129,11 @@ byte SYSIGNORE = 0; // Ignores SYSEX messages when toggled
 
 
 
-// Manual extern reference to the writeData function,
+// Manual extern reference to the writeCommands function,
 //     because the Arduino compiler's linking system gets broken by some functions that are called by the CmdFunc construct,
-//     which, in practical terms, means that functions in func_cmds.ino that call writeData() won't get linked to it,
-//     unless writeData() is linked manually with an extern command right here.
-extern void writeData(unsigned long pos, byte amt, byte b[], byte onchan);
+//     which, in practical terms, means that functions in func_cmds.ino that call writeCommands() won't get linked to it,
+//     unless writeCommands() is linked manually with an extern command right here.
+extern void writeCommands(unsigned long pos, byte amt, byte b[], byte onchan);
 
 
 

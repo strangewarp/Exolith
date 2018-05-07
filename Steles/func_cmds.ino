@@ -27,8 +27,10 @@ void clearCmd(byte col, byte row) {
 	byte t4 = TRACK * 4; // Get a bitwise offset based on whether track 1 or 2 is active
 
 	for (word i = 0; i < (word(min(abs(toChange(col, row)), len)) * 128); i += 8) { // For every 16th-note in the clear-area...
-		writeData(rspos + ((pos + i + t4) % blen), 4, buf, 1); // Overwrite it if it matches the TRACK and CHAN
+		writeCommands(rspos + ((pos + i + t4) % blen), 4, buf, 1); // Overwrite it if it matches the TRACK and CHAN
 	}
+
+	file.sync(); // Sync any still-buffered data to the savefile
 
 	BLINK = 255; // Start an LED-BLINK that is ~16ms long
 	TO_UPDATE |= 252; // Flag the bottom 6 rows for LED updates
@@ -99,7 +101,7 @@ void pasteCmd(__attribute__((unused)) byte col, byte row) {
 		file.seekSet(copybase + (word((COPYPOS + filled) % csize) * 32)); // Navigate to the current copy-position
 		file.read(b1, 32); // Read the copy-data
 
-		writeData( // Write this chunk of copy-data to the corresponding paste-area of the file
+		writeCommands( // Write this chunk of copy-data to the corresponding paste-area of the file
 			pastebase + (word((pstart + filled) % psize) * 32), // Bitwise file-position for quarter-note's paste-location
 			32, // Size of the data-buffer, in bytes
 			b1, // The data-buffer itself
@@ -107,6 +109,8 @@ void pasteCmd(__attribute__((unused)) byte col, byte row) {
 		);
 
 	}
+
+	file.sync(); // Sync any still-buffered data to the savefile
 
 	BLINK = 255; // Start an LED-BLINK that is ~16ms long
 	TO_UPDATE |= 252; // Flag the bottom 6 rows for LED updates

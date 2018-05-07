@@ -8,11 +8,15 @@ Software:
 
 	. writeData() doesn't actually do much, as all read/writes are 512 bytes large anyway
 		. remove the finnicky byte-by-byte replacement code: this actually does nothing and is worse than useless
-			-- 
+			-- done
+		. only replace entire note-slots at a time, because it will rarely make a difference
+			-- done
 		. remove file.sync() from writeData()
-			-- 
+			-- done
 		. place file.sync() into every command that calls writeData()
-			-- 
+			-- done
+		. change the name of writeData() to writeCommands()
+			-- done
 
 	. P.DAT: the attempt at only flipping individual bytes doesn't actually work, and in fact causes more wear than before
 		-- jinkies
@@ -24,8 +28,6 @@ Software:
 			-- 
 
 	. wear reduction:
-		. remove COPY/PASTE - mindlessly mashing this command a bunch could greatly reduce SD lifespan over time
-			-- 
 		. ERASE WHILE HELD: only call file.sync() when command is released (this will lead to fewer SD-writes when multiple adjacent notes are erased)
 			-- 
 		. RECORDING: only call file.sync() when the last note-key is released (this will lead to fewer SD-writes when REPEAT is toggled)
@@ -35,6 +37,18 @@ Software:
 		-- think so
 		. if so: only call file.sync() at the end of a given entire command
 			-- 
+
+	. increase TRACK polyphony to 4, now that I know file.read will be reading 512 bytes at a time anyway regardless
+		. change TRACK-toggle to cycle through values 0 to 3
+		. change all TRACK-checking routines
+		. change recording-related routines
+		. change sequence-data-reading routines
+
+	. increase MIDI-OUT buffer to 12 events rather than 8
+		. change sequence-data-collecting routines (these currently check for 8 notes in the MIDI-OUT buffer for their exit condition - change this to 12)
+
+	. reduce total number of savefiles to 96
+		. change LOADMODE to reflect this
 
 	. research how to back-up the contents of the SD-card in a manner that recombines the savefiles without losing their contiguous nature
 		-- files could be copied off the disk manually, and then transferred back onto the disk file-by-file using XVI32 to paste their contents into blank files
@@ -177,6 +191,11 @@ Software:
 	. test overloading the MIDI-IN system
 	. update "VERSION_TEXT" to "1"
 	. soak-test the physical prototype
+
+	. tutorial section for COPY/PASTE:
+		. note that mashing PASTE constantly will accelerate SD-card wear
+		. variable COPY size
+		. variable PASTE size
 
 Hardware:
 

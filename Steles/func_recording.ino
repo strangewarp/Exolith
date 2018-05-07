@@ -1,28 +1,11 @@
 
 
-// Helper function for writeData:
-// Write a number of buffered bytes to the file, based on the value of an iterator,
-//     and how many bytes it's been since the last matching byte
-void wdSince(
-	unsigned long pos, // Base position for the write
-	byte &since, // Number of bytes that have elapsed since the last matching-byte
-	byte i, // Current iterator value
-	byte b[] // Buffer of bytes to write
-) {
-	if (since) { // If it has been at least 1 byte since the last matching byte...
-		byte wbot = i - since; // Get the bottom byte for the write-position
-		file.seekSet(pos + wbot); // Navigate to the byte-cluster's position in the savefile
-		file.write(b + wbot, since); // Write the data-bytes into their corresponding savefile positions
-		since = 0; // Reset the bytes-since-last-matching-byte variable
-	}
-}
-
-// Write a given series of bytes into a given point in the savefile,
+// Write a given series of commands into a given point in the savefile,
 // only committing actual writes when the data doesn't match, in order to reduce SD-card wear.
-void writeData(
+void writeCommands(
 	unsigned long pos, // Note's bitwise position in the savefile (NOTE: (pos + amt) must be <= bytes in savefile!)
-	byte amt, // Amount of data to read for comparison
-	byte b[], // Array of bytes to compare against the data, and write into the file where discrepancies are found
+	byte amt, // Number of bytes to compare-and-write (must be a multiple of 4)
+	byte b[], // Array of command-bytes to compare against the data, and write into the file where discrepancies are found
 	byte onchan // Flag: only replace a given note if its channel matches the global CHAN
 ) {
 
@@ -33,32 +16,26 @@ void writeData(
 	file.seekSet(pos); // Navigate to the data's position
 	file.read(buf, amt); // Read the already-existing data from the savefile into the data-buffer
 
-	byte since = 0; // Will count the number of bytes that have been checked since the last matching-byte
-	for (byte i = 0; i < amt; i++) { // For every byte in the data...
-
+	for (byte i = 0; i < amt; i += 4) { // For every byte in the data...
 		if (
-			onchan // If replace-on-chan-match is flagged...
-			&& (!(i % 4)) // And this is a note's first byte...
-			&& ((buf[i] & 15) != (CHAN & 15)) // And the channels don't match...
+			( // If the command doesn't match...
+				(buf[i] != b[i])
+				|| (buf[i + 1] != b[i + 1])
+				|| (buf[i + 2] != b[i + 2])
+				|| (buf[i + 3] != b[i + 3])
+			) && ( // And...
+				(
+					onchan // If replace-on-chan-match is flagged...
+					&& ((buf[i] & 15) == (CHAN & 15)) // And the channels match...
+				) || ( // Or...
+					!onchan // Replace-on-chan-match isn't flagged...
+				)
+			)
 		) {
-			wdSince(pos, since, i, b); // Write bytes to the file, based on iterator and since-bytes
-			i += 3; // Increment the iterator to skip to the start of the next note in the data
-			continue; // Skip the rest of this iteration of the loop
+			file.seekSet(pos + i); // Go to the command's position in the savefile
+			file.write(b + i, 4); // Write the given command into that position
 		}
-
-		if (buf[i] == b[i]) { // If the byte in the savefile is the same as the given byte...
-			wdSince(pos, since, i, b); // Write bytes to the file, based on iterator and since-bytes
-		} else { // Else, if the byte in the savefile doesn't match the given byte...
-			since++; // Flag that it has been an additional byte since any matching bytes were found
-			if (i == (amt - 1)) { // If this is the last buffer-byte, and it didn't match its corresponding savefile-byte...
-				file.seekSet(pos + i); // Go to the savefile-byte's position
-				file.write(b[i]); // Replace it with the buffer-byte
-			}
-		}
-
 	}
-
-	file.sync(); // Sync the data immediately, to prevent any unusual behavior between multiple conflicting note-writes
 
 	delete [] buf; // Free the buffer's dynamically-allocated memory
 	buf = NULL; // Unset the buffer's pointer
@@ -79,9 +56,9 @@ void recordToSeq(word pstn, byte chan, byte b1, byte b2) {
 		byte((chan <= 15) * DURATION) // Duration-byte, or 0 if this is a non-NOTE-ON command
 	};
 
-	writeData(tickstart, 4, note, 0); // Write the note to its corresponding savefile position
+	writeCommands(tickstart, 4, note, 0); // Write the note to its corresponding savefile position
 
-	file.sync(); // Force the write-process to be committed to the savefile immediately
+	file.sync(); // Sync any still-buffered data to the savefile
 
 }
 
