@@ -94,9 +94,10 @@ void writePrefs() {
 	getPrefsFilename(pn); // Get the prefs-file's filename out of PROGMEM
 
 	file.open(pn, O_RDWR); // Open the prefs-file in read-write mode
-	file.seekSet(0); // Ensure we're on the first byte of the file
 
+	file.seekSet(0); // Ensure we're on the first byte of the file
 	file.read(cbuf, 11); // Read the old prefs-values
+
 	for (byte i = 0; i < 11; i++) { // For every byte in the prefs-file...
 		if (buf[i] != cbuf[i]) { // If the new byte doesn't match the old byte...
 			file.seekSet(i); // Go to the byte's location

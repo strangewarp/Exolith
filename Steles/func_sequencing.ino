@@ -164,7 +164,7 @@ void getTickNotes(byte ctrl, unsigned long held, byte s, byte buf[]) {
 					b, // Use the empty buffer that was just created
 					1 // Only overwrite notes that match the global CHAN
 				);
-				file.sync(); // Sync any still-buffered data to the savefile
+				// note: file.sync() is called elsewhere, for efficiency reasons
 			}
 		}
 		readTick(s, 0, buf); // Read the tick with no offset

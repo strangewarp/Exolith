@@ -110,10 +110,17 @@ void assignKey(byte col, byte row) {
 }
 
 // Interpret a key-release according to whatever command-mode is active
-void unassignKey(byte col) {
+void unassignKey(byte col, byte row, byte oldcmds) {
 	if (RECORDMODE) { // If RECORD-MODE is active...
 		if (col == 0) { // If this up-keystroke was in the leftmost column...
+			if (oldcmds == B00111100) { // If this was an ERASE WHILE HELD press...
+				file.sync(); // Sync any stored unwritten savefile-data
+			}
 			TO_UPDATE |= 253; // Flag the top LED-row, and bottom 6 LED-rows, for updating
+		} else { // Else, if this was a regular button-press...
+			if ((!oldcmds) && (!BUTTONS)) { // If no command-buttons are held, and no notes are remaining...
+				file.sync(); // Sync any stored unwritten savefile-data
+			}
 		}
 	}
 }

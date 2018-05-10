@@ -58,7 +58,7 @@ void recordToSeq(word pstn, byte chan, byte b1, byte b2) {
 
 	writeCommands(tickstart, 4, note, 0); // Write the note to its corresponding savefile position
 
-	file.sync(); // Sync any still-buffered data to the savefile
+	// note: file.sync() is called elsewhere, for efficiency reasons
 
 }
 

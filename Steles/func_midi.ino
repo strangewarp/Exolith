@@ -9,6 +9,7 @@ void parseMidiCommand() {
 			if ((CHAN & 15) == chn) { // If this command is within the currently-selected CHANNEL...
 				if ((cmd >= 144) && (cmd <= 239)) { // If this is a valid command...
 					recordToSeq(POS[RECORDSEQ], chn, INBYTES[1], INBYTES[2]); // Record the incoming MIDI command
+					file.sync(); // Sync any stored unwritten savefile-data
 				}
 			}
 		}

@@ -4,34 +4,25 @@ Tine TODO
 
 Software:
 
-	. prove I'm not a dipshit: actually finish the project
+	!!! DO NOT CHANGE list:
+		-- RECORD TOGGLE's glyph and ERASE WHILE HELD's chord need to conflict, so that the file.sync() on ERASE WHILE HELD's key-up doesn't get skipped when toggling
 
-	. writeData() doesn't actually do much, as all read/writes are 512 bytes large anyway
-		. remove the finnicky byte-by-byte replacement code: this actually does nothing and is worse than useless
-			-- done
-		. only replace entire note-slots at a time, because it will rarely make a difference
-			-- done
-		. remove file.sync() from writeData()
-			-- done
-		. place file.sync() into every command that calls writeData()
-			-- done
-		. change the name of writeData() to writeCommands()
-			-- done
+	. prove I'm not a dipshit: actually finish the project
 
 	. P.DAT: the attempt at only flipping individual bytes doesn't actually work, and in fact causes more wear than before
 		-- jinkies
 		. fix this by replacing the byte-by-byte checker with something that writes all the prefs at once
-			-- 
-		. P.DAT should reserve a space of 1024 bytes upon creation, for any future data additions
-			-- 
+			-- not necessary: every write is aggregated into a single sync anyway
+		. P.DAT should reserve a space of 512 bytes upon creation, for any future data additions
+			-- already does this
 		. delete the P.DAT on the SD-card, so that Tine writes a new P.DAT of the correct size
 			-- 
 
 	. wear reduction:
 		. ERASE WHILE HELD: only call file.sync() when command is released (this will lead to fewer SD-writes when multiple adjacent notes are erased)
-			-- 
+			-- done
 		. RECORDING: only call file.sync() when the last note-key is released (this will lead to fewer SD-writes when REPEAT is toggled)
-			-- 
+			-- done
 
 	. figure out whether Sdfat conducts internal caching on unsynced write-actions already, with automatic sync() calls
 		-- think so
@@ -199,42 +190,10 @@ Software:
 
 Hardware:
 
-	. use "industrial-grade" SD-cards, to prevent the hotspots in the savefiles from wearing out the cards over the course of 10,000 writes
+	. use "industrial-grade" SD-cards, to greatly lengthen the SD-card's wear-leveling life to something a user would be okay with
 		. something like "1GB THEMIS-A" in here: http://www.psism.com/industrialsd.htm
 		. sdfat /should/ support the FAT16 filesystems of the smaller THEMIS cards, but make sure this is indeed the case
 	. make sure that the SD-cards are shipped in a state identical to what results from the SD Association formatter utility
-
-	. test breadboarded prototype with shared-SPI-line layout (and two digital SPI-select pins), for LedControl_HW_SPI lag-reduction
-		. remember, when rebuilding breadboard, to follow this error-prevention process:
-			. print out schematics for reference
-			. check off schematic elements with a pencil (both components and wires) as they are added
-		. if this doesn't work:
-			. rewrite LedControl to directly address port-registers, thereby eliminating a lot of lag-time
-		. if this works:
-			. rewrite LedControl_HW_SPI to directly address port-registers, thereby eliminating a lot of lag-time and freeing up two pins
-			. update both KiCad and firmware to reflect the changes
-			. two pins will be freed up by this, so reassign them:
-				. possibilities:
-					. using both pins with a simple diode-and-resistor circuit to drive a vibration motor
-						. motor will be connected via screw-terminals and epoxied to the left side-panel
-							. make sure the screw-terminals are small enough to fit between the boards, or there's a void cut in the bottom-board for it or something
-						. if each pin has a resistor in series with a diode, then two pins will produce three vibration frequencies
-							. this will give the user better intuitive moment-to-moment feedback about the current beat-subdivision in RECORD MODE
-						. if this is chosen rather than the LEDs, then:
-							. add a two-slot screw-terminal to the bottom-board, within wire-range of the vibration-motor's epoxying position
-							. change the position of the shrouded AVR-ISP header to be set behind the right side-panel,
-								so the user doesn't end up causing metal-fatigue while awkwardly removing the motor's panel for firmware updates
-							. in the codebase:
-								. every vibration-event should have a STRENGTH and a COUNTDOWN TIMER, which could both be stored in a single global byte
-								. should vibrate at the following times:
-									. in time with the tempo, in RECORD-MODE
-									. whenever a button is pressed
-									. whenever a CUE event is processed
-					. OR: using both pins to drive digital LEDs that represent MIDI-IN and MIDI-OUT, thereby reducing the parts count
-						. pin 1: digital MIDI-IN indicator (NOTEs only)
-						. pin 2: digital MIDI-OUT indicator (NOTEs only)
-			. if 74HC14N ends up with free slots: add another buffering stage to the OUT line, and make the THRU port into a switchable THRU/OUT2 port
-		. put the results of this line of inquiry into the "update KiCad file" task
 
 	. double-check that the indicators have protection-diodes and protection-resistors on them
 		. protection-resistors in front of each first transistor's base terminal
