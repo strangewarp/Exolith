@@ -10,7 +10,9 @@ Software:
 	. prove I'm not a dipshit: actually finish the project
 
 	. figure out why the savefile system defaults to file "04"
-		-- 
+		-- loadPrefs() was missing a makePrefBuf() call, inside its "if (!sd.exists(pn)) ..." clause
+		. check whether this fixes things
+			-- seems to have fixed it
 
 	. re-test all recording mechanisms
 		. note-recording
