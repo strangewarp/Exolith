@@ -9,15 +9,6 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	. P.DAT: the attempt at only flipping individual bytes doesn't actually work, and in fact causes more wear than before
-		-- jinkies
-		. fix this by replacing the byte-by-byte checker with something that writes all the prefs at once
-			-- not necessary: every write is aggregated into a single sync anyway
-		. P.DAT should reserve a space of 512 bytes upon creation, for any future data additions
-			-- already does this
-		. delete the P.DAT on the SD-card, so that Tine writes a new P.DAT of the correct size
-			-- 
-
 	. wear reduction:
 		. ERASE WHILE HELD: only call file.sync() when command is released (this will lead to fewer SD-writes when multiple adjacent notes are erased)
 			-- done
@@ -27,25 +18,27 @@ Software:
 	. figure out whether Sdfat conducts internal caching on unsynced write-actions already, with automatic sync() calls
 		-- think so
 		. if so: only call file.sync() at the end of a given entire command
-			-- 
+			-- done
 
-	. increase TRACK polyphony to 4, now that I know file.read will be reading 512 bytes at a time anyway regardless
-		. change TRACK-toggle to cycle through values 0 to 3
-		. change all TRACK-checking routines
-		. change recording-related routines
-		. change sequence-data-reading routines
+	. figure out whether SD-cards do wear-leveling within a given block, or across the entire card, when editing already-existing files
+		-- researching now
+		-- on THEMIS-A cards, wear-leveling is indeed global
 
-	. increase MIDI-OUT buffer to 12 events rather than 8
-		. change sequence-data-collecting routines (these currently check for 8 notes in the MIDI-OUT buffer for their exit condition - change this to 12)
+	. P.DAT: the attempt at only flipping individual bytes doesn't actually work, and in fact causes more wear than before
+		-- jinkies
+		. fix this by replacing the byte-by-byte checker with something that writes all the prefs at once
+			-- not necessary: every write is aggregated into a single sync anyway
+		. P.DAT should reserve a space of 512 bytes upon creation, for any future data additions
+			-- already does this
 
-	. reduce total number of savefiles to 96
-		. change LOADMODE to reflect this
+	. wipe the SD-card again, so that Tine writes a new P.DAT of the correct size
+		-- done
 
-	. research how to back-up the contents of the SD-card in a manner that recombines the savefiles without losing their contiguous nature
-		-- files could be copied off the disk manually, and then transferred back onto the disk file-by-file using XVI32 to paste their contents into blank files
-		-- files could be copied en masse as a disk-image, and then reapplied en masse with a disk-imager
-			. write a tutorial on both of these methods
-				-- 
+	. double-check that ERASE WHILE HELD knows not to write anything into already-empty event-slots
+		-- yes
+
+	. figure out why the savefile system defaults to file "04"
+		-- 
 
 	. re-test all recording mechanisms
 		. note-recording
@@ -100,7 +93,25 @@ Software:
 
 	. fill 12 sequences with notes, and check whether lag occurs when connected to a hardware synthesizer
 
+	. add a note to tutorials on wear-leveling:
+		. extreme repetitive use of PASTE or CLEAR will lead to faster card degradation
+			-- 
+
+	. research how to back-up the contents of the SD-card in a manner that recombines the savefiles without losing their contiguous nature
+		-- files could be copied off the disk manually, and then transferred back onto the disk file-by-file using XVI32 to paste their contents into blank files
+		-- files could be copied en masse as a disk-image, and then reapplied en masse with a disk-imager
+			. write a tutorial on both of these methods
+				-- 
+
 	==== SOFTWARE BETA THRESHOLD ====
+
+	. fork the codebase:
+		. original fork is for the alpha-prototype hardware ONLY
+		. new fork is for the beta-prototype hardware ONLY
+	. breadboard the beta-prototype
+	. update the new fork for the beta-prototype
+		. will have shared SPI pins for MAX7219 (see "Hardware" tasks)
+		. will have a "safe-shutdown" circuit (see "Hardware" tasks)
 
 	. write a minimal alternate firmware to test SD-card lifespan, using an expendable normal SD-card
 		. needs to record number of writes to a given block
@@ -190,6 +201,23 @@ Software:
 
 Hardware:
 
+	. put the MAX7219 onto the SPI pins
+	. assign a second CS pin for the MAX7219
+		. write a simplified version of LedControl_HW_SPI, using raw commands from the SPI library
+		. remove the old LedControl library and replace all its function-calls
+	. assign a "safe-shutdown" pin
+		. 5v -> low-dropout-voltage power-diode -> (1uF electrolytic cap -> gnd) AND (1k resistor -> gnd) AND (220ohm(?) resistor -> DIGITAL-IN pin)
+			. update the schematics on this basis
+		. on every loop, check whether this pin has gone low
+		. when this pin goes low:
+			. immediately close the current file
+			. shut down the ATMEGA
+	. also test a new MIDI port setup:
+		. 1x MIDI-IN + indicator LED
+		. 1x MIDI-THRU
+		. 3x MIDI-OUT + indicator LED (via second 74HC14N chip)
+			. research how many milliamps the standard MIDI-OUT connection uses, to prevent the possibility of frying power components
+
 	. use "industrial-grade" SD-cards, to greatly lengthen the SD-card's wear-leveling life to something a user would be okay with
 		. something like "1GB THEMIS-A" in here: http://www.psism.com/industrialsd.htm
 		. sdfat /should/ support the FAT16 filesystems of the smaller THEMIS cards, but make sure this is indeed the case
@@ -198,10 +226,6 @@ Hardware:
 	. double-check that the indicators have protection-diodes and protection-resistors on them
 		. protection-resistors in front of each first transistor's base terminal
 		. protection-diodes between the MIDI data-lines and the first protection-resistors
-
-	. device could have 3 MIDI-OUT ports through various means:
-		. removing the analog MIDI I/O indicators, and using their 74HC14N slots for chained buffering
-		. adding a second 74HC14N chip, for chained buffering
 
 	. note: this task may no longer be necessary, but keeping it until I'm sure:
 		. test MIDI-IO LED circuit with 0.1uF & 1uF capacitors

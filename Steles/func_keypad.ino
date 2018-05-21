@@ -16,7 +16,7 @@ void scanColumn(byte col) {
 		if (bstate) { // If the button's new state is ON...
 			assignKey(col, row); // Assign any key-commands that might be based on this keystroke
 		} else { // Else, the button's new state is OFF, so...
-			unassignKey(col, row, oldcmds); // Unassign any key-commands that might be based on this release-keystroke
+			unassignKey(col, oldcmds); // Unassign any key-commands that might be based on this release-keystroke
 		}
 
 	}
