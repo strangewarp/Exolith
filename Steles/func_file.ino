@@ -129,7 +129,7 @@ void loadPrefs() {
 
 	if (!sd.exists(pn)) { // If the prefs-file doesn't exist, create the file
 
-		file.createContiguous(sd.vwd(), pn, 512); // Create a contiguous prefs-file, with a sector of fallow wear-leveling space
+		file.createContiguous(sd.vwd(), pn, 512); // Create a contiguous prefs-file, with a sector of reserved bytes
 		file.close(); // Close the newly-created file
 
 		file.open(pn, O_WRITE); // Create a prefs file and open it in write-mode

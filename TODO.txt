@@ -9,34 +9,6 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	. wear reduction:
-		. ERASE WHILE HELD: only call file.sync() when command is released (this will lead to fewer SD-writes when multiple adjacent notes are erased)
-			-- done
-		. RECORDING: only call file.sync() when the last note-key is released (this will lead to fewer SD-writes when REPEAT is toggled)
-			-- done
-
-	. figure out whether Sdfat conducts internal caching on unsynced write-actions already, with automatic sync() calls
-		-- think so
-		. if so: only call file.sync() at the end of a given entire command
-			-- done
-
-	. figure out whether SD-cards do wear-leveling within a given block, or across the entire card, when editing already-existing files
-		-- researching now
-		-- on THEMIS-A cards, wear-leveling is indeed global
-
-	. P.DAT: the attempt at only flipping individual bytes doesn't actually work, and in fact causes more wear than before
-		-- jinkies
-		. fix this by replacing the byte-by-byte checker with something that writes all the prefs at once
-			-- not necessary: every write is aggregated into a single sync anyway
-		. P.DAT should reserve a space of 512 bytes upon creation, for any future data additions
-			-- already does this
-
-	. wipe the SD-card again, so that Tine writes a new P.DAT of the correct size
-		-- done
-
-	. double-check that ERASE WHILE HELD knows not to write anything into already-empty event-slots
-		-- yes
-
 	. figure out why the savefile system defaults to file "04"
 		-- 
 
@@ -92,16 +64,6 @@ Software:
 		. test GLOBAL PLAY/STOP TOGGLE
 
 	. fill 12 sequences with notes, and check whether lag occurs when connected to a hardware synthesizer
-
-	. add a note to tutorials on wear-leveling:
-		. extreme repetitive use of PASTE or CLEAR will lead to faster card degradation
-			-- 
-
-	. research how to back-up the contents of the SD-card in a manner that recombines the savefiles without losing their contiguous nature
-		-- files could be copied off the disk manually, and then transferred back onto the disk file-by-file using XVI32 to paste their contents into blank files
-		-- files could be copied en masse as a disk-image, and then reapplied en masse with a disk-imager
-			. write a tutorial on both of these methods
-				-- 
 
 	==== SOFTWARE BETA THRESHOLD ====
 
@@ -193,6 +155,14 @@ Software:
 	. test overloading the MIDI-IN system
 	. update "VERSION_TEXT" to "1"
 	. soak-test the physical prototype
+
+	. add a note to tutorials on wear-leveling:
+		. extreme repetitive use of PASTE or CLEAR will lead to faster card degradation
+
+	. research how to back-up the contents of the SD-card in a manner that recombines the savefiles without losing their contiguous nature
+		-- files could be copied off the disk manually, and then transferred back onto the disk file-by-file using XVI32 to paste their contents into blank files
+		-- files could be copied en masse as a disk-image, and then reapplied en masse with a disk-imager
+			. write a tutorial on both of these methods
 
 	. tutorial section for COPY/PASTE:
 		. note that mashing PASTE constantly will accelerate SD-card wear

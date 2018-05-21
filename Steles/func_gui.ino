@@ -72,9 +72,9 @@ void displayQuantizeBeat() {
 void displayGlobalBeat() {
 
 	// Display the global beat in the 4 leftmost LEDs, with an extra disambiguation marker after beat 4;
-	// and alternate between the 5th and 6th LEDs when a new global quarter-note occurs;
+	// and create a counter based on the global quarter-note whenever a new quarter-note occurs;
 	// and also display the current PAGE in the 7th and 8th LEDs
-	lc.setRow(0, 0, getGlobalBeatLEDs() | (((!((CUR16 >> 2) % 2)) + 1) << 2) | ((!PAGE) + 1));
+	lc.setRow(0, 0, getGlobalBeatLEDs() | ((!(CUR16 & 4)) * (8 >> (!!(CUR16 & 8)))) | ((!PAGE) + 1));
 
 }
 
