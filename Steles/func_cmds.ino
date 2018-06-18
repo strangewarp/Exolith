@@ -8,7 +8,7 @@ void armCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row) 
 
 // Parse a CHAN press
 void chanCmd(byte col, byte row) {
-	CHAN = applyChange(CHAN, toChange(col, row), 128, 239); // Modify the CHAN value, keeping it within the range of valid/supported commands
+	CHAN = applyChange(CHAN, toChange(col, row), 128, 240); // Modify the CHAN value, keeping it within the range of valid/supported commands
 	TO_UPDATE |= 1; // Flag the topmost row for updating
 }
 

@@ -69,7 +69,18 @@ void parseTickContents(byte buf[]) {
 
 	for (byte bn = 0; bn < 8; bn += 4) { // For both event-slots on this tick...
 
-		if (!buf[bn]) { continue; } // If this slot doesn't contain a command, either check the next slot or exit the loop
+		if (!buf[bn]) { continue; } // If this slot doesn't contain a command, then check the next slot or exit the loop
+
+		if (buf[bn] == 240) { // If this is a BPM-CHANGE command...
+			BPM = buf[bn + 1]; // Set the global BPM to the new BPM-value
+			updateTickSize(); // Update the global tick-size to reflect the new BPM value
+			continue; // Either check the next command-slot or exit the loop
+		}
+
+		// If the MIDI-OUT queue is full, then ignore this command, since we're now sure that it's a MIDI command
+		// (This is checked here, instead of in iterateAll(), and using "continue" instead of "return",
+		//  because all BPM-CHANGE commands need to be caught, regardless of how full MOUT_BYTES gets)
+		if (MOUT_BYTES >= 22) { continue; }
 
 		memcpy(MOUT + MOUT_BYTES, buf + bn, 3); // Copy the event into the MIDI buffer's lowest empty MOUT location
 		MOUT_BYTES += 3; // Increase the counter that tracks the number of bytes in the MIDI buffer
@@ -174,8 +185,6 @@ void getTickNotes(byte ctrl, unsigned long held, byte s, byte buf[]) {
 	}
 
 	// If the function hasn't exited by this point, then that means this tick contained a note. So...
-
-	if (MOUT_BYTES >= 22) { return; } // If any command would overflow the MIDI-OUT buffer, exit the function
 
 	parseTickContents(buf); // Check the tick's contents, and add them to MIDI-OUT and SUSTAIN where appropriate
 	parseScatter(s, didscatter); // Parse any active SCATTER values that might be associated with the seq

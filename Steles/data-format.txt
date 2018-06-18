@@ -42,6 +42,10 @@ Steles data-file spec
 										(2-byte command)
 									224: PITCH BEND
 										(3-byte command)
+									240: BPM (internal non-MIDI cmd)
+										(2-byte command)
+										0: 240
+										1: new BPM (16-200)
 						1: Command byte 1 (0-127)
 						2: Command byte 2 (0-127)
 						3: Duration (0-255)
