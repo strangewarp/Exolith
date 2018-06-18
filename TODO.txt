@@ -9,6 +9,24 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
+	. check whether there's an additional "MIDI Tempo" SYSEX command, or whether it's solely dictated by TEMPO TICK events
+		-- yeah but it's a 4-byte SYSEX command. so...
+		. change all sequencing mechanisms in the following ways:
+			-- am doing
+			. BPM command is now a 2-byte command, in the format of "240 x 0":
+				. "x": the BPM value (bounded to 16-200)
+					-- 
+			. change note-entry system to allow BPM commands to be entered
+				-- 
+			. when a BPM command is encountered by the sequencing mechanism, only change the internal BPM value; do not actually send anything to MIDI-OUT
+				-- 
+			. anything that checks for 2-byte or 3-byte commands, or command-type in general, needs to be double-checked for conflicts with the BPM command type
+				-- 
+
+	. make the BPM command accessible through both PLAY MODE and RECORD MODE, with the same control-button chord
+	.     (this is especially necessary so the user can compensate for blunders related to slicing into a bad BPM during a performance)
+		--
+
 	. re-test all recording mechanisms
 		. note-recording
 			. TRACK 1
@@ -134,15 +152,16 @@ Software:
 
 	. add a command to change the global cue-point's granularity? (e.g. being 3 beats, or 7 beats, instead of 8 beats, and ignoring the extra LEDs)
 
-	. very rarely, the tempo will be far too fast upon power-up. figure out why
-
 	. re-test problem areas:
 		. GLOBAL PLAY/STOP
 		. MIDI-IN
 		. GLOBAL PLAY/STOP under conditions of complex MIDI-IN
 
-	. figure out the best method for SD-card disk-imaging, to back up savefiles
-		. remember to put this into the tutorial
+	. create a testing apparatus in Pdlua, or something, to double-check that all command-types are correctly-formed:
+		. when the command is played manually
+		. when the command is played back from the savefile, during the sequencing routine
+
+	. very rarely, the tempo will be far too fast upon power-up. figure out why
 
 	. double-check that there are no remaining "todo" or "test" comments in the codebase
 	. remove "THIS CODE IS UNDER DEVELOPMENT AND DOESN'T DO ANYTHING" from license-statement
