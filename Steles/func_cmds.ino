@@ -8,7 +8,8 @@ void armCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row) 
 
 // Parse a CHAN press
 void chanCmd(byte col, byte row) {
-	CHAN = applyChange(CHAN, toChange(col, row), 128, 240); // Modify the CHAN value, keeping it within the range of valid/supported commands
+	// Modify the CHAN value, keeping it within the range of valid/supported commands
+	CHAN = min(240, (CHAN & 240) | applyChange(CHAN & 15, toChange(col, row), 0, 15));
 	TO_UPDATE |= 1; // Flag the topmost row for updating
 }
 
@@ -184,10 +185,10 @@ void trackCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row
 
 // Parse an UPPER COMMAND BITS press
 void upperBitsCmd(byte col, byte row) {
-	byte ch = CHAN & 15; // Get the current MIDI channel, without the current upper command-bits
-	char change = max(-8, min(8, toChange(col, row))) << 4; // Convert col/row into a CHANGE val, bounded to +/- 16, 32, 64
-	CHAN = applyChange(CHAN & 240, change, 128, 224); // Apply that change-interval to the CHAN value, bounded to valid commands
-	CHAN += ch; // Add the MIDI channel back to the newly-updated command-bits
+	// Convert col/row into a CHANGE val, bounded to +/- 16, 32, 64
+	char change = max(-8, min(8, toChange(col, row))) << 4;
+	// Apply that change-interval to the CHAN value, bounded to valid commands
+	CHAN = min(240, (CHAN & 15) | applyChange(CHAN & 240, change, 128, 240));
 	TO_UPDATE |= 1; // Flag the topmost row for updating
 }
 
