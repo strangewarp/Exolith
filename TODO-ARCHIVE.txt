@@ -28,6 +28,9 @@ Software:
 	-- also moved the MOUT_COUNT checking mechanism into parseTickContents(), since every BPM-CHANGE needs to be caught, regardless of how full MOUT_COUNT gets.
 		-- this hypothetically slightly reduces performance, could revert it later if I need to
 
+	-- updated chanCmd() to compensate correctly for the validity of command-values of 240
+	-- updated upperBitsCmd() similarly
+
 Hardware:
 
 

@@ -9,12 +9,26 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	-- updated chanCmd() to compensate correctly for the validity of command-values of 240
-	-- updated upperBitsCmd() similarly
-
 	. make the BPM command accessible through both PLAY MODE and RECORD MODE, with the same control-button chord
 	.     (this is especially necessary so the user can compensate for blunders related to slicing into a bad BPM during a performance)
-		--
+		-- am doing
+		-- chord number: 010001 (in-code: 100010)
+		. update button-key.txt
+			-- done
+		. change BPM's behavior in assignKey() et al
+			-- am doing
+			. for PLAY MODE
+				-- done
+		. change BPM's key-chord in RECORD MODE
+			-- done
+			. change command-lists in data_cmds.ino
+				-- done
+		. add a "BPM" indicator to the GUI for PLAY MODE
+			-- done
+		. change the "BPM" case in the GUI for RECORD MODE
+			-- done
+		. remove "todo update" entries from button-key.txt
+			-- 
 
 	. re-test all recording mechanisms
 		. note-recording
@@ -62,6 +76,7 @@ Software:
 		. SCATTER (amount)
 		. SCATTER UNSET
 		. PAGE SCATTER UNSET
+		. double-pressed commands, of the same or different types, to check for unexpected behaviors
 
 	. test gesture system
 		. test LOAD-MODE TOGGLE
