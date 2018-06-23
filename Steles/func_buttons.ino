@@ -132,7 +132,7 @@ void unassignKey(byte col, byte oldcmds) {
 		}
 	} else { // Else, if this is PLAY MODE...
 		if ((BUTTONS & B00111111) == B00100010) { // If a BPM command is revealed by the key-release...
-			TO_UPDATE |= 1; // Flag the top LED-row for an update
+			TO_UPDATE |= 253; // Flag the top LED-row for an update
 		}
 	}
 }

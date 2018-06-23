@@ -9,28 +9,15 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	. make the BPM command accessible through both PLAY MODE and RECORD MODE, with the same control-button chord
-	.     (this is especially necessary so the user can compensate for blunders related to slicing into a bad BPM during a performance)
+	. add "BPM" glyph to PLAY MODE's BPM command
 		-- am doing
-		-- chord number: 010001 (in-code: 100010)
-		. update button-key.txt
+		. update TO_UPDATE flags in unassignKey() and parsePlayPress() to cover the bottom 6 rows as well
 			-- done
-		. change BPM's behavior in assignKey() et al
-			-- am doing
-			. for PLAY MODE
-				-- done
-		. change BPM's key-chord in RECORD MODE
-			-- done
-			. change command-lists in data_cmds.ino
-				-- done
-		. add a "BPM" indicator to the GUI for PLAY MODE
-			-- done
-		. change the "BPM" case in the GUI for RECORD MODE
-			-- done
-		. remove "todo update" entries from button-key.txt
+		. update GUI parser in updatePlayBottomRows() to display the BPM-glyph when a BPM chord is held
 			-- done
 
-	. re-test all recording mechanisms
+	. reload firmware and re-test all recording mechanisms
+		-- am doing
 		. note-recording
 			. TRACK 1
 				-- 
