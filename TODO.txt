@@ -28,7 +28,7 @@ Software:
 		. change the "BPM" case in the GUI for RECORD MODE
 			-- done
 		. remove "todo update" entries from button-key.txt
-			-- 
+			-- done
 
 	. re-test all recording mechanisms
 		. note-recording
