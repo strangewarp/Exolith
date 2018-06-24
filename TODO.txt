@@ -9,9 +9,11 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	-- fixed a one-off error for the "col" value in the call to tempoCmd() from parsePlayPress()
-	-- fixed the manner in which updatePlayBottomRows() displays the TEMPO glyph when PLAY MODE's BPM command is held
-	-- made the BPM sigil appear in PLAY MODE at all the correct times
+	. unknown command-types in RECORD MODE need to set a TO_UPDATE flag for the bottom 6 rows (currently seems to only flag top row)
+		-- fixed: it was a mismatched value in the KEYTAB array
+
+	. unusual problems with note-recording and erasing: things seem to be going to the wrong places. figure out what's wrong
+		-- 
 
 	. reload firmware and re-test all recording mechanisms
 		-- am doing
@@ -37,6 +39,14 @@ Software:
 				-- 
 			. with COPY in another sequence than PASTE
 				-- 
+
+	. reassign the RECORD-MODE control-commands to make logical sense around the new BPM keychord
+		. change button-key.txt:
+			. RECORD, REPEAT, and TRACK should be conceptually connected
+			. CHAN and UPPER-CHAN should be conceptually connected
+			. OCTAVE, VELOCITY, DURATION, HUMANIZE, and QUANTIZE should be conceptually connected
+		. change KEYTAB array
+		. change RECORD-MODE GUI routines
 
 	. re-test things
 		. various QUANTIZE settings
@@ -65,6 +75,8 @@ Software:
 	. test gesture system
 		. test LOAD-MODE TOGGLE
 		. test GLOBAL PLAY/STOP TOGGLE
+
+	. look at all note-recording routines again, to triple-check for any stupid mistakes that would lead to unnecessary wear
 
 	. fill 12 sequences with notes, and check whether lag occurs when connected to a hardware synthesizer
 

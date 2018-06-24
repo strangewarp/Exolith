@@ -39,7 +39,7 @@ const byte KEYTAB[] PROGMEM = {
 	4,  //  9, 001001:  4, clockCmd
 	10, // 10, 001010: 10, pasteCmd
 	0,  // 11, 001011:  0, ignore
-	9,  // 12, 001100:  8, humanizeCmd
+	8,  // 12, 001100:  8, humanizeCmd
 	0,  // 13, 001101:  0, ignore
 	0,  // 14, 001110:  0, ignore
 	3,  // 15, 001111:  3, clearCmd
