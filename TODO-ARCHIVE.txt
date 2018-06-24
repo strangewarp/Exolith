@@ -52,6 +52,13 @@ Software:
 		. remove "todo update" entries from button-key.txt
 			-- done
 
+	. add "BPM" glyph to PLAY MODE's BPM command
+		-- am doing
+		. update TO_UPDATE flags in unassignKey() and parsePlayPress() to cover the bottom 6 rows as well
+			-- done
+		. update GUI parser in updatePlayBottomRows() to display the BPM-glyph when a BPM chord is held
+			-- done
+
 Hardware:
 
 

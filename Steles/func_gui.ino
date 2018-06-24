@@ -198,7 +198,7 @@ void updatePlayBottomRows(byte ctrl) {
 				continue; // Skip to the next row
 			}
 			if (ctrl == B00100010) { // If a BPM command is held...
-				lc.setRow(0, i, pgm_read_byte_near(GLYPHS + KEYTAB[B00100010] + (i - 2))); // Display a line from the BPM glyph
+				lc.setRow(0, i, pgm_read_byte_near(GLYPHS + 96 + (i - 2))); // Display a line from the BPM glyph
 			} else { // Else, if a regular PLAY MODE command is held...
 				// If a SCATTER-related command is held, display a row of SCATTER info; else display a row of SEQ info
 				lc.setRow(0, i, heldsc ? getRowScatterVals(i - 2) : getRowSeqVals(i - 2));

@@ -21,7 +21,7 @@ void parsePlayPress(byte col, byte row) {
 		BLINK = 255; // Cue a ~16ms LED-blink
 		TO_UPDATE = 253; // Flag LED-rows 0 and 2-7 for updates
 	} else if (ctrl == B00100010) { // If BPM is held...
-		tempoCmd(col - 1, row); // Cue a global BPM modification command, using the same function as in RECORD MODE
+		tempoCmd(col, row); // Cue a global BPM modification command, using the same function as in RECORD MODE
 		BLINK = 255; // Cue a ~16ms LED-blink
 		TO_UPDATE |= 253; // Flag the top LED-row, and bottom 6 LED-rows, for an update
 	} else if (ctrl == B00100001) { // If PAGE-OFF is held, and a regular button-press was made to signal intent...
@@ -92,7 +92,7 @@ void assignKey(byte col, byte row) {
 			TO_UPDATE |= 253; // Flag the top LED-row, and bottom 6 LED-rows, for updating
 		} else { // Else, if this is PLAY MODE...
 			if (ctrl == B00100010) { // And a BPM command is newly-held...
-				TO_UPDATE |= 1; // Flag the top LED-row for an update
+				TO_UPDATE |= 253; // Flag the top LED-row and bottom 6 LED-rows for an update
 			}
 		}
 
@@ -131,8 +131,10 @@ void unassignKey(byte col, byte oldcmds) {
 			}
 		}
 	} else { // Else, if this is PLAY MODE...
-		if ((BUTTONS & B00111111) == B00100010) { // If a BPM command is revealed by the key-release...
-			TO_UPDATE |= 253; // Flag the top LED-row for an update
+		if ((BUTTONS & B00111111) == B00100010) { // If a BPM command is active...
+			TO_UPDATE |= 253; // Flag the top LED-row and bottom 6 LED-rows for an update
+		} else if (oldcmds == B00100010) { // Else, if the previous command was a BPM command...
+			TO_UPDATE |= 253; // Flag the top LED-row and bottom 6 LED-rows for an update, to clear the BPM glyph
 		}
 	}
 }

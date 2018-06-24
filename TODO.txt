@@ -9,12 +9,9 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	. add "BPM" glyph to PLAY MODE's BPM command
-		-- am doing
-		. update TO_UPDATE flags in unassignKey() and parsePlayPress() to cover the bottom 6 rows as well
-			-- done
-		. update GUI parser in updatePlayBottomRows() to display the BPM-glyph when a BPM chord is held
-			-- done
+	-- fixed a one-off error for the "col" value in the call to tempoCmd() from parsePlayPress()
+	-- fixed the manner in which updatePlayBottomRows() displays the TEMPO glyph when PLAY MODE's BPM command is held
+	-- made the BPM sigil appear in PLAY MODE at all the correct times
 
 	. reload firmware and re-test all recording mechanisms
 		-- am doing
