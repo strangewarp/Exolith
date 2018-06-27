@@ -9,8 +9,8 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	. unknown command-types in RECORD MODE need to set a TO_UPDATE flag for the bottom 6 rows (currently seems to only flag top row)
-		-- fixed: it was a mismatched value in the KEYTAB array
+	-- found and (probably) fixed a bug where all sequenced notes were acting like they had a duration of 0
+	-- changed writeCommands() to correctly overwrite BPM-change commands
 
 	. unusual problems with note-recording and erasing: things seem to be going to the wrong places. figure out what's wrong
 		-- 
