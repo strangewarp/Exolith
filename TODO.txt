@@ -11,9 +11,11 @@ Software:
 
 	-- found and (probably) fixed a bug where all sequenced notes were acting like they had a duration of 0
 	-- changed writeCommands() to correctly overwrite BPM-change commands
+	-- fixed the ERASE WHILE HELD glyph to change its appearance depending on whether note-recording is active
 
-	. unusual problems with note-recording and erasing: things seem to be going to the wrong places. figure out what's wrong
-		-- 
+	. something seemed wrong with QUANTIZE settings being inaccurately reflected in note-recording?
+		. or possibly it was that notes were simply not being replaced
+		. or both
 
 	. reload firmware and re-test all recording mechanisms
 		-- am doing
@@ -77,6 +79,8 @@ Software:
 		. test GLOBAL PLAY/STOP TOGGLE
 
 	. look at all note-recording routines again, to triple-check for any stupid mistakes that would lead to unnecessary wear
+
+	. double-check that the BPM rate is actually accurate at various speeds
 
 	. fill 12 sequences with notes, and check whether lag occurs when connected to a hardware synthesizer
 
