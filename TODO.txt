@@ -9,15 +9,31 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	-- updated the MIDI-IN system to only call file.sync() once per tick max, to save on SD-card wear (still requires testing)
-	-- increased the length of the BLINK that occurs on each QUANTIZE tick in RECORD MODE
+	-- made recording-blinks longer in RECORD-MODE
 
-	. change REPEAT so that held chords are recorded into TRACK 1 & 2 simultaneously
-		-- done
-	. in RECORD MODE, BLINK should only illuminate the half of the screen that corresponds to the current TRACK
-		-- done
+	. redesign the top LED-row in RECORD MODE:
+		. the quantize-tick should only be displayed in LEDs 5 and 6
+			. on the first quantize-period of the currently-recording sequence, LEDs 5 and 6 should both be illuminated
+			. otherwise, LEDs 5 and 6 alternate based on the quantize rate
+		. the currently-active TRACK should be displayed in LEDs 7 and 8
 
-	. reload firmware and re-test all recording mechanisms
+	. add a TRACK value to the prefs-file, and to every function that creates, rewrites, and reads the prefs-file
+		-- 
+	. make sure that the code checks for incorrect prefs-files (like an outdated one, etc)
+		-- 
+		. regardless: if a prefs-file is incorrect, it should be erased and replaced with a contiguous file of the correct size and contents
+
+	. reload firmware and test changes:
+		. is BLINK affected by the active TRACK in RECORD MODE?
+			-- yes
+		. does the top recording-row work right, with various SEQ-SIZE and QUANTIZE values?
+			-- 
+		. does REPEAT record held chords, but with recording otherwise acting monophonically?
+			-- 
+		. how many notes are actually played when more than 2 are held with REPEAT active?
+			-- 
+
+	. re-test all recording mechanisms
 		-- am doing
 		. note-recording
 			. TRACK 1
