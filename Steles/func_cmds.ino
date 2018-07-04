@@ -64,7 +64,7 @@ void durationCmd(byte col, byte row) {
 // Parse all of the possible actions that signal the recording of commands
 void genericCmd(byte col, byte row) {
 	if (REPEAT) { return; } // If REPEAT is held, exit the function, since no commands should be sent instantly
-	processRecAction((row * 4) + col); // Parse the key as a recording-action
+	processRecAction((row * 4) + col, TRACK); // Parse the key as a recording-action into the current TRACK
 }
 
 // Parse a HUMANIZE press

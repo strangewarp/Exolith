@@ -46,10 +46,10 @@ void writeCommands(
 }
 
 // Record a given MIDI command into the tempdata-file of the current RECORDSEQ sequence
-void recordToSeq(word pstn, byte chan, byte b1, byte b2) {
+void recordToSeq(word pstn, byte chan, byte b1, byte b2, byte trk) {
 
 	// Get the position of the first of this tick's bytes within the active track in the data-file
-	unsigned long tickstart = (49UL + (4096UL * RECORDSEQ)) + (((unsigned long)pstn) * 8) + (TRACK * 4);
+	unsigned long tickstart = (49UL + (4096UL * RECORDSEQ)) + (((unsigned long)pstn) * 8) + (trk * 4);
 
 	// Construct a virtual MIDI command, with an additional DURATION value
 	byte note[5] = {
@@ -66,7 +66,7 @@ void recordToSeq(word pstn, byte chan, byte b1, byte b2) {
 }
 
 // Parse all of the possible actions that signal the recording of commands
-void processRecAction(byte key) {
+void processRecAction(byte key, byte trk) {
 
 	// Get a note that corresponds to the key, organized from bottom-left to top-right, with all modifiers applied
 	byte pitch = (OCTAVE * 12) + ((23 - key) ^ 3);
@@ -85,7 +85,7 @@ void processRecAction(byte key) {
 			qp += (down <= up) ? (-down) : up; // Make the shortest distance into an offset for the note-insertion point
 			qp %= word(STATS[RECORDSEQ] & 63) * 16; // Wrap the insertion-point around the seq's length
 		}
-		recordToSeq(qp, CHAN, pitch, velo); // Record the note into the current RECORDSEQ slot
+		recordToSeq(qp, CHAN, pitch, velo, trk); // Record the note into the current RECORDSEQ slot
 		TO_UPDATE |= 252; // Flag the 6 bottommost LED-rows for an update
 	}
 

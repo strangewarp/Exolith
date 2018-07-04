@@ -1,15 +1,15 @@
 
 
 // Parse a given MIDI command
-void parseMidiCommand() {
+void parseMidiCommand(byte &rcd) {
 	if (RECORDMODE) { // If RECORD-MODE is active...
 		byte cmd = INBYTES[0] & 240; // Get the command-type
 		byte chn = INBYTES[0] & 15; // Get the MIDI channel
 		if ((BUTTONS & B00111111) == B00100000) { // If notes are currently being recorded...
 			if ((CHAN & 15) == chn) { // If this command is within the currently-selected CHANNEL...
 				if ((cmd >= 144) && (cmd <= 239)) { // If this is a valid command...
-					recordToSeq(POS[RECORDSEQ], chn, INBYTES[1], INBYTES[2]); // Record the incoming MIDI command
-					file.sync(); // Sync any stored unwritten savefile-data
+					recordToSeq(POS[RECORDSEQ], chn, INBYTES[1], INBYTES[2], TRACK % 2); // Record the incoming MIDI command
+					rcd |= 1; // Flag that at least one command has been recorded on this tick
 				}
 			}
 		}
@@ -19,6 +19,8 @@ void parseMidiCommand() {
 
 // Parse all incoming raw MIDI bytes
 void parseRawMidi() {
+
+	byte recced = 0; // Flag that tracks whether any commands have been recorded
 
 	// While new MIDI bytes are available to read from the MIDI-IN port...
 	while (Serial.available() > 0) {
@@ -35,7 +37,7 @@ void parseRawMidi() {
 				INBYTES[INCOUNT] = b;
 				INCOUNT++;
 				if (INCOUNT == INTARGET) { // If all the command's bytes have been received...
-					parseMidiCommand(); // Parse the command
+					parseMidiCommand(recced); // Parse the command
 					memset(INBYTES, 0, sizeof(INBYTES) - 1); // Reset incoming-command-tracking vars
 					INCOUNT = 0;
 				}
@@ -103,6 +105,10 @@ void parseRawMidi() {
 			}
 		}
 
+	}
+
+	if (recced) { // If any incoming commands have been recorded on this tick...
+		file.sync(); // Sync the data in the savefile
 	}
 
 }

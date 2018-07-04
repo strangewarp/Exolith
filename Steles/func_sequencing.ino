@@ -143,12 +143,17 @@ void processRepeats(byte ctrl, unsigned long held, byte s) {
 		&& (!ctrl) // And no command-button is currently held...
 	) { // Then this is a valid REPEAT position. So...
 
+		byte found = 0; // Track how many held-buttons were found, up to a recording-limit of 2
+
 		for (byte row = 0; row < 6; row++) { // For every row...
 			byte i = row; // Create a new value that will check all BUTTONS-formatted button-bits in order
 			for (byte col = 0; col < 4; col++) { // For every column...
 				if (held & (1UL << i)) { // If the internal BUTTONS-value for this note is held...
-					processRecAction((row * 4) + col); // Process the note-key
+					// Put the first note into the current track, or the second note into the alternate track
+					processRecAction((row * 4) + col, TRACK ^ found);
+					found++; // Increase the number that tracks how many note-presses have been found on this tick
 				}
+				if (found > 1) { return; } // If the second tick-note is filled, stop looking for notes and end the function
 				i += 6; // Increment this row-loop's BUTTON-bit counter to the next note
 			}
 		}

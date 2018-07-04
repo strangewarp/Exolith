@@ -66,6 +66,10 @@ Software:
 	. unknown command-types in RECORD MODE need to set a TO_UPDATE flag for the bottom 6 rows (currently seems to only flag top row)
 		-- fixed: it was a mismatched value in the KEYTAB array
 
+	-- found and (probably) fixed a bug where all sequenced notes were acting like they had a duration of 0
+	-- changed writeCommands() to correctly overwrite BPM-change commands
+	-- fixed the ERASE WHILE HELD glyph to change its appearance depending on whether note-recording is active
+
 Hardware:
 
 

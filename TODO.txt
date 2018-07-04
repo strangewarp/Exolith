@@ -9,13 +9,13 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	-- found and (probably) fixed a bug where all sequenced notes were acting like they had a duration of 0
-	-- changed writeCommands() to correctly overwrite BPM-change commands
-	-- fixed the ERASE WHILE HELD glyph to change its appearance depending on whether note-recording is active
+	-- updated the MIDI-IN system to only call file.sync() once per tick max, to save on SD-card wear (still requires testing)
+	-- increased the length of the BLINK that occurs on each QUANTIZE tick in RECORD MODE
 
-	. something seemed wrong with QUANTIZE settings being inaccurately reflected in note-recording?
-		. or possibly it was that notes were simply not being replaced
-		. or both
+	. change REPEAT so that held chords are recorded into TRACK 1 & 2 simultaneously
+		-- done
+	. in RECORD MODE, BLINK should only illuminate the half of the screen that corresponds to the current TRACK
+		-- done
 
 	. reload firmware and re-test all recording mechanisms
 		-- am doing
@@ -272,8 +272,12 @@ Hardware:
 	. make sure to use B3F-5050 buttons in finished unit; these have a longer life than B3F-4050 buttons
 
 	. redo all Inkscape files for enclosure, making sure to retake all measurements & repeat the KiCad-to-Inkscape vector paste process
-		. make the tabs and slots for the bottom half of the side-panels wider
-		. elongate the bottom side-panel tabs, to act as bottom-spacers for the device, to keep the screws from scratching tables
+		. make the tabs and slots for the bottom half of the side-panels the correct width for the plexiglass
+		. etch labels into the front-panel for each control-row button's PLAY MODE function
+			. space the upward-facing side-panel tabs and slots so they don't conflict with the labels' positioning
+
+	. look into sticky rubber spacers for the bottom of the device, to keep its screws from scraping on things and being worn down
+		. remember to add these to the master parts-list, however many are used per unit
 
 	. if working with an SD-card distributor: get a copy of the authorization letter that certifies the relationship with the brand they're selling
 		. also: get the upstream brand to confirm the distribution relationship
