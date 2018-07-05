@@ -10,12 +10,14 @@ Software:
 	. prove I'm not a dipshit: actually finish the project
 
 	-- made recording-blinks longer in RECORD-MODE
+		-- tweaked the duration for this again
 
 	. redesign the top LED-row in RECORD MODE:
+		-- am doing
 		. the quantize-tick should only be displayed in LEDs 5 and 6
-			. on the first quantize-period of the currently-recording sequence, LEDs 5 and 6 should both be illuminated
-			. otherwise, LEDs 5 and 6 alternate based on the quantize rate
+			-- done
 		. the currently-active TRACK should be displayed in LEDs 7 and 8
+			-- done
 
 	. add a TRACK value to the prefs-file, and to every function that creates, rewrites, and reads the prefs-file
 		-- 

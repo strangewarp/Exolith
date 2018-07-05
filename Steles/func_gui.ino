@@ -56,16 +56,10 @@ byte getGlobalBeatLEDs() {
 
 // Display the global beat and a QUANTIZE-based interval in the topmost row of LEDs
 void displayQuantizeBeat() {
-	byte cmod = CUR16 % (QUANTIZE * 4); // Get the current beat, wrapped to the QUANTIZE value times 4
-	for (byte i = 0; i < 4; i++) { // For every possible LED...
-		if ((QUANTIZE * (i + 1)) > cmod) { // If this LED corresponds to the current modified beat-value...
-			// Display the global beat in the 4 leftmost LEDs,
-			// and the quantized beat-value in the 4 rightmost LEDs,
-			// with an extra disambiguation marker after beat 4
-			lc.setRow(0, 0, getGlobalBeatLEDs() | (8 >> i));
-			break; // Since we're done searching, break from the for-loop
-		}
-	}
+	// Display the global beat in the 4 leftmost LEDs, with an extra disambiguation marker after beat 4;
+	// and a simple display of the current QUANTIZE point in LEDs 5 and 6;
+	// and the current TRACK in LEDs 7-8.
+	lc.setRow(0, 0, getGlobalBeatLEDs() | (4 << (QUANTIZE > (CUR16 % (QUANTIZE * 2)))) | ((!TRACK) + 1));
 }
 
 // Display the global beat and quarter-note in the topmost row of LEDs
