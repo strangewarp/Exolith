@@ -45,33 +45,6 @@ byte getRowScatterVals(byte r) {
 		| (!!(SCATTER[ib + 27] & 15));
 }
 
-// Get the half of the top row that contains the current global beat position
-// (returns the value in bits 4-7 of a byte)
-byte getGlobalBeatLEDs() {
-	byte beat = CUR16 >> 4; // Get the current global beat
-	byte b4 = beat % 4; // Get the global beat, wrapped by 4
-	byte join = (2 << (beat >> 2)) - 1; // Light a number of LEDs equal to the number of times the 8-beat has 4-wrapped
-	return ((join << (3 - b4)) | (join >> (b4 + 1))) << 4; // Return the global beat's wrapped LED-positions
-}
-
-// Display the global beat and a QUANTIZE-based interval in the topmost row of LEDs
-void displayQuantizeBeat() {
-	// Display the global beat in the 4 leftmost LEDs, with an extra disambiguation marker after beat 4;
-	// and a simple display of the current QUANTIZE point in LEDs 5 and 6;
-	// and the current TRACK in LEDs 7-8.
-	lc.setRow(0, 0, getGlobalBeatLEDs() | (4 << (QUANTIZE > (CUR16 % (QUANTIZE * 2)))) | ((!TRACK) + 1));
-}
-
-// Display the global beat and quarter-note in the topmost row of LEDs
-void displayGlobalBeat() {
-
-	// Display the global beat in the 4 leftmost LEDs, with an extra disambiguation marker after beat 4;
-	// and create a counter based on the global quarter-note whenever a new quarter-note occurs;
-	// and also display the current PAGE in the 7th and 8th LEDs
-	lc.setRow(0, 0, getGlobalBeatLEDs() | ((!(CUR16 & 4)) * (8 >> (!!(CUR16 & 8)))) | ((!PAGE) + 1));
-
-}
-
 // Update the first row of LEDs
 void updateFirstRow(byte ctrl) {
 	if (RECORDMODE) { // If this is RECORD-MODE...
@@ -103,13 +76,13 @@ void updateFirstRow(byte ctrl) {
 			// If ARM-RECORDING or ERASE WHILE HELD is held...
 			// Or some other unassigned button-combination is held...
 			// Or no control-buttons are held...
-			displayQuantizeBeat(); // Display the global beat-row with a QUANTIZE-based interval
+			lc.setRow(0, 0, 128 >> (CUR16 >> 4)); // Display the global cue's current beat
 		}
 	} else { // Else, if this isn't RECORD-MODE...
 		if ((!LOADMODE) && (ctrl == B00100010)) { // If this isn't LOAD MODE (then this is PLAY MODE), and if BPM is held...
 			lc.setRow(0, 0, BPM); // Display BPM value
 		} else { // Else, if this is LOAD MODE, or if this is PLAY MODE and a BPM command isn't held...
-			displayGlobalBeat(); // Display the global-beat row
+			lc.setRow(0, 0, 128 >> (CUR16 >> 4)); // Display the global cue's current beat
 		}
 	}
 }
@@ -126,7 +99,8 @@ void updateSecondRow() {
 		if ((BUTTONS & B00000011) == 3) { // If any SCATTER-shaped command is held...
 			lc.setRow(0, 1, SCATTER[RECORDSEQ]); // Display the most-recently-touched seq's SCATTER value
 		} else { // Else, if a SCATTER-shaped command isn't being held...
-			lc.setRow(0, 1, (256 >> SUST_COUNT) % 256); // Display the current number of sustains (0-8)
+			// Display the current number of sustains (0-8), with illumination inverted depending on which page is active
+			lc.setRow(0, 1, (255 >> SUST_COUNT) ^ (255 * (!PAGE)));
 		}
 	}
 }

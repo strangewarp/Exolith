@@ -9,31 +9,38 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	-- made recording-blinks longer in RECORD-MODE
-		-- tweaked the duration for this again
+	-- refactored the "flip number values into correct format" line in parsePlayPress()
+	-- fixed a labeling mistake in button-key.txt
+	-- removed superfluous parentheses from updateGlobalRand()
 
-	. redesign the top LED-row in RECORD MODE:
-		-- am doing
-		. the quantize-tick should only be displayed in LEDs 5 and 6
+	. since the meaningful GUI signifiers for QUANTIZE and TRACK are now being handled by the BLINK system...
+		. in RECORD MODE, change the top GUI row to only show the global-cue's current beat
 			-- done
-		. the currently-active TRACK should be displayed in LEDs 7 and 8
+		. in PLAY MODE...
+			. change the top GUI row to only show the global-cue's current beat
+				-- done
+			. if PAGE B is active, then invert the second GUI row's illumination
+				-- done
+		. change all TO_UPDATE calls related to these things
 			-- done
 
-	. add a TRACK value to the prefs-file, and to every function that creates, rewrites, and reads the prefs-file
-		-- 
-	. make sure that the code checks for incorrect prefs-files (like an outdated one, etc)
-		-- 
-		. regardless: if a prefs-file is incorrect, it should be erased and replaced with a contiguous file of the correct size and contents
+	. if QUANTIZE's upper bit is toggled...
+		. bound each QUANTIZE point to the size of a beat (16 16th-notes)
+			. change the REPEAT system to make this distinction
+			. change all related BLINK and TO_UPDATE calls
+			. change all relevant GUI calls
 
 	. reload firmware and test changes:
 		. is BLINK affected by the active TRACK in RECORD MODE?
 			-- yes
-		. does the top recording-row work right, with various SEQ-SIZE and QUANTIZE values?
-			-- 
 		. does REPEAT record held chords, but with recording otherwise acting monophonically?
 			-- 
 		. how many notes are actually played when more than 2 are held with REPEAT active?
 			-- 
+		. do both types of QUANTIZE command work correctly...
+			. in the GUI?
+			. in regular note-entry?
+			. in REPEAT-based note-entry?
 
 	. re-test all recording mechanisms
 		-- am doing
@@ -101,6 +108,8 @@ Software:
 	. double-check that the BPM rate is actually accurate at various speeds
 
 	. fill 12 sequences with notes, and check whether lag occurs when connected to a hardware synthesizer
+
+	. does anything catastrophic happen when the SD-card is removed during regular operation?
 
 	==== SOFTWARE BETA THRESHOLD ====
 
@@ -209,18 +218,19 @@ Software:
 
 Hardware:
 
-	. put the MAX7219 onto the SPI pins
-	. assign a second CS pin for the MAX7219
-		. write a simplified version of LedControl_HW_SPI, using raw commands from the SPI library
-		. remove the old LedControl library and replace all its function-calls
-	. assign a "safe-shutdown" pin
-		. 5v -> low-dropout-voltage power-diode -> (1uF electrolytic cap -> gnd) AND (1k resistor -> gnd) AND (220ohm(?) resistor -> DIGITAL-IN pin)
-			. update the schematics on this basis
-		. on every loop, check whether this pin has gone low
-		. when this pin goes low:
-			. immediately close the current file
-			. shut down the ATMEGA
-	. also test a new MIDI port setup:
+	. put the MAX7219 onto the SPI pins?
+		. assign a second CS pin for the MAX7219
+			. write a simplified version of LedControl_HW_SPI, using raw commands from the SPI library
+			. remove the old LedControl library and replace all its function-calls
+		. assign a "safe-shutdown" pin
+			. 5v -> low-dropout-voltage power-diode -> (1uF electrolytic cap -> gnd) AND (1k resistor -> gnd) AND (220ohm(?) resistor -> DIGITAL-IN pin)
+				. update the schematics on this basis
+			. on every loop, check whether this pin has gone low
+			. when this pin goes low:
+				. immediately close the current file
+				. shut down the ATMEGA
+
+	. test a new MIDI port setup:
 		. 1x MIDI-IN + indicator LED
 		. 1x MIDI-THRU
 		. 3x MIDI-OUT + indicator LED (via second 74HC14N chip)

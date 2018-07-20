@@ -27,7 +27,7 @@ byte ctrlToButtonIndex(byte ctrl) {
 
 // Create a global semirandom number, which will stay the same until the function is called again
 void updateGlobalRand() {
-	GLOBALRAND = (ABSOLUTETIME % 65536);
+	GLOBALRAND = ABSOLUTETIME % 65536;
 	GLOBALRAND ^= GLOBALRAND << 2;
 	GLOBALRAND ^= GLOBALRAND >> 7;
 	GLOBALRAND ^= GLOBALRAND << 7;

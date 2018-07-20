@@ -78,6 +78,16 @@ Software:
 	. in RECORD MODE, BLINK should only illuminate the half of the screen that corresponds to the current TRACK
 		-- done
 
+	-- made recording-blinks longer in RECORD-MODE
+		-- tweaked the duration for this again
+
+	. redesign the top LED-row in RECORD MODE:
+		-- am doing
+		. the quantize-tick should only be displayed in LEDs 5 and 6
+			-- done
+		. the currently-active TRACK should be displayed in LEDs 7 and 8
+			-- done
+
 Hardware:
 
 
