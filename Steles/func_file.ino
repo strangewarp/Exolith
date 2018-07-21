@@ -7,12 +7,10 @@ void createFiles() {
 
 	for (byte i = 0; i < 168; i++) { // For every song-slot...
 		if (!(i % 21)) { // After a certain amount of files, switch to the next logo letter
-			PORTD &= B10111111; // Set the MAX chip's CS pin low (data latch)
 			for (byte row = 0; row < 7; row++) { // For each row in the 7-row-tall logo text...
 				// Set the corresponding row to the corresponding letter slice
 				sendRow(row + 1, pgm_read_byte_near(LOGO + (row * 4) + ((i / 21) % 4)));
 			}
-			PORTD |= B01000000; // Set the MAX chip's CS pin high (data latch)
 		}
 		getFilename(name, i); // Get the filename that corresponds to this song-slot
 		if (sd.exists(name)) { continue; } // If the file exists, skip the file-creation process for this filename
@@ -170,8 +168,6 @@ void loadSong(byte slot) {
 	haltAllSustains(); // Clear all currently-sustained notes
 	resetAllSeqs(); // Reset all seqs' internal activity variables of all kinds
 
-	PORTD &= B10111111; // Set the MAX chip's CS pin low (data latch)
-
 	// Display a fully-lit screen while loading data
 	sendRow(0, 255);
 	sendRow(1, 255);
@@ -181,8 +177,6 @@ void loadSong(byte slot) {
 	sendRow(5, 255);
 	sendRow(6, 255);
 	sendRow(7, 255);
-
-	PORTD |= B01000000; // Set the MAX chip's CS pin high (data latch)
 
 	delay(10); // Wait for a long enough time for the screen-flash to be visible
 

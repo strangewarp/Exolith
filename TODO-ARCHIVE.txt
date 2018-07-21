@@ -124,6 +124,17 @@ Software:
 	. wipe the SD-card again before testing, since the prefs-file format has been changed
 		-- ok
 
+	-- added a blink effect whenever a note is played in RECORD-MODE, regardless of whether RECORDNOTES is armed
+
+	. write a stripped-down replacement for LedControl, to save RAM space
+		-- am doing
+		. write "initialize" and "send line" functions
+			-- done
+		. change updateGUI() to open and close the MAX72** chip's data-latch on digital pin 6
+			-- done
+		. change all GUI-related functions to use sendRow() instead of LedControl calls
+			-- done
+
 Hardware:
 
 

@@ -3,10 +3,14 @@
 // Initialize communications with the MAX72** chip,
 // on regular digital pins.
 void maxInitialize() {
+
 	DDRD |= B11100000; // Set the Data, Clk, and CS pins as outputs
+
 	PORTD &= B10111111; // Set the CS pin low (data latch)
-	shiftOut(5, 7, MSBFIRST, 15); // Set scanlimit to max
+	shiftOut(5, 7, MSBFIRST, 15); // Conduct a display-test
 	shiftOut(5, 7, MSBFIRST, 0); // ^
+	shiftOut(5, 7, MSBFIRST, 11); // Set scanlimit to max
+	shiftOut(5, 7, MSBFIRST, 7); // ^
 	shiftOut(5, 7, MSBFIRST, 9); // Decode is done in source
 	shiftOut(5, 7, MSBFIRST, 0); // ^
 	shiftOut(5, 7, MSBFIRST, 12); // Shutown mode: startup
@@ -14,12 +18,27 @@ void maxInitialize() {
 	shiftOut(5, 7, MSBFIRST, 10); // LED intensity: maximum
 	shiftOut(5, 7, MSBFIRST, 15); // ^
 	PORTD |= B01000000; // Set the CS pin high (data latch)
+
+	// Clear all rows
+	sendRow(0, 0);
+	sendRow(1, 0);
+	sendRow(2, 0);
+	sendRow(3, 0);
+	sendRow(4, 0);
+	sendRow(5, 0);
+	sendRow(6, 0);
+	sendRow(7, 0);
+
+	PORTD |= B01000000; // Set the CS pin high (data latch)
+
 }
 
 // Update the LED-data of a given row on the MAX72** chip
-void sendRow(byte row, byte d) {
+void sendRow(volatile byte row, volatile byte d) {
+	PORTD &= B10111111; // Set the CS pin low (data latch)
 	shiftOut(5, 7, MSBFIRST, row + 1); // Send the row's opcode
 	shiftOut(5, 7, MSBFIRST, d); // Send its 1-byte LED-data payload
+	PORTD |= B01000000; // Set the CS pin high (data latch)
 }
 
 // Display the number of a newly-loaded savefile
@@ -211,11 +230,7 @@ void updateBottomRows(byte ctrl) {
 // Update the GUI based on update-flags that have been set by the current tick's events
 void updateGUI() {
 
-	if (!TO_UPDATE) { return; } // If no rows are to be updated, exit the function
-
 	byte ctrl = BUTTONS & B00111111; // Get the control-row buttons' activity
-
-	PORTD &= B10111111; // Set the MAX chip's CS pin low (data latch)
 
 	if (TO_UPDATE & 1) { // If the first row is flagged for a GUI update...
 		updateFirstRow(ctrl); // Update the first row of LEDs
@@ -228,8 +243,6 @@ void updateGUI() {
 	if (TO_UPDATE & 252) { // If any of the bottom 6 rows are flagged for a GUI update...
 		updateBottomRows(ctrl); // Update the 6 bottom rows of LEDs
 	}
-
-	PORTD |= B01000000; // Set the MAX chip's CS pin high (data latch)
 
 	TO_UPDATE = 0; // Clear all TO_UPDATE flags
 

@@ -9,19 +9,9 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	-- added a blink effect whenever a note is played in RECORD-MODE, regardless of whether RECORDNOTES is armed
-
-	. write a stripped-down replacement for LedControl, to save RAM space
-		-- am doing
-		. write "initialize" and "send line" functions
-			-- done
-		. change updateGUI() to open and close the MAX72** chip's data-latch on digital pin 6
-			-- done
-		. change all GUI-related functions to use sendRow() instead of LedControl calls
-			-- done
-
-	. is the line "shiftOut(5, 7, MSBFIRST, 12);" necessary in maxInitialize()?
-		-- 
+	. new LED system doesn't work. figure out why
+		-- figured it out: every row-send command must be surrounded by its own set of CS-pin latch commands. these are now in sendRow()
+		-- also might have been that sendRow() requires "volatile byte" typing. this is mysterious. leaving it in to be thorough
 
 	. QUANTIZE/QRESET don't hit the right ticks when containing unusual values. fix it
 		-- 

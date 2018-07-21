@@ -174,16 +174,16 @@ void setup() {
 	DDRD |= B00011100;
 	DDRB |= B00000011;
 
+	maxInitialize(); // Initialize the MAX72** chip's LED system
+
 	// Initialize the SD-card at full speed, or throw a visible error message if no SD-card is inserted
 	if (!sd.begin(10, SPI_FULL_SPEED)) {
-		PORTD &= B10111111; // Set the MAX chip's CS pin low (data latch)
 		sendRow(2, B11101110);
 		sendRow(3, B10001001);
 		sendRow(4, B11101001);
 		sendRow(5, B00101001);
 		sendRow(6, B00101010);
 		sendRow(7, B11101100);
-		PORTD |= B01000000; // Set the MAX chip's CS pin high (data latch)
 		sd.initErrorHalt();
 	}
 
