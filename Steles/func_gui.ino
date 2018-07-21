@@ -29,8 +29,6 @@ void maxInitialize() {
 	sendRow(6, 0);
 	sendRow(7, 0);
 
-	PORTD |= B01000000; // Set the CS pin high (data latch)
-
 }
 
 // Update the LED-data of a given row on the MAX72** chip
