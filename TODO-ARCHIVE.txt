@@ -135,6 +135,10 @@ Software:
 		. change all GUI-related functions to use sendRow() instead of LedControl calls
 			-- done
 
+	. new LED system doesn't work. figure out why
+		-- figured it out: every row-send command must be surrounded by its own set of CS-pin latch commands. these are now in sendRow()
+		-- also might have been that sendRow() requires "volatile byte" typing. this is mysterious. leaving it in to be thorough
+
 Hardware:
 
 

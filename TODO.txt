@@ -9,10 +9,6 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	. new LED system doesn't work. figure out why
-		-- figured it out: every row-send command must be surrounded by its own set of CS-pin latch commands. these are now in sendRow()
-		-- also might have been that sendRow() requires "volatile byte" typing. this is mysterious. leaving it in to be thorough
-
 	. QUANTIZE/QRESET don't hit the right ticks when containing unusual values. fix it
 		-- 
 
@@ -152,10 +148,6 @@ Software:
 	. test MIDI-IN (clock)
 		. add a "DO NOT SEND CLOCK SIGNALS" user-flag to the CLOCK MASTER/FOLLOW mechanism?
 
-	. replace bloated LedControl with optimized custom functions
-		. replace LedControl with LedControl_HW_SPI???
-			. either a simplified version of LedControl_HW_SPI, or a simplified version of LedControl, but either way, it needs to directly address port-registers
-
 	. double-check all functionality for sequences on the second-page
 
 	. edge-case testing:
@@ -210,16 +202,16 @@ Software:
 Hardware:
 
 	. put the MAX7219 onto the SPI pins?
-		. assign a second CS pin for the MAX7219
-			. write a simplified version of LedControl_HW_SPI, using raw commands from the SPI library
-			. remove the old LedControl library and replace all its function-calls
-		. assign a "safe-shutdown" pin
-			. 5v -> low-dropout-voltage power-diode -> (1uF electrolytic cap -> gnd) AND (1k resistor -> gnd) AND (220ohm(?) resistor -> DIGITAL-IN pin)
-				. update the schematics on this basis
-			. on every loop, check whether this pin has gone low
-			. when this pin goes low:
-				. immediately close the current file
-				. shut down the ATMEGA
+		. if so:
+			. assign a second CS pin for the MAX7219
+				. write a simplified version of LedControl_HW_SPI, using raw commands from the SPI library
+			. assign a "safe-shutdown" pin
+				. 5v -> low-dropout-voltage power-diode -> (1uF electrolytic cap -> gnd) AND (1k resistor -> gnd) AND (220ohm(?) resistor -> DIGITAL-IN pin)
+					. update the schematics on this basis
+				. on every loop, check whether this pin has gone low
+				. when this pin goes low:
+					. immediately close the current file
+					. shut down the ATMEGA
 
 	. test a new MIDI port setup:
 		. 1x MIDI-IN + indicator LED
