@@ -88,6 +88,21 @@ Software:
 		. the currently-active TRACK should be displayed in LEDs 7 and 8
 			-- done
 
+	-- refactored the "flip number values into correct format" line in parsePlayPress()
+	-- fixed a labeling mistake in button-key.txt
+	-- removed superfluous parentheses from updateGlobalRand()
+
+	. since the meaningful GUI signifiers for QUANTIZE and TRACK are now being handled by the BLINK system...
+		. in RECORD MODE, change the top GUI row to only show the global-cue's current beat
+			-- done
+		. in PLAY MODE...
+			. change the top GUI row to only show the global-cue's current beat
+				-- done
+			. if PAGE B is active, then invert the second GUI row's illumination
+				-- done
+		. change all TO_UPDATE calls related to these things
+			-- done
+
 Hardware:
 
 

@@ -25,6 +25,17 @@ byte ctrlToButtonIndex(byte ctrl) {
 	)	)	)	);
 }
 
+// Get the distance from a seq's previous QUANTIZE-or-QRESET point,
+// or 0 if such a point is currently occupied.
+byte distFromQuantize() {
+	if (QRESET) { // If there is an active QRESET amount...
+		// Return the QRESET-adjusted QUANTIZE distance
+		return (POS[RECORDSEQ] % QRESET) % QUANTIZE;
+	}
+	// Otherwise, return the regular QUANTIZE distance
+	return POS[RECORDSEQ] % QUANTIZE;
+}
+
 // Create a global semirandom number, which will stay the same until the function is called again
 void updateGlobalRand() {
 	GLOBALRAND = ABSOLUTETIME % 65536;

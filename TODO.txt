@@ -9,38 +9,41 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	-- refactored the "flip number values into correct format" line in parsePlayPress()
-	-- fixed a labeling mistake in button-key.txt
-	-- removed superfluous parentheses from updateGlobalRand()
+	-- lightly refactored updateSecondRow()
+	-- fixed some slight bad text-formatting in buttons-key.txt
 
-	. since the meaningful GUI signifiers for QUANTIZE and TRACK are now being handled by the BLINK system...
-		. in RECORD MODE, change the top GUI row to only show the global-cue's current beat
+	. add a QRESET command, which will reset QUANTIZE's anchor point every n ticks
+		-- am doing
+		. change the REPEAT system to make this distinction
 			-- done
-		. in PLAY MODE...
-			. change the top GUI row to only show the global-cue's current beat
-				-- done
-			. if PAGE B is active, then invert the second GUI row's illumination
-				-- done
-		. change all TO_UPDATE calls related to these things
+		. change all related BLINK and TO_UPDATE calls
+			-- afaict done
+		. change the prefs-file routines to add a QRESET slot
+			-- done
+		. change all relevant GUI calls
+			-- done
+		. add CmdFunc and glyph for QRESET
+			-- done
+		. add GUI routines for QRESET
 			-- done
 
-	. if QUANTIZE's upper bit is toggled...
-		. bound each QUANTIZE point to the size of a beat (16 16th-notes)
-			. change the REPEAT system to make this distinction
-			. change all related BLINK and TO_UPDATE calls
-			. change all relevant GUI calls
+	. wipe the SD-card again before testing, since the prefs-file format has been changed
+		-- ok
 
 	. reload firmware and test changes:
 		. is BLINK affected by the active TRACK in RECORD MODE?
 			-- yes
+		. do QUANTIZE and QRESET both work correctly...
+			. in the GUI?
+				-- 
+			. in regular note-entry?
+				-- 
+			. in REPEAT-based note-entry?
+				-- 
 		. does REPEAT record held chords, but with recording otherwise acting monophonically?
 			-- 
 		. how many notes are actually played when more than 2 are held with REPEAT active?
 			-- 
-		. do both types of QUANTIZE command work correctly...
-			. in the GUI?
-			. in regular note-entry?
-			. in REPEAT-based note-entry?
 
 	. re-test all recording mechanisms
 		-- am doing

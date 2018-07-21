@@ -2,7 +2,7 @@
 
 /*
 
-		Steles is a MIDI sequencer for the "Tine" hardware.
+		Steles is a MIDI sequencer firmware for the "Tine" hardware.
 		THIS CODE IS UNDER DEVELOPMENT AND DOESN'T DO ANYTHING!
 		Copyright (C) 2016-2018, C.D.M. Rørmose (sevenplagues@gmail.com).
 
@@ -73,6 +73,7 @@ byte VELO = 127; // Baseline velocity-value for RECORD MODE notes
 byte HUMANIZE = 0; // Maximum velocity-humanize value for RECORD MODE notes
 byte CHAN = 151; // MIDI-COMMAND byte (including current CHANNEL) for RECORD MODE notes
 byte QUANTIZE = B00000100; // Time-quantize value for RECORD MODE notes (1 to 16)
+byte QRESET = 0; // Tracks how many beats must elapse within RECORDSEQ before the QUANTIZE anchor gets reset (0 = whole sequence)
 byte DURATION = 4; // Duration value for RECORD MODE notes, in 16th-notes
 byte COPYPOS = 0; // Copy-position within the copy-sequence
 byte COPYSEQ = 0; // Sequence from which to copy data

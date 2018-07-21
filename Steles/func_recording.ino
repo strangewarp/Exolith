@@ -80,8 +80,8 @@ void processRecAction(byte key, byte trk) {
 	if (PLAYING && RECORDNOTES) { // If notes are being recorded into a playing sequence...
 		word qp = POS[RECORDSEQ]; // Will hold a QUANTIZE-modified insertion point (defaults to the seq's current position)
 		if (!REPEAT) { // If REPEAT isn't toggled...
-			char down = POS[RECORDSEQ] % QUANTIZE; // Get distance to previous QUANTIZE point
-			byte up = QUANTIZE - down; // Get distance to next QUANTIZE point
+			char down = distFromQuantize(); // Get distance to previous QUANTIZE point
+			byte up = min(QRESET - down, QUANTIZE - down); // Get distance to next QUANTIZE point, compensating for QRESET
 			qp += (down <= up) ? (-down) : up; // Make the shortest distance into an offset for the note-insertion point
 			qp %= word(STATS[RECORDSEQ] & 63) * 16; // Wrap the insertion-point around the seq's length
 		}

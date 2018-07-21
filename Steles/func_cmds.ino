@@ -137,6 +137,13 @@ void posCmd(byte col, byte row) {
 
 }
 
+// Parse a QRESET press
+void qrstCmd(byte col, byte row) {
+	char change = toChange(col, row); // Convert a column and row into a CHANGE value
+	QRESET = applyChange(QRESET, change, 0, 128); // Modify the QRESET value
+	TO_UPDATE |= 1; // Flag the topmost row for updating
+}
+
 // Parse a QUANTIZE press
 void quantizeCmd(byte col, byte row) {
 	char change = toChange(col, row); // Convert a column and row into a CHANGE value

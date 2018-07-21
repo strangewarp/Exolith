@@ -65,12 +65,13 @@ void makePrefBuf(byte buf[]) {
 	buf[2] = VELO;
 	buf[3] = HUMANIZE;
 	buf[4] = CHAN;
-	buf[5] = QUANTIZE;
-	buf[6] = DURATION;
-	buf[7] = COPYPOS;
-	buf[8] = COPYSEQ;
-	buf[9] = SONG;
-	buf[10] = CLOCKMASTER;
+	buf[5] = QRESET;
+	buf[6] = QUANTIZE;
+	buf[7] = DURATION;
+	buf[8] = COPYPOS;
+	buf[9] = COPYSEQ;
+	buf[10] = SONG;
+	buf[11] = CLOCKMASTER;
 }
 
 // Get the prefs-file's filename out of PROGMEM
@@ -85,10 +86,10 @@ void writePrefs() {
 
 	file.close(); // Temporarily close the current song-file
 
-	byte buf[12]; // Make a buffer that will contain all the prefs
+	byte buf[13]; // Make a buffer that will contain all the prefs
 	makePrefBuf(buf); // Fill it with all the relevant pref values
 
-	byte cbuf[12]; // Make a buffer for checking the old prefs-contents
+	byte cbuf[13]; // Make a buffer for checking the old prefs-contents
 
 	char pn[6]; // Will contain the prefs-file's filename
 	getPrefsFilename(pn); // Get the prefs-file's filename out of PROGMEM
@@ -96,9 +97,9 @@ void writePrefs() {
 	file.open(pn, O_RDWR); // Open the prefs-file in read-write mode
 
 	file.seekSet(0); // Ensure we're on the first byte of the file
-	file.read(cbuf, 11); // Read the old prefs-values
+	file.read(cbuf, 12); // Read the old prefs-values
 
-	for (byte i = 0; i < 11; i++) { // For every byte in the prefs-file...
+	for (byte i = 0; i < 12; i++) { // For every byte in the prefs-file...
 		if (buf[i] != cbuf[i]) { // If the new byte doesn't match the old byte...
 			file.seekSet(i); // Go to the byte's location
 			file.write(buf[i]); // Replace the old byte
@@ -122,7 +123,7 @@ void writePrefs() {
 // Load the contents of the preferences file ("PRF.DAT"), and put its contents into global variables
 void loadPrefs() {
 
-	byte buf[12]; // Make a buffer that will contain all the prefs
+	byte buf[13]; // Make a buffer that will contain all the prefs
 
 	char pn[6]; // Will contain the prefs-file's filename
 	getPrefsFilename(pn); // Get the prefs-file's filename out of PROGMEM
@@ -131,16 +132,16 @@ void loadPrefs() {
 
 		makePrefBuf(buf); // Fill the prefs-data buffer with the current user-prefs
 
-		file.createContiguous(sd.vwd(), pn, 11); // Create a contiguous prefs-file
+		file.createContiguous(sd.vwd(), pn, 12); // Create a contiguous prefs-file
 		file.close(); // Close the newly-created file
 
 		file.open(pn, O_WRITE); // Create a prefs file and open it in write-mode
-		file.write(buf, 11); // Write the pref vars into the file
+		file.write(buf, 12); // Write the pref vars into the file
 
 	} else { // Else, if the prefs-file does exist...
 
 		file.open(pn, O_READ); // Open the prefs-file in read-mode
-		file.read(buf, 11); // Read all the prefs-bytes into the buffer
+		file.read(buf, 12); // Read all the prefs-bytes into the buffer
 
 		// Assign the buffer's-worth of pref-bytes to their respective global-vars
 		PAGE = buf[0];
@@ -148,12 +149,13 @@ void loadPrefs() {
 		VELO = buf[2];
 		HUMANIZE = buf[3];
 		CHAN = buf[4];
-		QUANTIZE = buf[5];
-		DURATION = buf[6];
-		COPYPOS = buf[7];
-		COPYSEQ = buf[8];
-		SONG = buf[9];
-		CLOCKMASTER = buf[10];
+		QRESET = buf[5];
+		QUANTIZE = buf[6];
+		DURATION = buf[7];
+		COPYPOS = buf[8];
+		COPYSEQ = buf[9];
+		SONG = buf[10];
+		CLOCKMASTER = buf[11];
 
 	}
 
