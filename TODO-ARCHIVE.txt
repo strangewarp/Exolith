@@ -103,6 +103,27 @@ Software:
 		. change all TO_UPDATE calls related to these things
 			-- done
 
+	-- lightly refactored updateSecondRow()
+	-- fixed some slight bad text-formatting in buttons-key.txt
+
+	. add a QRESET command, which will reset QUANTIZE's anchor point every n ticks
+		-- am doing
+		. change the REPEAT system to make this distinction
+			-- done
+		. change all related BLINK and TO_UPDATE calls
+			-- afaict done
+		. change the prefs-file routines to add a QRESET slot
+			-- done
+		. change all relevant GUI calls
+			-- done
+		. add CmdFunc and glyph for QRESET
+			-- done
+		. add GUI routines for QRESET
+			-- done
+
+	. wipe the SD-card again before testing, since the prefs-file format has been changed
+		-- ok
+
 Hardware:
 
 

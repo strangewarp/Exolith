@@ -6,12 +6,13 @@ void createFiles() {
 	char name[8]; // Will hold a given filename
 
 	for (byte i = 0; i < 168; i++) { // For every song-slot...
-		//lc.setRow(0, 0, i); // Display how many files have been created so far, if any
 		if (!(i % 21)) { // After a certain amount of files, switch to the next logo letter
+			PORTD &= B10111111; // Set the MAX chip's CS pin low (data latch)
 			for (byte row = 0; row < 7; row++) { // For each row in the 7-row-tall logo text...
 				// Set the corresponding row to the corresponding letter slice
-				lc.setRow(0, row + 1, pgm_read_byte_near(LOGO + (row * 4) + ((i / 21) % 4)));
+				sendRow(row + 1, pgm_read_byte_near(LOGO + (row * 4) + ((i / 21) % 4)));
 			}
+			PORTD |= B01000000; // Set the MAX chip's CS pin high (data latch)
 		}
 		getFilename(name, i); // Get the filename that corresponds to this song-slot
 		if (sd.exists(name)) { continue; } // If the file exists, skip the file-creation process for this filename
@@ -169,15 +170,20 @@ void loadSong(byte slot) {
 	haltAllSustains(); // Clear all currently-sustained notes
 	resetAllSeqs(); // Reset all seqs' internal activity variables of all kinds
 
+	PORTD &= B10111111; // Set the MAX chip's CS pin low (data latch)
+
 	// Display a fully-lit screen while loading data
-	lc.setRow(0, 0, 255);
-	lc.setRow(0, 1, 255);
-	lc.setRow(0, 2, 255);
-	lc.setRow(0, 3, 255);
-	lc.setRow(0, 4, 255);
-	lc.setRow(0, 5, 255);
-	lc.setRow(0, 6, 255);
-	lc.setRow(0, 7, 255);
+	sendRow(0, 255);
+	sendRow(1, 255);
+	sendRow(2, 255);
+	sendRow(3, 255);
+	sendRow(4, 255);
+	sendRow(5, 255);
+	sendRow(6, 255);
+	sendRow(7, 255);
+
+	PORTD |= B01000000; // Set the MAX chip's CS pin high (data latch)
+
 	delay(10); // Wait for a long enough time for the screen-flash to be visible
 
 	if (file.isOpen()) { // If a savefile is already open...

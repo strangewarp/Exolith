@@ -9,26 +9,22 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	-- lightly refactored updateSecondRow()
-	-- fixed some slight bad text-formatting in buttons-key.txt
+	-- added a blink effect whenever a note is played in RECORD-MODE, regardless of whether RECORDNOTES is armed
 
-	. add a QRESET command, which will reset QUANTIZE's anchor point every n ticks
+	. write a stripped-down replacement for LedControl, to save RAM space
 		-- am doing
-		. change the REPEAT system to make this distinction
+		. write "initialize" and "send line" functions
 			-- done
-		. change all related BLINK and TO_UPDATE calls
-			-- afaict done
-		. change the prefs-file routines to add a QRESET slot
+		. change updateGUI() to open and close the MAX72** chip's data-latch on digital pin 6
 			-- done
-		. change all relevant GUI calls
-			-- done
-		. add CmdFunc and glyph for QRESET
-			-- done
-		. add GUI routines for QRESET
+		. change all GUI-related functions to use sendRow() instead of LedControl calls
 			-- done
 
-	. wipe the SD-card again before testing, since the prefs-file format has been changed
-		-- ok
+	. is the line "shiftOut(5, 7, MSBFIRST, 12);" necessary in maxInitialize()?
+		-- 
+
+	. QUANTIZE/QRESET don't hit the right ticks when containing unusual values. fix it
+		-- 
 
 	. reload firmware and test changes:
 		. is BLINK affected by the active TRACK in RECORD MODE?
@@ -44,6 +40,8 @@ Software:
 			-- 
 		. how many notes are actually played when more than 2 are held with REPEAT active?
 			-- 
+
+	. mystery crash after allowing RECORD MODE to sit for a while. figure out what it is
 
 	. re-test all recording mechanisms
 		-- am doing

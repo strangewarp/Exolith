@@ -36,9 +36,6 @@
 // Program-space (PROGMEM) library
 #include <avr/pgmspace.h>
 
-// MAX7219/MAX7221 LED-matrix library
-#include <LedControl.h>
-
 // Serial Peripheral Interface library
 #include <SPI.h>
 
@@ -158,8 +155,6 @@ const char PREFS_FILENAME[] PROGMEM = {80, 46, 68, 65, 84, 0}; // Filename of th
 SdFat sd; // Initialize SdFat object
 SdFile file; // Initialize an SdFile File object, to control default data read/write processes
 
-LedControl lc = LedControl(5, 7, 6, 1); // Initialize the object that controls the MAX7219's LED-grid
-
 
 
 void setup() {
@@ -179,18 +174,16 @@ void setup() {
 	DDRD |= B00011100;
 	DDRB |= B00000011;
 
-	// Power up ledControl to full brightness
-	lc.shutdown(0, false);
-	lc.setIntensity(0, 15);
-
 	// Initialize the SD-card at full speed, or throw a visible error message if no SD-card is inserted
 	if (!sd.begin(10, SPI_FULL_SPEED)) {
-		lc.setRow(0, 2, B11101110);
-		lc.setRow(0, 3, B10001001);
-		lc.setRow(0, 4, B11101001);
-		lc.setRow(0, 5, B00101001);
-		lc.setRow(0, 6, B00101010);
-		lc.setRow(0, 7, B11101100);
+		PORTD &= B10111111; // Set the MAX chip's CS pin low (data latch)
+		sendRow(2, B11101110);
+		sendRow(3, B10001001);
+		sendRow(4, B11101001);
+		sendRow(5, B00101001);
+		sendRow(6, B00101010);
+		sendRow(7, B11101100);
+		PORTD |= B01000000; // Set the MAX chip's CS pin high (data latch)
 		sd.initErrorHalt();
 	}
 

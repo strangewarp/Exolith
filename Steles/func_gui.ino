@@ -1,15 +1,36 @@
 
 
+// Initialize communications with the MAX72** chip,
+// on regular digital pins.
+void maxInitialize() {
+	DDRD |= B11100000; // Set the Data, Clk, and CS pins as outputs
+	PORTD &= B10111111; // Set the CS pin low (data latch)
+	shiftOut(5, 7, MSBFIRST, 15); // Set scanlimit to max
+	shiftOut(5, 7, MSBFIRST, 0); // ^
+	shiftOut(5, 7, MSBFIRST, 9); // Decode is done in source
+	shiftOut(5, 7, MSBFIRST, 0); // ^
+	shiftOut(5, 7, MSBFIRST, 12); // Shutown mode: startup
+	shiftOut(5, 7, MSBFIRST, 1); // ^
+	shiftOut(5, 7, MSBFIRST, 10); // LED intensity: maximum
+	shiftOut(5, 7, MSBFIRST, 15); // ^
+	PORTD |= B01000000; // Set the CS pin high (data latch)
+}
+
+// Update the LED-data of a given row on the MAX72** chip
+void sendRow(byte row, byte d) {
+	shiftOut(5, 7, MSBFIRST, row + 1); // Send the row's opcode
+	shiftOut(5, 7, MSBFIRST, d); // Send its 1-byte LED-data payload
+}
+
 // Display the number of a newly-loaded savefile
 void displayLoadNumber() {
 	byte c1 = SONG % 10; // Get the ones digit
 	byte c2 = byte(floor(SONG / 10)) % 10; // Get the tens digit
 	byte c3 = SONG >= 100; // Get the hundreds digit (only 0 or 1)
-	lc.setRow(0, 0, 0); // Blank out top row
-	lc.setRow(0, 1, 0); // Blank out second row
+	sendRow(0, 0); // Blank out top row
+	sendRow(1, 0); // Blank out second row
 	for (byte i = 0; i < 6; i++) { // For each of the bottom 6 rows of the GUI...
-		lc.setRow(
-			0,
+		sendRow(
 			i + 2, // Set this row...
 			(pgm_read_byte_near(NUMBER_GLYPHS + (c1 * 6) + i) >> 5) // To a composite of all three digits, shifted in position accordingly
 				| (pgm_read_byte_near(NUMBER_GLYPHS + (c2 * 6) + i) >> 1)
@@ -49,42 +70,42 @@ byte getRowScatterVals(byte r) {
 void updateFirstRow(byte ctrl) {
 	if (RECORDMODE) { // If this is RECORD-MODE...
 		if (ctrl == B00100000) { // If ARM RECORDING is pressed...
-			lc.setRow(0, 0, RECORDSEQ); // Display currently-recording sequence (in binary)
+			sendRow(0, RECORDSEQ); // Display currently-recording sequence (in binary)
 		} else if (ctrl == B00010000) { // If QUANTIZE is pressed...
-			lc.setRow(0, 0, QUANTIZE); // Display QUANTIZE value
+			sendRow(0, QUANTIZE); // Display QUANTIZE value
 		} else if (ctrl == B00001000) { // Else, if OCTAVE is pressed...
-			lc.setRow(0, 0, OCTAVE); // Display OCTAVE value
+			sendRow(0, OCTAVE); // Display OCTAVE value
 		} else if (ctrl == B00000100) { // Else, if VELO is pressed...
-			lc.setRow(0, 0, VELO); // Display VELO value
+			sendRow(0, VELO); // Display VELO value
 		} else if (ctrl == B00000010) { // Else, if TRACK is pressed...
-			lc.setRow(0, 0, 240 >> (TRACK * 4)); // Display TRACK value (illuminate left side for track 1, right for track 2)
+			sendRow(0, 240 >> (TRACK * 4)); // Display TRACK value (illuminate left side for track 1, right for track 2)
 		} else if (ctrl == B00110000) { // Else, if SEQ-SIZE is pressed...
-			lc.setRow(0, 0, STATS[RECORDSEQ] & 63); // Display current record-seq's SIZE value
+			sendRow(0, STATS[RECORDSEQ] & 63); // Display current record-seq's SIZE value
 		} else if (ctrl == B00011000) { // Else, if DURATION is pressed...
-			lc.setRow(0, 0, DURATION); // Display DURATION value
+			sendRow(0, DURATION); // Display DURATION value
 		} else if (ctrl == B00001100) { // Else, if HUMANIZE is pressed...
-			lc.setRow(0, 0, HUMANIZE); // Display HUMANIZE value
+			sendRow(0, HUMANIZE); // Display HUMANIZE value
 		} else if ((ctrl == B00101000) || (ctrl == B00100100)) { // Else, if CHAN or UPPER CHAN BITS is pressed...
-			lc.setRow(0, 0, CHAN); // Display CHAN value
+			sendRow(0, CHAN); // Display CHAN value
 		} else if (ctrl == B00100010) { // Else, if BPM is pressed...
-			lc.setRow(0, 0, BPM); // Display BPM value
+			sendRow(0, BPM); // Display BPM value
 		} else if (ctrl == B00100001) { // Else, if SWITCH RECORDING-SEQUENCE is held...
-			lc.setRow(0, 0, RECORDSEQ); // Show the currently-active seq
+			sendRow(0, RECORDSEQ); // Show the currently-active seq
 		} else if (ctrl == B00010001) { // Else, if QUANTIZE-RESET is held...
-			lc.setRow(0, 0, QRESET); // Display QRESET value
+			sendRow(0, QRESET); // Display QRESET value
 		} else if (ctrl == B00001001) { // Else, if CLOCK-MASTER is pressed...
-			lc.setRow(0, 0, CLOCKMASTER * 255); // Light up row if CLOCKMASTER mode is active
+			sendRow(0, CLOCKMASTER * 255); // Light up row if CLOCKMASTER mode is active
 		} else { // Else...
 			// If ARM-RECORDING or ERASE WHILE HELD is held...
 			// Or some other unassigned button-combination is held...
 			// Or no control-buttons are held...
-			lc.setRow(0, 0, 128 >> (CUR16 >> 4)); // Display the global cue's current beat
+			sendRow(0, 128 >> (CUR16 >> 4)); // Display the global cue's current beat
 		}
 	} else { // Else, if this isn't RECORD-MODE...
 		if ((!LOADMODE) && (ctrl == B00100010)) { // If this isn't LOAD MODE (then this is PLAY MODE), and if BPM is held...
-			lc.setRow(0, 0, BPM); // Display BPM value
+			sendRow(0, BPM); // Display BPM value
 		} else { // Else, if this is LOAD MODE, or if this is PLAY MODE and a BPM command isn't held...
-			lc.setRow(0, 0, 128 >> (CUR16 >> 4)); // Display the global cue's current beat
+			sendRow(0, 128 >> (CUR16 >> 4)); // Display the global cue's current beat
 		}
 	}
 }
@@ -95,13 +116,13 @@ void updateSecondRow() {
 		byte beat = POS[RECORDSEQ] >> 4; // Get the current beat in the RECORDSEQ
 		byte b2 = beat % 8; // Get the current beat, wrapped by 8
 		byte join = (2 << (POS[RECORDSEQ] >> 7)) - 1; // Light a number of LEDs equal to the number of times the beat has wrapped around
-		lc.setRow(0, 1, (join << (7 - b2)) | (join >> (b2 + 1))); // Display the RECORDSEQ's spatially-wrapped beat-value
+		sendRow(1, (join << (7 - b2)) | (join >> (b2 + 1))); // Display the RECORDSEQ's spatially-wrapped beat-value
 	} else { // Else, if RECORDMODE isn't active...
 		if ((BUTTONS & B00000011) == 3) { // If any SCATTER-shaped command is held...
-			lc.setRow(0, 1, SCATTER[RECORDSEQ]); // Display the most-recently-touched seq's SCATTER value
+			sendRow(1, SCATTER[RECORDSEQ]); // Display the most-recently-touched seq's SCATTER value
 		} else { // Else, if a SCATTER-shaped command isn't being held...
 			// Display the current number of sustains (0-8), with illumination inverted depending on which page is active
-			lc.setRow(0, 1, (255 >> SUST_COUNT) ^ (255 * (!PAGE)));
+			sendRow(1, (255 >> SUST_COUNT) ^ (255 * (!PAGE)));
 		}
 	}
 }
@@ -111,8 +132,7 @@ void updateLoadBottomRows(byte ctrl) {
 	byte ind = ctrlToButtonIndex(ctrl); // Get the number that corresponds to the currently-held LOADPAGE-button
 	for (byte i = 0; i < 6; i++) { // For each of the bottom 6 GUI rows...
 		if (!(TO_UPDATE & (4 << i))) { continue; } // If the row is not flagged for an update, continue to the next row
-		lc.setRow( // Set the LED-row based on the current display-row:
-			0, // LED-grid 0 (only LED-grid used)...
+		sendRow( // Set the LED-row based on the current display-row:
 			i, // LED-row corresponding to the current row...
 			pgm_read_byte_near( // Get LED data from PROGMEM:
 				NUMBER_GLYPHS // Get a number-glyph,
@@ -152,7 +172,7 @@ void updateRecBottomRows(byte ctrl) {
 			}
 		}
 
-		lc.setRow(0, i + 2, row); // Set the LED-row based on the current display-row
+		sendRow(i + 2, row); // Set the LED-row based on the current display-row
 
 	}
 
@@ -164,14 +184,14 @@ void updatePlayBottomRows(byte ctrl) {
 	for (byte i = 2; i < 8; i++) { // For each of the bottom 6 GUI rows...
 		if (TO_UPDATE & (1 << i)) { // If the row is flagged for an update...
 			if (BLINK) { // If a BLINK is active within PLAY-mode...
-				lc.setRow(0, i, 255); // Illuminate the entire row
+				sendRow(i, 255); // Illuminate the entire row
 				continue; // Skip to the next row
 			}
 			if (ctrl == B00100010) { // If a BPM command is held...
-				lc.setRow(0, i, pgm_read_byte_near(GLYPHS + 96 + (i - 2))); // Display a line from the BPM glyph
+				sendRow(i, pgm_read_byte_near(GLYPHS + 96 + (i - 2))); // Display a line from the BPM glyph
 			} else { // Else, if a regular PLAY MODE command is held...
 				// If a SCATTER-related command is held, display a row of SCATTER info; else display a row of SEQ info
-				lc.setRow(0, i, heldsc ? getRowScatterVals(i - 2) : getRowSeqVals(i - 2));
+				sendRow(i, heldsc ? getRowScatterVals(i - 2) : getRowSeqVals(i - 2));
 			}
 		}
 	}
@@ -191,7 +211,11 @@ void updateBottomRows(byte ctrl) {
 // Update the GUI based on update-flags that have been set by the current tick's events
 void updateGUI() {
 
+	if (!TO_UPDATE) { return; } // If no rows are to be updated, exit the function
+
 	byte ctrl = BUTTONS & B00111111; // Get the control-row buttons' activity
+
+	PORTD &= B10111111; // Set the MAX chip's CS pin low (data latch)
 
 	if (TO_UPDATE & 1) { // If the first row is flagged for a GUI update...
 		updateFirstRow(ctrl); // Update the first row of LEDs
@@ -205,7 +229,9 @@ void updateGUI() {
 		updateBottomRows(ctrl); // Update the 6 bottom rows of LEDs
 	}
 
-	TO_UPDATE = 0; // Unset the GUI-row-update flags
+	PORTD |= B01000000; // Set the MAX chip's CS pin high (data latch)
+
+	TO_UPDATE = 0; // Clear all TO_UPDATE flags
 
 }
 

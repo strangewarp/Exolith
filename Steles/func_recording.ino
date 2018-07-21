@@ -86,8 +86,10 @@ void processRecAction(byte key, byte trk) {
 			qp %= word(STATS[RECORDSEQ] & 63) * 16; // Wrap the insertion-point around the seq's length
 		}
 		recordToSeq(qp, CHAN, pitch, velo, trk); // Record the note into the current RECORDSEQ slot
-		TO_UPDATE |= 252; // Flag the 6 bottommost LED-rows for an update
 	}
+
+	BLINK = max(BLINK, 128); // Start an ~8ms blink if a longer one isn't already active
+	TO_UPDATE |= 252; // Flag the 6 bottommost LED-rows for an update
 
 	// If this is a BPM-CHANGE command, change the BPM immediately to reflect its contents
 	if (CHAN == 240) {
