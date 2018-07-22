@@ -9,10 +9,15 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
+	-- found and fixed a SCATTER bug in parseScatter() even though I'm not testing that yet
+	-- added clarification to a readTick() call inside of getTickNotes(), since it could easily be mistaken for a SCATTER bug
+
 	. QUANTIZE/QRESET don't hit the right ticks when containing unusual values. fix it
 		-- am doing
 		. seems to go out of whack specifically when QRESET is at a value lower than 32. what's causing this
-			-- 
+			. wait... is this just the testing apparatus again, combined with some user error (selecting QRESET of 8 when I thought it was 16)?
+			-- this is the third time this has happened
+			-- horrible. horrible. the bug never existed in the first place
 
 	. reload firmware and test changes:
 		. is BLINK affected by the active TRACK in RECORD MODE?

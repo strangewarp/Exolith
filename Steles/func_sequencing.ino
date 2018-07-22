@@ -111,7 +111,7 @@ void parseScatter(byte s, byte didscatter) {
 	} else { // Else, if this wasn't a SCATTER-tick...
 
 		// If this tick's random-value doesn't exceed the seq's SCATTER-chance value, exit the function
-		if ((GLOBALRAND & 15) >= SCATTER[s]) { return; }
+		if ((GLOBALRAND & 15) >= (SCATTER[s] & 15)) { return; }
 
 		byte rnd = (GLOBALRAND >> 4) & 255; // Get 8 random bits
 
@@ -185,7 +185,8 @@ void getTickNotes(byte ctrl, unsigned long held, byte s, byte buf[]) {
 		}
 		readTick(s, 0, buf); // Read the tick with no offset
 	} else { // Else, if RECORD MODE is inactive...
-		readTick(s, (SCATTER[s] & 240) >> 3, buf); // Read the tick with SCATTER-offset
+		// Read the tick with SCATTER-offset (>> 3, not 4, because we want a minimum of an 8th-note granularity)
+		readTick(s, (SCATTER[s] & 240) >> 3, buf);
 		didscatter = 1;
 	}
 
@@ -221,7 +222,7 @@ void iterateAll() {
 			getTickNotes(ctrl, held, i, buf);
 
 			// Increase the seq's 16th-note position by one increment, wrapping it around its top limit
-			POS[i] = (POS[i] + 1) % (word(size) << 4);
+			POS[i] = (POS[i] + 1) % (word(size) * 16);
 
 		}
 
