@@ -9,11 +9,6 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	-- slightly lengthened the BLINK duration when a note-key is pressed in RECORD-MODE
-
-	. GUI is non-responsive after powering back up. figure out why
-		-- still not sure of the exact cause, but, fixed it by restructuring maxInitialize(), sendRow(), and creating sendMaxCmd()
-
 	. QUANTIZE/QRESET don't hit the right ticks when containing unusual values. fix it
 		-- am doing
 		. seems to go out of whack specifically when QRESET is at a value lower than 32. what's causing this
@@ -208,22 +203,13 @@ Software:
 
 Hardware:
 
-	. put the MAX7219 onto the SPI pins?
-		. if so:
-			. assign a second CS pin for the MAX7219
-				. write a simplified version of LedControl_HW_SPI, using raw commands from the SPI library
-			. assign a "safe-shutdown" pin
-				. 5v -> low-dropout-voltage power-diode -> (1uF electrolytic cap -> gnd) AND (1k resistor -> gnd) AND (220ohm(?) resistor -> DIGITAL-IN pin)
-					. update the schematics on this basis
-				. on every loop, check whether this pin has gone low
-				. when this pin goes low:
-					. immediately close the current file
-					. shut down the ATMEGA
+	. figure out how to stabilize the LEDs while soldering, so their wobbly resin base doesn't set them at slight angles
+		. should each LED just have a very short standoff? (2mm-ish?)
 
 	. test a new MIDI port setup:
+		. no MIDI-THRU! (feature would be too rarely used, on this particular kind of device)
 		. 1x MIDI-IN + indicator LED
-		. 1x MIDI-THRU
-		. 3x MIDI-OUT + indicator LED (via second 74HC14N chip)
+		. 2x MIDI-OUT + indicator LED
 			. research how many milliamps the standard MIDI-OUT connection uses, to prevent the possibility of frying power components
 
 	. use "industrial-grade" SD-cards, to greatly lengthen the SD-card's wear-leveling life to something a user would be okay with
@@ -235,10 +221,9 @@ Hardware:
 		. protection-resistors in front of each first transistor's base terminal
 		. protection-diodes between the MIDI data-lines and the first protection-resistors
 
-	. note: this task may no longer be necessary, but keeping it until I'm sure:
-		. test MIDI-IO LED circuit with 0.1uF & 1uF capacitors
-			. or with 1k/10k resistor from cap+ to GND
-			. if it's as bright as the current kind, then: change KiCad schematics & PCBs & Mouser order to reflect this
+	. test MIDI-IO LED circuit with 0.1uF & 1uF capacitors
+		. or with 1k/10k resistor from cap+ to GND
+		. if it's as bright as the current kind, then: change KiCad schematics & PCBs & Mouser order to reflect this
 
 	. if still using current standoff lengths, then MIDI ports will require another mm of vertical space
 		. therefore: put 1mm-thick spacers on every standoff and compensate for this in all side-panel sizes accordingly

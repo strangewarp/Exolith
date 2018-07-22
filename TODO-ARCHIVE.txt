@@ -141,6 +141,11 @@ Software:
 
 	-- removed an extraneous PORTD call from maxInitialize()
 
+	-- slightly lengthened the BLINK duration when a note-key is pressed in RECORD-MODE
+
+	. GUI is non-responsive after powering back up. figure out why
+		-- still not sure of the exact cause, but, fixed it by restructuring maxInitialize(), sendRow(), and creating sendMaxCmd()
+
 Hardware:
 
 
