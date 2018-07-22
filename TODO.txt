@@ -9,22 +9,24 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	-- found and fixed a SCATTER bug in parseScatter() even though I'm not testing that yet
-	-- added clarification to a readTick() call inside of getTickNotes(), since it could easily be mistaken for a SCATTER bug
+	-- fixed a glyph-display error for PLAY MODE's BPM command
 
-	. QUANTIZE/QRESET don't hit the right ticks when containing unusual values. fix it
-		-- am doing
-		. seems to go out of whack specifically when QRESET is at a value lower than 32. what's causing this
-			. wait... is this just the testing apparatus again, combined with some user error (selecting QRESET of 8 when I thought it was 16)?
-			-- this is the third time this has happened
-			-- horrible. horrible. the bug never existed in the first place
+	. in PLAY MODE, BPM conflicts with CUE-OFF
+		. this means:
+			. the PLAY MODE section of button-key.txt is actually reversed, except for the "BPM" entry. fix it
+			. the BPM command needs to be mirrored to (top-down) 100010
+				. update CmdFunc system for this
+				. update GUI routines for this in PLAY MODE and RECORD MODE
+			. the QRESET command, which takes up (top-down) 100010 in RECORD MODE, needs to be moved
+				. update CmdFunc system for this
+				. update GUI routines for this in RECORD MODE
 
 	. reload firmware and test changes:
 		. is BLINK affected by the active TRACK in RECORD MODE?
 			-- yes
 		. do QUANTIZE and QRESET both work correctly...
 			. in the GUI?
-				-- 
+				-- yes
 			. in regular note-entry?
 				-- 
 			. in REPEAT-based note-entry?
@@ -34,7 +36,12 @@ Software:
 		. how many notes are actually played when more than 2 are held with REPEAT active?
 			-- 
 
+	. on every NOTE-ON, look through the SUSTAIN system for the same note on the same channel, and if it is present, send a NOTE-OFF before the NOTE-ON
+	. (this will allow certain synths to obey conflicting QUANTIZE and DURATION settings without wigging out)
+		-- 
+
 	. mystery crash after allowing RECORD MODE to sit for a while. figure out what it is
+		-- no idea. hopefully the recent increase in free RAM will stop this type of weird event from happening
 
 	. re-test all recording mechanisms
 		-- am doing
@@ -143,7 +150,7 @@ Software:
 	. gestures sometimes have a sloppy response. figure out why
 
 	. if lag-reduction is necessary...
-		. try moving the MAX7219 onto the SPI pins and using LedControl_HW_SPI immediately?
+		. try moving the MAX7219 onto the SPI pins and using a homebrew variant of LedControl_HW_SPI
 		. make sequences monophonic?
 		. limit maximum BPM to 160?
 		. change max note-granularity to 8th-notes?
@@ -236,12 +243,13 @@ Hardware:
 	. update KiCad/Inkscape files:
 		. both boards:
 			. use connection-labels in the schematic, instead of having to make tangles of connections. faster revisions & reduces chance of overlooked errors
-			. should be 4mm to 10mm wider, to better accomodate standoffs and MIDI ports, and to allow a bit more trace space around the new header-position
-			. double-check that the stacking-headers on the bottom-board and top-board share their corresponding positions
+			. move DC-IN jack to bottom-board
+				. change edge-cuts for both boards to accomodate the new DC-IN jack position
 			. change standoff hole-sizes to M3, plus extra kerf to compensate for standoff screws always being slightly over-size due to their threading
 				. make sure there's still enough room for all M3 screws & standoffs
 				. change official parts-list to reflect this decision
 			. change all stacking headers to occupy a 2x20 horizontal row between the buttons and LEDs, to make the assembly process less fragile
+			. double-check that the stacking-headers on the bottom-board and top-board share their corresponding positions
 			. move model-number text to bottom-board - if it were still on the top-board, any sort of transparent plexiglas would make it look tacky
 				. model-number text should be in the following format:
 					. basilisk tine sequencer
