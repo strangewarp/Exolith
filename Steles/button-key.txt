@@ -15,76 +15,76 @@ Button gestures (ALL MODES):
 Button combinations (PLAY MODE):
 
 	1-keypress:
-	100000: OFF
-	010000: 1
-	001000: 2
-	000100: 4
-	000010: CUE (default 0)
-	000001: PAGE
+	000001: OFF
+	000010: 1
+	000100: 2
+	001000: 4
+	010000: CUE (default 0)
+	100000: PAGE
 
 	2-keypress:
-	110000: OFF CUE 1
-	101000: OFF CUE 2
-	100100: OFF CUE 4
-	100010: OFF CUE 0
+	000011: OFF CUE 1
+	000101: OFF CUE 2
+	001001: OFF CUE 4
+	010001: OFF CUE 0
 	100001: PAGE OFF
-	011000: 3
-	010100: 5
+	000110: 3
+	001010: 5
 	010010: CUE 1
-	010001: BPM
+	100010: BPM
 	001100: 6
-	001010: CUE 2
-	001001: reserved (type: "page-2")
-	000110: CUE 4
-	000101: reserved (type: "page-4")
-	000011: SCATTER UNSET
+	010100: CUE 2
+	100100: reserved (type: "page-2")
+	011000: CUE 4
+	101000: reserved (type: "page-4")
+	110000: SCATTER UNSET
 
 	3-keypress:
-	111000: OFF CUE 3
-	110100: OFF CUE 5
-	110010: OFF CUE 1 (duplicate)
-	110001: reserved (type: "page-off-1")
-	101100: OFF CUE 6
-	101010: OFF CUE 2 (duplicate)
-	101001: reserved (type: "page-off-2")
-	100110: OFF CUE 4 (duplicate)
-	100101: reserved (type: "page-off-4")
-	100011: PAGE SCATTER UNSET
-	011100: 7
-	011010: CUE 3
-	011001: reserved (type: "page-ab")
-	010110: CUE 5
-	010101: reserved (type: "page-ac")
-	010011: SCATTER 1
-	001110: CUE 6
-	001101: reserved (type: "page-bc")
-	001011: SCATTER 2
-	000111: SCATTER 4
+	000111: OFF CUE 3
+	001011: OFF CUE 5
+	010011: OFF CUE 1 (duplicate)
+	100011: reserved (type: "page-off-1")
+	001101: OFF CUE 6
+	010101: OFF CUE 2 (duplicate)
+	100101: reserved (type: "page-off-2")
+	011001: OFF CUE 4 (duplicate)
+	101001: reserved (type: "page-off-4")
+	110001: PAGE SCATTER UNSET
+	001110: 7
+	010110: CUE 3
+	100110: reserved (type: "page-ab")
+	011010: CUE 5
+	101010: reserved (type: "page-ac")
+	110010: SCATTER 1
+	011100: CUE 6
+	101100: reserved (type: "page-bc")
+	110100: SCATTER 2
+	111000: SCATTER 4
 
 	4-keypress:
-	111100: OFF CUE 7
-	111010: OFF CUE 3 (duplicate)
-	111001: reserved (type: "page-off-3")
-	110110: OFF CUE 5 (duplicate)
-	110101: reserved (type: "page-off-5")
+	001111: OFF CUE 7
+	010111: OFF CUE 3 (duplicate)
+	100111: reserved (type: "page-off-3")
+	011011: OFF CUE 5 (duplicate)
+	101011: reserved (type: "page-off-5")
 	110011: reserved (type: "page-cue-1-off")
-	101110: OFF CUE 6 (duplicate)
+	011101: OFF CUE 6 (duplicate)
 	101101: reserved (type: "page-off-6")
-	101011: reserved (type: "page-cue-2-off")
-	100111: reserved (type: "page-cue-4-off")
+	110101: reserved (type: "page-cue-2-off")
+	111001: reserved (type: "page-cue-4-off")
 	011110: CUE 7
-	011101: reserved (type: "page-abc")
-	011011: SCATTER 3
-	010111: SCATTER 5
-	001111: SCATTER 6
+	101110: reserved (type: "page-abc")
+	110110: SCATTER 3
+	111010: SCATTER 5
+	111100: SCATTER 6
 
 	5-keypress:
-	111110: OFF CUE 7 (duplicate)
-	111101: reserved (type: "page-off-7")
-	111011: reserved (type: "page-cue-3-off")
-	110111: reserved (type: "page-cue-5-off")
-	101111: reserved (type: "page-cue-6-off")
-	011111: SCATTER 7
+	011111: OFF CUE 7 (duplicate)
+	101111: reserved (type: "page-off-7")
+	110111: reserved (type: "page-cue-3-off")
+	111011: reserved (type: "page-cue-5-off")
+	111101: reserved (type: "page-cue-6-off")
+	111110: SCATTER 7
 
 
 Button combinations (RECORD MODE):
@@ -101,12 +101,12 @@ Button combinations (RECORD MODE):
 	110000: SHIFT CURRENT POSITION
 	101000:
 	100100: CLOCK-MASTER
-	100010: QUANTIZE-RESET
+	100010: BPM
 	100001: SWITCH RECORDING SEQUENCE
 	011000:
 	010100: PASTE
-	010010:
-	010001: BPM
+	010010: QUANTIZE-RESET
+	010001:
 	001100: HUMANIZE
 	001010: COPY
 	001001: UPPER CHAN BITS

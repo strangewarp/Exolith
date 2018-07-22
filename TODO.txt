@@ -14,14 +14,26 @@ Software:
 	. in PLAY MODE, BPM conflicts with CUE-OFF
 		. this means:
 			. the PLAY MODE section of button-key.txt is actually reversed, except for the "BPM" entry. fix it
+				-- done
 			. the BPM command needs to be mirrored to (top-down) 100010
+				-- am doing
 				. update CmdFunc system for this
+					-- done
 				. update GUI routines for this in PLAY MODE and RECORD MODE
-			. the QRESET command, which takes up (top-down) 100010 in RECORD MODE, needs to be moved
+					-- done
+			. the QRESET command, which takes up (top-down) 100010 in RECORD MODE, needs to be moved to (top-down) 010010
+				-- am doing
 				. update CmdFunc system for this
+					-- done
 				. update GUI routines for this in RECORD MODE
+					-- done
 
-	. reload firmware and test changes:
+	. test: do the reworked QUANTIZE and BPM commands work right?
+		-- 
+	. has OFF CUE 0 been freed up correctly?
+		-- 
+
+	. test changes:
 		. is BLINK affected by the active TRACK in RECORD MODE?
 			-- yes
 		. do QUANTIZE and QRESET both work correctly...

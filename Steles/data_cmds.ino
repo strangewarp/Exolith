@@ -45,8 +45,8 @@ const byte KEYTAB[] PROGMEM = {
 	0,  // 14, 001110:  0, ignore
 	3,  // 15, 001111:  3, clearCmd
 	13, // 16, 010000: 13, quantizeCmd
-	12, // 17, 010001: 12, qrstCmd
-	0,  // 18, 010010:  0, ignore
+	17, // 17, 010001: 17, tempoCmd
+	12, // 18, 010010: 12, qrstCmd
 	0,  // 19, 010011:  0, ignore
 	5,  // 20, 010100:  5, copyCmd
 	0,  // 21, 010101:  0, ignore
@@ -62,7 +62,7 @@ const byte KEYTAB[] PROGMEM = {
 	0,  // 31, 011111:  0, ignore
 	1,  // 32, 100000:  1, armCmd
 	16, // 33, 100001: 16, switchCmd
-	17, // 34, 100010: 17, tempoCmd
+	0,  // 34, 100010:  0, ignore
 	0,  // 35, 100011:  0, ignore
 	19, // 36, 100100: 19, upperBitsCmd
 	0,  // 37, 100101:  0, ignore
