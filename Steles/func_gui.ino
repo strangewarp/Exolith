@@ -6,18 +6,9 @@ void maxInitialize() {
 
 	DDRD |= B11100000; // Set the Data, Clk, and CS pins as outputs
 
-	PORTD &= B10111111; // Set the CS pin low (data latch)
-	shiftOut(5, 7, MSBFIRST, 15); // Conduct a display-test
-	shiftOut(5, 7, MSBFIRST, 0); // ^
-	shiftOut(5, 7, MSBFIRST, 11); // Set scanlimit to max
-	shiftOut(5, 7, MSBFIRST, 7); // ^
-	shiftOut(5, 7, MSBFIRST, 9); // Decode is done in source
-	shiftOut(5, 7, MSBFIRST, 0); // ^
-	shiftOut(5, 7, MSBFIRST, 12); // Shutown mode: startup
-	shiftOut(5, 7, MSBFIRST, 1); // ^
-	shiftOut(5, 7, MSBFIRST, 10); // LED intensity: maximum
-	shiftOut(5, 7, MSBFIRST, 15); // ^
-	PORTD |= B01000000; // Set the CS pin high (data latch)
+	sendMaxCmd(15, 0); // Conduct a display-test
+	sendMaxCmd(11, 7); // Set scanlimit to max
+	sendMaxCmd(9, 0); // Decode is done in source
 
 	// Clear all rows
 	sendRow(0, 0);
@@ -29,13 +20,22 @@ void maxInitialize() {
 	sendRow(6, 0);
 	sendRow(7, 0);
 
+	sendMaxCmd(12, 0); // Shutown mode: shutdown
+	sendMaxCmd(12, 1); // Shutown mode: startup
+	sendMaxCmd(10, 15); // LED intensity: maximum
+
 }
 
 // Update the LED-data of a given row on the MAX72** chip
 void sendRow(volatile byte row, volatile byte d) {
+	sendMaxCmd(row + 1, d); // Send the row's opcode and data byte
+}
+
+// Send a command to the MAX72** chip
+void sendMaxCmd(volatile byte cmd, volatile byte d) {
 	PORTD &= B10111111; // Set the CS pin low (data latch)
-	shiftOut(5, 7, MSBFIRST, row + 1); // Send the row's opcode
-	shiftOut(5, 7, MSBFIRST, d); // Send its 1-byte LED-data payload
+	shiftOut(5, 7, MSBFIRST, cmd); // Send the command's opcode
+	shiftOut(5, 7, MSBFIRST, d); // Send the command's 1-byte LED-data payload
 	PORTD |= B01000000; // Set the CS pin high (data latch)
 }
 

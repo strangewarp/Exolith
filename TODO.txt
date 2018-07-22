@@ -9,10 +9,15 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	-- removed an extraneous PORTD call from maxInitialize()
+	-- slightly lengthened the BLINK duration when a note-key is pressed in RECORD-MODE
+
+	. GUI is non-responsive after powering back up. figure out why
+		-- still not sure of the exact cause, but, fixed it by restructuring maxInitialize(), sendRow(), and creating sendMaxCmd()
 
 	. QUANTIZE/QRESET don't hit the right ticks when containing unusual values. fix it
-		-- 
+		-- am doing
+		. seems to go out of whack specifically when QRESET is at a value lower than 32. what's causing this
+			-- 
 
 	. reload firmware and test changes:
 		. is BLINK affected by the active TRACK in RECORD MODE?

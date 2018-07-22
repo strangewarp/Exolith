@@ -139,6 +139,8 @@ Software:
 		-- figured it out: every row-send command must be surrounded by its own set of CS-pin latch commands. these are now in sendRow()
 		-- also might have been that sendRow() requires "volatile byte" typing. this is mysterious. leaving it in to be thorough
 
+	-- removed an extraneous PORTD call from maxInitialize()
+
 Hardware:
 
 

@@ -88,7 +88,7 @@ void processRecAction(byte key, byte trk) {
 		recordToSeq(qp, CHAN, pitch, velo, trk); // Record the note into the current RECORDSEQ slot
 	}
 
-	BLINK = max(BLINK, 128); // Start an ~8ms blink if a longer one isn't already active
+	BLINK = max(BLINK, 192); // Start a ~12ms blink if a longer one isn't already active
 	TO_UPDATE |= 252; // Flag the 6 bottommost LED-rows for an update
 
 	// If this is a BPM-CHANGE command, change the BPM immediately to reflect its contents
