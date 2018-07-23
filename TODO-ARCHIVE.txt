@@ -156,6 +156,25 @@ Software:
 			-- this is the third time this has happened
 			-- horrible. horrible. the bug never existed in the first place
 
+	-- fixed a glyph-display error for PLAY MODE's BPM command
+
+	. in PLAY MODE, BPM conflicts with CUE-OFF
+		. this means:
+			. the PLAY MODE section of button-key.txt is actually reversed, except for the "BPM" entry. fix it
+				-- done
+			. the BPM command needs to be mirrored to (top-down) 100010
+				-- am doing
+				. update CmdFunc system for this
+					-- done
+				. update GUI routines for this in PLAY MODE and RECORD MODE
+					-- done
+			. the QRESET command, which takes up (top-down) 100010 in RECORD MODE, needs to be moved to (top-down) 010010
+				-- am doing
+				. update CmdFunc system for this
+					-- done
+				. update GUI routines for this in RECORD MODE
+					-- done
+
 Hardware:
 
 

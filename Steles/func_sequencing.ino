@@ -45,7 +45,7 @@ void parseCues(byte s, byte size) {
 
 	CMD[s] = 0; // Clear the sequence's CUED-COMMANDS byte
 
-	BLINK = 127; // Start an ~8ms LED-blink
+	BLINK = 128; // Start an ~8ms LED-blink
 	TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for an update
 	//TO_UPDATE |= 4 << ((s % 24) >> 2); // Flag the sequence's corresponding LED-row for an update
 
