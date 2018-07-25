@@ -9,26 +9,29 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	. change the BLINK system:
-		. divide BLINK into BLINKL and BLINKR, which are decremented in the same way that BLINK is
-		. (BLINKL and BLINKR will simplify the need to show notes playing on tracks in RECORD MODE)
-			-- ok
-		. rewrite func_timer.ino to decrement both BLINKL/R types simultaneously
-			-- done
-		. rewrite all BLINK commands to flag BLINKL, BLINKR, or both, depending on context
-			-- done
-		. rewrite GUI routines to remove situational cruft, and to instead follow BLINKL and BLINKR straightforwardly
-			-- done
+	. test GUI changes
+		. RECORD MODE [blink on note presence by track]
+			-- forgot to include a TO_UPDATE call after the BLINK-setting mechanism in parseTickContents()
+			. test again. does it work?
+				-- both inaccurate blink-timing, and incomplete blink-shape in UI
+				. what's causing inaccurate blink-timing?
+					-- incorrect manipulation of the contents of BLINKL/BLINKR in updateRecBottomRows()
+				. what's causing incomplete blink-shape?
+					-- incorrect manipulation of the contents of BLINKL/BLINKR in updateRecBottomRows()
+		. BLINKs during REPEAT
+			-- seem ok
+		. RECORDNOTES flag's impact on BLINK style
+			-- seems correct
+		. BLINK's response to TRACK-switching
+			-- seems correct
+		. CUE commands in PLAY MODE
+			-- seems fine
 
-	. when RECORD MODE is active, and RECORDNOTES is unarmed, and REPEAT is not active,
-	.     a BLINK should occur for every note playing on each of the two tracks within the seq
-	. (this will allow users to quickly know which track a seq's notes are playing on, because nobody can be expected to remember that, and it gets frustrating)
-		-- done
+	. add a SEQFLASH system to PLAY MODE, so that any seqs with pending CUE commands will blink in certain ways:
+		. already-active seqs blink ON and OFF every quarter-note
+		. currently-OFF seqs blink ON, OFF, OFF, OFF, every 4 quarter-notes
 
-	. test GUI changes (RECORD MODE, REPEAT, RECORDNOTES, TRACK switching, CUE commands in PLAY MODE)
-		-- 
-
-	. move CUE button to second bottommost row, and shift the 1-2-4 buttons upwards by 1 row?
+	. move CUE button to second-bottommost row, and shift the 1-2-4 buttons upwards by 1 row?
 	. (seems like this would be more intuitive UI - "off" and "cue" are used in concrete ways, whereas the numbers are used in abstract ways)
 		-- 
 

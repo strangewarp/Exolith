@@ -76,6 +76,7 @@ void parseTickContents(byte s, byte buf[]) {
 		if ((RECORDMODE) && (RECORDSEQ == s) && (!RECORDNOTES)) {
 			BLINKL |= (!bn) * 192; // Start or continue a TRACK-activity-linked LED-BLINK that is ~12ms long
 			BLINKR |= bn * 48; // ^
+			TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for an update
 		}
 
 		if (buf[bn] == 240) { // If this is a BPM-CHANGE command...

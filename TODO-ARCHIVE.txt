@@ -184,6 +184,22 @@ Software:
 	. has OFF CUE 0 been freed up correctly?
 		-- yes
 
+	. change the BLINK system:
+		. divide BLINK into BLINKL and BLINKR, which are decremented in the same way that BLINK is
+		. (BLINKL and BLINKR will simplify the need to show notes playing on tracks in RECORD MODE)
+			-- ok
+		. rewrite func_timer.ino to decrement both BLINKL/R types simultaneously
+			-- done
+		. rewrite all BLINK commands to flag BLINKL, BLINKR, or both, depending on context
+			-- done
+		. rewrite GUI routines to remove situational cruft, and to instead follow BLINKL and BLINKR straightforwardly
+			-- done
+
+	. when RECORD MODE is active, and RECORDNOTES is unarmed, and REPEAT is not active,
+	.     a BLINK should occur for every note playing on each of the two tracks within the seq
+	. (this will allow users to quickly know which track a seq's notes are playing on, because nobody can be expected to remember that, and it gets frustrating)
+		-- done
+
 Hardware:
 
 

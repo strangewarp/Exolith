@@ -174,7 +174,7 @@ void updateRecBottomRows(byte ctrl) {
 		if (!(TO_UPDATE & (4 << i))) { continue; } // If the row is not flagged for an update, continue to the next row
 
 		if (BLINKL || BLINKR) { // If a BLINK is active...
-			row = (BLINKL * 240) | (BLINKR * 15); // Fill in the LED-row based on which BLINK-sides are active
+			row = (240 * (!!BLINKL)) | (15 * (!!BLINKR)); // Fill in the LED-row based on which BLINK-sides are active
 		} else if (!ctrl) { // Else, if no control-buttons are held...
 			row = getRowSeqVals(i); // Get the row's standard SEQ values
 		} else if (ctrl == B00111100) { // Else, if ERASE NOTES is held...
@@ -198,18 +198,18 @@ void updateRecBottomRows(byte ctrl) {
 // Update the bottom LED-rows for PLAY-MODE
 void updatePlayBottomRows(byte ctrl) {
 	byte heldsc = (ctrl & B00000011) == B00000011; // Make sure this is, indeed, a command with SCATTER shape
+	byte row = 0; // Will hold the binary value to be sent to the row's LEDs
+	byte blnk = (240 * (!!BLINKL)) | (15 * (!!BLINKR)); // If there are any active BLINKs, create a row-template for them
 	for (byte i = 2; i < 8; i++) { // For each of the bottom 6 GUI rows...
 		if (TO_UPDATE & (1 << i)) { // If the row is flagged for an update...
-			if (BLINKL || BLINKR) { // If a BLINK is active within PLAY-mode...
-				sendRow(i, 255); // Illuminate the entire row
-				continue; // Skip to the next row
-			}
+			row = blnk; // If a BLINK is active, add it to the row's contents (also: this line clears the previous loop's row value)
 			if (ctrl == B00010001) { // If a BPM command is held...
-				sendRow(i, pgm_read_byte_near(GLYPHS + 100 + i)); // Display a line from the BPM glyph
+				row |= pgm_read_byte_near(GLYPHS + 100 + i); // Display a line from the BPM glyph
 			} else { // Else, if a regular PLAY MODE command is held...
 				// If a SCATTER-related command is held, display a row of SCATTER info; else display a row of SEQ info
-				sendRow(i, heldsc ? getRowScatterVals(i - 2) : getRowSeqVals(i - 2));
+				row |= heldsc ? getRowScatterVals(i - 2) : getRowSeqVals(i - 2);
 			}
+			sendRow(i, row); // Send the composite row
 		}
 	}
 }
