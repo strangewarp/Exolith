@@ -32,23 +32,33 @@ void resetAllTiming() {
 // Compare a seq's CUE-commands to the global CUE-point, and parse them if the timing is correct
 void parseCues(byte s, byte size) {
 
-	if (
-		(!CMD[s]) // If the seq has no cued commands...
-		|| (CUR16 != ((CMD[s] & B11100000) >> 1)) // Or the global 16th-note doesn't correspond to the seq's cue-point...
-	) { return; } // ...Exit the function
+	if (CMD[s]) { // If the sequence has any cued commands...
 
-	// Enable or disable the sequence's playing-bit
-	STATS[s] = (STATS[s] & B00111111) | ((CMD[s] & 2) << 6);
+		if (CUR16 == ((CMD[s] & B11100000) >> 1)) { // If the global 16th-note corresponds to the seq's cue-point...
 
-	// Set the sequence's internal tick to a position based on the incoming SLICE bits
-	POS[s] = word(size) * ((CMD[s] & B00011100) >> 1);
+			// Enable or disable the sequence's playing-bit
+			STATS[s] = (STATS[s] & B00111111) | ((CMD[s] & 2) << 6);
 
-	CMD[s] = 0; // Clear the sequence's CUED-COMMANDS byte
+			// Set the sequence's internal tick to a position based on the incoming SLICE bits
+			POS[s] = word(size) * ((CMD[s] & B00011100) >> 1);
 
-	BLINKL = 128; // Start an ~8ms LED-blink
-	BLINKR = 128; // ^
-	TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for an update
-	//TO_UPDATE |= 4 << ((s % 24) >> 2); // Flag the sequence's corresponding LED-row for an update
+			CMD[s] = 0; // Clear the sequence's CUED-COMMANDS byte
+
+			TO_UPDATE |= 4 << ((s % 24) >> 2); // Flag the sequence's corresponding LED-row for an update
+
+		} else { // Else, the seq's cue-command is still dormant, so...
+
+			byte ison = STATS[s] & 128; // Get the sequence's on/off bit
+			if (
+				(ison && (!(CUR16 % 4))) // If the sequence is already on, and the global tick is on a quarter-note...
+				|| ((!(CUR16 % 8)) && (!ison)) // Or the sequence is off, and the global tick is on a half-note...
+			) {
+				TO_UPDATE |= 4 << ((s % 24) >> 2); // Flag the sequence's corresponding LED-row for an update
+			}
+
+		}
+
+	}
 
 }
 

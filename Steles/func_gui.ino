@@ -57,17 +57,23 @@ void displayLoadNumber() {
 	delay(750); // Pause the program for 3/4 of a second while the number is displayed
 }
 
+// Get the LED-value for a single seq, adjusted based on whether it's active and whether it has a dormant cue-command
+byte getSeqVal(byte s) {
+	byte ison = STATS[s] & 128;
+	return CMD[s] ? (((CUR16 >> (3 - (!!ison))) % 2) * 128) : ison;
+}
+
 // Get the SEQUENCE-ACTIVITY LED-values for a given GUI row within the lower 6 rows
 byte getRowSeqVals(byte r) {
 	byte ib = r << 2; // Get the row's left-side's global-array position
-	return (STATS[ib] & 128) // Return the row's PLAYING info, from both pages, as a row's worth of bits
-		| ((STATS[ib + 1] & 128) >> 1)
-		| ((STATS[ib + 2] & 128) >> 2)
-		| ((STATS[ib + 3] & 128) >> 3)
-		| ((STATS[ib + 24] & 128) >> 4)
-		| ((STATS[ib + 25] & 128) >> 5)
-		| ((STATS[ib + 26] & 128) >> 6)
-		| ((STATS[ib + 27] & 128) >> 7);
+	return getSeqVal(ib) // Return the row's PLAYING info, from both pages, as a row's worth of bits
+		| (getSeqVal(ib + 1) >> 1)
+		| (getSeqVal(ib + 2) >> 2)
+		| (getSeqVal(ib + 3) >> 3)
+		| (getSeqVal(ib + 24) >> 4)
+		| (getSeqVal(ib + 25) >> 5)
+		| (getSeqVal(ib + 26) >> 6)
+		| (getSeqVal(ib + 27) >> 7);
 }
 
 // Get the SCATTER-ACTIVITY LED-values for a given GUI row within the lower 6 rows

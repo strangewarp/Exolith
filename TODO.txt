@@ -9,27 +9,25 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	. test GUI changes
-		. RECORD MODE [blink on note presence by track]
-			-- forgot to include a TO_UPDATE call after the BLINK-setting mechanism in parseTickContents()
-			. test again. does it work?
-				-- both inaccurate blink-timing, and incomplete blink-shape in UI
-				. what's causing inaccurate blink-timing?
-					-- incorrect manipulation of the contents of BLINKL/BLINKR in updateRecBottomRows()
-				. what's causing incomplete blink-shape?
-					-- incorrect manipulation of the contents of BLINKL/BLINKR in updateRecBottomRows()
-		. BLINKs during REPEAT
-			-- seem ok
-		. RECORDNOTES flag's impact on BLINK style
-			-- seems correct
-		. BLINK's response to TRACK-switching
-			-- seems correct
-		. CUE commands in PLAY MODE
-			-- seems fine
+	-- removed the BLINKs from...
+		-- completed CUE commands in PLAY MODE (parseCues()),
+		-- PLAY MODE CUE-chord-presses (parsePlayPress()),
+	-- ...as there will now be visual confirmation related to flashing seq-LEDs
 
 	. add a SEQFLASH system to PLAY MODE, so that any seqs with pending CUE commands will blink in certain ways:
-		. already-active seqs blink ON and OFF every quarter-note
-		. currently-OFF seqs blink ON, OFF, OFF, OFF, every 4 quarter-notes
+		-- am doing
+		. already-active seqs blink ON and OFF every quarter-note:
+			. add a CUE-checking routine that sets a TO_UPDATE flag in parseCues()
+				-- done
+			. add a rendering routine for this to updatePlayBottomRows()
+				-- done
+		. currently-OFF seqs blink every half-note
+			-- ok
+		. test this
+			-- 
+
+	. do sequences FLASH when they are empty and receive a CUE-OFF command?
+		-- 
 
 	. move CUE button to second-bottommost row, and shift the 1-2-4 buttons upwards by 1 row?
 	. (seems like this would be more intuitive UI - "off" and "cue" are used in concrete ways, whereas the numbers are used in abstract ways)

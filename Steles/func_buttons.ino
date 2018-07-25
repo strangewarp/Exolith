@@ -65,9 +65,7 @@ void parsePlayPress(byte col, byte row) {
 	}
 
 	if (ctrl && (ctrl != B00010001)) { // If this was a non-BPM control-command...
-		BLINKL = 192; // Start a ~12ms LED-blink
-		BLINKR = 192; // ^
-		TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for an update
+		TO_UPDATE |= 4 << ((seq % 24) >> 2); // Flag the sequence's corresponding LED-row for an update
 	}
 
 }

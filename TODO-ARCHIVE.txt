@@ -200,6 +200,24 @@ Software:
 	. (this will allow users to quickly know which track a seq's notes are playing on, because nobody can be expected to remember that, and it gets frustrating)
 		-- done
 
+	. test GUI changes
+		. RECORD MODE [blink on note presence by track]
+			-- forgot to include a TO_UPDATE call after the BLINK-setting mechanism in parseTickContents()
+			. test again. does it work?
+				-- both inaccurate blink-timing, and incomplete blink-shape in UI
+				. what's causing inaccurate blink-timing?
+					-- incorrect manipulation of the contents of BLINKL/BLINKR in updateRecBottomRows()
+				. what's causing incomplete blink-shape?
+					-- incorrect manipulation of the contents of BLINKL/BLINKR in updateRecBottomRows()
+		. BLINKs during REPEAT
+			-- seem ok
+		. RECORDNOTES flag's impact on BLINK style
+			-- seems correct
+		. BLINK's response to TRACK-switching
+			-- seems correct
+		. CUE commands in PLAY MODE
+			-- seems fine
+
 Hardware:
 
 
