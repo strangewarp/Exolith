@@ -243,6 +243,11 @@ Software:
 			-- done
 			-- also changed the logic around the related TO_UPDATE call in parseCues() so it is activated on a quarter-note for every seq with a dormant-cue
 
+	. flashing-seqs still read in a visually confusing way when both CUE and CUE-OFF seqs are flashing at the same time, especially at low tempo.
+		. the only reasonable way to fix this would be...
+			. update a seq-LED on the first and second 16th-note within each half-note, with currently ON and OFF seq blinking in opposite ways
+				-- done
+
 Hardware:
 
 

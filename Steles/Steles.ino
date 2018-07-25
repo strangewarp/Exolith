@@ -188,14 +188,16 @@ void setup() {
 		sd.initErrorHalt();
 	}
 
+	Serial.begin(31250); // Start serial comms at the MIDI baud rate
+
+	midiPanic(); // Send NOTE-OFFs to every MIDI note on every MIDI channel
+	
 	createFiles(); // Check whether the savefiles exist, and if they don't, then create them
 
 	loadPrefs(); // Load whatever prefsarein PRF.DAT, or create PRF.DAT if it doesn't exist yet
 
 	loadSong(SONG); // Load whatever song-slot was in PRF.DAT, or the default song-slot if PRF.DAT didn't exist
 
-	Serial.begin(31250); // Start serial comms at the MIDI baud rate
-	
 	ABSOLUTETIME = micros(); // Make sure ABSOLUTETIME matches the current time, so tempo doesn't have an initial jerk
 
 }

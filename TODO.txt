@@ -9,13 +9,8 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	. flashing-seqs still read in a visually confusing way when both CUE and CUE-OFF seqs are flashing at the same time, especially at low tempo.
-		. the only reasonable way to fix this would be...
-			. update a seq-LED on the first and second 16th-note within each half-note, with currently ON and OFF seq blinking in opposite ways
-				-- done
-
 	. needs to be a MIDI PANIC on startup, to compensate for any accidental power-cycles in the middle of SUSTAINs
-		-- 
+		-- done
 
 	. do sequences FLASH when they are empty and receive a CUE-OFF command?
 		-- yes

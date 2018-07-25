@@ -1,5 +1,36 @@
 
 
+// MIDI PANIC: Send a NOTE-OFF to every note on every MIDI channel.
+//     This is done twice over, for maximum thoroughness:
+//     Firstly, as a series of "ALL NOTES OFF" CC-commands on every MIDI channel;
+//     Secondly, as a series of manual "NOTE-OFF" commands for every pitch on every MIDI channel.
+void midiPanic() {
+
+	byte note[4]; // Create a note-buffer to hold a single note's worth of data at a time
+
+	note[1] = 123; // Set byte 2 to the "ALL NOTES OFF" CC command
+	note[2] = 0; // As per MIDI spec, set byte 3 to "0" (empty)
+	for (byte i = 0; i <= 15; i++) { // For every MIDI channel...
+		sendRow(0, i); // Send a visible status to the top LED-row
+		note[0] = 176 + i; // Create a CC command-byte for the current channel
+		Serial.write(note, 3); // Send the ALL-NOTES-OFF CC command to MIDI-OUT immediately
+	}
+
+	note[2] = 127; // Set the velocity-byte to 127, for the sake of completeness
+
+	for (byte i = 0; i <= 15; i++) { // For every MIDI channel...
+		sendRow(0, i); // Send a visible status to the top LED-row
+		note[0] = 128 + i; // Create a NOTE-OFF command for the current channel
+		for (byte j = 0; j <= 127; j++) { // For every pitch...
+			note[1] = j; // Put that pitch into the note-buffer
+			Serial.write(note, 3); // Send the NOTE-OFF command to MIDI-OUT immediately
+		}
+	}
+
+	sendRow(0, 0); // Empty the command's LED-status-row before finishing
+
+}
+
 // Parse a given MIDI command
 void parseMidiCommand(byte &rcd) {
 	if (RECORDMODE) { // If RECORD-MODE is active...
