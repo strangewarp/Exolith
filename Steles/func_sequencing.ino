@@ -45,7 +45,8 @@ void parseCues(byte s, byte size) {
 
 	CMD[s] = 0; // Clear the sequence's CUED-COMMANDS byte
 
-	BLINK = 128; // Start an ~8ms LED-blink
+	BLINKL = 128; // Start an ~8ms LED-blink
+	BLINKR = 128; // ^
 	TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for an update
 	//TO_UPDATE |= 4 << ((s % 24) >> 2); // Flag the sequence's corresponding LED-row for an update
 
@@ -65,11 +66,17 @@ void readTick(byte s, byte offset, byte buf[]) {
 }
 
 // Parse the contents of a given tick, and add them to the MIDI-OUT buffer and SUSTAIN buffer as appropriate
-void parseTickContents(byte buf[]) {
+void parseTickContents(byte s, byte buf[]) {
 
 	for (byte bn = 0; bn < 8; bn += 4) { // For both event-slots on this tick...
 
 		if (!buf[bn]) { continue; } // If this slot doesn't contain a command, then check the next slot or exit the loop
+
+		// If this is the RECORDSEQ, in RECORD MODE, and RECORDNOTES isn't armed, and a command is present on this tick...
+		if ((RECORDMODE) && (RECORDSEQ == s) && (!RECORDNOTES)) {
+			BLINKL |= (!bn) * 192; // Start or continue a TRACK-linked LED-BLINK that is ~12ms long
+			BLINKR |= bn * 48; // ^
+		}
 
 		if (buf[bn] == 240) { // If this is a BPM-CHANGE command...
 			BPM = buf[bn + 1]; // Set the global BPM to the new BPM-value
@@ -192,7 +199,7 @@ void getTickNotes(byte ctrl, unsigned long held, byte s, byte buf[]) {
 
 	// If the function hasn't exited by this point, then that means this tick contained a note. So...
 
-	parseTickContents(buf); // Check the tick's contents, and add them to MIDI-OUT and SUSTAIN where appropriate
+	parseTickContents(s, buf); // Check the tick's contents, and add them to MIDI-OUT and SUSTAIN where appropriate
 	parseScatter(s, didscatter); // Parse any active SCATTER values that might be associated with the seq
 
 }

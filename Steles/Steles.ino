@@ -48,7 +48,8 @@
 unsigned long BUTTONS = 0; // Tracks which of the 30 buttons are currently pressed; each button has an on/off bit
 byte GESTURE[5]; // Tracks currently-active button-gesture events
 byte PAGE = 0; // Tracks currently-active page of sequences
-byte BLINK = 0; // When an LED-BLINK is active, this will count down to 0
+byte BLINKL = 0; // When filled, this will count down to 0, illuminating the left side of the LEDs
+byte BLINKR = 0; // ^ This, but right side
 byte TO_UPDATE = 0; // Tracks which rows of LEDs should be updated at the end of a given tick
 
 // Timing vars

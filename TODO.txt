@@ -9,14 +9,31 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	-- replaced other references to the outdated BPM keychord in func_gui.ino
-	-- removed the BLINK event on any BPM modification in PLAY MODE, for UI consistency
-	-- refactored BLINK and TO_UPDATE flags in parsePlayPress()
+	. change the BLINK system:
+		. divide BLINK into BLINKL and BLINKR, which are decremented in the same way that BLINK is
+		. (BLINKL and BLINKR will simplify the need to show notes playing on tracks in RECORD MODE)
+			-- ok
+		. rewrite func_timer.ino to decrement both BLINKL/R types simultaneously
+			-- done
+		. rewrite all BLINK commands to flag BLINKL, BLINKR, or both, depending on context
+			-- done
+		. rewrite GUI routines to remove situational cruft, and to instead follow BLINKL and BLINKR straightforwardly
+			-- done
 
-	. test: do the repositioned QRESET and BPM commands work right?
-		-- yes
-	. has OFF CUE 0 been freed up correctly?
-		-- yes
+	. when RECORD MODE is active, and RECORDNOTES is unarmed, and REPEAT is not active,
+	.     a BLINK should occur for every note playing on each of the two tracks within the seq
+	. (this will allow users to quickly know which track a seq's notes are playing on, because nobody can be expected to remember that, and it gets frustrating)
+		-- done
+
+	. test GUI changes (RECORD MODE, REPEAT, RECORDNOTES, TRACK switching, CUE commands in PLAY MODE)
+		-- 
+
+	. move CUE button to second bottommost row, and shift the 1-2-4 buttons upwards by 1 row?
+	. (seems like this would be more intuitive UI - "off" and "cue" are used in concrete ways, whereas the numbers are used in abstract ways)
+		-- 
+
+	. when notes are being entered with REPEAT active, the note gets retriggered twice on the entry-tick. this is bad. fix it
+		-- 
 
 	. test changes:
 		. is BLINK affected by the active TRACK in RECORD MODE?
@@ -27,7 +44,7 @@ Software:
 			. in regular note-entry?
 				-- 
 			. in REPEAT-based note-entry?
-				-- 
+				-- yes
 		. does REPEAT record held chords, but with recording otherwise acting monophonically?
 			-- 
 		. how many notes are actually played when more than 2 are held with REPEAT active?

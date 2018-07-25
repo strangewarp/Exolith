@@ -54,15 +54,29 @@ void updateTimer() {
 	}
 	ABSOLUTETIME = micr; // Set the absolute-time to the current time-value
 
-	if (BLINK) { // If an LED-BLINK is active...
-		word o2 = offset >> 6; // Get a bit-shifted version of the offset value, to decrement the BLINK counter correctly
+	if (BLINKL || BLINKR) { // If an LED-BLINK is active...
+
+		word o2 = offset >> 6; // Get a bit-shifted version of the offset value, to decrement the BLINK counters correctly
 		o2 |= !o2; // If the bit-shifted offset value is empty, set it to 1
-		if (BLINK > o2) { // If the BLINK-counter is greater than the bit-shifted offset value...
-			BLINK -= o2; // Subtract the offset from the BLINK-counter
-		} else { // Else, if the BLINK-counter is lower than the offset...
-			BLINK = 0; // Clear the BLINK-counter
-			TO_UPDATE |= 252; // Flag the bottom 6 rows for LED updates
+
+		if (BLINKL) { // If BLINK-LEFT is active...
+			if (BLINKL > o2) { // If the BLINKL-counter is greater than the bit-shifted offset value...
+				BLINKL -= o2; // Subtract the offset from the BLINKL-counter
+			} else { // Else, if the BLINKL-counter is lower than the offset...
+				BLINKL = 0; // Clear the BLINKL-counter
+				TO_UPDATE |= 252; // Flag the bottom 6 rows for LED updates
+			}
 		}
+
+		if (BLINKR) { // If BLINK-RIGHT is active...
+			if (BLINKR > o2) { // If the BLINKR-counter is greater than the bit-shifted offset value...
+				BLINKR -= o2; // Subtract the offset from the BLINKR-counter
+			} else { // Else, if the BLINKR-counter is lower than the offset...
+				BLINKR = 0; // Clear the BLINKR-counter
+				TO_UPDATE |= 252; // Flag the bottom 6 rows for LED updates
+			}
+		}
+
 	}
 
 	updateGestureKeys(); // Update the tracking-info for all active gesture-keys
@@ -96,7 +110,11 @@ void updateTimer() {
 			TO_UPDATE |= 2; // Flag the second LED-row for updating
 		}
 		if (RECORDNOTES && (!distFromQuantize())) { // If we are recording notes, and on a QUANTIZE or QRESET tick...
-			BLINK = 192; // Cue a ~12ms blink
+			if (TRACK) { // If TRACK 2 is active...
+				BLINKR = 192; // Cue a ~12ms RIGHT-BLINK
+			} else { // Else, if TRACK 1 is active...
+				BLINKL = 192; // Cue a ~12ms LEFT-BLINK
+			}
 			TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
 		}
 	}

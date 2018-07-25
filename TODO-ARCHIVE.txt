@@ -175,6 +175,15 @@ Software:
 				. update GUI routines for this in RECORD MODE
 					-- done
 
+	-- replaced other references to the outdated BPM keychord in func_gui.ino
+	-- removed the BLINK event on any BPM modification in PLAY MODE, for UI consistency
+	-- refactored BLINK and TO_UPDATE flags in parsePlayPress()
+
+	. test: do the repositioned QRESET and BPM commands work right?
+		-- yes
+	. has OFF CUE 0 been freed up correctly?
+		-- yes
+
 Hardware:
 
 

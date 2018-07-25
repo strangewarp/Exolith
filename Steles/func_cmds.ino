@@ -33,7 +33,8 @@ void clearCmd(byte col, byte row) {
 
 	file.sync(); // Sync any still-buffered data to the savefile
 
-	BLINK = 255; // Start an LED-BLINK that is ~16ms long
+	BLINKL = (!TRACK) * 255; // Start a TRACK-linked LED-BLINK that is ~16ms long
+	BLINKR = TRACK * 255; // ^
 	TO_UPDATE |= 252; // Flag the bottom 6 rows for LED updates
 
 }
@@ -50,7 +51,8 @@ void clockCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row
 void copyCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row) {
 	COPYPOS = POS[RECORDSEQ] - (POS[RECORDSEQ] % 16); // Set the COPY-position to the start of the beat
 	COPYSEQ = RECORDSEQ; // Set the COPY-seq to the curent RECORD-seq
-	BLINK = 255; // Start an LED-BLINK that is ~16ms long
+	BLINKL = 255; // Start an LED-BLINK that is ~16ms long
+	BLINKR = 255; // ^
 	TO_UPDATE |= 252; // Flag the bottom 6 rows for LED updates
 }
 
@@ -113,7 +115,8 @@ void pasteCmd(__attribute__((unused)) byte col, byte row) {
 
 	file.sync(); // Sync any still-buffered data to the savefile
 
-	BLINK = 255; // Start an LED-BLINK that is ~16ms long
+	BLINKL = 255; // Start an LED-BLINK that is ~16ms long
+	BLINKR = 255; // ^
 	TO_UPDATE |= 252; // Flag the bottom 6 rows for LED updates
 
 }
