@@ -74,7 +74,7 @@ void parseTickContents(byte s, byte buf[]) {
 
 		// If this is the RECORDSEQ, in RECORD MODE, and RECORDNOTES isn't armed, and a command is present on this tick...
 		if ((RECORDMODE) && (RECORDSEQ == s) && (!RECORDNOTES)) {
-			BLINKL |= (!bn) * 192; // Start or continue a TRACK-linked LED-BLINK that is ~12ms long
+			BLINKL |= (!bn) * 192; // Start or continue a TRACK-activity-linked LED-BLINK that is ~12ms long
 			BLINKR |= bn * 48; // ^
 		}
 
