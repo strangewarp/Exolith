@@ -9,13 +9,12 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	. needs to be a MIDI PANIC on startup, to compensate for any accidental power-cycles in the middle of SUSTAINs
-		-- done
-
 	. do sequences FLASH when they are empty and receive a CUE-OFF command?
 		-- yes
 		. should something be done about this?
-			-- 
+			-- probably
+			. cut this out at the source: don't let CUE-OFF commands get applied to already-off seqs
+				-- done
 
 	. move CUE button to second-bottommost row, and shift the 1-2-4 buttons upwards by 1 row?
 	. (seems like this would be more intuitive UI - "off" and "cue" are used in concrete ways, whereas the numbers are used in abstract ways)
