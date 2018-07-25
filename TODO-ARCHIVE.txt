@@ -218,6 +218,31 @@ Software:
 		. CUE commands in PLAY MODE
 			-- seems fine
 
+	-- removed the BLINKs from...
+		-- completed CUE commands in PLAY MODE (parseCues()),
+		-- PLAY MODE CUE-chord-presses (parsePlayPress()),
+	-- ...as there will now be visual confirmation related to flashing seq-LEDs
+
+	. add a SEQFLASH system to PLAY MODE, so that any seqs with pending CUE commands will blink in certain ways:
+		-- am doing
+		. already-active seqs blink ON and OFF every quarter-note:
+			. add a CUE-checking routine that sets a TO_UPDATE flag in parseCues()
+				-- done
+			. add a rendering routine for this to updatePlayBottomRows()
+				-- done
+		. currently-OFF seqs blink every half-note
+			-- ok
+		. test this
+			-- seems to work
+
+	. the seq-flash, in PLAY MODE, is reversed chronologically. it should be on-off-on-off but that is reversed. fix it
+		-- fixed
+
+	. for seqs that are OFF and have a dormant CUE, a half-note-sized flash-cycle is too visually confusing in-the-moment. so...
+		. make them both have quarter-note flash-cycles, but with reversed flash-timing
+			-- done
+			-- also changed the logic around the related TO_UPDATE call in parseCues() so it is activated on a quarter-note for every seq with a dormant-cue
+
 Hardware:
 
 

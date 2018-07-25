@@ -9,36 +9,10 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	-- removed the BLINKs from...
-		-- completed CUE commands in PLAY MODE (parseCues()),
-		-- PLAY MODE CUE-chord-presses (parsePlayPress()),
-	-- ...as there will now be visual confirmation related to flashing seq-LEDs
-
-	. add a SEQFLASH system to PLAY MODE, so that any seqs with pending CUE commands will blink in certain ways:
-		-- am doing
-		. already-active seqs blink ON and OFF every quarter-note:
-			. add a CUE-checking routine that sets a TO_UPDATE flag in parseCues()
-				-- done
-			. add a rendering routine for this to updatePlayBottomRows()
-				-- done
-		. currently-OFF seqs blink every half-note
-			-- ok
-		. test this
-			-- seems to work
-
-	. the seq-flash, in PLAY MODE, is reversed chronologically. it should be on-off-on-off but that is reversed. fix it
-		-- fixed
-
-	. for seqs that are OFF and have a dormant CUE, a half-note-sized flash-cycle is too visually confusing in-the-moment. so...
-		. make them both have quarter-note flash-cycles, but with reversed flash-timing
-			-- done
-			-- also changed the logic around the related TO_UPDATE call in parseCues() so it is activated on a quarter-note for every seq with a dormant-cue
-
 	. flashing-seqs still read in a visually confusing way when both CUE and CUE-OFF seqs are flashing at the same time, especially at low tempo.
 		. the only reasonable way to fix this would be...
-			. CUE: on-off, 8th-notes
-			. CUE-OFF: on-off, 4th-notes
-				-- 
+			. update a seq-LED on the first and second 16th-note within each half-note, with currently ON and OFF seq blinking in opposite ways
+				-- done
 
 	. needs to be a MIDI PANIC on startup, to compensate for any accidental power-cycles in the middle of SUSTAINs
 		-- 
