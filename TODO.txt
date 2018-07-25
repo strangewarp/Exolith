@@ -24,10 +24,29 @@ Software:
 		. currently-OFF seqs blink every half-note
 			-- ok
 		. test this
-			-- 
+			-- seems to work
+
+	. the seq-flash, in PLAY MODE, is reversed chronologically. it should be on-off-on-off but that is reversed. fix it
+		-- fixed
+
+	. for seqs that are OFF and have a dormant CUE, a half-note-sized flash-cycle is too visually confusing in-the-moment. so...
+		. make them both have quarter-note flash-cycles, but with reversed flash-timing
+			-- done
+			-- also changed the logic around the related TO_UPDATE call in parseCues() so it is activated on a quarter-note for every seq with a dormant-cue
+
+	. flashing-seqs still read in a visually confusing way when both CUE and CUE-OFF seqs are flashing at the same time, especially at low tempo.
+		. the only reasonable way to fix this would be...
+			. CUE: on-off, 8th-notes
+			. CUE-OFF: on-off, 4th-notes
+				-- 
+
+	. needs to be a MIDI PANIC on startup, to compensate for any accidental power-cycles in the middle of SUSTAINs
+		-- 
 
 	. do sequences FLASH when they are empty and receive a CUE-OFF command?
-		-- 
+		-- yes
+		. should something be done about this?
+			-- 
 
 	. move CUE button to second-bottommost row, and shift the 1-2-4 buttons upwards by 1 row?
 	. (seems like this would be more intuitive UI - "off" and "cue" are used in concrete ways, whereas the numbers are used in abstract ways)

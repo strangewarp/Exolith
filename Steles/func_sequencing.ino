@@ -47,15 +47,9 @@ void parseCues(byte s, byte size) {
 			TO_UPDATE |= 4 << ((s % 24) >> 2); // Flag the sequence's corresponding LED-row for an update
 
 		} else { // Else, the seq's cue-command is still dormant, so...
-
-			byte ison = STATS[s] & 128; // Get the sequence's on/off bit
-			if (
-				(ison && (!(CUR16 % 4))) // If the sequence is already on, and the global tick is on a quarter-note...
-				|| ((!(CUR16 % 8)) && (!ison)) // Or the sequence is off, and the global tick is on a half-note...
-			) {
+			if (!(CUR16 % 4)) { // If the global tick is on a quarter-note...
 				TO_UPDATE |= 4 << ((s % 24) >> 2); // Flag the sequence's corresponding LED-row for an update
 			}
-
 		}
 
 	}

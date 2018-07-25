@@ -60,7 +60,8 @@ void displayLoadNumber() {
 // Get the LED-value for a single seq, adjusted based on whether it's active and whether it has a dormant cue-command
 byte getSeqVal(byte s) {
 	byte ison = STATS[s] & 128;
-	return CMD[s] ? (((CUR16 >> (3 - (!!ison))) % 2) * 128) : ison;
+	return CMD[s] ? ((((CUR16 >> 3) + (!ison)) % 2) * 128) : ison;
+	//return CMD[s] ? ((!((CUR16 >> (3 - (!!ison))) % 2)) * 128) : ison;
 }
 
 // Get the SEQUENCE-ACTIVITY LED-values for a given GUI row within the lower 6 rows
