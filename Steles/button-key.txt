@@ -14,77 +14,33 @@ Button gestures (ALL MODES):
 
 Button combinations (PLAY MODE):
 
+	variable-keypress:
+	0***00: SLICE (0-7)
+	0***01: OFF (0); CUE-OFF (1-7)
+	0***10: CUE (0-7)
+	0***11: CUE-OFF (0-7)
+	1***00: reserved (1, 3-7)
+	1***01: PAGE-OFF (0); reserved (1-7)
+	1***10: SCATTER UNSET (0); SCATTER (1-7)
+	1***11: PAGE SCATTER UNSET (0); reserved (1-7)
+
 	1-keypress:
-	000001: OFF
-	000010: 1
-	000100: 2
-	001000: 4
-	010000: CUE (default 0)
 	100000: PAGE
 
 	2-keypress:
-	000011: OFF CUE 1
-	000101: OFF CUE 2
-	001001: OFF CUE 4
-	010001: OFF CUE 0
-	100001: PAGE OFF
-	000110: 3
-	001010: 5
-	010010: CUE 1
-	100010: BPM
-	001100: 6
-	010100: CUE 2
-	100100: reserved (type: "page-2")
-	011000: CUE 4
-	101000: reserved (type: "page-4")
-	110000: SCATTER UNSET
+	101000: BPM
 
 	3-keypress:
-	000111: OFF CUE 3
-	001011: OFF CUE 5
-	010011: OFF CUE 1 (duplicate)
-	100011: reserved (type: "page-off-1")
-	001101: OFF CUE 6
-	010101: OFF CUE 2 (duplicate)
-	100101: reserved (type: "page-off-2")
-	011001: OFF CUE 4 (duplicate)
-	101001: reserved (type: "page-off-4")
-	110001: PAGE SCATTER UNSET
-	001110: 7
-	010110: CUE 3
-	100110: reserved (type: "page-ab")
-	011010: CUE 5
-	101010: reserved (type: "page-ac")
-	110010: SCATTER 1
-	011100: CUE 6
-	101100: reserved (type: "page-bc")
-	110100: SCATTER 2
-	111000: SCATTER 4
+	...
 
 	4-keypress:
-	001111: OFF CUE 7
-	010111: OFF CUE 3 (duplicate)
-	100111: reserved (type: "page-off-3")
-	011011: OFF CUE 5 (duplicate)
-	101011: reserved (type: "page-off-5")
-	110011: reserved (type: "page-cue-1-off")
-	011101: OFF CUE 6 (duplicate)
-	101101: reserved (type: "page-off-6")
-	110101: reserved (type: "page-cue-2-off")
-	111001: reserved (type: "page-cue-4-off")
-	011110: CUE 7
-	101110: reserved (type: "page-abc")
-	110110: SCATTER 3
-	111010: SCATTER 5
-	111100: SCATTER 6
+	...
 
 	5-keypress:
-	011111: OFF CUE 7 (duplicate)
-	101111: reserved (type: "page-off-7")
-	110111: reserved (type: "page-cue-3-off")
-	111011: reserved (type: "page-cue-5-off")
-	111101: reserved (type: "page-cue-6-off")
-	111110: SCATTER 7
+	...
+
+	6-keypress:
+	...
 
 
 Button combinations (RECORD MODE):
@@ -99,9 +55,9 @@ Button combinations (RECORD MODE):
 
 	2-keypress:
 	110000: SHIFT CURRENT POSITION
-	101000:
+	101000: BPM
 	100100: CLOCK-MASTER
-	100010: BPM
+	100010:
 	100001: SWITCH RECORDING SEQUENCE
 	011000:
 	010100: PASTE
@@ -118,10 +74,14 @@ Button combinations (RECORD MODE):
 	...
 
 	4-keypress:
-	...
 	111100: CLEAR NOTES
-	...
 	001111: ERASE WHILE HELD
+
+	5-keypress:
+	...
+
+	6-keypress:
+	...
 
 
 Button combinations (LOAD MODE):

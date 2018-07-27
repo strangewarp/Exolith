@@ -251,6 +251,13 @@ Software:
 	. needs to be a MIDI PANIC on startup, to compensate for any accidental power-cycles in the middle of SUSTAINs
 		-- done
 
+	. do sequences FLASH when they are empty and receive a CUE-OFF command?
+		-- yes
+		. should something be done about this?
+			-- probably
+			. cut this out at the source: don't let CUE-OFF commands get applied to already-off seqs
+				-- done
+
 Hardware:
 
 

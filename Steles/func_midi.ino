@@ -11,7 +11,6 @@ void midiPanic() {
 	note[1] = 123; // Set byte 2 to the "ALL NOTES OFF" CC command
 	note[2] = 0; // As per MIDI spec, set byte 3 to "0" (empty)
 	for (byte i = 0; i <= 15; i++) { // For every MIDI channel...
-		sendRow(0, i); // Send a visible status to the top LED-row
 		note[0] = 176 + i; // Create a CC command-byte for the current channel
 		Serial.write(note, 3); // Send the ALL-NOTES-OFF CC command to MIDI-OUT immediately
 	}
