@@ -9,24 +9,12 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	-- removed the first sendRow() from midiPanic(), since the first series of "ALL NOTES OFF" commands is too quick to be visible
-
-	. move CUE button to second-bottommost row, and shift the 1-2-4 buttons upwards by 1 row?
-	. (seems like this would be more intuitive UI - "off" and "cue" are used in concrete ways, whereas the numbers are used in abstract ways)
-		. change all "CUE, 1, 2, and 4"-button-related entries in the PLAY MODE section of button-key.txt
-			-- am doing
-			. change most PLAY MODE-related commands
-				. go through the codebase looking for everything related to a PLAY MODE keypress and updating as necessary
-					-- done
-			. change BPM command (again)
-				. BPM: (top-down) 110000
-					-- changed its entries in buttons-key.txt
-					-- changed its CmdFunc entry
-
 	. test all updated command-chords
 		-- 
 
 	. when notes are being entered with REPEAT active, the note gets retriggered twice on the entry-tick. this is bad. fix it
+		-- fixed it by inserting an if-then-return clause at a specific point in processRecAction()
+	. test the fix
 		-- 
 
 	. test changes:

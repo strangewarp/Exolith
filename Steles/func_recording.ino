@@ -78,14 +78,23 @@ void processRecAction(byte key, byte trk) {
 	byte velo = VELO - min(VELO - 1, byte(GLOBALRAND & 255) % (HUMANIZE + 1));
 
 	if (PLAYING && RECORDNOTES) { // If notes are being recorded into a playing sequence...
+
 		word qp = POS[RECORDSEQ]; // Will hold a QUANTIZE-modified insertion point (defaults to the seq's current position)
+
 		if (!REPEAT) { // If REPEAT isn't toggled...
 			char down = distFromQuantize(); // Get distance to previous QUANTIZE point
 			byte up = min(QRESET - down, QUANTIZE - down); // Get distance to next QUANTIZE point, compensating for QRESET
 			qp += (down <= up) ? (-down) : up; // Make the shortest distance into an offset for the note-insertion point
 			qp %= word(STATS[RECORDSEQ] & 63) * 16; // Wrap the insertion-point around the seq's length
 		}
+
 		recordToSeq(qp, CHAN, pitch, velo, trk); // Record the note into the current RECORDSEQ slot
+
+		// If the quantize-point fell on this tick,
+		// then exit the function without sending the command, and without flagging GUI-updates,
+		// since the command will be sent immediately after this anyway by a readTick() call.
+		if (qp == POS[RECORDSEQ]) { return; }
+
 	}
 
 	// Flag GUI elements in the middle of the function, as the function may exit early
