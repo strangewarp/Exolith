@@ -10,7 +10,9 @@ Software:
 	. prove I'm not a dipshit: actually finish the project
 
 	. test all updated command-chords
-		-- 
+		-- BPM-command doesn't work in PLAY MODE
+		. fix it
+			-- fixed: forgot to update the command-chord for BPM-presses in assignKey()
 
 	. when notes are being entered with REPEAT active, the note gets retriggered twice on the entry-tick. this is bad. fix it
 		-- fixed it by inserting an if-then-return clause at a specific point in processRecAction()
@@ -32,12 +34,16 @@ Software:
 		. how many notes are actually played when more than 2 are held with REPEAT active?
 			-- 
 
-	. on every NOTE-ON, look through the SUSTAIN system for the same note on the same channel, and if it is present, send a NOTE-OFF before the NOTE-ON
+	. add a MOVE GLOBAL CUE command, to shift the position of the global cue-point forward or backward by one step in PLAY MODE
+		. allocate a command-chord in buttons-key.txt
+		. add a clause to the PLAY MODE keypress routines
+			. should change the global CUR16 value, but not any seqs' POS values
+		. test it by itself
+		. test it with various cued-commands active in various sequences
+
+	. on every MIDI-OUT, look through the SUSTAIN system for the same note on the same channel, and if it is present, send a NOTE-OFF before the NOTE-ON
 	. (this will allow certain synths to obey conflicting QUANTIZE and DURATION settings without wigging out)
 		-- 
-
-	. mystery crash after allowing RECORD MODE to sit for a while. figure out what it is
-		-- no idea. hopefully the recent increase in free RAM will stop this type of weird event from happening
 
 	. re-test all recording mechanisms
 		-- am doing
@@ -172,10 +178,6 @@ Software:
 
 	. add SONG POSITION POINTER functionality while in CLOCK FOLLOW mode, to orient the global cue-position correctly?
 
-	. add a command to shift the position of the global cue-point?
-
-	. add a command to change the global cue-point's granularity? (e.g. being 3 beats, or 7 beats, instead of 8 beats, and ignoring the extra LEDs)
-
 	. re-test problem areas:
 		. GLOBAL PLAY/STOP
 		. MIDI-IN
@@ -211,8 +213,13 @@ Software:
 
 Hardware:
 
+	. print out the alpha-prototype's schematic for reference while making updates (KiCad can corrupt a project if more than 1 is open)
+		-- 
+
 	. figure out how to stabilize the LEDs while soldering, so their wobbly resin base doesn't set them at slight angles
 		. should each LED just have a very short standoff? (2mm-ish?)
+			-- yes
+			. add LED-standoffs to master parts-list, and to beta-prototype shopping list
 
 	. test a new MIDI port setup:
 		. no MIDI-THRU! (feature would be too rarely used, on this particular kind of device)

@@ -272,6 +272,9 @@ Software:
 					-- changed its entries in buttons-key.txt
 					-- changed its CmdFunc entry
 
+	. mystery crash after allowing RECORD MODE to sit for a while. figure out what it is
+		-- no idea. hopefully the recent increase in free RAM will stop this type of weird event from happening
+
 Hardware:
 
 
