@@ -275,6 +275,16 @@ Software:
 	. mystery crash after allowing RECORD MODE to sit for a while. figure out what it is
 		-- no idea. hopefully the recent increase in free RAM will stop this type of weird event from happening
 
+	. test all updated command-chords
+		-- BPM-command doesn't work in PLAY MODE
+		. fix it
+			-- fixed: forgot to update the command-chord for BPM-presses in assignKey()
+
+	. when notes are being entered with REPEAT active, the note gets retriggered twice on the entry-tick. this is bad. fix it
+		-- fixed it by inserting an if-then-return clause at a specific point in processRecAction()
+	. test the fix
+		-- seems to work correctly
+
 Hardware:
 
 

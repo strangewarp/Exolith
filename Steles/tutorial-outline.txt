@@ -23,6 +23,8 @@ Tutorial Outline
 
 		CUE
 
+		SHIFT
+
 		SLICE
 
 		CUED SLICE-INSERTION
@@ -32,7 +34,7 @@ Tutorial Outline
 		PAGE-OFF
 
 		SCATTER
-			* Is always unset when toggling into RECORD MODE
+			* Is always unset for the most-recently-touched seq when toggling into RECORD MODE
 
 		SCATTER UNSET
 

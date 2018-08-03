@@ -11,6 +11,27 @@ const byte LOGO[] PROGMEM = {
 	B00011000, B01111110, B01100010, B01111110
 };
 
+// Standalone glyph: ERASING NOTES
+const byte GLYPH_ERASE[] PROGMEM = {
+	B00000000,
+	B11101010,
+	B10001010,
+	B11101010,
+	B10000000,
+	B11101010
+};
+
+// Standalone glyph: SHIFT GLOBAL CUE
+const byte GLYPH_SHIFT[] PROGMEM = {
+	B00000000,
+	B11101110,
+	B10001000,
+	B11101000,
+	B00101000,
+	B11101110,
+};
+
+// Multiglyph array: holds all straightforward command-glyphs
 const byte GLYPHS[] PROGMEM = {
 
 	// Glyph: blank
@@ -176,16 +197,6 @@ const byte GLYPHS[] PROGMEM = {
 	B00110000,
 	B00010000
 
-};
-
-// Standalone glyph: ERASING NOTES
-const byte GLYPH_ERASE[] PROGMEM = {
-	B00000000,
-	B11101010,
-	B10001010,
-	B11101010,
-	B10000000,
-	B11101010
 };
 
 // Number multiglyph: holds all numbers (0-9)

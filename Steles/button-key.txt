@@ -28,6 +28,7 @@ Button combinations (PLAY MODE):
 	100000: PAGE
 
 	2-keypress:
+	110000: SHIFT
 	101000: BPM
 
 	3-keypress:
