@@ -121,7 +121,7 @@ void pasteCmd(__attribute__((unused)) byte col, byte row) {
 
 }
 
-// Parse a SHIFT CURRENT POSITION press
+// Parse a SHIFT RECORDING POSITION press
 void posCmd(byte col, byte row) {
 
 	int change = int(toChange(col, row)) * 16; // Convert a column and row into a CHANGE value, in 16th-notes

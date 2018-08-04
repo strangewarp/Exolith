@@ -21,7 +21,7 @@ void parsePlayPress(byte col, byte row) {
 		TO_UPDATE |= 2; // Flag the second LED-row for updates
 	} else if (ctrl == B00000011) { // If SHIFT is held...
 		// Shift the CUR16 value by a number of GLOBAL CUE slices equal to the column of the keystroke (-2, -1, +1, +2)
-		CUR16 = byte(((int(CUR16) + (((char(col) - 2) + (col >= 2)) * 16)) + 128) % 128);
+		CUR16 = byte(((int(CUR16) + (((int(col) - 2) + (col >= 2)) * 16)) + 128) % 128);
 		TO_UPDATE |= 1; // Flag the top LED-row for updates
 	} else if (ctrl == B00000101) { // If BPM is held...
 		tempoCmd(col, row); // Cue a global BPM modification command, using the same function as in RECORD MODE
