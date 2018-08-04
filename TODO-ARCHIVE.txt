@@ -300,6 +300,11 @@ Software:
 		. how many notes are actually played when more than 2 are held with REPEAT active?
 			-- always 2, which is reasonable
 
+	-- removed redundant if-then statements for SCATTER behavior in parsePlayPress()
+	-- changed assignKey() and unassignKey() so their BPM-and-SHIFT-checking routines are collapsed into a single external function: refreshPlayCustoms()
+	-- clarified that SHIFT RECORDING POSITION works differently, and serves a different purpose, from SHIFT CUE
+	-- fixed an outdated TO_UPDATE-checking line in parseRawMidi()
+
 Hardware:
 
 

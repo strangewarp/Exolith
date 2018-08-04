@@ -9,11 +9,6 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	-- removed redundant if-then statements for SCATTER behavior in parsePlayPress()
-	-- changed assignKey() and unassignKey() so their BPM-and-SHIFT-checking routines are collapsed into a single external function: refreshPlayCustoms()
-	-- clarified that SHIFT RECORDING POSITION works differently, and serves a different purpose, from SHIFT CUE
-	-- fixed an outdated TO_UPDATE-checking line in parseRawMidi()
-
 	. add a SHIFT GLOBAL CUE command, to shift the position of the global cue-point forward or backward by one step in PLAY MODE
 		-- am doing
 		. allocate a command-chord in buttons-key.txt
@@ -46,10 +41,9 @@ Software:
 		. figure out what to do
 			-- changed "char" to "int" in the CUR16-updating line in parsePlayPress()
 			. are there still crashes now?
-				-- 
-
+				-- tentatively, I am not finding any
 	. also encountering a bug related to the SHIFT-freeze bug, where LEDs will seem to be pulling partially-formed glyphs from memory in PLAY MODE
-		-- 
+		-- this seems to have gone away as well
 
 	. double-check: can the CHAN byte's upper bits only be changed by the UPPER CHAN BYTES command, as they should?
 		-- 
