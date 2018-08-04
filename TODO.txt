@@ -38,8 +38,11 @@ Software:
 					. mash the various crash-related commands again for a while: find any more crashes now?
 						-- yes: sometimes the CUR16 point seems to stop advancing, when SHIFT is being held, during certain CUE-commands...
 						-- ... but it doesn't seem to be an easily-replicable bug for some reason
-						. figure out what to do
-							-- 
+	. SHIFT debugging cont'd:
+		-- seems related to: shifting the cue forward by 1(16) while one or several sequences have CUE-OFF 0 in their CUE-value.
+		-- ...at which point, the CUR16 stops advancing(?!)
+		. figure out what to do
+			-- 
 
 	. also encountering a bug related to the SHIFT-freeze bug, where LEDs will seem to be pulling partially-formed glyphs from memory in PLAY MODE
 		-- 
