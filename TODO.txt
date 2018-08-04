@@ -9,20 +9,8 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	. test changes:
-		. is BLINK affected by the active TRACK in RECORD MODE?
-			-- yes
-		. do QUANTIZE and QRESET both work correctly...
-			. in the GUI?
-				-- yes
-			. in regular note-entry?
-				-- seems so
-			. in REPEAT-based note-entry?
-				-- yes
-		. does REPEAT record held chords, but with recording otherwise acting monophonically?
-			-- yes
-		. how many notes are actually played when more than 2 are held with REPEAT active?
-			-- always 2, which is reasonable
+	-- removed redundant if-then statements for SCATTER behavior in parsePlayPress()
+	-- changed assignKey() and unassignKey() so their BPM-and-SHIFT-checking routines are collapsed into a single external function: refreshPlayCustoms()
 
 	. add a SHIFT GLOBAL CUE command, to shift the position of the global cue-point forward or backward by one step in PLAY MODE
 		-- am doing
@@ -37,9 +25,24 @@ Software:
 		. add a GUI-routine to display the glyph
 			-- done
 		. test it by itself, particularly going over every possible off-by-one case
-			-- 
+			-- fixed a bug where the SHIFT glyph was being loaded from PROGMEM wrong, due to an offset "i" var in updatePlayBottomRows()
+			-- seems fine
 		. test it with various cued-commands active in various sequences
-			-- 
+			-- freezes during certain OFF-cmd configurations
+			. figure out what's going on
+				-- freezes occur when SHIFT is held while a sequence is in CUE-OFF state, but only sometimes
+				. what is happening specifically?
+					-- could be that the other if-then checks in parsePlayPress() are screwing with something somehow
+					. fix the spaghetti-code there
+						-- ok
+					. mash the various crash-related commands again for a while: find any more crashes now?
+						-- yes: sometimes the CUR16 point seems to stop advancing, when SHIFT is being held, during certain CUE-commands...
+						-- ... but it doesn't seem to be an easily-replicable bug for some reason
+						. figure out what to do
+							-- 
+
+	. also encountering a bug related to the SHIFT-freeze bug, where LEDs will seem to be pulling partially-formed glyphs from memory in PLAY MODE
+		-- 
 
 	. double-check: can the CHAN byte's upper bits only be changed by the UPPER CHAN BYTES command, as they should?
 		-- 
@@ -65,6 +68,8 @@ Software:
 		. when a SWING CHANGE GRANULARITY or SWING CHANGE AMOUNT command is encountered:
 			. its contents should be saved until the end of the tick, and then immediately applied
 			. there should be separate GRANUL_IN and AMOUNT_IN vars to track these incoming changes
+	. wipe the SD-card, since file contents and filesizes have been changed
+	. test all SWING mechanisms
 
 	. re-test all recording mechanisms
 		-- am doing

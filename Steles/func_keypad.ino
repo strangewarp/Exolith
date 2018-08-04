@@ -14,7 +14,7 @@ void scanColumn(byte col) {
 		BUTTONS ^= 1UL << bpos; // Flip the button's activity-bit into its new state
 
 		if (bstate) { // If the button's new state is ON...
-			assignKey(col, row); // Assign any key-commands that might be based on this keystroke
+			assignKey(col, row, oldcmds); // Assign any key-commands that might be based on this keystroke
 		} else { // Else, the button's new state is OFF, so...
 			unassignKey(col, oldcmds); // Unassign any key-commands that might be based on this release-keystroke
 		}

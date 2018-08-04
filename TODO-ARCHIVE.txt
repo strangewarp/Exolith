@@ -285,6 +285,21 @@ Software:
 	. test the fix
 		-- seems to work correctly
 
+	. test changes:
+		. is BLINK affected by the active TRACK in RECORD MODE?
+			-- yes
+		. do QUANTIZE and QRESET both work correctly...
+			. in the GUI?
+				-- yes
+			. in regular note-entry?
+				-- seems so
+			. in REPEAT-based note-entry?
+				-- yes
+		. does REPEAT record held chords, but with recording otherwise acting monophonically?
+			-- yes
+		. how many notes are actually played when more than 2 are held with REPEAT active?
+			-- always 2, which is reasonable
+
 Hardware:
 
 
