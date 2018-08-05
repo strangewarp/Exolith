@@ -305,6 +305,42 @@ Software:
 	-- clarified that SHIFT RECORDING POSITION works differently, and serves a different purpose, from SHIFT CUE
 	-- fixed an outdated TO_UPDATE-checking line in parseRawMidi()
 
+	. add a SHIFT GLOBAL CUE command, to shift the position of the global cue-point forward or backward by one step in PLAY MODE
+		-- am doing
+		. allocate a command-chord in buttons-key.txt
+			-- done
+		. add a clause to the PLAY MODE keypress routines
+			-- done
+			. should change the global CUR16 value, but not any seqs' POS values
+				-- ok
+		. add a standalone GUI-GLYPH for SHIFT
+			-- done
+		. add a GUI-routine to display the glyph
+			-- done
+		. test it by itself, particularly going over every possible off-by-one case
+			-- fixed a bug where the SHIFT glyph was being loaded from PROGMEM wrong, due to an offset "i" var in updatePlayBottomRows()
+			-- seems fine
+		. test it with various cued-commands active in various sequences
+			-- freezes during certain OFF-cmd configurations
+			. figure out what's going on
+				-- freezes occur when SHIFT is held while a sequence is in CUE-OFF state, but only sometimes
+				. what is happening specifically?
+					-- could be that the other if-then checks in parsePlayPress() are screwing with something somehow
+					. fix the spaghetti-code there
+						-- ok
+					. mash the various crash-related commands again for a while: find any more crashes now?
+						-- yes: sometimes the CUR16 point seems to stop advancing, when SHIFT is being held, during certain CUE-commands...
+						-- ... but it doesn't seem to be an easily-replicable bug for some reason
+	. SHIFT debugging cont'd:
+		-- seems related to: shifting the cue forward by 1(16) while one or several sequences have CUE-OFF 0 in their CUE-value.
+		-- ...at which point, the CUR16 stops advancing(?!)
+		. figure out what to do
+			-- changed "char" to "int" in the CUR16-updating line in parsePlayPress()
+			. are there still crashes now?
+				-- tentatively, I am not finding any
+	. also encountering a bug related to the SHIFT-freeze bug, where LEDs will seem to be pulling partially-formed glyphs from memory in PLAY MODE
+		-- this seems to have gone away as well
+
 Hardware:
 
 

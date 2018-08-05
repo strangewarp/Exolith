@@ -91,15 +91,18 @@ void parseTickContents(byte s, byte buf[]) {
 
 		// If the MIDI-OUT queue is full, then ignore this command, since we're now sure that it's a MIDI command
 		// (This is checked here, instead of in iterateAll(), and using "continue" instead of "return",
-		//  because all BPM-CHANGE commands need to be caught, regardless of how full MOUT_BYTES gets)
-		if (MOUT_BYTES >= 22) { continue; }
+		//  because all BPM-CHANGE commands need to be caught, regardless of how full MOUT_COUNT gets)
+		if (MOUT_COUNT == 8) { continue; }
 
-		memcpy(MOUT + MOUT_BYTES, buf + bn, 3); // Copy the event into the MIDI buffer's lowest empty MOUT location
-		MOUT_BYTES += 3; // Increase the counter that tracks the number of bytes in the MIDI buffer
+		memcpy(MOUT + (MOUT_COUNT * 3), buf + bn, 3); // Copy the event into the MIDI buffer's lowest empty MOUT location
+		MOUT_COUNT++; // Increase the counter that tracks the number of bytes in the MIDI buffer
 
 		if ((buf[bn] & 240) != 144) { continue; } // If this wasn't a NOTE-ON, forego any sustain mechanisms
 
 		// If the function hasn't exited, then we're dealing with a NOTE-ON. So...
+
+		// Send NOTE-OFFs for any duplicate SUSTAINs, and remove duplicate MOUT entries
+		removeDuplicates(buf[bn], buf[bn + 1]);
 
 		buf[bn] -= 16; // Turn the NOTE-ON into a NOTE-OFF
 		buf[bn + 2] = buf[bn + 3]; // Move DURATION to the next byte over, for the 3-byte SUST-array note-format
@@ -240,12 +243,13 @@ void iterateAll() {
 
 	}
 
-	if (MOUT_BYTES) { // If there are any commands in the MIDI-command buffer...
-		for (byte i = 0; i < MOUT_BYTES; i += 3) { // For every command in the MIDI-OUT queue...
+	if (MOUT_COUNT) { // If there are any commands in the MIDI-command buffer...
+		byte m3 = MOUT_COUNT * 3; // Get the number of outgoing bytes
+		for (byte i = 0; i < m3; i += 3) { // For every command in the MIDI-OUT queue...
 			Serial.write(MOUT + i, 2 + ((MOUT[i] % 224) <= 191)); // Send that command's number of bytes
 		}
-		memset(MOUT, 0, MOUT_BYTES); // Clear the MOUT array of now-obsolete data
-		MOUT_BYTES = 0; // Clear the MIDI buffer's byte-counter
+		memset(MOUT, 0, m3); // Clear the MOUT array of now-obsolete data
+		MOUT_COUNT = 0; // Clear the MIDI buffer's command-counter
 	}
 
 	processSustains(); // Process one 16th-note's worth of duration for all sustained notes

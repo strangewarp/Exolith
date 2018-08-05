@@ -113,7 +113,7 @@ word POS[49];
 // (format: MOUT[n*3] = command, pitch, velocity)
 // to be sent in a batch at the tick's end
 byte MOUT[25];
-byte MOUT_BYTES = 0; // Counts the number of bytes used by notes in the MOUT buffer
+byte MOUT_COUNT = 0; // Counts the number of outgoing MIDI-commands
 
 // Note-Sustain data storage
 // (format: SUST[n*3] = channel, pitch, duration)

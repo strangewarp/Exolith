@@ -9,48 +9,17 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	. add a SHIFT GLOBAL CUE command, to shift the position of the global cue-point forward or backward by one step in PLAY MODE
-		-- am doing
-		. allocate a command-chord in buttons-key.txt
-			-- done
-		. add a clause to the PLAY MODE keypress routines
-			-- done
-			. should change the global CUR16 value, but not any seqs' POS values
-				-- ok
-		. add a standalone GUI-GLYPH for SHIFT
-			-- done
-		. add a GUI-routine to display the glyph
-			-- done
-		. test it by itself, particularly going over every possible off-by-one case
-			-- fixed a bug where the SHIFT glyph was being loaded from PROGMEM wrong, due to an offset "i" var in updatePlayBottomRows()
-			-- seems fine
-		. test it with various cued-commands active in various sequences
-			-- freezes during certain OFF-cmd configurations
-			. figure out what's going on
-				-- freezes occur when SHIFT is held while a sequence is in CUE-OFF state, but only sometimes
-				. what is happening specifically?
-					-- could be that the other if-then checks in parsePlayPress() are screwing with something somehow
-					. fix the spaghetti-code there
-						-- ok
-					. mash the various crash-related commands again for a while: find any more crashes now?
-						-- yes: sometimes the CUR16 point seems to stop advancing, when SHIFT is being held, during certain CUE-commands...
-						-- ... but it doesn't seem to be an easily-replicable bug for some reason
-	. SHIFT debugging cont'd:
-		-- seems related to: shifting the cue forward by 1(16) while one or several sequences have CUE-OFF 0 in their CUE-value.
-		-- ...at which point, the CUR16 stops advancing(?!)
-		. figure out what to do
-			-- changed "char" to "int" in the CUR16-updating line in parsePlayPress()
-			. are there still crashes now?
-				-- tentatively, I am not finding any
-	. also encountering a bug related to the SHIFT-freeze bug, where LEDs will seem to be pulling partially-formed glyphs from memory in PLAY MODE
-		-- this seems to have gone away as well
-
 	. double-check: can the CHAN byte's upper bits only be changed by the UPPER CHAN BYTES command, as they should?
-		-- 
+		-- yes
 
 	. on every MIDI-OUT, look through the SUSTAIN system for the same note on the same channel, and if it is present, send a NOTE-OFF before the NOTE-ON
 	. (this will allow certain synths to obey conflicting QUANTIZE and DURATION settings without wigging out)
-		-- 
+		-- had to also apply this mechanism to MOUT, to prevent weird effects from duplicate notes on the same tick
+		-- subsequently had to refactor the SUSTAIN and MOUT systems
+	. re-test the SUSTAIN and MOUT systems:
+		. normal usage-case
+		. severe usage-case
+		. special case: multiple duplicate notes on the same tick
 
 	. add global SWING values, set per-song like BPM
 		. create SWING GRANULARITY and SWING AMOUNT vars
@@ -321,6 +290,7 @@ Hardware:
 		. make the tabs and slots for the bottom half of the side-panels the correct width for the plexiglass
 		. etch labels into the front-panel for each control-row button's PLAY MODE function
 			. space the upward-facing side-panel tabs and slots so they don't conflict with the labels' positioning
+		. should the bottom-right group of 4x6 LEDs have an etched area around them?
 
 	. look into sticky rubber spacers for the bottom of the device, to keep its screws from scraping on things and being worn down
 		. remember to add these to the master parts-list, however many are used per unit
