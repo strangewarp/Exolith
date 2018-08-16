@@ -23,13 +23,33 @@
 */
 
 
+/////////////////////////////
+// Start define statements //
+/////////////////////////////
 
-// Define statements:
-//   These values may need to be changed in the course of programming/debugging,
-//   but will always stay the same at runtime.
-#define FILE_BYTES 196608UL // Number of bytes in each seq-file
+// These values may need to be changed in the course of programming/debugging,
+// but will always stay the same at runtime.
+
+#define FILE_BYTES 196659UL // Number of bytes in each savefile
+
+// Location of bytes in a given savefile's header-block:
+#define FILE_BPM_BYTE 0 // BPM byte
+#define FILE_SGRAN_BYTE 1 // SWING GRANULARITY byte
+#define FILE_SAMOUNT_BYTE 2 // SWING AMOUNT byte
+#define FILE_SQS_START 3 // Start-byte of the seq-size-values block
+#define FILE_SQS_END 50 // End-byte of the seq-size-values block
+
+#define FILE_BODY_START 51UL // Start of the file's body-block (UL because large values get added to this)
+
+#define FILE_SEQ_BYTES 4096UL // Bytes within each sequence (UL because large values get added to this)
+
 #define SCANRATE 7000 // Amount of time between keystroke-scans, in microseconds
+
 #define GESTDECAY 250000UL // Amount of time between gesture-decay ticks, in microseconds
+
+///////////////////////////
+// End define statements //
+///////////////////////////
 
 
 
@@ -85,6 +105,11 @@ byte BPM = 80; // Beats-per-minute value: one beat is 96 tempo-ticks
 byte TICKCOUNT = 5; // Current global tick, bounded within the size of a 16th-note
 byte CUR16 = 127; // Current global sixteenth-note (bounded to 128, or 8 beats)
 word GLOBALRAND = 12345; // Global all-purpose semirandom value; gets changed on every tick
+
+// Swing vars
+byte SGRAN = 1; // Current SWING granularity (1 = 8th; 2 = 4th; 3 = half note; 4 = whole note)
+char SAMOUNT = 0; // Current SWING amount (-127 = full negative swing; 127 = full positive swing; 0 = no swing)
+byte SPART = 0; // Tracks which section of the SWING is currently active
 
 // Beat-scattering flags, one per seq.
 // bits 0-3: scatter chance

@@ -22,7 +22,8 @@ void checkForGestures() {
 		resetAllTiming(); // Reset the timing of all seqs and the global cue-point
 		if (RECORDMODE) { // If RECORDMODE is about to be untoggled...
 			writePrefs(); // Write the current relevant global vars into PRF.DAT
-			updateSeqSize();
+			updateSwingVals(); // Update the savefile's SWING-data, if it has been changed
+			updateSeqSize(); // Update the size-data of all sequences in the savefile
 		} else { // Else, if RECORD-MODE is about to be toggled...
 			resetSeq(RECORDSEQ); // If the most-recently-touched seq is already playing, reset it to prepare for timing-wrapping
 			SCATTER[RECORDSEQ] = 0; // Unset the most-recently-touched seq's SCATTER values before starting to record

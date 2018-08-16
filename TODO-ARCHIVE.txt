@@ -341,6 +341,9 @@ Software:
 	. also encountering a bug related to the SHIFT-freeze bug, where LEDs will seem to be pulling partially-formed glyphs from memory in PLAY MODE
 		-- this seems to have gone away as well
 
+	. double-check: can the CHAN byte's upper bits only be changed by the UPPER CHAN BYTES command, as they should?
+		-- yes
+
 Hardware:
 
 

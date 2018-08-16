@@ -26,6 +26,7 @@ void resetSeq(byte s) {
 // Reset the timing of all seqs and the global cue-point
 void resetAllTiming() {
 	CUR16 = 127; // Reset the global cue-point
+	SPART = 0; // Reset the global SWING PART to 0 (its initial state)
 	memset(POS, 0, 96); // Reset each seq's internal tick-position
 }
 
@@ -65,7 +66,7 @@ void readTick(byte s, byte offset, byte buf[]) {
 	}
 	// Navigate to the note's absolute position,
 	// and compensate for the fact that each tick contains 8 bytes
-	file.seekSet((49UL + (loc * 8)) + (4096UL * s));
+	file.seekSet((FILE_BODY_START + (loc * 8)) + (FILE_SEQ_BYTES * s));
 	file.read(buf, 8); // Read the data of the tick's notes
 }
 
@@ -190,7 +191,8 @@ void getTickNotes(byte ctrl, unsigned long held, byte s, byte buf[]) {
 				byte b[5]; // Make a buffer the size of a note...
 				memset(b, 0, 4); // ...And clear it of any junk-data
 				writeCommands( // Write the blank note to the savefile
-					(49UL + (POS[RECORDSEQ] * 8)) + (4096UL * RECORDSEQ) + (TRACK * 4), // Write at the RECORDSEQ's current position
+					// Write at the RECORDSEQ's current position
+					(FILE_BODY_START + (POS[RECORDSEQ] * 8)) + (FILE_SEQ_BYTES * RECORDSEQ) + (TRACK * 4),
 					4, // Write 4 bytes of data
 					b, // Use the empty buffer that was just created
 					1 // Only overwrite notes that match the global CHAN

@@ -49,7 +49,7 @@ void writeCommands(
 void recordToSeq(word pstn, byte chan, byte b1, byte b2, byte trk) {
 
 	// Get the position of the first of this tick's bytes within the active track in the data-file
-	unsigned long tickstart = (49UL + (4096UL * RECORDSEQ)) + (((unsigned long)pstn) * 8) + (trk * 4);
+	unsigned long tickstart = (FILE_BODY_START + (FILE_SEQ_BYTES * RECORDSEQ)) + (((unsigned long)pstn) * 8) + (trk * 4);
 
 	// Construct a virtual MIDI command, with an additional DURATION value
 	byte note[5] = {

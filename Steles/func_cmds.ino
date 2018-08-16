@@ -23,7 +23,7 @@ void clearCmd(byte col, byte row) {
 	byte len = STATS[RECORDSEQ] & 63; // Get the RECORDSEQ's length, in beats
 	word blen = word(len) * 128; // Get the RECORDSEQ's length, in bytes
 
-	unsigned long rspos = 49UL + (4096UL * RECORDSEQ); // Get the RECORDSEQ's absolute data-position
+	unsigned long rspos = FILE_BODY_START + (FILE_SEQ_BYTES * RECORDSEQ); // Get the RECORDSEQ's absolute data-position
 	word pos = (POS[RECORDSEQ] >> 4) << 4; // Get the bottom-point of the current beat in RECORDSEQ
 	byte t4 = TRACK * 4; // Get a bitwise offset based on whether track 1 or 2 is active
 
@@ -89,8 +89,8 @@ void pasteCmd(__attribute__((unused)) byte col, byte row) {
 	byte b1[33]; // Create a quarter-note-sized copy-data buffer...
 	memset(b1, 0, 32); // ...And clear it of any junk-data
 
-	unsigned long copybase = 49UL + (word(COPYSEQ) * 4096); // Get the literal position of the copy-seq
-	unsigned long pastebase = 49UL + (word(RECORDSEQ) * 4096); // Get the literal position of the paste-seq
+	unsigned long copybase = FILE_BODY_START + (word(COPYSEQ) * FILE_SEQ_BYTES); // Get the literal position of the copy-seq
+	unsigned long pastebase = FILE_BODY_START + (word(RECORDSEQ) * FILE_SEQ_BYTES); // Get the literal position of the paste-seq
 
 	byte clen = 128 >> row; // Get the length of the copy/paste, in quarter-notes
 

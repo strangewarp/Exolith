@@ -17,9 +17,9 @@ void createFiles() {
 		file.createContiguous(sd.vwd(), name, FILE_BYTES); // Create a contiguous file
 		file.close(); // Close the newly-created file
 		file.open(name, O_WRITE); // Open the file explicitly in WRITE mode
-		file.seekSet(0); // Go to byte 0
+		file.seekSet(FILE_BPM_BYTE); // Go to the BPM-byte
 		file.write(byte(80)); // Write a default BPM value of 80
-		for (byte j = 1; j < 49; j++) { // For every header-byte...
+		for (byte j = FILE_SQS_START; j <= FILE_SQS_END; j++) { // For every seq-size byte in the header...
 			file.seekSet(j); // Go to that byte's position
 			file.write(byte(8)); // Write a default sequence-size value of 8
 		}
@@ -41,20 +41,31 @@ void getFilename(char source[], byte fnum) {
 }
 
 // Update a given byte within a given song-file.
-// This is used to update BPM and SEQ-SIZE bytes in the header
+// This is used only to update various bytes in the header, so "byte" is acceptable.
 void updateFileByte(byte pos, byte b) {
 	file.seekSet(pos); // Go to the given insert-point
 	file.write(b); // Write the new byte into the file
 	file.sync(); // Make sure the changes are recorded
 }
 
+// Check whether a given header-byte is a duplicate, and if not, update it in the savefile.
+// This is used only to update various bytes in the header, so "byte" is acceptable.
+void updateNonDuplicate(byte pos, byte b) {
+	file.seekSet(pos); // Go to the corresponding byte in the savefile
+	if (file.read() != b) { // Read the header-byte. If it isn't the same as the given byte-value...
+		updateFileByte(pos, b); // Put the local header-byte into its corresponding savefile header-byte
+	}
+}
+
+// Update the savefile's SWING-data, if it has been changed
+void updateSwingVals() {
+	updateNonDuplicate(FILE_SGRAN_BYTE, SGRAN); // Save the SWING GRANULARITY value, if it has been changed
+	updateNonDuplicate(FILE_SAMOUNT_BYTE, SAMOUNT); // ^ Same, but for SWING AMOUNT
+}
+
 // Update the sequence's size-byte in the savefile, if it has been changed
 void updateSeqSize() {
-	byte newsize = STATS[RECORDSEQ] & 63; // Get the RECORDSEQ's current size
-	file.seekSet(RECORDSEQ + 1); // Go to the RECORDSEQ's corresponding size-byte in the savefile
-	if (file.read() != newsize) { // Read the size-byte. If it isn't the same as the seq-size held within local vars...
-		updateFileByte(RECORDSEQ + 1, newsize); // Put the RECORDSEQ's local size-byte into its corresponding savefile size-byte
-	}
+	updateNonDuplicate(FILE_SQS_START + RECORDSEQ, STATS[RECORDSEQ] & 63);
 }
 
 // Put the current prefs-related global vars into a given buffer
@@ -114,7 +125,7 @@ void writePrefs() {
 
 	file.seekSet(0); // Go to the BPM-byte's location
 	if (file.read() != BPM) { // If the BPM-byte doesn't match the current BPM...
-		updateFileByte(0, BPM); // Update the BPM-byte in the song's savefile
+		updateFileByte(FILE_BPM_BYTE, BPM); // Update the BPM-byte in the song's savefile
 	}
 
 }
@@ -187,18 +198,24 @@ void loadSong(byte slot) {
 	char name[8];
 	getFilename(name, slot); // Get the name of the target song-slot's savefile
 
-	// Put the header-bytes from the savefile into the global BPM and STATS vars
+	// Put the header-bytes from the savefile into the global BPM, SWING, and STATS vars
 	file.open(name, O_RDWR);
-	BPM = file.read();
-	file.seekSet(1); // Go to the start of the SEQ-SIZE block
-	file.read(STATS, 48);
+	file.seekSet(FILE_BPM_BYTE); // Go to the BPM-byte location
+	BPM = file.read(); // Read it
+	file.seekSet(FILE_SGRAN_BYTE); // Go to the SWING GRANULARITY byte
+	SGRAN = file.read(); // Read it
+	file.seekSet(FILE_SAMOUNT_BYTE); // Go to the SWING AMOUNT byte
+	SAMOUNT = file.read(); // Read it
+	file.seekSet(FILE_SQS_START); // Go to the start of the SEQ-SIZE block
+	file.read(STATS, 48); // Read it
 
 	updateTickSize(); // Update the internal tick-size (in microseconds) to match the new BPM value
 
-	SONG = slot; // Set the currently-active SONG-position to the given save-slot
-
+	SPART = 0; // Set the current SWING PART to 0, as all timing elements are being reset
 	CUR16 = 127; // Set the global cue-position to arrive at 1 immediately
 	ELAPSED = 0; // Reset the elapsed-time-since-last-16th-note counter
+
+	SONG = slot; // Set the currently-active SONG-position to the given save-slot
 
 	displayLoadNumber(); // Display the number of the newly-loaded savefile
 
