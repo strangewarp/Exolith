@@ -108,7 +108,7 @@ word GLOBALRAND = 12345; // Global all-purpose semirandom value; gets changed on
 
 // Swing vars
 byte SGRAN = 1; // Current SWING granularity (1 = 8th; 2 = 4th; 3 = half note; 4 = whole note)
-char SAMOUNT = 0; // Current SWING amount (-127 = full negative swing; 127 = full positive swing; 0 = no swing)
+byte SAMOUNT = 64; // Current SWING amount (0 = full negative swing; 128 = full positive swing; 64 = no swing)
 byte SPART = 0; // Tracks which section of the SWING is currently active
 
 // Beat-scattering flags, one per seq.

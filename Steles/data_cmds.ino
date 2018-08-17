@@ -18,11 +18,13 @@ const CmdFunc COMMANDS[] PROGMEM = {
 	quantizeCmd,      // 13: QUANTIZE
 	repeatCmd,        // 14: TOGGLE REPEAT
 	sizeCmd,          // 15: SEQ-SIZE
-	switchCmd,        // 16: SWITCH RECORDING-SEQUENCE
-	tempoCmd,         // 17: BPM
-	trackCmd,         // 18: TRACK
-	upperBitsCmd,     // 19: UPPER CHAN BITS
-	veloCmd           // 20: VELOCITY
+	swAmtCmd,         // 16: SWING AMOUNT
+	swGranCmd,        // 17: SWING GRANULARITY
+	switchCmd,        // 18: SWITCH RECORDING-SEQUENCE
+	tempoCmd,         // 19: BPM
+	trackCmd,         // 20: TRACK
+	upperBitsCmd,     // 21: UPPER CHAN BITS
+	veloCmd           // 22: VELOCITY
 };
 
 // Matches control-row binary button-values to the decimal values that stand for their corresponding functions in COMMANDS
@@ -30,10 +32,10 @@ const CmdFunc COMMANDS[] PROGMEM = {
 const byte KEYTAB[] PROGMEM = {
 	7,  //  0, 000000:  7, genericCmd (REGULAR NOTE)
 	14, //  1, 000001: 14, repeatCmd
-	18, //  2, 000010: 18, trackCmd
+	20, //  2, 000010: 20, trackCmd
 	11, //  3, 000011: 11, posCmd
-	20, //  4, 000100: 20, veloCmd
-	17, //  5, 000101: 17, tempoCmd
+	22, //  4, 000100: 22, veloCmd
+	19, //  5, 000101: 19, tempoCmd
 	0,  //  6, 000110:  0, ignore
 	0,  //  7, 000111:  0, ignore
 	9,  //  8, 001000:  9, octaveCmd
@@ -45,7 +47,7 @@ const byte KEYTAB[] PROGMEM = {
 	0,  // 14, 001110:  0, ignore
 	3,  // 15, 001111:  3, clearCmd
 	13, // 16, 010000: 13, quantizeCmd
-	0,  // 17, 010001:  0, ignore
+	17, // 17, 010001: 17, swGranCmd
 	12, // 18, 010010: 12, qrstCmd
 	0,  // 19, 010011:  0, ignore
 	5,  // 20, 010100:  5, copyCmd
@@ -61,10 +63,10 @@ const byte KEYTAB[] PROGMEM = {
 	0,  // 30, 011110:  0, ignore
 	0,  // 31, 011111:  0, ignore
 	1,  // 32, 100000:  1, armCmd
-	16, // 33, 100001: 16, switchCmd
-	0,  // 34, 100010:  0, ignore
+	18, // 33, 100001: 18, switchCmd
+	16, // 34, 100010: 16, swAmtCmd
 	0,  // 35, 100011:  0, ignore
-	19, // 36, 100100: 19, upperBitsCmd
+	21, // 36, 100100: 21, upperBitsCmd
 	0,  // 37, 100101:  0, ignore
 	0,  // 38, 100110:  0, ignore
 	0,  // 39, 100111:  0, ignore

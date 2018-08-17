@@ -41,19 +41,21 @@ Software:
 			. SWING PART is reset to 0 on every toggle between RECORD-MODE and PLAY-MODE
 				-- done: I put this into resetAllTiming()
 		. create entries in buttons-key.txt for SWING commands in RECORD MODE
-			-- 
+			-- done
 		. create CmdFunc entries for SWING GRANULARITY and SWING AMOUNT
-			-- 
+			-- ok
 			. when SWING GRANULARITY is changed, SWING SECTION should be checked against the new section-size and changed accordingly
-				-- 
-			. when either SWING GRANULARITY or SWING AMOUNT has a key-up, 
-				-- 
-		. create glyphs for them
-			-- 
-		. shift other manual glyph calls in func_gui.ino (BPM glyph)
-			-- 
-		. on GUI for SWING-AMOUNT: top row should fill its left side for pre-swing, and fill its right side for post-swing, up to -127/127 on respective sides
-			-- 
+				-- ok: a new function called updateSwingPart() does this now
+		. create glyphs for SWING GRANULARITY and SWING AMOUNT
+			-- done
+		. edit CmdFunc apparatus to compensate for the presence of new glyphs
+			-- done
+		. shift other manual glyph calls in func_gui.ino (BPM/TEMPO glyph)
+			-- done
+		. on GUI for SWING-AMOUNT: top row should fill its left side for pre-swing, and fill its right side for post-swing, up to -64/+64 on respective sides
+			-- done (definitely needs testing)
+		. update top-row GUI for SWING-GRANULARITY
+			-- done
 		. change timing routines to compensate for SWING
 			-- 
 			. split TICKSIZE into "TSIZE1" and "TSIZE2" vars, to hold values equal to each side of the current SWING-amount in microseconds
@@ -62,13 +64,20 @@ Software:
 			. to avoid lots of division:
 				. use a lookup-table in PROGMEM for all ((200-32) * 16) BPM+SWING values? (would require reduction of SWING granularity to 32 [-16 to 16])
 					. one division operation per SWING-command isn't actually that bad though
+		. call updateSwingPart() after updating CUR16 in the timer func
+			-- 
 		. writeCommands() should recognize SWING commands in its wear-reduction mechanism
 			-- 
 
-		. test SWING modification
-			-- 
-		. test recordable SWING-commands
-			-- 
+	. wipe the testing SD-card again, due to savefile format changes
+		-- 
+
+	. re-test BPM command, to make sure the newly-moved glyph is still displaying right
+		-- 
+	. test SWING modification
+		-- 
+	. test recordable SWING-commands
+		-- 
 
 	. add a SWING CHANGE command, which can be stored as a note in savefiles, to change either SWING GRANULARITY or SWING AMOUNT
 		. when a SWING CHANGE GRANULARITY or SWING CHANGE AMOUNT command is encountered:

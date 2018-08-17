@@ -170,6 +170,19 @@ void sizeCmd(byte col, byte row) {
 	TO_UPDATE |= 3; // Flag top two rows for updating
 }
 
+// Parse a SWING AMOUNT press
+void swAmtCmd(byte col, byte row) {
+	SAMOUNT = applyChange(SAMOUNT, toChange(col, row), 0, 128); // Apply the column-and-row's CHANGE value to the SAMOUNT value
+	TO_UPDATE |= 1; // Flag the topmost row for updating
+}
+
+// Parse a SWING GRANULARITY press
+void swGranCmd(byte col, byte row) {
+	SGRAN = applyChange(SGRAN, toChange(col, row), 1, 4); // Apply the column-and-row's CHANGE value to the SGRAN value
+	updateSwingPart(); // Update the SWING-PART var based on the current SWING GRANULARITY and CUR16 tick
+	TO_UPDATE |= 1; // Flag the topmost row for updating
+}
+
 // Parse a SWITCH RECORDSEQ press
 void switchCmd(byte col, byte row) {
 	updateSeqSize(); // Update the current seq's size-byte in the savefile, if applicable

@@ -30,6 +30,11 @@ void resetAllTiming() {
 	memset(POS, 0, 96); // Reset each seq's internal tick-position
 }
 
+// Update the SWING-PART var based on the current SWING GRANULARITY and CUR16 tick
+void updateSwingPart() {
+	SPART = !!((CUR16 % (1 << SGRAN)) >> (SGRAN - 1));
+}
+
 // Compare a seq's CUE-commands to the global CUE-point, and parse them if the timing is correct
 void parseCues(byte s, byte size) {
 

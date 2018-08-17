@@ -50,7 +50,7 @@ void updateFileByte(byte pos, byte b) {
 
 // Check whether a given header-byte is a duplicate, and if not, update it in the savefile.
 // This is used only to update various bytes in the header, so "byte" is acceptable.
-void updateNonDuplicate(byte pos, byte b) {
+void updateNonMatch(byte pos, byte b) {
 	file.seekSet(pos); // Go to the corresponding byte in the savefile
 	if (file.read() != b) { // Read the header-byte. If it isn't the same as the given byte-value...
 		updateFileByte(pos, b); // Put the local header-byte into its corresponding savefile header-byte
@@ -59,13 +59,13 @@ void updateNonDuplicate(byte pos, byte b) {
 
 // Update the savefile's SWING-data, if it has been changed
 void updateSwingVals() {
-	updateNonDuplicate(FILE_SGRAN_BYTE, SGRAN); // Save the SWING GRANULARITY value, if it has been changed
-	updateNonDuplicate(FILE_SAMOUNT_BYTE, SAMOUNT); // ^ Same, but for SWING AMOUNT
+	updateNonMatch(FILE_SGRAN_BYTE, SGRAN); // Save the SWING GRANULARITY value, if it has been changed
+	updateNonMatch(FILE_SAMOUNT_BYTE, SAMOUNT); // ^ Same, but for SWING AMOUNT
 }
 
 // Update the sequence's size-byte in the savefile, if it has been changed
 void updateSeqSize() {
-	updateNonDuplicate(FILE_SQS_START + RECORDSEQ, STATS[RECORDSEQ] & 63);
+	updateNonMatch(FILE_SQS_START + RECORDSEQ, STATS[RECORDSEQ] & 63);
 }
 
 // Put the current prefs-related global vars into a given buffer
