@@ -195,7 +195,7 @@ void switchCmd(byte col, byte row) {
 // Parse a BPM-press
 void tempoCmd(byte col, byte row) {
 	char change = toChange(col, row); // Convert a column and row into a CHANGE value
-	BPM = applyChange(BPM, change, 16, 200); // Change the BPM rate
+	BPM = applyChange(BPM, change, BPM_LIMIT_LOW, BPM_LIMIT_HIGH); // Change the BPM rate
 	updateTickSize(); // Update the internal tick-size (in microseconds) to match the new BPM value
 	TO_UPDATE |= 1; // Flag the topmost row for updating
 }

@@ -43,6 +43,9 @@
 
 #define FILE_SEQ_BYTES 4096UL // Bytes within each sequence (UL because large values get added to this)
 
+#define BPM_LIMIT_LOW 32 // Limits to the range of valid BPM values
+#define BPM_LIMIT_HIGH 200 // ^
+
 #define SCANRATE 7000 // Amount of time between keystroke-scans, in microseconds
 
 #define GESTDECAY 250000UL // Amount of time between gesture-decay ticks, in microseconds
@@ -77,7 +80,8 @@ unsigned long ABSOLUTETIME = 0; // Absolute time elapsed: wraps around after rea
 unsigned long ELAPSED = 0; // Time elapsed since last tick
 word KEYELAPSED = 0; // Time elapsed since last keystroke-scan
 unsigned long GESTELAPSED = 0; // Time elapsed since last gesture-decay
-unsigned long TICKSIZE = 6250; // Size of the current tick, in microseconds; tick = 60000000 / (bpm * 96)
+word TICKSZ1 = 6250; // Current size of pre-SWING-modified ticks
+word TICKSZ2 = 6250; // Current size of post-SWING-modified ticks
 
 // Recording vars
 byte LOADMODE = 0; // Tracks whether LOAD MODE is active

@@ -9,6 +9,8 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
+	-- updated some BPM-manipulation routines to use BPM_LIMIT_LOW and BPM_LIMIT_HIGH instead of hardcoded limit values
+
 	. on every MIDI-OUT, look through the SUSTAIN system for the same note on the same channel, and if it is present, send a NOTE-OFF before the NOTE-ON
 	. (this will allow certain synths to obey conflicting QUANTIZE and DURATION settings without wigging out)
 		-- had to also apply this mechanism to MOUT, to prevent weird effects from duplicate notes on the same tick
@@ -57,13 +59,20 @@ Software:
 		. update top-row GUI for SWING-GRANULARITY
 			-- done
 		. change timing routines to compensate for SWING
-			-- 
+			-- am doing
 			. split TICKSIZE into "TSIZE1" and "TSIZE2" vars, to hold values equal to each side of the current SWING-amount in microseconds
-			. ...e.g.: S1 = round([TICKSIZE-deriving function] * (64/SAMOUNT)); S2 = 1 - S1;
+				-- done
+			. update every function that references TICKSIZE
 				-- 
-			. to avoid lots of division:
-				. use a lookup-table in PROGMEM for all ((200-32) * 16) BPM+SWING values? (would require reduction of SWING granularity to 32 [-16 to 16])
-					. one division operation per SWING-command isn't actually that bad though
+			. update TICKSZ1 and TICKSZ2 on every SWING AMOUNT change
+				. for manual SWING AMOUNT via CmdFunc
+					-- 
+				. for automatic SWING AMOUNT via sequences SWING GRAN commands
+					-- 
+			. meticulously check that updateTimer() can handle situations where the micros-since-last-tick is many times greater than the micros-to-next-tick value
+				-- 
+				. also make sure that it won't run many iterations of iterateAll() in such a situation without re-checking, because SWING may change back around
+					-- 
 		. call updateSwingPart() after updating CUR16 in the timer func
 			-- 
 		. writeCommands() should recognize SWING commands in its wear-reduction mechanism
@@ -72,6 +81,8 @@ Software:
 	. wipe the testing SD-card again, due to savefile format changes
 		-- 
 
+	. test changes to the timing system
+		-- 
 	. re-test BPM command, to make sure the newly-moved glyph is still displaying right
 		-- 
 	. test SWING modification

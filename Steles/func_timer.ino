@@ -7,7 +7,7 @@ void toggleMidiClock(byte usercmd) {
 
 	if (CLOCKMASTER) { // If in CLOCK MASTER mode...
 		if (PLAYING) { // If playing has just been enabled...
-			ELAPSED = TICKSIZE; // Cue the next tick-update to occur on the next timer-check
+			ELAPSED = TICKSZ2; // Cue the next tick-update to occur on the next timer-check
 			TICKCOUNT = 5; // Set the next 16th-note to be cued on the next timer-check
 			CUR16 = 127; // Ensure that the global 16th-note position will reach 0 on the next timer-check
 			ABSOLUTETIME = micros(); // Set the ABSOLUTETIME to the current time, to prevent changes to ELAPSED in the next timer-check

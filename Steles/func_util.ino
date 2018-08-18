@@ -4,9 +4,7 @@
 // clamping it between the given low and high values.
 byte applyChange(byte n, char change, byte low, byte high) {
 	int n2 = int(n) + change;
-	if (n2 <= low) { return low; }
-	if (n2 >= high) { return high; }
-	return byte(n2);
+	return (n2 < low) ? low : ((n2 > high) ? high : byte(n2));
 }
 
 // Convert a column and row into a CHANGE value,

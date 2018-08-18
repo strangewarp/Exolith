@@ -54,7 +54,7 @@ void recordToSeq(word pstn, byte chan, byte b1, byte b2, byte trk) {
 	// Construct a virtual MIDI command, with an additional DURATION value
 	byte note[5] = {
 		chan, // Channel-byte
-		byte((chan == 240) ? min(200, max(16, b1 + VELO)) : b1), // Pitch-byte, or BPM-byte in a BPM-CHANGE command
+		byte((chan == 240) ? max(BPM_LIMIT_LOW, min(BPM_LIMIT_HIGH, b1 + VELO)) : b1), // Pitch-byte, or BPM-byte in a BPM-CHANGE command
 		byte(b2 * (((chan % 224) <= 191) || (chan != 240))), // Velocity-byte, or 0 if this is a 2-byte command
 		byte(((chan & 240) == 144) * DURATION) // Duration-byte, or 0 if this is a non-NOTE-ON command
 	};
@@ -105,7 +105,7 @@ void processRecAction(byte key, byte trk) {
 	// If this is a BPM-CHANGE command, change the BPM immediately to reflect its contents
 	if (CHAN == 240) {
 		// Add the modified-pitch and the unmodified-VELO, and clamp them into the new BPM value
-		BPM = min(200, max(16, pitch + VELO));
+		BPM = max(BPM_LIMIT_LOW, min(BPM_LIMIT_HIGH, pitch + VELO));
 		updateTickSize(); // Update the global tick-size to reflect the new BPM value
 		return; // Exit the function, since BPM-CHANGE commands require neither a SUSTAIN nor a MIDI-OUT message
 	}
