@@ -43,15 +43,13 @@ void updateTimer() {
 
 	if (micr < ABSOLUTETIME) { // If the micros-value has wrapped around its finite counting-space to be less than the last absolute-time position...
 		offset = (4294967295UL - ABSOLUTETIME) + micr; // Get an offset representing time since last check, wrapped around the unsigned long's limit
-		GESTELAPSED += offset; // Put the wrapped-around microseconds into the elapsed-time-for-gesture-decay value
-		KEYELAPSED += offset; // Put the wrapped-around microseconds into the elapsed-time-for-keypad-checks value
-		ELAPSED += offset; // Put the wrapped-around microseconds into the elapsed-time value
 	} else { // Else, if the micros-value is greater than or equal to last loop's absolute-time position...
 		offset = micr - ABSOLUTETIME; // Get an offset representing time since last check
-		GESTELAPSED += offset; // Add the difference between the current time and the previous time to the elapsed-time-for-gesture-decay value
-		KEYELAPSED += offset; // Add the difference between the current time and the previous time to the elapsed-time-for-keypad-checks value
-		ELAPSED += offset; // Add the difference between the current time and the previous time to the elapsed-time value
 	}
+	GESTELAPSED += offset; // Add the difference between the current time and the previous time to the elapsed-time-for-gesture-decay value
+	KEYELAPSED += offset; // Add the difference between the current time and the previous time to the elapsed-time-for-keypad-checks value
+	ELAPSED += offset; // Add the difference between the current time and the previous time to the elapsed-time value
+
 	ABSOLUTETIME = micr; // Set the absolute-time to the current time-value
 
 	if (BLINKL || BLINKR) { // If an LED-BLINK is active...
@@ -86,10 +84,14 @@ void updateTimer() {
 		KEYELAPSED = 0; // Reset the keypad-check timer
 	}
 
-	// If not in CLOCKMASTER mode, or in LOAD mode, or if the next tick hasn't been reached, exit the function
-	if ((!CLOCKMASTER) || (ELAPSED < TICKSIZE)) { return; }
+	word tlen = SPART ? TICKSZ2 : TICKSZ1; // Get the length of the current SWING-section's ticks
 
-	ELAPSED -= TICKSIZE; // Subtract the tick-delay length from the elapsed-time variable
+	if (
+		(!CLOCKMASTER) // If not in CLOCKMASTER mode...
+		|| (ELAPSED < tlen) // Or if the next tick hasn't been reached within the current SWING-section's tick-length...
+	) { return; } // Exit the function
+
+	ELAPSED -= tlen; // Subtract the current tick-length from the elapsed-time variable
 
 	if (!PLAYING) { return; } // If the sequencer isn't in PLAYING mode, exit the function
 
@@ -100,6 +102,8 @@ void updateTimer() {
 
 	// Since we're sure we're on a new 16th-note, increase the global current-16th-note variable
 	CUR16 = (CUR16 + 1) % 128;
+
+	updateSwingPart(); // Update the SWING-PART var based on the current SWING GRANULARITY and CUR16 tick
 
 	if (!(CUR16 % 16)) { // It we're on the first tick within a global cue...
 		TO_UPDATE |= 1; // Flag the top LED-row for updating

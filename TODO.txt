@@ -63,10 +63,10 @@ Software:
 			. split TICKSIZE into "TSIZE1" and "TSIZE2" vars, to hold values equal to each side of the current SWING-amount in microseconds
 				-- done
 			. update every function that references TICKSIZE
-				-- 
+				-- done
 			. update TICKSZ1 and TICKSZ2 on every SWING AMOUNT change
 				. for manual SWING AMOUNT via CmdFunc
-					-- 
+					-- done
 				. for automatic SWING AMOUNT via sequences SWING GRAN commands
 					-- 
 			. meticulously check that updateTimer() can handle situations where the micros-since-last-tick is many times greater than the micros-to-next-tick value
@@ -74,7 +74,7 @@ Software:
 				. also make sure that it won't run many iterations of iterateAll() in such a situation without re-checking, because SWING may change back around
 					-- 
 		. call updateSwingPart() after updating CUR16 in the timer func
-			-- 
+			-- done
 		. writeCommands() should recognize SWING commands in its wear-reduction mechanism
 			-- 
 

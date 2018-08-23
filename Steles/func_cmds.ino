@@ -173,6 +173,7 @@ void sizeCmd(byte col, byte row) {
 // Parse a SWING AMOUNT press
 void swAmtCmd(byte col, byte row) {
 	SAMOUNT = applyChange(SAMOUNT, toChange(col, row), 0, 128); // Apply the column-and-row's CHANGE value to the SAMOUNT value
+	updateTickSize(); // Update the internal tick-size (in microseconds) to match the new BPM value
 	TO_UPDATE |= 1; // Flag the topmost row for updating
 }
 

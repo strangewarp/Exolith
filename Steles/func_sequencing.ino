@@ -2,11 +2,21 @@
 
 // Update the internal tick-sizes (in microseconds) to match a new BPM and/or SWING AMOUNT value
 void updateTickSize() {
-	// Get the BPM's raw microseconds-per-tick, times 2 since we are splitting it (60000000 is the usual micros value for this)
-	float mcs = 120000000UL / (word(BPM) * 96);
-	float mcmod = mcs * (SAMOUNT / 128); // Get the size of the ticks in the leftmost SWING-chunk
-	TICKSZ1 = word(round(mcmod)); // Round and set the leftmost SWING-tick size
-	TICKSZ2 = word(round(mcs - mcmod)); // Get, round, and set the rightmost SWING-tick size
+
+	// Get the multiplier that corresponds to the current SWING AMOUNT
+	float sw = pgm_read_float_near(SWING_TABLE + abs(SAMOUNT - 64));
+
+	if (SAMOUNT >= 64) { // If this is a positive SWING distance...
+		sw = 1.0 - sw; // Subtract the SWING-multiplier from 1.0
+	}
+
+	// Get the micros-per-tick value that corresponds to the current BPM
+	float mcs = pgm_read_float_near(BPM_TABLE + (BPM - BPM_LIMIT_LOW));
+
+	float tmod = mcs * sw; // Get a SWING-modified tick-length value
+	TICKSZ1 = word(round(tmod)); // Round and set the leftmost SWING-tick size
+	TICKSZ2 = word(round(mcs - tmod)); // Get, round, and set the rightmost SWING-tick size
+
 }
 
 // Reset every sequence, including SCATTER values
