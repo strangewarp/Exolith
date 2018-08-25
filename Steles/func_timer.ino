@@ -35,47 +35,35 @@ void toggleMidiClock(byte usercmd) {
 
 }
 
-// Update the internal timer system, and trigger various events
-void updateTimer() {
+// Engage all timed elements of a 16th-note-sized granularity
+void activateStep() {
 
-	unsigned long micr = micros(); // Get the current microsecond-timer value
-	unsigned long offset; // Will hold the time-offset since the last ABSOLUTETIME point
+	updateSwingPart(); // Update the SWING-PART var based on the current SWING GRANULARITY and CUR16 tick
 
-	if (micr < ABSOLUTETIME) { // If the micros-value has wrapped around its finite counting-space to be less than the last absolute-time position...
-		offset = (4294967295UL - ABSOLUTETIME) + micr; // Get an offset representing time since last check, wrapped around the unsigned long's limit
-	} else { // Else, if the micros-value is greater than or equal to last loop's absolute-time position...
-		offset = micr - ABSOLUTETIME; // Get an offset representing time since last check
+	if (!(CUR16 % 16)) { // It we're on the first tick within a global cue...
+		TO_UPDATE |= 1; // Flag the top LED-row for updating
 	}
-	GESTELAPSED += offset; // Add the difference between the current time and the previous time to the elapsed-time-for-gesture-decay value
-	KEYELAPSED += offset; // Add the difference between the current time and the previous time to the elapsed-time-for-keypad-checks value
-	ELAPSED += offset; // Add the difference between the current time and the previous time to the elapsed-time value
 
-	ABSOLUTETIME = micr; // Set the absolute-time to the current time-value
-
-	if (BLINKL || BLINKR) { // If an LED-BLINK is active...
-
-		word o2 = offset >> 6; // Get a bit-shifted version of the offset value, to decrement the BLINK counters correctly
-		o2 |= !o2; // If the bit-shifted offset value is empty, set it to 1
-
-		if (BLINKL) { // If BLINK-LEFT is active...
-			if (BLINKL > o2) { // If the BLINKL-counter is greater than the bit-shifted offset value...
-				BLINKL -= o2; // Subtract the offset from the BLINKL-counter
-			} else { // Else, if the BLINKL-counter is lower than the offset...
-				BLINKL = 0; // Clear the BLINKL-counter
-				TO_UPDATE |= 252; // Flag the bottom 6 rows for LED updates
-			}
+	if (RECORDMODE) { // If we're in RECORD-MODE...
+		if (!(POS[RECORDSEQ] % 16)) { // If at the start of a new beat of RECORDSEQ...
+			TO_UPDATE |= 2; // Flag the second LED-row for updating
 		}
-
-		if (BLINKR) { // If BLINK-RIGHT is active...
-			if (BLINKR > o2) { // If the BLINKR-counter is greater than the bit-shifted offset value...
-				BLINKR -= o2; // Subtract the offset from the BLINKR-counter
-			} else { // Else, if the BLINKR-counter is lower than the offset...
-				BLINKR = 0; // Clear the BLINKR-counter
-				TO_UPDATE |= 252; // Flag the bottom 6 rows for LED updates
+		if (RECORDNOTES && (!distFromQuantize())) { // If we are recording notes, and on a QUANTIZE or QRESET tick...
+			if (TRACK) { // If TRACK 2 is active...
+				BLINKR = 192; // Cue a ~12ms RIGHT-BLINK
+			} else { // Else, if TRACK 1 is active...
+				BLINKL = 192; // Cue a ~12ms LEFT-BLINK
 			}
+			TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
 		}
-
 	}
+
+	iterateAll(); // Iterate through a step of each active sequence
+
+}
+
+// Check all timing elements of a tick-sized granularity (1/6 of a 16th note), and advance the tick-counter
+void advanceTick() {
 
 	updateGestureKeys(); // Update the tracking-info for all active gesture-keys
 
@@ -100,30 +88,63 @@ void updateTimer() {
 
 	if (TICKCOUNT) { return; } // If the current tick doesn't fall on a 16th-note, exit the function
 
-	// Since we're sure we're on a new 16th-note, increase the global current-16th-note variable
+	// Since we're sure we're on a new 16th-note, advance the global current-16th-note variable
 	CUR16 = (CUR16 + 1) % 128;
 
-	updateSwingPart(); // Update the SWING-PART var based on the current SWING GRANULARITY and CUR16 tick
+	activateStep(); // Engage all timed elements of a 16th-note-sized granularity
 
-	if (!(CUR16 % 16)) { // It we're on the first tick within a global cue...
-		TO_UPDATE |= 1; // Flag the top LED-row for updating
-	}
+}
 
-	if (RECORDMODE) { // If we're in RECORD-MODE...
-		if (!(POS[RECORDSEQ] % 16)) { // If at the start of a new beat of RECORDSEQ...
-			TO_UPDATE |= 2; // Flag the second LED-row for updating
-		}
-		if (RECORDNOTES && (!distFromQuantize())) { // If we are recording notes, and on a QUANTIZE or QRESET tick...
-			if (TRACK) { // If TRACK 2 is active...
-				BLINKR = 192; // Cue a ~12ms RIGHT-BLINK
-			} else { // Else, if TRACK 1 is active...
-				BLINKL = 192; // Cue a ~12ms LEFT-BLINK
+// Decay any currrently-active BLINKL/BLINKR counters
+void blinkDecay(word omod) {
+
+	if (BLINKL || BLINKR) { // If an LED-BLINK is active...
+
+		omod |= !omod; // If the bit-shifted offset value is empty, set it to 1
+
+		if (BLINKL) { // If BLINK-LEFT is active...
+			if (BLINKL > omod) { // If the BLINKL-counter is greater than the bit-shifted offset value...
+				BLINKL -= omod; // Subtract the offset from the BLINKL-counter
+			} else { // Else, if the BLINKL-counter is lower than the offset...
+				BLINKL = 0; // Clear the BLINKL-counter
+				TO_UPDATE |= 252; // Flag the bottom 6 rows for LED updates
 			}
-			TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
 		}
+
+		if (BLINKR) { // If BLINK-RIGHT is active...
+			if (BLINKR > omod) { // If the BLINKR-counter is greater than the bit-shifted offset value...
+				BLINKR -= omod; // Subtract the offset from the BLINKR-counter
+			} else { // Else, if the BLINKR-counter is lower than the offset...
+				BLINKR = 0; // Clear the BLINKR-counter
+				TO_UPDATE |= 252; // Flag the bottom 6 rows for LED updates
+			}
+		}
+
 	}
 
-	iterateAll(); // Iterate through a step of each active sequence
+}
+
+// Update the internal timer system, and trigger various events
+void updateTimer() {
+
+	unsigned long micr = micros(); // Get the current microsecond-timer value
+	unsigned long offset; // Will hold the time-offset since the last ABSOLUTETIME point
+
+	if (micr < ABSOLUTETIME) { // If the micros-value has wrapped around its finite counting-space to be less than the last absolute-time position...
+		offset = (4294967295UL - ABSOLUTETIME) + micr; // Get an offset representing time since last check, wrapped around the unsigned long's limit
+	} else { // Else, if the micros-value is greater than or equal to last loop's absolute-time position...
+		offset = micr - ABSOLUTETIME; // Get an offset representing time since last check
+	}
+	GESTELAPSED += offset; // Add the difference between the current time and the previous time to the elapsed-time-for-gesture-decay value
+	KEYELAPSED += offset; // Add the difference between the current time and the previous time to the elapsed-time-for-keypad-checks value
+	ELAPSED += offset; // Add the difference between the current time and the previous time to the elapsed-time value
+
+	ABSOLUTETIME = micr; // Set the absolute-time to the current time-value
+
+	// Send a bit-shifted version of the offset value to blinkDecay(), to decrement the BLINK counters correctly
+	blinkDecay(word(offset >> 6)); // Decay any currrently-active BLINKL/BLINKR counters
+
+	advanceTick(); // Check all timing elements of a tick-sized granularity (1/6 of a 16th note), and advance the tick-counter
 
 }
 
