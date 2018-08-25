@@ -418,6 +418,13 @@ Software:
 		. writeCommands() should recognize SWING commands in its wear-reduction mechanism
 			-- done
 
+	-- split updateTimer() into 4 smaller functions: updateTimer(), blinkDecay(), advanceTick(), and activateStep()
+
+	. meticulously check that updateTimer() can handle situations where the micros-since-last-tick is many times greater than the micros-to-next-tick value
+		-- seems ok: uses "if" instead of "while", relying instead on the main-loop itself
+		. also make sure that it won't run many iterations of iterateAll() in such a situation without re-checking, because SWING may change back around
+			-- aye, see above
+
 Hardware:
 
 
