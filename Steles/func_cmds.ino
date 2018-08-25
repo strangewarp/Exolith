@@ -9,7 +9,7 @@ void armCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row) 
 // Parse a CHAN press
 void chanCmd(byte col, byte row) {
 	// Modify the CHAN value, keeping it within the range of valid/supported commands
-	CHAN = min(240, (CHAN & 240) | applyChange(CHAN & 15, toChange(col, row), 0, 15));
+	CHAN = min(239, (CHAN & 240) | applyChange(CHAN & 15, toChange(col, row), 0, 15));
 	TO_UPDATE |= 1; // Flag the topmost row for updating
 }
 
@@ -66,7 +66,7 @@ void durationCmd(byte col, byte row) {
 // Parse all of the possible actions that signal the recording of commands
 void genericCmd(byte col, byte row) {
 	if (REPEAT) { return; } // If REPEAT is held, exit the function, since no commands should be sent instantly
-	processRecAction((row * 4) + col, TRACK); // Parse the key as a recording-action into the current TRACK
+	processRecAction(col, row, TRACK); // Parse the key as a recording-action into the current TRACK
 }
 
 // Parse a HUMANIZE press
@@ -212,7 +212,7 @@ void upperBitsCmd(byte col, byte row) {
 	// Convert col/row into a CHANGE val, bounded to +/- 16, 32, 64
 	char change = max(-8, min(8, toChange(col, row))) << 4;
 	// Apply that change-interval to the CHAN value, bounded to valid commands
-	CHAN = min(240, (CHAN & 15) | applyChange(CHAN & 240, change, 128, 240));
+	CHAN = (CHAN & 15) | applyChange(CHAN & 240, change, UPPER_BITS_LOW, UPPER_BITS_HIGH);
 	TO_UPDATE |= 1; // Flag the topmost row for updating
 }
 

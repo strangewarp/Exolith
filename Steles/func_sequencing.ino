@@ -103,7 +103,12 @@ void parseTickContents(byte s, byte buf[]) {
 			TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for an update
 		}
 
-		if (buf[bn] == 240) { // If this is a BPM-CHANGE command...
+		if (buf[bn] == 96) { // If this is a SWING-CHANGE command...
+			SGRAN = buf[bn + 1]; // Set SWING GRANULARITY to its new value
+			SAMOUNT = buf[bn + 2]; // Set SWING AMOUNT to its new value
+			updateTickSize(); // Update the global tick-size to reflect the new SWING values
+			continue; // Either check the next command-slot or exit the loop
+		} else if (buf[bn] == 112) { // If this is a BPM-CHANGE command...
 			BPM = buf[bn + 1]; // Set the global BPM to the new BPM-value
 			updateTickSize(); // Update the global tick-size to reflect the new BPM value
 			continue; // Either check the next command-slot or exit the loop
@@ -185,7 +190,7 @@ void processRepeats(byte ctrl, unsigned long held) {
 			for (byte col = 0; col < 4; col++) { // For every column...
 				if (held & (1UL << i)) { // If the internal BUTTONS-value for this note is held...
 					// Put the first note into the current track, or the second note into the alternate track
-					processRecAction((row * 4) + col, TRACK ^ found);
+					processRecAction(col, row, TRACK ^ found);
 					found++; // Increase the number that tracks how many note-presses have been found on this tick
 				}
 				if (found > 1) { return; } // If the second tick-note is filled, stop looking for notes and end the function

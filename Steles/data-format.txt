@@ -29,6 +29,15 @@ Steles data-file spec
 								lower bits:
 									0-15: MIDI channel
 								higher bits:
+									96: SWING (internal non-MIDI cmd)
+										(3-byte command)
+										0: 96
+										1: new SGRAN (1-4)
+										2: new SAMOUNT (0-128)
+									112: BPM (internal non-MIDI cmd)
+										(2-byte command)
+										0: 112
+										1: new BPM (32-200)
 									128: NOTE-OFF
 										(3-byte command)
 									144: NOTE-ON
@@ -43,10 +52,6 @@ Steles data-file spec
 										(2-byte command)
 									224: PITCH BEND
 										(3-byte command)
-									240: BPM (internal non-MIDI cmd)
-										(2-byte command)
-										0: 240
-										1: new BPM (16-200)
 						1: Command byte 1 (0-127)
 						2: Command byte 2 (0-127)
 						3: Duration (0-255)

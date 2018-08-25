@@ -10,8 +10,7 @@ void writeCommands(
 ) {
 
 	byte* buf = NULL; // Create a pointer to a dynamically-allocated buffer...
-	buf = new byte[amt + 1]; // Allocate that buffer's memory based on the given size...
-	memset(buf, 0, amt); // ...And clear it of any junk-data
+	buf = new byte[amt + 1]; // Allocate that buffer's memory based on the given size
 
 	file.seekSet(pos); // Navigate to the data's position
 	file.read(buf, amt); // Read the already-existing data from the savefile into the data-buffer
@@ -30,8 +29,14 @@ void writeCommands(
 					onchan // Replace-on-chan-match is flagged...
 					&& ((buf[i] & 15) == (CHAN & 15)) // And the channels match...
 				) || ( // Or...
-					(buf[i] == 240) // The command-to-be-replaced is a channel-independent internal BPM command...
-					&& (buf[i + 1] != BPM) // And its value doesn't match the current BPM...
+					(buf[i] == 112) // The command-to-be-replaced is a channel-independent internal BPM command...
+					&& (buf[i + 1] != b[i + 1]) // And its value doesn't match the given BPM-value...
+				) || ( // Or...
+					(buf[i] == 96) // The command-to-be-replaced is a channel-independent internal SWING command...
+					&& ( // And...
+						(buf[i + 1] != b[i + 1]) // Its first byte doesn't match the given SGRAN-value...
+						|| (buf[i + 2] != b[i + 2]) // Or its second byte doesn't match the given SAMOUNT-value...
+					)
 				)
 			)
 		) {
@@ -51,12 +56,14 @@ void recordToSeq(word pstn, byte chan, byte b1, byte b2, byte trk) {
 	// Get the position of the first of this tick's bytes within the active track in the data-file
 	unsigned long tickstart = (FILE_BODY_START + (FILE_SEQ_BYTES * RECORDSEQ)) + (((unsigned long)pstn) * 8) + (trk * 4);
 
+	byte cstrip = chan & 240; // Get the command-type, stripped of any MIDI CHANNEL information
+
 	// Construct a virtual MIDI command, with an additional DURATION value
 	byte note[5] = {
-		chan, // Channel-byte
-		byte((chan == 240) ? max(BPM_LIMIT_LOW, min(BPM_LIMIT_HIGH, b1 + VELO)) : b1), // Pitch-byte, or BPM-byte in a BPM-CHANGE command
-		byte(b2 * (((chan % 224) <= 191) || (chan != 240))), // Velocity-byte, or 0 if this is a 2-byte command
-		byte(((chan & 240) == 144) * DURATION) // Duration-byte, or 0 if this is a non-NOTE-ON command
+		(cstrip <= 112) ? cstrip : chan, // Channel-byte (stripped of CHAN-info for any internal BPM or SWING commands)
+		byte((cstrip == 112) ? max(BPM_LIMIT_LOW, min(BPM_LIMIT_HIGH, b1 + b2)) : b1), // Pitch-byte, or BPM-byte in a BPM-CHANGE command
+		byte(b2 * (((cstrip % 224) <= 176) && (cstrip != 112))), // Velocity-byte, or 0 if this is a 2-byte command
+		byte((cstrip == 144) * DURATION) // Duration-byte, or 0 if this is a non-NOTE-ON command
 	};
 
 	writeCommands(tickstart, 4, note, 0); // Write the note to its corresponding savefile position
@@ -66,10 +73,10 @@ void recordToSeq(word pstn, byte chan, byte b1, byte b2, byte trk) {
 }
 
 // Parse all of the possible actions that signal the recording of commands
-void processRecAction(byte key, byte trk) {
+void processRecAction(byte col, byte row, byte trk) {
 
 	// Get a note that corresponds to the key, organized from bottom-left to top-right, with all modifiers applied
-	byte pitch = (OCTAVE * 12) + ((23 - key) ^ 3);
+	byte pitch = (OCTAVE * 12) + ((23 - ((row * 4) + col)) ^ 3);
 	while (pitch > 127) { // If the pitch is above 127, which is the limit for MIDI notes...
 		pitch -= 12; // Reduce it by an octave until it is at or below 127
 	}
@@ -98,14 +105,23 @@ void processRecAction(byte key, byte trk) {
 	}
 
 	// Flag GUI elements in the middle of the function, as the function may exit early
-	BLINKL = (!TRACK) * 192; // Start a TRACK-linked LED-BLINK that is ~12ms long
-	BLINKR = TRACK * 192; // ^
+	BLINKL |= (!TRACK) * 192; // Start a TRACK-linked LED-BLINK that is ~12ms long
+	BLINKR |= TRACK * 192; // ^
 	TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for an update
 
-	// If this is a BPM-CHANGE command, change the BPM immediately to reflect its contents
-	if (CHAN == 240) {
-		// Add the modified-pitch and the unmodified-VELO, and clamp them into the new BPM value
-		BPM = max(BPM_LIMIT_LOW, min(BPM_LIMIT_HIGH, pitch + VELO));
+	// If this was a SWING-CHANGE command, change the local SWING values immediately to reflect its contents
+	if (CHAN == 96) {
+		SGRAN = col + 1; // Derive SWING GRANULARITY from the keystroke's column
+		SAMOUNT = velo; // Derive SWING AMOUNT from the HUMANIZE-modified VELOCITY
+		updateTickSize(); // Update the global tick-size to reflect the new SWING values
+		updateSwingPart(); // Update the SWING-PART var based on the current SWING GRANULARITY and CUR16 tick
+		return; // Exit the function, since SWING-CHANGE commands require neither a SUSTAIN nor a MIDI-OUT message
+	}
+
+	// If this was a BPM-CHANGE command, change the local BPM immediately to reflect its contents
+	if (CHAN == 112) {
+		// Add the modified-pitch and velo, and clamp them into the new BPM value
+		BPM = max(BPM_LIMIT_LOW, min(BPM_LIMIT_HIGH, pitch + velo));
 		updateTickSize(); // Update the global tick-size to reflect the new BPM value
 		return; // Exit the function, since BPM-CHANGE commands require neither a SUSTAIN nor a MIDI-OUT message
 	}

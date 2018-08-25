@@ -10,19 +10,14 @@ Software:
 	. prove I'm not a dipshit: actually finish the project
 
 	-- updated some BPM-manipulation routines to use BPM_LIMIT_LOW and BPM_LIMIT_HIGH instead of hardcoded limit values
+	-- changed the BLINKL/BLINKR calls in processRecAction() to add their values to whatever other BLINK values might be present
+	-- fixed the entry of BPM-commands in processRecAction() so that they would correctly apply the same recorded HUMANIZE-modded-VELO to the current BPM
+	-- writeCommands() was comparing saved BPM commands to the global BPM var, instead of the value that was actually passed to the function. fixed this
 
 	. on every MIDI-OUT, look through the SUSTAIN system for the same note on the same channel, and if it is present, send a NOTE-OFF before the NOTE-ON
 	. (this will allow certain synths to obey conflicting QUANTIZE and DURATION settings without wigging out)
 		-- had to also apply this mechanism to MOUT, to prevent weird effects from duplicate notes on the same tick
 		-- subsequently had to refactor the SUSTAIN and MOUT systems
-	. re-test the SUSTAIN and MOUT systems:
-		-- am doing
-		. normal usage-case
-			-- 
-		. severe usage-case
-			-- 
-		. special case: multiple duplicate notes on the same tick
-			-- 
 
 	. add global SWING values, set per-song like BPM
 		. create SWING GRANULARITY and SWING AMOUNT vars
@@ -67,20 +62,43 @@ Software:
 			. update TICKSZ1 and TICKSZ2 on every SWING AMOUNT change
 				. for manual SWING AMOUNT via CmdFunc
 					-- done
-				. for automatic SWING AMOUNT via sequences SWING GRAN commands
-					-- 
-			. meticulously check that updateTimer() can handle situations where the micros-since-last-tick is many times greater than the micros-to-next-tick value
-				-- 
-				. also make sure that it won't run many iterations of iterateAll() in such a situation without re-checking, because SWING may change back around
-					-- 
+				. for automatic SWING AMOUNT via sequenced SWING GRAN commands
+					-- done
+		. change sequencing functions to incorporate SWING commands
+			-- am doing
+			. limits of the upperChanBits CmdFunc should now be 96 - 224, and any value below 128 should wipe the *lower* chan bits automatically
+				-- ok
+				. update sequenced/saved BPM commands to occupy a command-byte value of 112
+					-- done
+				. update the CmdFunc for UPPER CHAN BYTES to accomodate the new command-byte value-range
+					-- done
+				. update all sequencing routines that check for any kind of command-byte number
+					-- done afaict
+			. command-entry in RECORD MODE
+				-- done afaict
+			. sequencing in PLAY MODE
+				-- done afaict
 		. call updateSwingPart() after updating CUR16 in the timer func
 			-- done
 		. writeCommands() should recognize SWING commands in its wear-reduction mechanism
+			-- done
+
+	. meticulously check that updateTimer() can handle situations where the micros-since-last-tick is many times greater than the micros-to-next-tick value
+		-- 
+		. also make sure that it won't run many iterations of iterateAll() in such a situation without re-checking, because SWING may change back around
 			-- 
 
 	. wipe the testing SD-card again, due to savefile format changes
 		-- 
 
+	. re-test the SUSTAIN and MOUT systems:
+		-- am doing
+		. normal usage-case
+			-- 
+		. severe usage-case
+			-- 
+		. special case: multiple duplicate notes on the same tick
+			-- 
 	. test changes to the timing system
 		-- 
 	. re-test BPM command, to make sure the newly-moved glyph is still displaying right
