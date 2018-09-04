@@ -18,7 +18,7 @@ void createFiles() {
 		file.close(); // Close the newly-created file
 		file.open(name, O_WRITE); // Open the file explicitly in WRITE mode
 		file.seekSet(FILE_BPM_BYTE); // Go to the BPM-byte
-		file.write(byte(80)); // Write a default BPM value of 80
+		file.write(byte(100)); // Write a default BPM value of 100
 		for (byte j = FILE_SQS_START; j <= FILE_SQS_END; j++) { // For every seq-size byte in the header...
 			file.seekSet(j); // Go to that byte's position
 			file.write(byte(8)); // Write a default sequence-size value of 8

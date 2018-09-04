@@ -9,9 +9,41 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	. wipe the testing SD-card again, due to savefile format changes
-		-- 
+	-- refactored the functions in func_timer.ino, and moved the KEYELAPSED-checking mechanism from advanceTick() to scanKeypad() (in func_keypad.ino)
+	-- removed duplicate TODO entries for the SWING system
+	-- changed SAMOUNT's top-row GUI to use the same visual shorthand as RPTSWEEP's - namely, using a virtual-char-display for its byte-value
 
+	. wipe the testing SD-card again, due to savefile format changes
+		-- done
+
+	. tempo seems slightly too slow. re-check BPM/SWING algorithms
+		-- it was just the default BPM value being lower than I expected, I think
+		-- changed default savefile BPM value from 80 to 100
+
+	. add a RPTSWEEP var to RECORD MODE: this will cause any REPEAT command to store its velocity in the RPTVELO var
+		. make a CmdFunc table entry for REPEAT-SWEEP, and update all other subsequent CmdFuncs in the list
+			-- done
+		. make the CmdFunc itself
+			-- done
+		. make a GUI-glyph for REPEAT-SWEEP
+			-- done
+		. update top-row to show negative/positive REPEAT-SWEEP values, using the same algorithm as the display for SWING-AMOUNT
+			-- done
+		. update manual call to BPM-glyph in func-gui to compensate for the new REPEAT-SWEEP glyph's presence
+			-- done
+		. subsequent REPEAT-triggers during the same keypress will change RPTVELO by the RPTSWEEP amount, and play/record at that velocity
+			-- done
+		. on any new note-button keystroke when REPEAT is enabled, RPTVELO should be set equal to VELO
+			-- 
+		. if REPEAT is enabled, then the HUMANIZE process should be based on RPTVELO instead of VELO
+			-- 
+			. after a given REPEAT is processed, make sure RPTVELO has stored a raw reduced-RPTVELO velocity, not a velocity modulated by HUMANIZE for recording
+				-- 
+
+	. test changes to the timing system
+		-- 
+	. is the newly-moved BPM-glyph still displaying right?
+		-- 
 	. re-test the SUSTAIN and MOUT systems:
 		-- am doing
 		. normal usage-case
@@ -20,24 +52,13 @@ Software:
 			-- 
 		. special case: multiple duplicate notes on the same tick
 			-- 
-	. test changes to the timing system
-		-- 
-	. re-test BPM command, to make sure the newly-moved glyph is still displaying right
-		-- 
 	. test SWING modification
 		-- 
 	. test recordable SWING-commands
 		-- 
 
-	. add a SWING CHANGE command, which can be stored as a note in savefiles, to change either SWING GRANULARITY or SWING AMOUNT
-		. when a SWING CHANGE GRANULARITY or SWING CHANGE AMOUNT command is encountered:
-			. its contents should be saved until the end of the tick, and then immediately applied
-			. there should be separate GRANUL_IN and AMOUNT_IN vars to track these incoming changes
-	. wipe the SD-card, since file contents and filesizes have been changed
-	. test all SWING mechanisms
-
 	. re-test all recording mechanisms
-		-- am doing
+		-- 
 		. note-recording
 			. TRACK 1
 				-- 

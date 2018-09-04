@@ -81,8 +81,10 @@ void processRecAction(byte col, byte row, byte trk) {
 		pitch -= 12; // Reduce it by an octave until it is at or below 127
 	}
 
-	// Get the note's velocity, with a random humanize-offset
-	byte velo = VELO - min(VELO - 1, byte(GLOBALRAND & 255) % (HUMANIZE + 1));
+	byte velo = REPEAT ? RPTVELO : VELO; // Get VELO for regular notes, or RPTVELO for REPEAT-notes
+
+	// Subtract a random humanize-offset from the note's velocity
+	velo -= min(velo - 1, byte(GLOBALRAND & 255) % (HUMANIZE + 1));
 
 	if (PLAYING && RECORDNOTES) { // If notes are being recorded into a playing sequence...
 

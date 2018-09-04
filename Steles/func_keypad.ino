@@ -26,6 +26,10 @@ void scanColumn(byte col) {
 // Scan all keypad rows and columns, checking for changes in state
 void scanKeypad() {
 
+	// If the next keypad-check time hasn't been reached, exit the function
+	if (KEYELAPSED < SCANRATE) { return; }
+	KEYELAPSED = 0; // Reset the keypad-check timer
+
 	byte cr[6] = {0, 0, 0, 1, 1}; // Temp var: port-registers for column-pins: 2 = 0; 3 = 0; 4 = 0; 8 = 1; 9 = 1
 	byte cb[6] = { // Temp var: port-bit-locations for column-pins:
 		B00000100, // col 0: pin 2 = bit 2

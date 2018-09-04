@@ -65,13 +65,6 @@ void activateStep() {
 // Check all timing elements of a tick-sized granularity (1/6 of a 16th note), and advance the tick-counter
 void advanceTick() {
 
-	updateGestureKeys(); // Update the tracking-info for all active gesture-keys
-
-	if (KEYELAPSED >= SCANRATE) { // If the next keypad-check time has been reached...
-		scanKeypad(); // Scan the keypad for changes in keystroke values
-		KEYELAPSED = 0; // Reset the keypad-check timer
-	}
-
 	word tlen = SPART ? TICKSZ2 : TICKSZ1; // Get the length of the current SWING-section's ticks
 
 	if (
@@ -143,6 +136,10 @@ void updateTimer() {
 
 	// Send a bit-shifted version of the offset value to blinkDecay(), to decrement the BLINK counters correctly
 	blinkDecay(word(offset >> 6)); // Decay any currrently-active BLINKL/BLINKR counters
+
+	updateGestureKeys(); // Update the tracking-info for all active gesture-keys
+
+	scanKeypad(); // Scan the keypad for changes in keystroke values
 
 	advanceTick(); // Check all timing elements of a tick-sized granularity (1/6 of a 16th note), and advance the tick-counter
 

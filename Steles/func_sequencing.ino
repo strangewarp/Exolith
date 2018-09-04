@@ -193,9 +193,15 @@ void processRepeats(byte ctrl, unsigned long held) {
 					processRecAction(col, row, TRACK ^ found);
 					found++; // Increase the number that tracks how many note-presses have been found on this tick
 				}
-				if (found > 1) { return; } // If the second tick-note is filled, stop looking for notes and end the function
+				if (found > 1) { break; } // If the second tick-note is filled, exit the loops
 				i += 6; // Increment this row-loop's BUTTON-bit counter to the next note
 			}
+			if (found > 1) { break; } // If the second tick-note is filled, exit the loops
+		}
+
+		if (found) { // If any held-REPEAT-notes were found...
+			// Change the stored REPEAT-VELOCITY by the REPEAT-SWEEP amount
+			RPTVELO = applyChange(RPTVELO, char(int(RPTSWEEP) - 128), 0, 127);
 		}
 
 	}

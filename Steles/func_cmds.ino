@@ -160,6 +160,13 @@ void repeatCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte ro
 	TO_UPDATE |= 252; // Flag the bottom 6 rows for LED updates
 }
 
+// Parse a REPEAT-SWEEP press
+void rSweepCmd(byte col, byte row) {
+	char change = toChange(col, row); // Convert a column and row into a CHANGE value
+	RPTSWEEP = applyChange(RPTSWEEP, change, 0, 255); // Modify the RPTSWEEP value by the CHANGE amount
+	TO_UPDATE |= 253; // Flag the top row, and bottom 6 rows, for LED updates
+}
+
 // Parse a SEQ-SIZE press
 void sizeCmd(byte col, byte row) {
 	char change = toChange(col, row); // Convert a column and row into a CHANGE value
