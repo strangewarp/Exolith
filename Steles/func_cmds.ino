@@ -65,7 +65,10 @@ void durationCmd(byte col, byte row) {
 
 // Parse all of the possible actions that signal the recording of commands
 void genericCmd(byte col, byte row) {
-	if (REPEAT) { return; } // If REPEAT is held, exit the function, since no commands should be sent instantly
+	if (REPEAT) { // If REPEAT is active...
+		RPTVELO = VELO; // Reset the REPEAT-VELOCITY tracking var to be equal to the user-defined VELOCITY amount
+		return; // Exit the function, since no commands should be sent instantly
+	}
 	processRecAction(col, row, TRACK); // Parse the key as a recording-action into the current TRACK
 }
 
