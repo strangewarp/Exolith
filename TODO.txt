@@ -9,39 +9,10 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	-- refactored the functions in func_timer.ino, and moved the KEYELAPSED-checking mechanism from advanceTick() to scanKeypad() (in func_keypad.ino)
-	-- removed duplicate TODO entries for the SWING system
-	-- changed SAMOUNT's top-row GUI to use the same visual shorthand as RPTSWEEP's - namely, using a virtual-char-display for its byte-value
-
-	. wipe the testing SD-card again, due to savefile format changes
-		-- done
-
-	. tempo seems slightly too slow. re-check BPM/SWING algorithms
-		-- it was just the default BPM value being lower than I expected, I think
-		-- changed default savefile BPM value from 80 to 100
-
-	. add a RPTSWEEP var to RECORD MODE: this will cause any REPEAT command to store its velocity in the RPTVELO var
-		. make a CmdFunc table entry for REPEAT-SWEEP, and update all other subsequent CmdFuncs in the list
-			-- done
-		. make the CmdFunc itself
-			-- done
-		. make a GUI-glyph for REPEAT-SWEEP
-			-- done
-		. update top-row to show negative/positive REPEAT-SWEEP values, using the same algorithm as the display for SWING-AMOUNT
-			-- done
-		. update manual call to BPM-glyph in func-gui to compensate for the new REPEAT-SWEEP glyph's presence
-			-- done
-		. subsequent REPEAT-triggers during the same keypress will change RPTVELO by the RPTSWEEP amount, and play/record at that velocity
-			-- done
-		. on any new note-button keystroke when REPEAT is enabled, RPTVELO should be set equal to VELO
-			-- done
-		. if REPEAT is enabled, then the HUMANIZE process should be based on RPTVELO instead of VELO
-			-- ok
-			. after a given REPEAT is processed, make sure RPTVELO has stored a raw reduced-RPTVELO velocity, not a velocity modulated by HUMANIZE for recording
-				-- logic-flow seems correct for this
+	-- moved updateTickSize() to func_timer.ino
 
 	. test changes to the timing system
-		-- 
+		-- doing
 	. is the newly-moved BPM-glyph still displaying right?
 		-- 
 	. re-test the SUSTAIN and MOUT systems:
@@ -53,11 +24,31 @@ Software:
 		. special case: multiple duplicate notes on the same tick
 			-- 
 	. test SWING modification
+		-- horrible: changes in SWING value are erroneously changing the apparent tempo
+		-- this seems to be at its worst when SWING AMOUNT is at or just below either 63 or 127
+		. figure out what's going on
+			-- updateTickSize()'s algorithm seems wrong
+			. fix it
+				-- having trouble finding the root of the problem:
+				-- it looks like a problem with how TICKSZ1/TICKSZ2 are being interpreted, but there's nothing to be interpreting them the wrong way...
+				-- ...which implies that the problem is in updateTickSize(), but the problem does not map to what could be being caused by that algorithm
+				. continue looking and testing
+					-- 
+			. re-test SWING-modification with notes, after applying fixes
+				-- 
+	. test REPEAT-SWEEP
 		-- 
 	. test recordable SWING-commands
 		-- 
-	. test REPEAT-SWEEP
-		-- 
+	. test REPEAT-SWEEP on:
+		. recorded regular MIDI commands
+			-- 
+		. recorded special MIDI commands
+			-- 
+		. recorded BPM commands
+			-- 
+		. recorded SWING commands
+			-- 
 
 	. re-test all recording mechanisms
 		-- 

@@ -35,6 +35,21 @@ void toggleMidiClock(byte usercmd) {
 
 }
 
+// Update the internal tick-sizes (in microseconds) to match a new BPM and/or SWING AMOUNT value
+void updateTickSize() {
+
+	// Get the multiplier that corresponds to the current SWING AMOUNT, negative for left-swing, positive for right-swing
+	float sw = pgm_read_float_near(SWING_TABLE + ((SAMOUNT <= 63) ? SAMOUNT : (64 - (SAMOUNT - 64))));
+	sw *= ((char(SAMOUNT >= 64) * 2) - 1);
+
+	// Get the micros-per-tick value that corresponds to the current BPM
+	float mcs = pgm_read_float_near(BPM_TABLE + (BPM - BPM_LIMIT_LOW));
+
+	TICKSZ1 = word(round(mcs * sw)); // Get and set the leftmost SWING-tick size
+	TICKSZ2 = word(round(mcs * (1.0 - sw))); // Get and set the rightmost SWING-tick size
+
+}
+
 // Engage all timed elements of a 16th-note-sized granularity
 void activateStep() {
 

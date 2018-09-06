@@ -425,6 +425,37 @@ Software:
 		. also make sure that it won't run many iterations of iterateAll() in such a situation without re-checking, because SWING may change back around
 			-- aye, see above
 
+	-- refactored the functions in func_timer.ino, and moved the KEYELAPSED-checking mechanism from advanceTick() to scanKeypad() (in func_keypad.ino)
+	-- removed duplicate TODO entries for the SWING system
+	-- changed SAMOUNT's top-row GUI to use the same visual shorthand as RPTSWEEP's - namely, using a virtual-char-display for its byte-value
+
+	. wipe the testing SD-card again, due to savefile format changes
+		-- done
+
+	. tempo seems slightly too slow. re-check BPM/SWING algorithms
+		-- it was just the default BPM value being lower than I expected, I think
+		-- changed default savefile BPM value from 80 to 100
+
+	. add a RPTSWEEP var to RECORD MODE: this will cause any REPEAT command to store its velocity in the RPTVELO var
+		. make a CmdFunc table entry for REPEAT-SWEEP, and update all other subsequent CmdFuncs in the list
+			-- done
+		. make the CmdFunc itself
+			-- done
+		. make a GUI-glyph for REPEAT-SWEEP
+			-- done
+		. update top-row to show negative/positive REPEAT-SWEEP values, using the same algorithm as the display for SWING-AMOUNT
+			-- done
+		. update manual call to BPM-glyph in func-gui to compensate for the new REPEAT-SWEEP glyph's presence
+			-- done
+		. subsequent REPEAT-triggers during the same keypress will change RPTVELO by the RPTSWEEP amount, and play/record at that velocity
+			-- done
+		. on any new note-button keystroke when REPEAT is enabled, RPTVELO should be set equal to VELO
+			-- done
+		. if REPEAT is enabled, then the HUMANIZE process should be based on RPTVELO instead of VELO
+			-- ok
+			. after a given REPEAT is processed, make sure RPTVELO has stored a raw reduced-RPTVELO velocity, not a velocity modulated by HUMANIZE for recording
+				-- logic-flow seems correct for this
+
 Hardware:
 
 
