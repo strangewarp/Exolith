@@ -38,15 +38,21 @@ void toggleMidiClock(byte usercmd) {
 // Update the internal tick-sizes (in microseconds) to match a new BPM and/or SWING AMOUNT value
 void updateTickSize() {
 
-	// Get the multiplier that corresponds to the current SWING AMOUNT, negative for left-swing, positive for right-swing
-	float sw = pgm_read_float_near(SWING_TABLE + ((SAMOUNT <= 63) ? SAMOUNT : (64 - (SAMOUNT - 64))));
-	sw *= ((char(SAMOUNT >= 64) * 2) - 1);
+	float sw; // Will hold a multiplier that corresponds to the current SWING AMOUNT
+	if (SAMOUNT <= 64) { // If this is a left-swing or a no-swing...
+		sw = 1.0 - pgm_read_float_near(SWING_TABLE + (64 - SAMOUNT)); // Flip the SAMOUNT index, and subtract its SWING value from 1
+	} else { // Else, if this is a right-swing...
+		sw = 1.0 + pgm_read_float_near(SWING_TABLE + (SAMOUNT - 64)); // Reduce SAMOUNT by 64, and add its SWING value to 1
+	}
 
-	// Get the micros-per-tick value that corresponds to the current BPM
-	float mcs = pgm_read_float_near(BPM_TABLE + (BPM - BPM_LIMIT_LOW));
+	// Get a micros-per-two-ticks value that corresponds to the current BPM
+	float mcpb = pgm_read_float_near(BPM_TABLE + (BPM - BPM_LIMIT_LOW));
 
-	TICKSZ1 = word(round(mcs * sw)); // Get and set the leftmost SWING-tick size
-	TICKSZ2 = word(round(mcs * (1.0 - sw))); // Get and set the rightmost SWING-tick size
+	// Modify the micros-per-two-ticks-value by the SWING-multiplier, to get the left-tick's new absolute size
+	float mcmod = mcpb * sw;
+
+	TICKSZ1 = word(round(mcmod)); // Set the leftmost SWING-tick size
+	TICKSZ2 = word(round(mcpb - mcmod)); // Get and set the rightmost SWING-tick size
 
 }
 

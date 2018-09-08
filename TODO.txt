@@ -33,7 +33,9 @@ Software:
 				-- it looks like a problem with how TICKSZ1/TICKSZ2 are being interpreted, but there's nothing to be interpreting them the wrong way...
 				-- ...which implies that the problem is in updateTickSize(), but the problem does not map to what could be being caused by that algorithm
 				. continue looking and testing
-					-- 
+					-- might've fixed it, after drawing some diagrams and rewriting the algorithm again
+					. test it
+						-- 
 			. re-test SWING-modification with notes, after applying fixes
 				-- 
 	. test REPEAT-SWEEP
