@@ -45,14 +45,14 @@ void updateTickSize() {
 		sw = 1.0 + pgm_read_float_near(SWING_TABLE + (SAMOUNT - 64)); // Reduce SAMOUNT by 64, and add its SWING value to 1
 	}
 
-	// Get a micros-per-two-ticks value that corresponds to the current BPM
-	float mcpb = pgm_read_float_near(BPM_TABLE + (BPM - BPM_LIMIT_LOW));
+	// Get a micros-per-tick value that corresponds to the current BPM
+	float mcpb = pgm_read_float_near(MCS_TABLE + (BPM - BPM_LIMIT_LOW));
 
-	// Modify the micros-per-two-ticks-value by the SWING-multiplier, to get the left-tick's new absolute size
+	// Modify the micros-per-tick-value by the SWING-multiplier, to get the left-tick's new absolute size
 	float mcmod = mcpb * sw;
 
 	TICKSZ1 = word(round(mcmod)); // Set the leftmost SWING-tick size
-	TICKSZ2 = word(round(mcpb - mcmod)); // Get and set the rightmost SWING-tick size
+	TICKSZ2 = word(round((mcpb * 2) - mcmod)); // Get and set the rightmost SWING-tick size
 
 }
 

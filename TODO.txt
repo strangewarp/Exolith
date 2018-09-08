@@ -10,6 +10,7 @@ Software:
 	. prove I'm not a dipshit: actually finish the project
 
 	-- moved updateTickSize() to func_timer.ino
+	-- changed the name of "BPM_TABLE" to "MCS_TABLE"
 
 	. test changes to the timing system
 		-- doing
@@ -34,6 +35,7 @@ Software:
 				-- ...which implies that the problem is in updateTickSize(), but the problem does not map to what could be being caused by that algorithm
 				. continue looking and testing
 					-- might've fixed it, after drawing some diagrams and rewriting the algorithm again
+					-- found further bugs after mentally modeling the algorithm, and changed things around to correct for them
 					. test it
 						-- 
 			. re-test SWING-modification with notes, after applying fixes
