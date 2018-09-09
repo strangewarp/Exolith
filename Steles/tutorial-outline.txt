@@ -43,6 +43,7 @@ Tutorial Outline
 		GLOBAL PLAY/STOP
 
 		TOGGLE RECORD-MODE
+			* The most-recently-touched sequence is the one that will be selected for editing. This does not apply to any sequence-buttons pressed while holding the topmost ("PAGE") control-button for any of its associated commands.
 
 
 

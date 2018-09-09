@@ -24,7 +24,7 @@ void createFiles() {
 		file.open(name, O_WRITE); // Open the file explicitly in WRITE mode
 
 		file.seekSet(FILE_BPM_BYTE); // Go to the BPM-byte
-		file.write(byte(96)); // Write a default BPM value of 96
+		file.write(byte(80)); // Write a default BPM value of 80
 		file.seekSet(FILE_SGRAN_BYTE); // Go to the SWING-GRANULARITY byte
 		file.write(byte(1)); // Write a default SWING-GRANULARITY value of 1
 		file.seekSet(FILE_SAMOUNT_BYTE); // Go to the SWING AMOUNT byte

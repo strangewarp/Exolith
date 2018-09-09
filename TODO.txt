@@ -13,18 +13,9 @@ Software:
 	-- changed the name of "BPM_TABLE" to "MCS_TABLE"
 	-- removed individual-note-offs from midiPanic(), since they're mostly-extraneous and cause a lot of startup lag
 
-	. test changes to the timing system
-		-- doing
-	. is the newly-moved BPM-glyph still displaying right?
-		-- 
-	. re-test the SUSTAIN and MOUT systems:
-		-- am doing
-		. normal usage-case
-			-- 
-		. severe usage-case
-			-- 
-		. special case: multiple duplicate notes on the same tick
-			-- 
+	. when a BPM command is activated in PLAY MODE, this primed the RECORDSEQ with an awkward and wrong value. fix it
+		-- done: changed parsePlayPress() to check for PAGE-OFF, SCATTER, SCATTER UNSET, PAGE SCATTER UNSET, PAGE, SHIFT, and BPM
+
 	. test SWING modification
 		-- horrible: changes in SWING value are erroneously changing the apparent tempo
 		-- this seems to be at its worst when SWING AMOUNT is at or just below either 63 or 127
@@ -46,13 +37,27 @@ Software:
 							-- SGRAN was being set to 0 on file-load, because createFiles() didn't have any commands to fill the stored SGRAN and SAMOUNT values
 							-- so, added those commands to createFiles().
 							. wipe SD-card again
-								-- 
+								-- ok
 							. test SWING for basic functionality again
-								-- 
+								-- basic functionality achieved
 			. re-test SWING-modification with notes, after applying fixes
 				-- 
 		. SWING-AMOUNT's GUI is off by one, on its negative side. fix it
 			-- 
+
+	. test changes to the timing system
+		-- doing
+	. is the newly-moved BPM-glyph still displaying right?
+		-- 
+	. re-test the SUSTAIN and MOUT systems:
+		-- am doing
+		. normal usage-case
+			-- 
+		. severe usage-case
+			-- 
+		. special case: multiple duplicate notes on the same tick
+			-- 
+
 	. test REPEAT-SWEEP
 		-- 
 	. test recordable SWING-commands

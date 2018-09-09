@@ -10,7 +10,10 @@ void parsePlayPress(byte col, byte row) {
 	byte nums = ctrl & B00001110; // Get the NUMBER commands' status
 	byte off = ctrl & B00100000; // Get the OFF command's status
 
-	RECORDSEQ = seq; // Set the most-recent-seq to the seq whose button was pressed, regardless of command
+	// If neither a PAGE-OFF, SCATTER, SCATTER UNSET, PAGE SCATTER UNSET, PAGE, SHIFT, or BPM command is held...
+	if (!pg) {
+		RECORDSEQ = seq; // Set the most-recent-seq to the seq whose button was pressed, regardless of command
+	}
 
 	// Flip the number-values into the expected format for CUE/SLICE operations
 	// (1 in lowest bit, 2 next, then 4)
