@@ -11,6 +11,7 @@ Software:
 
 	-- moved updateTickSize() to func_timer.ino
 	-- changed the name of "BPM_TABLE" to "MCS_TABLE"
+	-- removed individual-note-offs from midiPanic(), since they're mostly-extraneous and cause a lot of startup lag
 
 	. test changes to the timing system
 		-- doing
@@ -37,9 +38,14 @@ Software:
 					-- might've fixed it, after drawing some diagrams and rewriting the algorithm again
 					-- found further bugs after mentally modeling the algorithm, and changed things around to correct for them
 					. test it
-						-- 
+						-- still not working. but: some testing-code has revealed that the TICKSZ1&2 vals are indeed being set correctly
+						-- therefore: the problem is somewhere in the timing routines that *interpret* the TICKSZ vars
+						. find the problem
+							-- 
 			. re-test SWING-modification with notes, after applying fixes
 				-- 
+		. SWING-AMOUNT's GUI is off by one, on its negative side. fix it
+			-- 
 	. test REPEAT-SWEEP
 		-- 
 	. test recordable SWING-commands
