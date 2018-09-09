@@ -6,24 +6,37 @@ void createFiles() {
 	char name[8]; // Will hold a given filename
 
 	for (byte i = 0; i < 168; i++) { // For every song-slot...
+
 		if (!(i % 21)) { // After a certain amount of files, switch to the next logo letter
 			for (byte row = 0; row < 7; row++) { // For each row in the 7-row-tall logo text...
 				// Set the corresponding row to the corresponding letter slice
 				sendRow(row + 1, pgm_read_byte_near(LOGO + (row * 4) + ((i / 21) % 4)));
 			}
 		}
+
 		getFilename(name, i); // Get the filename that corresponds to this song-slot
+
 		if (sd.exists(name)) { continue; } // If the file exists, skip the file-creation process for this filename
+
 		file.createContiguous(sd.vwd(), name, FILE_BYTES); // Create a contiguous file
 		file.close(); // Close the newly-created file
+
 		file.open(name, O_WRITE); // Open the file explicitly in WRITE mode
+
 		file.seekSet(FILE_BPM_BYTE); // Go to the BPM-byte
-		file.write(byte(100)); // Write a default BPM value of 100
+		file.write(byte(96)); // Write a default BPM value of 96
+		file.seekSet(FILE_SGRAN_BYTE); // Go to the SWING-GRANULARITY byte
+		file.write(byte(1)); // Write a default SWING-GRANULARITY value of 1
+		file.seekSet(FILE_SAMOUNT_BYTE); // Go to the SWING AMOUNT byte
+		file.write(byte(64)); // Write a default SWING-AMOUNT of 64
+
 		for (byte j = FILE_SQS_START; j <= FILE_SQS_END; j++) { // For every seq-size byte in the header...
 			file.seekSet(j); // Go to that byte's position
 			file.write(byte(8)); // Write a default sequence-size value of 8
 		}
+
 		file.close(); // Close the file
+
 	}
 
 }
