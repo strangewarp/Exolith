@@ -456,6 +456,13 @@ Software:
 			. after a given REPEAT is processed, make sure RPTVELO has stored a raw reduced-RPTVELO velocity, not a velocity modulated by HUMANIZE for recording
 				-- logic-flow seems correct for this
 
+	-- moved updateTickSize() to func_timer.ino
+	-- changed the name of "BPM_TABLE" to "MCS_TABLE"
+	-- removed individual-note-offs from midiPanic(), since they're mostly-extraneous and cause a lot of startup lag
+
+	. when a BPM command is activated in PLAY MODE, this primed the RECORDSEQ with an awkward and wrong value. fix it
+		-- done: changed parsePlayPress() to check for PAGE-OFF, SCATTER, SCATTER UNSET, PAGE SCATTER UNSET, PAGE, SHIFT, and BPM
+
 Hardware:
 
 

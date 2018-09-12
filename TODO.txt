@@ -9,12 +9,8 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	-- moved updateTickSize() to func_timer.ino
-	-- changed the name of "BPM_TABLE" to "MCS_TABLE"
-	-- removed individual-note-offs from midiPanic(), since they're mostly-extraneous and cause a lot of startup lag
-
-	. when a BPM command is activated in PLAY MODE, this primed the RECORDSEQ with an awkward and wrong value. fix it
-		-- done: changed parsePlayPress() to check for PAGE-OFF, SCATTER, SCATTER UNSET, PAGE SCATTER UNSET, PAGE, SHIFT, and BPM
+	-- changed the defaut position of RPTSWEEP so it sits at 128, which is its "middle" value
+	-- added firmware-update process to tutorial-outline
 
 	. test SWING modification
 		-- horrible: changes in SWING value are erroneously changing the apparent tempo
@@ -41,9 +37,19 @@ Software:
 							. test SWING for basic functionality again
 								-- basic functionality achieved
 			. re-test SWING-modification with notes, after applying fixes
-				-- 
+				-- am doing
+				. test with non-recorded-notes in RECORD MODE
+					-- seems to work
+				. test with plain recorded-notes
+					-- 
+				. test with REPEAT
+					-- it works
 		. SWING-AMOUNT's GUI is off by one, on its negative side. fix it
-			-- 
+			-- fixed
+			-- this also fixed a related bug in REPEAT-SWEEP's GUI, which also relied on sendVirtualCharRow()
+
+	. when two REPEAT-notes are being recorded/played in RECORD MODE, both sides of the screen should be covered by BLINK, not just one
+		-- 
 
 	. test changes to the timing system
 		-- doing

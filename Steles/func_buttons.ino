@@ -10,8 +10,7 @@ void parsePlayPress(byte col, byte row) {
 	byte nums = ctrl & B00001110; // Get the NUMBER commands' status
 	byte off = ctrl & B00100000; // Get the OFF command's status
 
-	// If neither a PAGE-OFF, SCATTER, SCATTER UNSET, PAGE SCATTER UNSET, PAGE, SHIFT, or BPM command is held...
-	if (!pg) {
+	if (!pg) { // If neither a PAGE-OFF, SCATTER, SCATTER UNSET, PAGE SCATTER UNSET, PAGE, SHIFT, or BPM command is held...
 		RECORDSEQ = seq; // Set the most-recent-seq to the seq whose button was pressed, regardless of command
 	}
 

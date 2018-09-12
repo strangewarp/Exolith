@@ -93,7 +93,7 @@ byte RECORDSEQ = 0; // Sequence currently being recorded into
 byte RECORDNOTES = 0; // Tracks whether notes are currently being recorded into a sequence
 byte TRACK = 0; // Current track within the active sequence to edit with RECORDMODE actions
 byte REPEAT = 0; // Toggles whether held-down note-buttons should repeat a NOTE-ON every QUANTIZE ticks, in RECORD-MODE
-byte RPTSWEEP = 0; // Amount to modify RPTVELO by on each held-REPEAT-tick (0-127 = minus, 128-255 = plus)
+byte RPTSWEEP = 128; // Amount to modify RPTVELO by on each held-REPEAT-tick (0-127 = minus, 128-255 = plus)
 byte RPTVELO = 127; // Stored RPTSWEEP-modified VELOCITY value for the current REPEAT step (refreshed on every new REPEAT-note press)
 byte OCTAVE = 3; // Octave-offset value for RECORD MODE notes
 byte VELO = 127; // Baseline velocity-value for RECORD MODE notes

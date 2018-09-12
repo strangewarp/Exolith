@@ -89,11 +89,11 @@ byte getRowScatterVals(byte r) {
 }
 
 // Send a virtual char-value to the top LED-row, for "byte" values whose contents represent a virtual negative-to-positive range
-void sendVirtualCharRow(byte n, byte middle) {
-	if (n < middle) { // If the value is less than the range's midpoint...
-		sendRow(0, 128 | ((middle - 1) - n)); // Send an inverted version of the byte's contents, combined with a "negative" indicator-LED
+void sendVirtualCharRow(byte n, byte mid) {
+	if (n < mid) { // If the value is less than the range's midpoint...
+		sendRow(0, 128 | (mid - n)); // Send an inverted version of the byte's contents, combined with a "negative" indicator-LED
 	} else { // Else, if the value is at or above the range's midpoint...
-		sendRow(0, n - middle); // Send an offset version of the byte's contents, without any "negative" LED-indication
+		sendRow(0, n - mid); // Send an offset version of the byte's contents, without any "negative" LED-indication
 	}
 }
 

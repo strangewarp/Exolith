@@ -72,3 +72,34 @@ Tutorial Outline
 			* Distinct from the version of SHIFT in PLAY MODE
 
 
+
+		FILE FORMAT:
+
+
+
+		HOW TO TRANSFER FILES CORRECTLY:
+
+
+
+		HOW TO UPDATE FIRMWARE:
+			1. IMPORTANT! Unplug Tine's DC-power cable, turning Tine off. Do not plug this cable back in until after all of these steps are complete!
+			2. Unscrew the six screws on Tine's faceplate.
+			3. Remove Tine's faceplate, and its left-side-plate.
+			4. On the body of your AVR-programming-cable, set its power-switch to "Power Target" mode.
+			5. Connect AVR-programming-cable to the 6-pin shrouded header on the left side of the bottom-board. It should slide in without any forcing.
+			6. Connect other end of AVR-programming-cable to your computer's USB port. This should turn Tine back on; it is now being powered by your computer.
+			7. Open up the Arduino program on your computer.
+			8. Select in the menu: File -> Open...
+			9. Navigate to the firmware's main file and select it. (For Steles, the default firmware, this file is "Steles.ino".)
+			10. Select in the menu: Tools -> Board -> Arduino Duemilanove or Diecimila
+			11. Select in the menu: Tools -> Processor -> ATmega328
+			12. Select in the menu: Tools -> Programmer -> [Whichever type of AVR-programming-cable you are using]
+			13. Select in the menu: Sketch -> Upload Using Programmer
+			14. The firmware-uploading process will now display its status in a console window. Do not disturb Tine, your computer, or your AVR-programming-cable until both the "Writing" and "Reading" processes have finished, and a message appears that says "avrdude done. Thank you."
+			15. Unplug AVR-programming-cable from your computer's USB port.
+			16. Unplug AVR-programming-cable from Tine.
+			17. Reassemble Tine's left-side-plate and its faceplate.
+			18. Screw the faceplate back on.
+			19. Congratulations: you have updated your Tine unit's firmware! You may now plug the DC-power cable back in.
+
+
