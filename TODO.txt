@@ -41,7 +41,7 @@ Software:
 				. test with non-recorded-notes in RECORD MODE
 					-- seems to work
 				. test with plain recorded-notes
-					-- 
+					-- seems to work
 				. test with REPEAT
 					-- it works
 		. SWING-AMOUNT's GUI is off by one, on its negative side. fix it
@@ -49,17 +49,26 @@ Software:
 			-- this also fixed a related bug in REPEAT-SWEEP's GUI, which also relied on sendVirtualCharRow()
 
 	. when two REPEAT-notes are being recorded/played in RECORD MODE, both sides of the screen should be covered by BLINK, not just one
-		-- 
+		-- fixed: changed processRecAction() to use the given "trk" value, rather than the global "TRACK" value, when assigning BLINK-sides
 
 	. test changes to the timing system
 		-- doing
 	. is the newly-moved BPM-glyph still displaying right?
-		-- 
+		-- yes
 	. re-test the SUSTAIN and MOUT systems:
 		-- am doing
-		. normal usage-case
-			-- 
-		. severe usage-case
+		. percussion usage-case
+			-- is not sending recorded notes for some reason
+			. figure it out
+				-- fixed: the second while-loop in removeDuplicates() was removing the MOUT-queue entry for the note it was checking
+		. synth usage-case:
+			. sustains
+				-- 
+			. chords
+				-- 
+			. z-fighting
+				-- 
+		. overloaded usage-case
 			-- 
 		. special case: multiple duplicate notes on the same tick
 			-- 
@@ -273,6 +282,7 @@ Hardware:
 		. protection-diodes between the MIDI data-lines and the first protection-resistors
 
 	. test MIDI-IO LED circuit with 0.1uF & 1uF capacitors
+		. or 0.1uF on first stage & 1uF/10uF on second stage
 		. or with 1k/10k resistor from cap+ to GND
 		. if it's as bright as the current kind, then: change KiCad schematics & PCBs & Mouser order to reflect this
 

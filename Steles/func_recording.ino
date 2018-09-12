@@ -107,8 +107,8 @@ void processRecAction(byte col, byte row, byte trk) {
 	}
 
 	// Flag GUI elements in the middle of the function, as the function may exit early
-	BLINKL |= (!TRACK) * 192; // Start a TRACK-linked LED-BLINK that is ~12ms long
-	BLINKR |= TRACK * 192; // ^
+	BLINKL |= (!trk) * 192; // Start a given-track-linked LED-BLINK that is ~12ms long
+	BLINKR |= trk * 192; // ^
 	TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for an update
 
 	// If this was a SWING-CHANGE command, change the local SWING values immediately to reflect its contents

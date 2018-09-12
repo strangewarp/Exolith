@@ -14,7 +14,9 @@ void haltAllSustains() {
 
 // Send NOTE-OFFs for any duplicate SUSTAINs and MOUTs
 void removeDuplicates(byte cmd, byte pitch) {
-	byte i = 0;
+
+	byte i = 0; // Iteration var for both while-loops
+
 	while (i < (SUST_COUNT * 3)) { // For every SUSTAIN-slot...
 		if ((SUST[i + 1] == pitch) && ((SUST[i] + 16) == cmd)) { // If the pitch and channel match...
 			endSustain(i); // End the sustain in a given SUST-slot
@@ -22,14 +24,18 @@ void removeDuplicates(byte cmd, byte pitch) {
 			i += 3; // Set "i" forward, since no SUSTAIN-entries were removed
 		}
 	}
+
 	i = 0; // Reset the iteration var
-	while (i < (MOUT_COUNT * 3)) { // For every MOUT-slot...
+
+	// For every MOUT-slot, except for the one that was added for the given note right before this function was called...
+	while (i < ((MOUT_COUNT - 1) * 3)) {
 		if ((MOUT[i + 1] == pitch) && (MOUT[i] == cmd)) { // If the MOUT pitch and channel match...
 			arrayRemoveEntry(MOUT, i, MOUT_COUNT); // Remove the duplicate MOUT-entry
 		} else { // Else, if this wasn't a match...
 			i += 3; // Set "i" forward, since no MOUT-entries were removed
 		}
 	}
+
 }
 
 // Remove an entry from the SUST or MOUT array, and then decrement its counter
