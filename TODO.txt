@@ -9,48 +9,6 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	-- changed the defaut position of RPTSWEEP so it sits at 128, which is its "middle" value
-	-- added firmware-update process to tutorial-outline
-
-	. test SWING modification
-		-- horrible: changes in SWING value are erroneously changing the apparent tempo
-		-- this seems to be at its worst when SWING AMOUNT is at or just below either 63 or 127
-		. figure out what's going on
-			-- updateTickSize()'s algorithm seems wrong
-			. fix it
-				-- having trouble finding the root of the problem:
-				-- it looks like a problem with how TICKSZ1/TICKSZ2 are being interpreted, but there's nothing to be interpreting them the wrong way...
-				-- ...which implies that the problem is in updateTickSize(), but the problem does not map to what could be being caused by that algorithm
-				. continue looking and testing
-					-- might've fixed it, after drawing some diagrams and rewriting the algorithm again
-					-- found further bugs after mentally modeling the algorithm, and changed things around to correct for them
-					. test it
-						-- still not working. but: some testing-code has revealed that the TICKSZ1&2 vals are indeed being set correctly
-						-- therefore: the problem is somewhere in the timing routines that *interpret* the TICKSZ vars
-						. find the problem
-							-- testing-code indicates that updateSwingPart() is staying at a value of 0 for some reason
-							-- it can't be updateSwingPart(). however...
-							-- SGRAN was being set to 0 on file-load, because createFiles() didn't have any commands to fill the stored SGRAN and SAMOUNT values
-							-- so, added those commands to createFiles().
-							. wipe SD-card again
-								-- ok
-							. test SWING for basic functionality again
-								-- basic functionality achieved
-			. re-test SWING-modification with notes, after applying fixes
-				-- am doing
-				. test with non-recorded-notes in RECORD MODE
-					-- seems to work
-				. test with plain recorded-notes
-					-- seems to work
-				. test with REPEAT
-					-- it works
-		. SWING-AMOUNT's GUI is off by one, on its negative side. fix it
-			-- fixed
-			-- this also fixed a related bug in REPEAT-SWEEP's GUI, which also relied on sendVirtualCharRow()
-
-	. when two REPEAT-notes are being recorded/played in RECORD MODE, both sides of the screen should be covered by BLINK, not just one
-		-- fixed: changed processRecAction() to use the given "trk" value, rather than the global "TRACK" value, when assigning BLINK-sides
-
 	. test changes to the timing system
 		-- doing
 	. is the newly-moved BPM-glyph still displaying right?
@@ -163,14 +121,8 @@ Software:
 		. original fork is for the alpha-prototype hardware ONLY
 		. new fork is for the beta-prototype hardware ONLY
 	. breadboard the beta-prototype
-	. update the new fork for the beta-prototype
-		. will have shared SPI pins for MAX7219 (see "Hardware" tasks)
-		. will have a "safe-shutdown" circuit (see "Hardware" tasks)
 
-	. write a minimal alternate firmware to test SD-card lifespan, using an expendable normal SD-card
-		. needs to record number of writes to a given block
-		. needs to record number of errors within that block
-		. needs to store wear-data within a different block, to prevent corruption of record-keeping
+	. soak-test the beta-prototype with several heavy MIDI-OUT sequences active, to stress-test the OUT-indicator circuit's second transistor
 
 	. when the OFF button is used to wipe the cues from a cued seq, does that cued seq refrain from any activity correctly?
 		. if a new cue is set for the same seq, as the seq's first action after such a situation, then does the cue act as expected?
@@ -207,7 +159,9 @@ Software:
 
 	. test MIDI-IN (notes)
 	. test MIDI-IN (clock)
-		. add a "DO NOT SEND CLOCK SIGNALS" user-flag to the CLOCK MASTER/FOLLOW mechanism?
+	. does it synchronize correctly with other clocked gear, without jumping forward or behind by a tick? (test at very low tempo)
+		. ...when receiving CLOCK?
+		. ...when sending CLOCK to other gear?
 
 	. double-check all functionality for sequences on the second-page
 
@@ -258,28 +212,27 @@ Software:
 
 Hardware:
 
-	. print out the alpha-prototype's schematic for reference while making updates (KiCad can corrupt a project if more than 1 is open)
-		-- 
+	. double-check that the indicators have protection-diodes and protection-resistors on them
+		. protection-resistors in front of each first transistor's base terminal
+			-- yes
+		. protection-diodes between the MIDI data-lines and the first protection-resistors
+			-- yes
 
 	. figure out how to stabilize the LEDs while soldering, so their wobbly resin base doesn't set them at slight angles
 		. should each LED just have a very short standoff? (2mm-ish?)
 			-- yes
-			. add LED-standoffs to master parts-list, and to beta-prototype shopping list
 
 	. test a new MIDI port setup:
 		. no MIDI-THRU! (feature would be too rarely used, on this particular kind of device)
 		. 1x MIDI-IN + indicator LED
 		. 2x MIDI-OUT + indicator LED
 			. research how many milliamps the standard MIDI-OUT connection uses, to prevent the possibility of frying power components
+				-- 
 
 	. use "industrial-grade" SD-cards, to greatly lengthen the SD-card's wear-leveling life to something a user would be okay with
 		. something like "1GB THEMIS-A" in here: http://www.psism.com/industrialsd.htm
 		. sdfat /should/ support the FAT16 filesystems of the smaller THEMIS cards, but make sure this is indeed the case
 	. make sure that the SD-cards are shipped in a state identical to what results from the SD Association formatter utility
-
-	. double-check that the indicators have protection-diodes and protection-resistors on them
-		. protection-resistors in front of each first transistor's base terminal
-		. protection-diodes between the MIDI data-lines and the first protection-resistors
 
 	. test MIDI-IO LED circuit with 0.1uF & 1uF capacitors
 		. or 0.1uF on first stage & 1uF/10uF on second stage
@@ -308,6 +261,7 @@ Hardware:
 							  1 - philosopher's stone
 			. reduce boards' size, to fit the results of various changes
 			. change all edge-cuts to reflect the rearrangement of ports/standoffs, if applicable
+			. add edge-cuts to top-board for all electrolytic capacitors on the bottom-board
 			. double-check that ports aren't competing for space with standoffs
 		. bottom-board:
 			. reduce board-size to use only the two frontmost pairs of screws?
@@ -319,6 +273,8 @@ Hardware:
 			. socket all capacitors, to futureproof the capacitor-replacement process
 			. move shrouded AVR-ISP jack to front-left edge of bottom-board, to prevent any need to muck around with safety-caps
 			. SD-card should be on the right side of the front-panel
+			. double-check the SD-card's footprint against its datasheet (its stabilization-holes were kind of wonky on the alpha prototype)
+			. double-check all pin assignments on all regulators and transistors, comparing datasheets directly to footprints
 			. update R-SET resistor's value based on the new diffused LEDs
 			. socket the R-SET resistor, to futureproof against any possible changes to the top-board LEDs
 			. move POWER-LED to center of bottom-board, and use a high-brightness white LED with a very wide visibility-cone
@@ -328,6 +284,8 @@ Hardware:
 			. increase distance between LEDs by 1 or 1.5 mm, to allow more wiggle-room in the faceplate's laser-cutting
 
 	. double-check that the text diagrams in button-key.txt accurately reflect the finalized LED-placement
+
+	. add 2mm LED-standoffs to master parts-list, and to beta-prototype shopping list
 
 	. buy grounding-bracelets to use while soldering beta prototypes, and while assembling finished units
 
@@ -351,4 +309,7 @@ Hardware:
 	==== HARDWARE BETA THRESHOLD ====
 
 	. make sure to buy extra SD-cards in case people need replacements
+
+	. stress-test both MIDI-INDICATOR LEDs simultaneously, with heavy simultaneous IN/OUT signals (with OUT plugged into two devices), and with the main LED-screen fully illuminated, to make sure the unit isn't prone to brownouts
+		. if brownout does occur, then increase the uF value on the 5v regulator-assembly's capacitors
 
