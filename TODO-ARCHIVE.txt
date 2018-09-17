@@ -510,4 +510,14 @@ Hardware:
 	. print out the alpha-prototype's schematic for reference while making updates (KiCad can corrupt a project if more than 1 is open)
 		-- done
 
+	. double-check that the indicators have protection-diodes and protection-resistors on them
+		. protection-resistors in front of each first transistor's base terminal
+			-- yes
+		. protection-diodes between the MIDI data-lines and the first protection-resistors
+			-- yes
+
+	. figure out how to stabilize the LEDs while soldering, so their wobbly resin base doesn't set them at slight angles
+		. should each LED just have a very short standoff? (2mm-ish?)
+			-- yes
+
 
