@@ -107,28 +107,36 @@ Software:
 		. test LOAD-MODE TOGGLE
 		. test GLOBAL PLAY/STOP TOGGLE
 
+	. test LOAD MODE fully:
+		. check toggling into/out of LOAD MODE from both PLAY MODE and RECORD MODE
+			. PLAY MODE:
+				. check toggling LOAD MODE when seqs are playing
+				. check toggling LOAD MODE when seqs have active cued-commands
+			. RECORD MODE:
+				. check toggling LOAD MODE when RECORDNOTES is armed / when REPEAT is active / both
+		. check that all possible edge-case sequences on all pages load correctly
+
+	. test MIDI-IN (notes)
+		. are notes recorded correctly in RECORD-MODE?
+		. are notes recorded only when RECORDNOTES is armed?
+		. make sure that notes are not erroneously recorded when PLAY MODE or LOAD MODE is active
+			. especially after toggling into LOAD MODE from RECORD MODE with RECORDNOTES armed
+	. test MIDI-IN (clock)
+		. does it synchronize correctly with other clocked gear, without jumping forward or behind by a tick? (test at very low tempo)
+			. ...when receiving CLOCK?
+			. ...when sending CLOCK to other gear?
+
+	. check whether sequences function correctly with non-multiple-of-2 lengths, under all RECORD MODE and PLAY MODE processes
+	. check that, when a deeper savefile is loaded and is running many complex sequences, there's no extra lag for whatever reason
 	. look at all note-recording routines again, to triple-check for any stupid mistakes that would lead to unnecessary wear
-
 	. double-check that the BPM rate is actually accurate at various speeds
-
 	. fill 12 sequences with notes, and check whether lag occurs when connected to a hardware synthesizer
-
 	. does anything catastrophic happen when the SD-card is removed during regular operation?
 
 	==== SOFTWARE BETA THRESHOLD ====
 
-	. fork the codebase:
-		. original fork is for the alpha-prototype hardware ONLY
-		. new fork is for the beta-prototype hardware ONLY
-	. breadboard the beta-prototype
-
-	. soak-test the beta-prototype with several heavy MIDI-OUT sequences active, to stress-test the OUT-indicator circuit's second transistor
-
 	. when the OFF button is used to wipe the cues from a cued seq, does that cued seq refrain from any activity correctly?
 		. if a new cue is set for the same seq, as the seq's first action after such a situation, then does the cue act as expected?
-
-	. does BPM change the savefile correctly?
-		. is it loaded in correctly, on startup, after being changed by the user?
 
 	. when two note-buttons are simultaneously held during ARMED RECORDING, are they recorded simultaneously?
 		. what if more than two are held?
@@ -142,26 +150,7 @@ Software:
 	. do very slow BPMs have the expected tick-length?
 	. test whether very fast BPMs have any lag
 
-	. make sure that, when a deeper savefile is loaded, there's no extra lag for whatever reason
-
 	. gestures sometimes have a sloppy response. figure out why
-	. reduce gesture-checking duration, to prevent accidental toggling into RECORD-MODE during performance
-		. or: keep gesture-checking duration the same, but make gestures contain more keystrokes (6 instead of 4?)
-
-	. if lag-reduction is necessary...
-		. try moving the MAX7219 onto the SPI pins and using a homebrew variant of LedControl_HW_SPI
-		. make sequences monophonic?
-		. limit maximum BPM to 160?
-		. change max note-granularity to 8th-notes?
-		. remove MIDI CLOCK?
-		. remove MIDI IN?
-		. remove or greatly simplify SCATTER system?
-
-	. test MIDI-IN (notes)
-	. test MIDI-IN (clock)
-	. does it synchronize correctly with other clocked gear, without jumping forward or behind by a tick? (test at very low tempo)
-		. ...when receiving CLOCK?
-		. ...when sending CLOCK to other gear?
 
 	. double-check all functionality for sequences on the second-page
 
@@ -173,18 +162,12 @@ Software:
 
 	. survey all TO_UPDATE calls, for superfluous flags
 
-	. check whether sequences can actually function with non-multiple-of-2 lengths
-
 	. add SONG POSITION POINTER functionality while in CLOCK FOLLOW mode, to orient the global cue-position correctly?
 
 	. re-test problem areas:
 		. GLOBAL PLAY/STOP
 		. MIDI-IN
 		. GLOBAL PLAY/STOP under conditions of complex MIDI-IN
-
-	. create a testing apparatus in Pdlua, or something, to double-check that all command-types are correctly-formed:
-		. when the command is played manually
-		. when the command is played back from the savefile, during the sequencing routine
 
 	. very rarely, the tempo will be far too fast upon power-up. figure out why
 
@@ -194,7 +177,6 @@ Software:
 	. test overloading the 8-events-per-tick system
 	. test overloading the SUSTAIN system with simultaneous sequencing and notes-from-RECORD-MODE
 	. test overloading the MIDI-IN system
-	. update "VERSION_TEXT" to "1"
 	. soak-test the physical prototype
 
 	. add a note to tutorials on wear-leveling:
