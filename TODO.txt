@@ -219,6 +219,12 @@ Hardware:
 			. research how many milliamps the standard MIDI-OUT connection uses, to prevent the possibility of frying power components
 				-- 
 
+	. breadboard and test a regular MIDI-IN LED indicator circuit, alongside a simplified version of the same MIDI-IN LED-indicator circuit:
+		. inverted MIDI signal -> inverter stage -> buffered regular MIDI signal <- 330ohm/220ohm R <- LED <- 5v
+		. if this works just as well, then:
+			. update schematic
+			. revise indicator-circuit-related TODO tasks
+
 	. use "industrial-grade" SD-cards, to greatly lengthen the SD-card's wear-leveling life to something a user would be okay with
 		. something like "1GB THEMIS-A" in here: http://www.psism.com/industrialsd.htm
 		. sdfat /should/ support the FAT16 filesystems of the smaller THEMIS cards, but make sure this is indeed the case
