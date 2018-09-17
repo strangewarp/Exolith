@@ -520,4 +520,7 @@ Hardware:
 		. should each LED just have a very short standoff? (2mm-ish?)
 			-- yes
 
+	. research how many milliamps the standard MIDI-OUT connection uses, to prevent the possibility of frying power components
+		-- 5mA per connection, negligible amount even if both ports are driving quad splitters
+
 

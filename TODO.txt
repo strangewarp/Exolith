@@ -212,18 +212,16 @@ Software:
 
 Hardware:
 
-	. test a new MIDI port setup:
-		. no MIDI-THRU! (feature would be too rarely used, on this particular kind of device)
-		. 1x MIDI-IN + indicator LED
-		. 2x MIDI-OUT + indicator LED
-			. research how many milliamps the standard MIDI-OUT connection uses, to prevent the possibility of frying power components
-				-- 
-
 	. breadboard and test a regular MIDI-IN LED indicator circuit, alongside a simplified version of the same MIDI-IN LED-indicator circuit:
 		. inverted MIDI signal -> inverter stage -> buffered regular MIDI signal <- 330ohm/220ohm R <- LED <- 5v
 		. if this works just as well, then:
 			. update schematic
 			. revise indicator-circuit-related TODO tasks
+
+	. breadboard and test a new MIDI port setup:
+		. no MIDI-THRU! (feature would be too rarely used, on this particular kind of device)
+		. 1x MIDI-IN + indicator LED
+		. 2x MIDI-OUT + indicator LED
 
 	. use "industrial-grade" SD-cards, to greatly lengthen the SD-card's wear-leveling life to something a user would be okay with
 		. something like "1GB THEMIS-A" in here: http://www.psism.com/industrialsd.htm
