@@ -218,15 +218,10 @@ Hardware:
 			. update schematic
 			. revise indicator-circuit-related TODO tasks
 
-	. breadboard and test a new MIDI port setup:
+	. breadboard a dummy-sequencer with no buttons or screen, and test a new MIDI port setup:
 		. no MIDI-THRU! (feature would be too rarely used, on this particular kind of device)
 		. 1x MIDI-IN + indicator LED
 		. 2x MIDI-OUT + indicator LED
-
-	. use "industrial-grade" SD-cards, to greatly lengthen the SD-card's wear-leveling life to something a user would be okay with
-		. something like "1GB THEMIS-A" in here: http://www.psism.com/industrialsd.htm
-		. sdfat /should/ support the FAT16 filesystems of the smaller THEMIS cards, but make sure this is indeed the case
-	. make sure that the SD-cards are shipped in a state identical to what results from the SD Association formatter utility
 
 	. test MIDI-IO LED circuit with 0.1uF & 1uF capacitors
 		. or 0.1uF on first stage & 1uF/10uF on second stage
@@ -281,12 +276,17 @@ Hardware:
 
 	. add 2mm LED-standoffs to master parts-list, and to beta-prototype shopping list
 
+	. make sure to buy B3F-5050 buttons; these have a longer life than B3F-4050 buttons
+
+	. buy "industrial-grade" SD-cards, to greatly lengthen the SD-card's wear-leveling life to something a user would be okay with
+		. something like "1GB THEMIS-A" in here: http://www.psism.com/industrialsd.htm
+		. sdfat /should/ support the FAT16 filesystems of the smaller THEMIS cards, but make sure this is indeed the case
+		. when ordering these, make sure that the SD-cards are shipped in a state identical to what results from the SD Association formatter utility
+
 	. buy grounding-bracelets to use while soldering beta prototypes, and while assembling finished units
 
 	. use different-color button-caps on the note-keys, to differentiate between "white notes" and "black notes" like on a piano
 	. use different button-cap color for control-row?
-
-	. make sure to use B3F-5050 buttons in finished unit; these have a longer life than B3F-4050 buttons
 
 	. redo all Inkscape files for enclosure, making sure to retake all measurements & repeat the KiCad-to-Inkscape vector paste process
 		. make the tabs and slots for the bottom half of the side-panels the correct width for the plexiglass
@@ -297,13 +297,13 @@ Hardware:
 	. look into sticky rubber spacers for the bottom of the device, to keep its screws from scraping on things and being worn down
 		. remember to add these to the master parts-list, however many are used per unit
 
-	. if working with an SD-card distributor: get a copy of the authorization letter that certifies the relationship with the brand they're selling
-		. also: get the upstream brand to confirm the distribution relationship
-
 	==== HARDWARE BETA THRESHOLD ====
-
-	. make sure to buy extra SD-cards in case people need replacements
 
 	. stress-test both MIDI-INDICATOR LEDs simultaneously, with heavy simultaneous IN/OUT signals (with OUT plugged into two devices), and with the main LED-screen fully illuminated, to make sure the unit isn't prone to brownouts
 		. if brownout does occur, then increase the uF value on the 5v regulator-assembly's capacitors
+
+	. if working with an SD-card distributor: get a copy of the authorization letter that certifies the relationship with the brand they're selling
+		. also: get the upstream brand to confirm the distribution relationship
+	. make sure to buy extra SD-cards in case people need replacements
+
 
