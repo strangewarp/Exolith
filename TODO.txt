@@ -28,8 +28,15 @@ Software:
 				-- 
 		. overloaded usage-case
 			-- 
-		. special case: multiple duplicate notes on the same tick
-			-- 
+		. special case: multiple duplicate notes on the same tick:
+			. in RECORD MODE:
+				. same note on both TRACKs
+					-- 
+			. in PLAY MODE:
+				. same note in two separate seqs
+					-- 
+				. same note on both tracks, in multiple separate seqs
+					-- 
 
 	. test REPEAT-SWEEP
 		-- 
@@ -196,32 +203,38 @@ Hardware:
 
 	. breadboard and test a regular MIDI-IN LED indicator circuit, alongside a simplified version of the same MIDI-IN LED-indicator circuit:
 		. inverted MIDI signal -> inverter stage -> buffered regular MIDI signal <- 330ohm/220ohm R <- LED <- 5v
+			-- it works perfectly. sheesh
 		. if this works just as well, then:
 			. update schematic
+				-- done
 			. revise indicator-circuit-related TODO tasks
+				-- 
 
 	. breadboard a dummy-sequencer with no buttons or screen, and test a new MIDI port setup:
 		. no MIDI-THRU! (feature would be too rarely used, on this particular kind of device)
 		. 1x MIDI-IN + indicator LED
 		. 2x MIDI-OUT + indicator LED
+		-- 
 
-	. test MIDI-IO LED circuit with 0.1uF & 1uF capacitors
-		. or 0.1uF on first stage & 1uF/10uF on second stage
-		. or with 1k/10k resistor from cap+ to GND
-		. if it's as bright as the current kind, then: change KiCad schematics & PCBs & Mouser order to reflect this
-
-	. if still using current standoff lengths, then MIDI ports will require another mm of vertical space
-		. therefore: put 1mm-thick spacers on every standoff and compensate for this in all side-panel sizes accordingly
+	. test the feasibility of a MIDI EXPANDER, by breadboarding out a second Schmitt-trigger inverter that drives 4 extra dummy-MIDI-OUT circuits
+		-- 	
 
 	. update KiCad/Inkscape files:
 		. both boards:
 			. use connection-labels in the schematic, instead of having to make tangles of connections. faster revisions & reduces chance of overlooked errors
-			. move DC-IN jack to bottom-board
+				-- am using this process now
+			. move DC-IN jack and MIDI-ports to bottom-board
+				-- done
 				. change edge-cuts for both boards to accomodate the new DC-IN jack position
+					-- 
 			. change standoff hole-sizes to M3, plus extra kerf to compensate for standoff screws always being slightly over-size due to their threading
 				. make sure there's still enough room for all M3 screws & standoffs
 				. change official parts-list to reflect this decision
 			. change all stacking headers to occupy a 2x20 horizontal row between the buttons and LEDs, to make the assembly process less fragile
+				. do this in schematic
+					-- done
+				. do this in PCB
+					-- 
 			. double-check that the stacking-headers on the bottom-board and top-board share their corresponding positions
 			. move model-number text to bottom-board - if it were still on the top-board, any sort of transparent plexiglas would make it look tacky
 				. model-number text should be in the following format:
@@ -230,29 +243,21 @@ Hardware:
 						. e.g.
 							. basilisk tine sequencer
 							  1 - philosopher's stone
-			. reduce boards' size, to fit the results of various changes
-			. change all edge-cuts to reflect the rearrangement of ports/standoffs, if applicable
+			. make sure all edge-cuts reflect the rearrangement of ports/standoffs
 			. add edge-cuts to top-board for all electrolytic capacitors on the bottom-board
 			. double-check that ports aren't competing for space with standoffs
 		. bottom-board:
-			. reduce board-size to use only the two frontmost pairs of screws?
-				. would need to either perfectly compensate for size discrepancies in the backmost standoffs,
-					or have two tiny squares of "dummy board" between the backmost standoffs,
-					to keep the vertical kerf in check
-			. reduce thermal-plate size to accomodate new smaller heatsinks
-			. use regular-sized capacitors, in a laying-down position, because people replacing capacitors wouldn't have special tiny ones sitting around
-			. socket all capacitors, to futureproof the capacitor-replacement process
-			. move shrouded AVR-ISP jack to front-left edge of bottom-board, to prevent any need to muck around with safety-caps
-			. SD-card should be on the right side of the front-panel
+			. place thermal-plates that accomodate new smaller heatsinks
+			. place all capacitors beneath edge-cuts, so they have enough room to stand
+			. place shrouded AVR-ISP jack on the back-left edge of the bottom-board, under the same edge-cut as the capacitors
+			. SD-card should be on the left of the front-panel
 			. double-check the SD-card's footprint against its datasheet (its stabilization-holes were kind of wonky on the alpha prototype)
-			. double-check all pin assignments on all regulators and transistors, comparing datasheets directly to footprints
+			. double-check all pin assignments on both regulators, comparing datasheets directly to footprints
 			. update R-SET resistor's value based on the new diffused LEDs
-			. socket the R-SET resistor, to futureproof against any possible changes to the top-board LEDs
+			. individually label the pins on the "MIDI-EXPANDER" header
 			. move POWER-LED to center of bottom-board, and use a high-brightness white LED with a very wide visibility-cone
 		. top-board:
-			. remove AVR-ISP jack and associated headers from top-board
-			. remove POWER-LED from top-board
-			. increase distance between LEDs by 1 or 1.5 mm, to allow more wiggle-room in the faceplate's laser-cutting
+			. remember to include edge-cuts for: the MIDI ports, the electrolytic capacitors, and the AVR-ISP port
 
 	. double-check that the text diagrams in button-key.txt accurately reflect the finalized LED-placement
 
