@@ -208,15 +208,30 @@ Hardware:
 			. update schematic
 				-- done
 			. revise indicator-circuit-related TODO tasks
-				-- 
+				-- done
 
 	. breadboard a dummy-sequencer with no buttons or screen, and test a new MIDI port setup:
 		. no MIDI-THRU! (feature would be too rarely used, on this particular kind of device)
 		. 1x MIDI-IN + indicator LED
 		. 2x MIDI-OUT + indicator LED
-		-- 
+		-- OUT ports don't work for some reason
+		. troubleshoot
+			-- doesn't seem to be the circuit itself
+			. test the MIDI ports:
+				. on a better breadboard
+					-- still doesn't work
+				. with alligator clips
+					-- still doesn't work
+			. test with code that only addresses a specific MIDI channel, rather than all of them in order
+				-- still doesn't work
+			. build testing-circuit from scratch with new components
+				-- nope
+			. the testing-chip is the wrong kind: ATMEGA328-PU (wrong) instead of ATMEGA328P-PU (the correct kind)
+				-- I'm cussing, but also relieved
+				. find an ATMEGA328P-PU and slot it in, then test
+					-- 
 
-	. test the feasibility of a MIDI EXPANDER, by breadboarding out a second Schmitt-trigger inverter that drives 4 extra dummy-MIDI-OUT circuits
+	. test the feasibility of a MIDI EXPANDER, by breadboarding out a second Schmitt-trigger inverter that drives 4 extra dummy-MIDI-OUT-to-MIDI-IN circuits
 		-- 	
 
 	. update KiCad/Inkscape files:
@@ -248,6 +263,7 @@ Hardware:
 			. double-check that ports aren't competing for space with standoffs
 		. bottom-board:
 			. place thermal-plates that accomodate new smaller heatsinks
+			. remember to include screw-holes inside the thermal-plates (these may be part of the regulators' footprints)
 			. place all capacitors beneath edge-cuts, so they have enough room to stand
 			. place shrouded AVR-ISP jack on the back-left edge of the bottom-board, under the same edge-cut as the capacitors
 			. SD-card should be on the left of the front-panel
@@ -292,5 +308,7 @@ Hardware:
 	. if working with an SD-card distributor: get a copy of the authorization letter that certifies the relationship with the brand they're selling
 		. also: get the upstream brand to confirm the distribution relationship
 	. make sure to buy extra SD-cards in case people need replacements
+
+	. every unit should have its own serial-number written onto a sticker somewhere on its circuit-board
 
 
