@@ -229,7 +229,15 @@ Hardware:
 			. the testing-chip is the wrong kind: ATMEGA328-PU (wrong) instead of ATMEGA328P-PU (the correct kind)
 				-- I'm cussing, but also relieved
 				. find an ATMEGA328P-PU and slot it in, then test
-					-- 
+					-- still doesn't work. oh my god
+					. in that case... find more potential problem sources
+						-- the testing-chip's processing rate seems to be slowed by a factor of 8, for some reason (this is impacting delay() et al)
+						. figure out what could be causing that
+							-- apparently a fresh chip needs its bootloader re-burned, to set the fuses correctly
+							. do that, and test again
+								-- it works now. oof
+		. re-test multi-OUT circuit
+			-- 
 
 	. test the feasibility of a MIDI EXPANDER, by breadboarding out a second Schmitt-trigger inverter that drives 4 extra dummy-MIDI-OUT-to-MIDI-IN circuits
 		-- 	
@@ -301,6 +309,9 @@ Hardware:
 		. remember to add these to the master parts-list, however many are used per unit
 
 	==== HARDWARE BETA THRESHOLD ====
+
+	. make sure that you order the ATMEGA chips with the proper bootloader fuse config (along with the firmware), or else they will be 8 times too slow and incapable of sending MIDI
+		. buy a test-batch that are preprogrammed in such a way, and slot one into a Tine beta unit for testing
 
 	. stress-test both MIDI-INDICATOR LEDs simultaneously, with heavy simultaneous IN/OUT signals (with OUT plugged into two devices), and with the main LED-screen fully illuminated, to make sure the unit isn't prone to brownouts
 		. if brownout does occur, then increase the uF value on the 5v regulator-assembly's capacitors
