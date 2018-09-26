@@ -237,10 +237,9 @@ Hardware:
 							. do that, and test again
 								-- it works now. oof
 		. re-test multi-OUT circuit
-			-- 
-
-	. test the feasibility of a MIDI EXPANDER, by breadboarding out a second Schmitt-trigger inverter that drives 4 extra dummy-MIDI-OUT-to-MIDI-IN circuits
-		-- 	
+			-- MIDI-IN doesn't seem to be working
+			. test with a proper IN source
+				-- it works now
 
 	. update KiCad/Inkscape files:
 		. both boards:
@@ -285,9 +284,13 @@ Hardware:
 
 	. double-check that the text diagrams in button-key.txt accurately reflect the finalized LED-placement
 
-	. add 2mm LED-standoffs to master parts-list, and to beta-prototype shopping list
-
-	. make sure to buy B3F-5050 buttons; these have a longer life than B3F-4050 buttons
+	. make a list of every part needed for the prototype, with each part's specific part-number (both manufacturer and distributor)
+		. buy 2mm LED-standoffs
+		. buy all regular standoffs for circuit-boards, and associated screws
+		. buy longer screws for the two top-back screw-holes, since these will have several additional layers of enclosure to cover the MIDI ports
+		. make sure to buy B3F-5050 buttons; these have a longer life than B3F-4050 buttons
+		. ATMEGA328P-PU chips, /not/ ATMEGA328-PU chips. only ATMEGA328P-PU can be easily reprogrammed by the end-user
+		. make entries for all other parts
 
 	. buy "industrial-grade" SD-cards, to greatly lengthen the SD-card's wear-leveling life to something a user would be okay with
 		. something like "1GB THEMIS-A" in here: http://www.psism.com/industrialsd.htm
@@ -319,6 +322,8 @@ Hardware:
 	. if working with an SD-card distributor: get a copy of the authorization letter that certifies the relationship with the brand they're selling
 		. also: get the upstream brand to confirm the distribution relationship
 	. make sure to buy extra SD-cards in case people need replacements
+
+	. order all parts by copy-pasting part-names from the master parts-list, to avoid mental errors (like missing the inner second "P" in "ATMEGA328P-PU")
 
 	. every unit should have its own serial-number written onto a sticker somewhere on its circuit-board
 
