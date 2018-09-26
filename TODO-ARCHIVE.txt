@@ -523,4 +523,44 @@ Hardware:
 	. research how many milliamps the standard MIDI-OUT connection uses, to prevent the possibility of frying power components
 		-- 5mA per connection, negligible amount even if both ports are driving quad splitters
 
+	. breadboard and test a regular MIDI-IN LED indicator circuit, alongside a simplified version of the same MIDI-IN LED-indicator circuit:
+		. inverted MIDI signal -> inverter stage -> buffered regular MIDI signal <- 330ohm/220ohm R <- LED <- 5v
+			-- it works perfectly. sheesh
+		. if this works just as well, then:
+			. update schematic
+				-- done
+			. revise indicator-circuit-related TODO tasks
+				-- done
+
+	. breadboard a dummy-sequencer with no buttons or screen, and test a new MIDI port setup:
+		. no MIDI-THRU! (feature would be too rarely used, on this particular kind of device)
+		. 1x MIDI-IN + indicator LED
+		. 2x MIDI-OUT + indicator LED
+		-- OUT ports don't work for some reason
+		. troubleshoot
+			-- doesn't seem to be the circuit itself
+			. test the MIDI ports:
+				. on a better breadboard
+					-- still doesn't work
+				. with alligator clips
+					-- still doesn't work
+			. test with code that only addresses a specific MIDI channel, rather than all of them in order
+				-- still doesn't work
+			. build testing-circuit from scratch with new components
+				-- nope
+			. the testing-chip is the wrong kind: ATMEGA328-PU (wrong) instead of ATMEGA328P-PU (the correct kind)
+				-- I'm cussing, but also relieved
+				. find an ATMEGA328P-PU and slot it in, then test
+					-- still doesn't work. oh my god
+					. in that case... find more potential problem sources
+						-- the testing-chip's processing rate seems to be slowed by a factor of 8, for some reason (this is impacting delay() et al)
+						. figure out what could be causing that
+							-- apparently a fresh chip needs its bootloader re-burned, to set the fuses correctly
+							. do that, and test again
+								-- it works now. oof
+		. re-test multi-OUT circuit
+			-- MIDI-IN doesn't seem to be working
+			. test with a proper IN source
+				-- it works now
+
 
