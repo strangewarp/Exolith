@@ -201,6 +201,9 @@ Software:
 
 Hardware:
 
+	. clear/clean/update todo tasks
+		-- 
+
 	. update KiCad/Inkscape files:
 		. both boards:
 			. use connection-labels in the schematic, instead of having to make tangles of connections. faster revisions & reduces chance of overlooked errors
@@ -208,25 +211,30 @@ Hardware:
 			. move DC-IN jack and MIDI-ports to bottom-board
 				-- done
 				. change edge-cuts for both boards to accomodate the new DC-IN jack position
-					-- 
-			. change standoff hole-sizes to M3, plus extra kerf to compensate for standoff screws always being slightly over-size due to their threading
-				. make sure there's still enough room for all M3 screws & standoffs
-				. change official parts-list to reflect this decision
+					-- done
+			. add extra kerf to standoff-holes, to compensate for standoff screws always being slightly over-size due to their threading
+				-- done: increased from 2.5mm to 2.75mm
 			. change all stacking headers to occupy a 2x20 horizontal row between the buttons and LEDs, to make the assembly process less fragile
 				. do this in schematic
 					-- done
-				. do this in PCB
-					-- 
-			. double-check that the stacking-headers on the bottom-board and top-board share their corresponding positions
+				. do this in PCBs
+					. top-board
+						-- done
+					. bottom-board
+						-- 
+			. make sure stacking-headers have the same pin-positions, signifying the same pin-contents (keeping in mind that the top-board's header is reversed)
+				-- 
 			. move model-number text to bottom-board - if it were still on the top-board, any sort of transparent plexiglas would make it look tacky
+				-- 
 				. model-number text should be in the following format:
 					. basilisk tine sequencer
 					  production run number - production run name
-						. e.g.
-							. basilisk tine sequencer
-							  1 - philosopher's stone
 			. make sure all edge-cuts reflect the rearrangement of ports/standoffs
+				-- 
 			. add edge-cuts to top-board for all electrolytic capacitors on the bottom-board
+				-- done
+				. double-check that the capacitors in the parts-list are actually slim enough to fit into this space
+					-- 
 			. double-check that ports aren't competing for space with standoffs
 		. bottom-board:
 			. place thermal-plates that accomodate new smaller heatsinks
@@ -249,7 +257,18 @@ Hardware:
 		. buy all regular standoffs for circuit-boards, and associated screws
 		. buy longer screws for the two top-back screw-holes, since these will have several additional layers of enclosure to cover the MIDI ports
 		. make sure to buy B3F-5050 buttons; these have a longer life than B3F-4050 buttons
+		. electrolytic capacitors: 5mm width, 2.5mm pin-width
+		. 20pF capacitors: SR211A200JAR (5.08mm length)
+		. 0.1uF capacitors: K104K15X7RF53H5 (5mm length)
+		. resistors!
+		. LEDs:
+		. LSET-resistor:
+		. 16Mhz crystal oscillator: FOXSLF/160-20e ("C4ST", formerly HC49SLF) (11.35mm length, 4.65mm width)
+		. look into power-cables with a right-angle plug, since the DC-power port has been moved to the left side
 		. ATMEGA328P-PU chips, /not/ ATMEGA328-PU chips. only ATMEGA328P-PU can be easily reprogrammed by the end-user
+			. get these from DigiKey, using the "preprogrammed chip" service, to make sure the preprogrammed-bootloader-and-firmware process works
+		. sockets!
+		. heatsinks for TO-220-shaped regulators!
 		. make entries for all other parts
 
 	. buy "industrial-grade" SD-cards, to greatly lengthen the SD-card's wear-leveling life to something a user would be okay with

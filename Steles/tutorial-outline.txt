@@ -85,9 +85,9 @@ Tutorial Outline
 			1. IMPORTANT! Unplug Tine's DC-power cable, turning Tine off. Do not plug this cable back in until after all of these steps are complete!
 			2. Remove the SD-card.
 			3. Unscrew the six screws on Tine's faceplate.
-			4. Remove Tine's faceplate, and its left-side-plate.
+			4. Remove Tine's faceplate, and its right-side-plate.
 			5. On the body of your AVR-programming-cable, set its power-switch to "Power Target" mode.
-			6. Connect AVR-programming-cable to the 6-pin shrouded header on the left side of the bottom-board. It should slide in without any forcing.
+			6. Connect AVR-programming-cable to the 6-pin shrouded header on the right side of the bottom-board. It should slide in without any forcing.
 			7. Connect other end of AVR-programming-cable to your computer's USB port. This should turn Tine back on; it is now being powered by your computer.
 			8. Open up the Arduino program on your computer.
 			9. Select in the menu: File -> Open...
@@ -99,7 +99,7 @@ Tutorial Outline
 			15. The firmware-uploading process will now display its status in a console window. Do not disturb Tine, your computer, or your AVR-programming-cable until both the "Writing" and "Reading" processes have finished, and a message appears that says "avrdude done. Thank you."
 			16. Unplug AVR-programming-cable from your computer's USB port.
 			17. Unplug AVR-programming-cable from Tine.
-			18. Reassemble Tine's left-side-plate and its faceplate.
+			18. Reassemble Tine's right-side-plate and its faceplate.
 			19. Screw the faceplate back on.
 			20. Re-insert the SD-card.
 			21. Congratulations: you have updated your Tine unit's firmware! You may now plug the DC-power cable back in.
