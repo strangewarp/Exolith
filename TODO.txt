@@ -9,14 +9,29 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	. BPM values are sometimes set to 255 on startup, when the SD-card hasn't been used for a while. figure out why
-		-- no idea why. hmm...
-		. figure out what to do
-			-- I've put in a restart-function that gets called whenever the loaded BPM is 255.
-			-- a do-while loop doesn't work here for whatever reason, but afaict, a total restart of the device fixes the problem.
-			-- therefore, since the bug occurs on startup, and is relatively rare, calling a restart-function is the least-bad option to compensate for it.
-			-- the bug itself seems to be some horrendous deep-wizard situation with the SD-card displaying unusual behavior that's impossible to replicate.
-			-- but since it's a specific bug, with a specific unusual behavior that's always the same, the restart-function should take care of it.
+	. change all DURATION-related routines to treat DURATION as a char, with boundaries of [-1 to 64]
+		-- 
+	. change GUI routines to display DURATION's new properties
+		-- 
+	. rewrite note-entry system in RECORD MODE:
+		. if DURATION is set to -1, and REPEAT isn't active, then...
+			. when a note-key is pressed:
+				. play a NOTE-ON for the note
+				. flag KEYTOGGLE (this will be necessary in case a control-column button is pressed while the note-button is held)
+				. store in the byteKEYTIME and charKEYQ vars:
+					. the time that the keystroke occurred
+					. the QUANTIZE-offset for the keystroke
+			. when a note-key is released:
+				. if KEYTOGGLE is flagged (even if a control-column button is held)...
+					. [function recordHeldNote() should be created for the following:]
+						. send a NOTE-OFF
+						. use KEYTIME and KEYQ to calculate the QUANTIZE-offset start-time for the note
+						. use the current tick and the note's start-time to calculate a duration for the note
+						. reset KEYTOGGLE, KEYTIME, and KEYQ
+			. on mode-toggle:
+				. if KEYTOGGLE is flagged (even if a control-column button is held)...
+					. call recordHeldNote()
+		. if DURATION is set to -1, and REPEAT *is* active, then use the QUANTIZE-size for the note's duration
 
 	. is tempo actually being clocked at the right speed?
 		. test with a MIDI-IN apparatus that measures actual BPM from TEMPO ticks

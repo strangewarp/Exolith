@@ -505,6 +505,15 @@ Software:
 	. when two REPEAT-notes are being recorded/played in RECORD MODE, both sides of the screen should be covered by BLINK, not just one
 		-- fixed: changed processRecAction() to use the given "trk" value, rather than the global "TRACK" value, when assigning BLINK-sides
 
+	. BPM values are sometimes set to 255 on startup, when the SD-card hasn't been used for a while. figure out why
+		-- no idea why. hmm...
+		. figure out what to do
+			-- I've put in a restart-function that gets called whenever the loaded BPM is 255.
+			-- a do-while loop doesn't work here for whatever reason, but afaict, a total restart of the device fixes the problem.
+			-- therefore, since the bug occurs on startup, and is relatively rare, calling a restart-function is the least-bad option to compensate for it.
+			-- the bug itself seems to be some horrendous deep-wizard situation with the SD-card displaying unusual behavior that's impossible to replicate.
+			-- but since it's a specific bug, with a specific unusual behavior that's always the same, the restart-function should take care of it.
+
 Hardware:
 
 	. print out the alpha-prototype's schematic for reference while making updates (KiCad can corrupt a project if more than 1 is open)
