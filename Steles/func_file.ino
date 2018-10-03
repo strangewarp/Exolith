@@ -136,7 +136,7 @@ void writePrefs() {
 
 	file.open(name, O_RDWR); // Reopen the current song-file
 
-	file.seekSet(0); // Go to the BPM-byte's location
+	file.seekSet(FILE_BPM_BYTE); // Go to the BPM-byte's location
 	if (file.read() != BPM) { // If the BPM-byte doesn't match the current BPM...
 		updateFileByte(FILE_BPM_BYTE, BPM); // Update the BPM-byte in the song's savefile
 	}
@@ -215,6 +215,9 @@ void loadSong(byte slot) {
 	file.open(name, O_RDWR);
 	file.seekSet(FILE_BPM_BYTE); // Go to the BPM-byte location
 	BPM = file.read(); // Read it
+	if (BPM == 255) { // If the BPM is set to an erroneous value (this is a known bug that occurs for an unknown reason)...
+		restart(); // Restart the entire device
+	}
 	file.seekSet(FILE_SGRAN_BYTE); // Go to the SWING GRANULARITY byte
 	SGRAN = file.read(); // Read it
 	file.seekSet(FILE_SAMOUNT_BYTE); // Go to the SWING AMOUNT byte

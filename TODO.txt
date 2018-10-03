@@ -9,6 +9,21 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
+	. BPM values are sometimes set to 255 on startup, when the SD-card hasn't been used for a while. figure out why
+		-- no idea why. hmm...
+		. figure out what to do
+			-- I've put in a restart-function that gets called whenever the loaded BPM is 255.
+			-- a do-while loop doesn't work here for whatever reason, but afaict, a total restart of the device fixes the problem.
+			-- therefore, since the bug occurs on startup, and is relatively rare, calling a restart-function is the least-bad option to compensate for it.
+			-- the bug itself seems to be some horrendous deep-wizard situation with the SD-card displaying unusual behavior that's impossible to replicate.
+			-- but since it's a specific bug, with a specific unusual behavior that's always the same, the restart-function should take care of it.
+
+	. is tempo actually being clocked at the right speed?
+		. test with a MIDI-IN apparatus that measures actual BPM from TEMPO ticks
+			-- 
+		. if yes, then:
+			. should the global cue have 256 rather than 128 16th-notes, to be more useable at tempos above ~120?
+
 	. test changes to the timing system
 		-- doing
 	. is the newly-moved BPM-glyph still displaying right?
@@ -237,14 +252,16 @@ Hardware:
 					-- 
 			. double-check that ports aren't competing for space with standoffs
 		. bottom-board:
+			. update R-SET resistor's value based on the new diffused LEDs
+				-- 
+			. double-check all pin assignments on both regulators, comparing datasheets directly to footprints
+				-- 
 			. place thermal-plates that accomodate new smaller heatsinks
 			. remember to include screw-holes inside the thermal-plates (these may be part of the regulators' footprints)
 			. place all capacitors beneath edge-cuts, so they have enough room to stand
 			. place shrouded AVR-ISP jack on the back-left edge of the bottom-board, under the same edge-cut as the capacitors
-			. SD-card should be on the left of the front-panel
+			. SD-card should be in the center of the front-panel
 			. double-check the SD-card's footprint against its datasheet (its stabilization-holes were kind of wonky on the alpha prototype)
-			. double-check all pin assignments on both regulators, comparing datasheets directly to footprints
-			. update R-SET resistor's value based on the new diffused LEDs
 			. individually label the pins on the "MIDI-EXPANDER" header
 			. move POWER-LED to center of bottom-board, and use a high-brightness white LED with a very wide visibility-cone
 		. top-board:
@@ -253,10 +270,16 @@ Hardware:
 	. double-check that the text diagrams in button-key.txt accurately reflect the finalized LED-placement
 
 	. make a list of every part needed for the prototype, with each part's specific part-number (both manufacturer and distributor)
-		. buy 2mm LED-standoffs
-		. buy all regular standoffs for circuit-boards, and associated screws
-		. buy longer screws for the two top-back screw-holes, since these will have several additional layers of enclosure to cover the MIDI ports
-		. make sure to buy B3F-5050 buttons; these have a longer life than B3F-4050 buttons
+		. 2mm LED-standoffs
+		. regular standoffs for circuit-boards, and associated screws
+		. longer screws for the two top-back screw-holes, since these will have several additional layers of enclosure to cover the MIDI ports
+		. small screws and nuts, for securing the heatsinks to the regulators and their underlying circuit-board
+		. 5v regulator: L7805ABV
+		. 3.3v regulator: 
+		. heatsinks for TO-220-shaped regulators!
+		. B3F-5050 buttons (these have a longer life than B3F-4050 buttons)
+			. use different-color button-caps on the note-keys, to differentiate between "white notes" and "black notes" like on a piano
+			. use different button-cap color for control-row?
 		. electrolytic capacitors: 5mm width, 2.5mm pin-width
 		. 20pF capacitors: SR211A200JAR (5.08mm length)
 		. 0.1uF capacitors: K104K15X7RF53H5 (5mm length)
@@ -268,27 +291,17 @@ Hardware:
 		. ATMEGA328P-PU chips, /not/ ATMEGA328-PU chips. only ATMEGA328P-PU can be easily reprogrammed by the end-user
 			. get these from DigiKey, using the "preprogrammed chip" service, to make sure the preprogrammed-bootloader-and-firmware process works
 		. sockets!
-		. heatsinks for TO-220-shaped regulators!
+		. grounding-bracelets, to use while soldering beta prototypes, and while assembling finished units
+		. "industrial-grade" SD-cards: these will greatly lengthen the SD-card's wear-leveling life to something a user would be okay with
+			. something like "1GB THEMIS-A" in here: http://www.psism.com/industrialsd.htm
+			. sdfat /should/ support the FAT16 filesystems of the smaller THEMIS cards, but make sure this is indeed the case
+			. when ordering these, make sure that the SD-cards are shipped in a state identical to what results from the SD Association formatter utility
+		. look into sticky rubber spacers for the bottom of the device, to keep its screws from scraping on things and being worn down
 		. make entries for all other parts
-
-	. buy "industrial-grade" SD-cards, to greatly lengthen the SD-card's wear-leveling life to something a user would be okay with
-		. something like "1GB THEMIS-A" in here: http://www.psism.com/industrialsd.htm
-		. sdfat /should/ support the FAT16 filesystems of the smaller THEMIS cards, but make sure this is indeed the case
-		. when ordering these, make sure that the SD-cards are shipped in a state identical to what results from the SD Association formatter utility
-
-	. buy grounding-bracelets to use while soldering beta prototypes, and while assembling finished units
-
-	. use different-color button-caps on the note-keys, to differentiate between "white notes" and "black notes" like on a piano
-	. use different button-cap color for control-row?
 
 	. redo all Inkscape files for enclosure, making sure to retake all measurements & repeat the KiCad-to-Inkscape vector paste process
 		. make the tabs and slots for the bottom half of the side-panels the correct width for the plexiglass
-		. etch labels into the front-panel for each control-row button's PLAY MODE function
-			. space the upward-facing side-panel tabs and slots so they don't conflict with the labels' positioning
-		. should the bottom-right group of 4x6 LEDs have an etched area around them?
-
-	. look into sticky rubber spacers for the bottom of the device, to keep its screws from scraping on things and being worn down
-		. remember to add these to the master parts-list, however many are used per unit
+		. tabulate the heights of all internal components, to figure out how many layers of plexiglass need to go into the "bump" above the MIDI-ports
 
 	==== HARDWARE BETA THRESHOLD ====
 

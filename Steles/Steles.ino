@@ -192,6 +192,11 @@ SdFile file; // Initialize an SdFile File object, to control default data read/w
 
 
 
+// A restart-function, which is used when encountering unusual bugs on startup
+void (*restart)(void) = 0;
+
+
+
 void setup() {
 
 	// Ensure that the global arrays don't contain junk-data
@@ -228,9 +233,9 @@ void setup() {
 	
 	createFiles(); // Check whether the savefiles exist, and if they don't, then create them
 
-	loadPrefs(); // Load whatever prefsarein PRF.DAT, or create PRF.DAT if it doesn't exist yet
+	loadPrefs(); // Load whatever prefsarein P.DAT, or create PRF.DAT if it doesn't exist yet
 
-	loadSong(SONG); // Load whatever song-slot was in PRF.DAT, or the default song-slot if PRF.DAT didn't exist
+	loadSong(SONG); // Load whatever song-slot was in P.DAT, or the default song-slot if PRF.DAT didn't exist
 
 	ABSOLUTETIME = micros(); // Make sure ABSOLUTETIME matches the current time, so tempo doesn't have an initial jerk
 

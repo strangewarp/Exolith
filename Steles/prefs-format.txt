@@ -12,10 +12,11 @@ Steles prefs-file spec
 		byte 2:  VELO
 		byte 3:  HUMANIZE
 		byte 4:  CHAN
-		byte 5:  QUANTIZE
-		byte 6:  DURATION
-		byte 7:  COPYPOS
-		byte 8:  COPYSEQ
-		byte 9:  SONG
-		byte 10: CLOCKMASTER
+		byte 5:  QUANTIZE-RESET
+		byte 6:  QUANTIZE
+		byte 7:  DURATION
+		byte 8:  COPYPOS
+		byte 9:  COPYSEQ
+		byte 10: SONG
+		byte 11: CLOCKMASTER
 
