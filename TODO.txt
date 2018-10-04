@@ -15,9 +15,9 @@ Software:
 		. if yes, then:
 			. should the global cue have 256 rather than 128 16th-notes, to be more useable at tempos above ~120?
 
-	. change all DURATION-related routines to treat DURATION as a char, with boundaries of [-1 to 64]
+	. change all DURATION-related routines to treat DURATION as a char, with boundaries of [-1 to 128]
 		-- 
-	. change GUI routines to display DURATION's new properties
+	. change GUI routines to display DURATION's new properties (on -1, entire top-row should be lit)
 		-- 
 	. rewrite note-entry system in RECORD MODE:
 		. if DURATION is set to -1, and REPEAT is active, then use the QUANTIZE-size for the note's duration
