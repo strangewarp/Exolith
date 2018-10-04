@@ -51,19 +51,19 @@ void writeCommands(
 }
 
 // Record a given MIDI command into the tempdata-file of the current RECORDSEQ sequence
-void recordToSeq(word pstn, byte chan, byte b1, byte b2, byte trk) {
+void recordToSeq(word pstn, byte dur, byte chan, byte b1, byte b2, byte trk) {
 
 	// Get the position of the first of this tick's bytes within the active track in the data-file
 	unsigned long tickstart = (FILE_BODY_START + (FILE_SEQ_BYTES * RECORDSEQ)) + (((unsigned long)pstn) * 8) + (trk * 4);
 
 	byte cstrip = chan & 240; // Get the command-type, stripped of any MIDI CHANNEL information
 
-	// Construct a virtual MIDI command, with an additional DURATION value
+	// Construct a virtual MIDI command
 	byte note[5] = {
 		(cstrip <= 112) ? cstrip : chan, // Channel-byte (stripped of CHAN-info for any internal BPM or SWING commands)
 		byte((cstrip == 112) ? max(BPM_LIMIT_LOW, min(BPM_LIMIT_HIGH, b1 + b2)) : b1), // Pitch-byte, or BPM-byte in a BPM-CHANGE command
 		byte(b2 * (((cstrip % 224) <= 176) && (cstrip != 112))), // Velocity-byte, or 0 if this is a 2-byte command
-		byte((cstrip == 144) * DURATION) // Duration-byte, or 0 if this is a non-NOTE-ON command
+		byte((cstrip == 144) * dur) // Duration-byte, or 0 if this is a non-NOTE-ON command
 	};
 
 	writeCommands(tickstart, 4, note, 0); // Write the note to its corresponding savefile position
@@ -75,27 +75,12 @@ void recordToSeq(word pstn, byte chan, byte b1, byte b2, byte trk) {
 // Parse all of the possible actions that signal the recording of commands
 void processRecAction(byte col, byte row, byte trk) {
 
-	// Get a note that corresponds to the key, organized from bottom-left to top-right, with all modifiers applied
-	byte pitch = (OCTAVE * 12) + ((23 - ((row * 4) + col)) ^ 3);
-	while (pitch > 127) { // If the pitch is above 127, which is the limit for MIDI notes...
-		pitch -= 12; // Reduce it by an octave until it is at or below 127
-	}
-
-	byte velo = REPEAT ? RPTVELO : VELO; // Get VELO for regular notes, or RPTVELO for REPEAT-notes
-
-	// Subtract a random humanize-offset from the note's velocity
-	velo -= min(velo - 1, byte(GLOBALRAND & 255) % (HUMANIZE + 1));
+	byte pitch = modKeyPitch(row, col); // Get a note-value that corresponds to the keystroke, with all modifiers applied
+	byte velo = modVelo(); // Get a velocity-value with all current modifiers applied
 
 	if (PLAYING && RECORDNOTES) { // If notes are being recorded into a playing sequence...
 
-		word qp = POS[RECORDSEQ]; // Will hold a QUANTIZE-modified insertion point (defaults to the seq's current position)
-
-		if (!REPEAT) { // If REPEAT isn't toggled...
-			char down = distFromQuantize(); // Get distance to previous QUANTIZE point
-			byte up = min(QRESET - down, QUANTIZE - down); // Get distance to next QUANTIZE point, compensating for QRESET
-			qp += (down <= up) ? (-down) : up; // Make the shortest distance into an offset for the note-insertion point
-			qp %= word(STATS[RECORDSEQ] & 63) * 16; // Wrap the insertion-point around the seq's length
-		}
+		word qp = getInsertionPoint(); // Get the QUANTIZE-adjusted insertion-point for the current tick in the current RECORDSEQ
 
 		recordToSeq(qp, CHAN, pitch, velo, trk); // Record the note into the current RECORDSEQ slot
 
@@ -141,5 +126,55 @@ void processRecAction(byte col, byte row, byte trk) {
 	byte buf[4] = {CHAN, pitch, velo, 0}; // Build a correctly-formatted MIDI command
 	Serial.write(buf, 2 + ((CHAN % 224) <= 191)); // Send the command to MIDI-OUT, with the correct number of bytes
 
+}
+
+
+
+// Get the QUANTIZE-adjusted insertion-point for the current tick in the current RECORDSEQ
+word getInsertionPoint() {
+	word p = POS[RECORDSEQ]; // Will hold a QUANTIZE-modified insertion point (defaults to the seq's current position)
+	if (!REPEAT) { // If REPEAT isn't toggled...
+		char down = distFromQuantize(); // Get distance to previous QUANTIZE point
+		byte up = min(QRESET - down, QUANTIZE - down); // Get distance to next QUANTIZE point, compensating for QRESET
+		p += (down <= up) ? (-down) : up; // Make the shortest distance into an offset for the note-insertion point
+		p %= word(STATS[RECORDSEQ] & 63) * 16; // Wrap the insertion-point around the seq's length
+	}
+}
+
+
+// Get a note that corresponds to a keystroke, organized from bottom-left to top-right, with all modifiers applied
+byte modKeyPitch(byte row, byte col) {
+	byte pitch = (OCTAVE * 12) + ((23 - ((row * 4) + col)) ^ 3); // Translate row and col into a pitch, plus current octave
+	while (pitch > 127) { // If the pitch is above 127, which is the limit for MIDI notes...
+		pitch -= 12; // Reduce it by an octave until it is at or below 127
+	}
+	return pitch; // Return a pitch-value that corresponds to the keystroke
+}
+
+// Get a velocity-value with all current modifiers applied
+byte modVelo() {
+	byte velo = REPEAT ? RPTVELO : VELO; // Get VELO for regular notes, or RPTVELO for REPEAT-notes
+	// Subtract a random humanize-offset from the note's velocity, and return it
+	return velo - min(velo - 1, byte(GLOBALRAND & 255) % (HUMANIZE + 1));
+}
+
+// Set a held-recording-note, using the given pitch and velocity values, without any modifications
+void setRawKeyNote(byte pitch, byte velo) {
+
+	// Send a NOTE-ON for the given pitch and velocity
+	byte note[4] = {144 + CHAN, pitch, velo, 0};
+	Serial.write(note, 3);
+
+	KEYFLAG = 1; // Toggle the flag for "a note is currently being held in manual-duration-mode"
+	KEYPOS = getInsertionPoint(); // Get the QUANTIZE-adjusted insertion-point in the current RECORDSEQ
+	KEYNOTE = pitch; // Store the given pitch and velo
+	KEYVELO = velo; // ^
+	KEYCOUNT = 0; // Reset the counter that tracks how many ticks the note has been held for
+
+}
+
+// Set a held-recording-note, based on a keypress, and apply all of RECORD-MODE's pitch and velocity modifiers
+void setKeyNote(byte col, byte row, byte velo) {
+	setRawKeyNote(modKeyPitch(col, row), modVelo(velo));
 }
 

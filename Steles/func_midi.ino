@@ -16,19 +16,39 @@ void midiPanic() {
 
 // Parse a given MIDI command
 void parseMidiCommand(byte &rcd) {
+
+	byte didplay = 0; // Track whether a command has been sent by this function or not
+
 	if (RECORDMODE) { // If RECORD-MODE is active...
 		byte cmd = INBYTES[0] & 240; // Get the command-type
 		byte chn = INBYTES[0] & 15; // Get the MIDI channel
 		if ((BUTTONS & B00111111) == B00100000) { // If notes are currently being recorded...
 			if ((CHAN & 15) == chn) { // If this command is within the currently-selected CHANNEL...
-				if ((cmd >= 144) && (cmd <= 239)) { // If this is a valid command...
-					recordToSeq(POS[RECORDSEQ], chn, INBYTES[1], INBYTES[2], TRACK % 2); // Record the incoming MIDI command
-					rcd |= 1; // Flag that at least one command has been recorded on this tick
+				// If REPEAT is inactive, DURATION is in manual-mode, and the command is either a NOTE-ON or NOTE-OFF...
+				if ((!REPEAT) && (DURATION == 129) && (cmd <= 144)) {
+					if (KEYFLAG) { // If a note is currently being pressed...
+						recordHeldNote(); // Record the held note and reset its associated tracking-vars
+						rcd++; // Flag that at least one command has been recorded on this tick
+					}
+					if (cmd == 144) { // If this command is a NOTE-ON...
+						setRawKeyNote(INBYTES[1], INBYTES[2]); // Key-tracking mechanism: start tracking the unmodified held-note
+					}
+					didplay = 1; // Flag that a note has already been played by this function
+				} else { // Else, if REPEAT is active, or DURATION is in auto-mode...
+					if ((cmd >= 144) && (cmd <= 239)) { // If this is a valid command for auto-mode recording...
+						// Record the incoming MIDI command, clamping DURATION for situations where REPEAT=1,DURATION=129
+						recordToSeq(POS[RECORDSEQ], min(128, DURATION), chn, INBYTES[1], INBYTES[2], TRACK % 2);
+						rcd++; // Flag that at least one command has been recorded on this tick
+					}
 				}
 			}
 		}
 	}
+
+	if (didplay) { return; } // If a command was already sent by this function, exit the function
+
 	Serial.write(INBYTES, INTARGET); // Having parsed the command, send its bytes onward to MIDI-OUT
+
 }
 
 // Parse all incoming raw MIDI bytes

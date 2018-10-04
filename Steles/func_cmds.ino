@@ -59,7 +59,7 @@ void copyCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row)
 // Parse a DURATION press
 void durationCmd(byte col, byte row) {
 	char change = toChange(col, row); // Convert a column and row into a CHANGE value
-	DURATION = applyChange(DURATION, change, 0, 255); // Modify the DURATION value
+	DURATION = applyChange(DURATION, change, 0, 129); // Modify the DURATION value
 	TO_UPDATE |= 1; // Flag the topmost row for updating
 }
 

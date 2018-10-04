@@ -86,13 +86,15 @@ unsigned long GESTELAPSED = 0; // Time elapsed since last gesture-decay
 word TICKSZ1 = 6250; // Current size of pre-SWING-modified ticks
 word TICKSZ2 = 6250; // Current size of post-SWING-modified ticks
 
-// Recording vars
+// Mode flag vars
 byte LOADMODE = 0; // Tracks whether LOAD MODE is active
 byte RECORDMODE = 0; // Tracks whether RECORD MODE is active
 byte RECORDSEQ = 0; // Sequence currently being recorded into
 byte RECORDNOTES = 0; // Tracks whether notes are currently being recorded into a sequence
 byte TRACK = 0; // Current track within the active sequence to edit with RECORDMODE actions
 byte REPEAT = 0; // Toggles whether held-down note-buttons should repeat a NOTE-ON every QUANTIZE ticks, in RECORD-MODE
+
+// Recording vars
 byte RPTSWEEP = 128; // Amount to modify RPTVELO by on each held-REPEAT-tick (0-127 = minus, 128-255 = plus)
 byte RPTVELO = 127; // Stored RPTSWEEP-modified VELOCITY value for the current REPEAT step (refreshed on every new REPEAT-note press)
 byte OCTAVE = 3; // Octave-offset value for RECORD MODE notes
@@ -101,9 +103,16 @@ byte HUMANIZE = 0; // Maximum velocity-humanize value for RECORD MODE notes
 byte CHAN = 151; // MIDI-COMMAND byte (including current CHANNEL) for RECORD MODE notes
 byte QUANTIZE = B00000100; // Time-quantize value for RECORD MODE notes (1 to 16)
 byte QRESET = 0; // Tracks how many beats must elapse within RECORDSEQ before the QUANTIZE anchor gets reset (0 = whole sequence)
-byte DURATION = 4; // Duration value for RECORD MODE notes, in 16th-notes
+byte DURATION = 4; // Duration value for RECORD MODE notes, in 16th-notes (0 to 128; and 129 = special behavior)
 byte COPYPOS = 0; // Copy-position within the copy-sequence
 byte COPYSEQ = 0; // Sequence from which to copy data
+
+// Manual-note-recording vars
+byte KEYFLAG = 0; // Flags whether a note is currently being recorded in manual-DURATION-mode
+word KEYPOS = 0; // Holds the QUANTIZE-adjusted insert-point for the current recording-note
+byte KEYNOTE = 0; // Holds the recording-note's pitch-value
+byte KEYVELO = 0; // Holds the recording-note's velocity-value
+byte KEYCOUNT = 0; // Holds the number of ticks for which a recording-note has been held
 
 // Sequencing vars
 byte SONG = 0; // Current song-slot whose data-files are being played

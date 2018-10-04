@@ -15,35 +15,40 @@ Software:
 		. if yes, then:
 			. should the global cue have 256 rather than 128 16th-notes, to be more useable at tempos above ~120?
 
-	. change all DURATION-related routines to treat DURATION as a char, with boundaries of [-1 to 128]
-		-- 
-	. change GUI routines to display DURATION's new properties (on -1, entire top-row should be lit)
-		-- 
+	. change all DURATION-related routines to treat DURATION as a byte with boundaries of [0 to 129]
+		-- done
+	. change GUI routines to display DURATION's new properties (on 129, entire top-row should be lit)
+		-- done
 	. rewrite note-entry system in RECORD MODE:
-		. if DURATION is set to -1, and REPEAT is active, then use the QUANTIZE-size for the note's duration
+		. if DURATION is set to 129, and REPEAT is active, then use the QUANTIZE-size for the note's duration
 			-- 
-		. if DURATION is set to -1, and REPEAT *isn't* active, then...
+		. if DURATION is set to 129, and REPEAT *isn't* active, then...
 			-- 
 			. when a note-key is pressed, or a MIDI-IN NOTE-ON is received:
-				. [function setKeyNote() should be created for the following:]
-					. play a NOTE-ON for the note
-					. flag KEYTOGGLE (this will be necessary in case a control-column button is pressed while the note-button is held)
-					. store in wordKEYTIME: the tick within the active seq where the keystroke occurred
-					. store in charKEYQ: the note's QUANTIZE-offset
-					. store in byteKEYNOTE: the note-value corresponding to the button-press
-						. if MIDI-IN, then store the incoming note-byte
-						. if button-press, then use getNote()
-							. getNote(): make note-modulation from processRecAction() into a new function, called by both processRecAction() and setKeyButton()
-					. store in byteKEYVELO: the velocity-value corresponding to the button-press
-						. if MIDI-IN, then store the incoming velo-byte
-						. if button-press, then use getVelo()
-							. getVelo(): make velocity-modulation from processRecAction() into a new function, called by both processRecAction() and setKeyButton()
+				. [function setKeyNote(pitch, velo) should be created for the following:]
+					. [function setRawKeyNote(pitch, velo) should be created for the following:]
+						. play a NOTE-ON for the note
+							-- ok
+						. flag byteKEYFLAG (this will be necessary in case a control-column button is pressed while the note-button is held)
+							-- ok
+						. store in wordKEYPOS: the tick within the active seq where the keystroke occurred (offset by QUANTIZE)
+							-- ok
+						. store in byteKEYNOTE: the note-value corresponding to the button-press
+							-- done
+						. store in byteKEYVELO: the velocity-value corresponding to the button-press
+							-- done
+						. set byteKEYCOUNT to 0
+							-- done
+					. modKeyPitch(): make note-modulation from processRecAction() into a new function, called by both processRecAction() and setKeyNote() [for KEYNOTE]
+						-- done
+					. modVelo(): make velo-modulation from processRecAction() into a new function, called by both processRecAction() and setKeyNote() [for KEYVELO]
+						-- done
 			. on every tick:
-				. increase byteKEYTRACK by 1
-				. if KEYTRACK has reached a value of 128...
+				. increase KEYCOUNT by 1
+				. if KEYCOUNT has reached a value of 128...
 					. call recordHeldNote()
 			. when a note-key is released, or a MIDI-IN NOTE-OFF is received:
-				. if KEYTOGGLE is flagged (even if a control-column button is held)...
+				. if KEYFLAG is flagged (even if a control-column button is held)...
 					. and if getNote(BUTTON) corresponds to the key that has been released...
 						. [function recordHeldNote() should be created for the following:]
 							. send a NOTE-OFF
@@ -51,14 +56,18 @@ Software:
 							. offset NewPosition by KEYQ
 							. if (int(KEYQ) + KEYTRACK) < 0 then NewDuration = 0
 								. else NewDuration = max(128, KEYTRACK + KEYQ)
-							. reset KEYTOGGLE, KEYTIME, KEYQ, KEYTRACK, KEYNOTE, and KEYVELO
+							. reset KEYFLAG, KEYPOS, KEYQ, KEYTRACK, KEYNOTE, and KEYVELO
 							. call recordToSeq() with the reconstructed note-information, from NewPosition, NewDuration, KEYNOTE, KEYVELO
-			. if a new note-key is pressed (or a new MIDI-IN NOTE-ON is received) while KEYTOGGLE is still flagged:
+			. if a new control-button is pressed:
+				. call recordHeldNote() for the current KEYNOTE (this prevents any conflicts)
+			. if a new note-key is pressed (or a new MIDI-IN NOTE-ON is received) while KEYFLAG is still flagged:
 				. call recordHeldNote() for the current KEYNOTE
 				. call setKeyButton() for the new KEYNOTE
-	. on mode-toggle:
-		. if KEYTOGGLE is flagged (even if a control-column button is held)...
-			. call recordHeldNote()
+		. rewrite every other recordToSeq() call, to call the function with a DURATION value, since the funtion had to be rewritten to take a given duration
+			-- 
+		. on mode-toggle:
+			. if KEYFLAG is flagged (even if a control-column button is held)...
+				. call recordHeldNote()
 
 	. test changes to the timing system
 		-- doing
