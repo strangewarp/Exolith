@@ -54,7 +54,13 @@ void displayLoadNumber() {
 				| (pgm_read_byte_near(NUMBER_GLYPHS + (c3 * 6) + i) * c3)
 		);
 	}
-	delay(750); // Pause the program for 3/4 of a second while the number is displayed
+}
+
+// Flag the LEDs that correspond to the given TRACK to blink for ~12ms
+void recBlink(byte trk) {
+	BLINKL |= (!trk) * 192; // Start a given-track-linked LED-BLINK that is ~12ms long
+	BLINKR |= trk * 192; // ^
+	TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for an update
 }
 
 // Get the LED-value for a single seq, adjusted based on whether it's active and whether it has a dormant cue-command
@@ -217,9 +223,11 @@ void updateRecBottomRows(byte ctrl) {
 
 // Update the bottom LED-rows for PLAY-MODE
 void updatePlayBottomRows(byte ctrl) {
+
 	byte heldsc = (ctrl & B00000011) == B00000011; // Make sure this is, indeed, a command with SCATTER shape
 	byte row = 0; // Will hold the binary value to be sent to the row's LEDs
 	byte blnk = (240 * (!!BLINKL)) | (15 * (!!BLINKR)); // If there are any active BLINKs, create a row-template for them
+
 	for (byte i = 2; i < 8; i++) { // For each of the bottom 6 GUI rows...
 		if (TO_UPDATE & (1 << i)) { // If the row is flagged for an update...
 			row = blnk; // If a BLINK is active, add it to the row's contents (also: this line clears the previous loop's row value)
@@ -234,11 +242,14 @@ void updatePlayBottomRows(byte ctrl) {
 			sendRow(i, row); // Send the composite row
 		}
 	}
+
 }
 
 // Update the 6 bottom rows of LEDs
 void updateBottomRows(byte ctrl) {
-	if (LOADMODE) { // If LOAD MODE is active...
+	if (LOADHOLD) { // If a number from a just-loaded savefile is being held on screen...
+		displayLoadNumber(); // Display the number of the newly-loaded savefile
+	} else if (LOADMODE) { // If LOAD MODE is active...
 		updateLoadBottomRows(ctrl); // Update the bottom LED-rows for LOAD-MODE
 	} else if (RECORDMODE) { // If RECORD MODE is active...
 		updateRecBottomRows(ctrl); // Update the bottom-rows for RECORD-MODE

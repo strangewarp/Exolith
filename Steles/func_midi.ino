@@ -80,13 +80,9 @@ void parseRawMidi() {
 				byte cmd = b & 240; // Get the command-type of any given non-SYSEX command
 
 				if (b == 248) { // TIMING CLOCK command
-					Serial.write(b); // Send the byte to MIDI-OUT
+					// Note: The CLOCK-tick isn't passed to MIDI-OUT via Serial.write() here, since that is done by advanceTick()
 					if (!CLOCKMASTER) { // If the clock is in MIDI FOLLOW mode...
-						CUR16++; // Since we're sure we're on a new 16th-note, increase the current-16th-note variable
-						if (!(CUR16 % 16)) { // If the global 16th-note is the first within a global slice...
-							TO_UPDATE |= 1; // Flag the global-cue row of LEDs for an update
-						}
-						iterateAll(); // Iterate through one step of all sequencing processes
+						advanceTick(); // Advance the concrete tick, and all its associated sequencing mechanisms
 					}
 				} else if (b == 250) { // START command
 					Serial.write(b); // Send the byte to MIDI-OUT

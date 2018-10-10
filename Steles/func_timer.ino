@@ -83,29 +83,42 @@ void activateStep() {
 
 }
 
-// Check all timing elements of a tick-sized granularity (1/6 of a 16th note), and advance the tick-counter
+// Advance the concrete tick, and all its associated sequencing mechanisms
 void advanceTick() {
 
-	word tlen = SPART ? TICKSZ2 : TICKSZ1; // Get the length of the current SWING-section's ticks
-
-	if (
-		(!CLOCKMASTER) // If not in CLOCKMASTER mode...
-		|| (ELAPSED < tlen) // Or if the next tick hasn't been reached within the current SWING-section's tick-length...
-	) { return; } // Exit the function
-
-	ELAPSED -= tlen; // Subtract the current tick-length from the elapsed-time variable
-
-	if (!PLAYING) { return; } // If the sequencer isn't in PLAYING mode, exit the function
+	Serial.write(248); // Send a MIDI CLOCK pulse
 
 	TICKCOUNT = (TICKCOUNT + 1) % 6; // Increase the value that tracks ticks, bounded to the size of a 16th-note
-	Serial.write(248); // Send a MIDI CLOCK pulse
 
 	if (TICKCOUNT) { return; } // If the current tick doesn't fall on a 16th-note, exit the function
 
 	// Since we're sure we're on a new 16th-note, advance the global current-16th-note variable
 	CUR16 = (CUR16 + 1) % 128;
 
+	if (KEYFLAG) { // If a note is currently being recorded in manual-duration-mode...
+		KEYCOUNT++; // Increase the note's tick-counter by 1
+		if (KEYCOUNT == 128) { // If the note's tick-counter has reached a length of 2 beats...
+			recordHeldNote(); // Record the note, since it's reached the maximum reasonable size
+		}
+	}
+
 	activateStep(); // Engage all timed elements of a 16th-note-sized granularity
+
+}
+
+// Check whether timing should currently be advanced, and if so, start applying internal timing changes
+void advanceOwnTick() {
+
+	word tlen = SPART ? TICKSZ2 : TICKSZ1; // Get the length of the current SWING-section's ticks
+
+	// If the next tick hasn't been reached within the current SWING-section's tick-length, exit the function
+	if (ELAPSED < tlen) { return; }
+
+	ELAPSED -= tlen; // Subtract the current tick-length from the elapsed-time variable
+
+	if (!PLAYING) { return; } // If the sequencer isn't in PLAYING mode, exit the function
+
+	advanceTick(); // Advance the concrete tick, and all its associated sequencing mechanisms
 
 }
 
@@ -155,6 +168,14 @@ void updateTimer() {
 
 	ABSOLUTETIME = micr; // Set the absolute-time to the current time-value
 
+	if (LOADHOLD) { // If a just-loaded file's file-number is currently being held onscreen...
+		LOADHOLD -= max(1, (offset >> 8)); // Reduce LOADHOLD by an offset-based value
+		if (LOADHOLD <= 0) { // If LOADHOLD has just this moment finished reducing all the way to 0...
+			LOADHOLD = 0; // Set LOADHOLD to 0, so boolean checks will parse it as "false"
+			TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
+		}
+	}
+
 	// Send a bit-shifted version of the offset value to blinkDecay(), to decrement the BLINK counters correctly
 	blinkDecay(word(offset >> 6)); // Decay any currrently-active BLINKL/BLINKR counters
 
@@ -162,7 +183,9 @@ void updateTimer() {
 
 	scanKeypad(); // Scan the keypad for changes in keystroke values
 
-	advanceTick(); // Check all timing elements of a tick-sized granularity (1/6 of a 16th note), and advance the tick-counter
+	// If CLOCK-FOLLOW mode is active, then exit the function without updating the sequencing mechanisms
+	if (!CLOCKMASTER) { return; }
+
+	advanceOwnTick(); // Check all timing elements of a tick-sized granularity (1/6 of a 16th note), and advance the tick-counter
 
 }
-

@@ -68,8 +68,16 @@ void genericCmd(byte col, byte row) {
 	if (REPEAT) { // If REPEAT is active...
 		RPTVELO = VELO; // Reset the REPEAT-VELOCITY tracking var to be equal to the user-defined VELOCITY amount
 		return; // Exit the function, since no commands should be sent instantly
+	} else { // Else, if REPEAT isn't active...
+		if (DURATION == 129) { // If DURATION is in manual-mode...
+			if (KEYFLAG) { // If another key is already held in manual-mode...
+				recordHeldNote(); // Record that held key's note
+			}
+			setKeyNote(col, row); // Set a held-recording-note for the given button-position
+		} else { // Else, if DURATION is in auto-mode...
+			processRecAction(col, row, TRACK); // Parse the key as a recording-action into the current TRACK
+		}
 	}
-	processRecAction(col, row, TRACK); // Parse the key as a recording-action into the current TRACK
 }
 
 // Parse a HUMANIZE press

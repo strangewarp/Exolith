@@ -514,6 +514,90 @@ Software:
 			-- the bug itself seems to be some horrendous deep-wizard situation with the SD-card displaying unusual behavior that's impossible to replicate.
 			-- but since it's a specific bug, with a specific unusual behavior that's always the same, the restart-function should take care of it.
 
+	. change all DURATION-related routines to treat DURATION as a byte with boundaries of [0 to 129]
+		-- done
+	. change GUI routines to display DURATION's new properties (on 129, entire top-row should be lit)
+		-- done
+	. rewrite note-entry system in RECORD MODE:
+		. add clause to processRecAction(): if DURATION is set to 129, and REPEAT is active, then use the QUANTIZE-size for the note's duration
+			-- done
+		. add clause to genericCmd(): if DURATION is set to 129, and REPEAT *isn't* active, then...
+			-- done
+			. when a note-key is pressed, or a MIDI-IN NOTE-ON is received:
+				. [function setKeyNote(pitch, velo) should be created for the following:]
+					. [function setRawKeyNote(pitch, velo) should be created for the following:]
+						. play a NOTE-ON for the note
+							-- ok
+						. flag byteKEYFLAG (this will be necessary in case a control-column button is pressed while the note-button is held)
+							-- ok
+						. store in wordKEYPOS: the tick within the active seq where the keystroke occurred (offset by QUANTIZE)
+							-- ok
+						. store in byteKEYNOTE: the note-value corresponding to the button-press
+							-- done
+						. store in byteKEYVELO: the velocity-value corresponding to the button-press
+							-- done
+						. set byteKEYCOUNT to 0
+							-- done
+						. set current TRACK to BLINK
+							-- done
+					. modKeyPitch(): make note-modulation from processRecAction() into a new function, called by both processRecAction() and setKeyNote() [for KEYNOTE]
+						-- done
+					. modVelo(): make velo-modulation from processRecAction() into a new function, called by both processRecAction() and setKeyNote() [for KEYVELO]
+						-- done
+			. if a new note-key is pressed (or a new MIDI-IN NOTE-ON is received) while KEYFLAG is still flagged:
+				. call recordHeldNote() for the current KEYNOTE and setKeyButton() for the new KEYNOTE
+					. make sure this applies to:
+						. MIDI-IN
+							-- yes
+						. keystrokes
+							-- yes
+				-- done
+			. on every tick:
+				. if KEYFLAG = 1...
+					. increase KEYCOUNT by 1
+						-- ok
+					. if KEYCOUNT == 128...
+						. call recordHeldNote()
+							-- ok
+				-- done
+			. if a new control-button is pressed:
+				. call recordHeldNote() for the current KEYNOTE (this prevents any conflicts)
+					-- done
+			. when a note-key is released, or a MIDI-IN NOTE-OFF is received:
+				. if KEYFLAG is flagged...
+					. and if modKeyPitch(BUTTON) corresponds to the key that has been released...
+						. [function recordHeldNote() should be created for the following:]
+							. send a NOTE-OFF
+								-- ok
+							. if RECORDING is currently ARMED...
+								. call recordToSeq() with the reconstructed note-information, from NewPosition, NewDuration, KEYNOTE, KEYVELO
+									-- done
+								. set current TRACK to BLINK
+									-- done
+							. reset KEYFLAG
+								-- done
+				-- done
+		. rewrite every other recordToSeq() call, to call the function with a DURATION value, since the funtion had to be rewritten to take a given duration
+			-- done
+		. on mode-toggle:
+			. if KEYFLAG is flagged (even if a control-column button is held)...
+				. call recordHeldNote()
+					-- done
+
+	. allow new songs to be loaded seamlessly
+		. loading should display its number-glyph without pausing the entire sequencer
+			-- ok
+		. if any sequences are still active when a song is loaded, then their activity should persist on load (though their position should reset)
+			-- done
+		. sustains should NOT be halted on load
+			-- done
+		. cued commands should be CLEARED on load
+			-- done
+		. sequence positions should be WRAPPED on load
+			-- done
+		. needs an extra GUI tracking var, to display the file-number on the screen for half a second after loading, rather than being gated behind a delay()
+			-- done
+
 Hardware:
 
 	. print out the alpha-prototype's schematic for reference while making updates (KiCad can corrupt a project if more than 1 is open)
@@ -571,5 +655,3 @@ Hardware:
 			-- MIDI-IN doesn't seem to be working
 			. test with a proper IN source
 				-- it works now
-
-

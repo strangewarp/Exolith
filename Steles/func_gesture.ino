@@ -8,11 +8,14 @@ void newGestureEntry(byte row) {
 
 // Check the gesture-tracking array for matches to any gesture-commands
 void checkForGestures() {
+
 	word all = 0; // Will get filled with a sequence of GESTURE-related bits for easy comparison
+
 	for (byte i = 3; i != 255; i--) { // For each entry in the GESTURE-tracking array...
 		if (!(GESTURE[i] & 128)) { return; } // If no GESTURE entry exists for this slot, exit the function
 		all |= (GESTURE[i] & 7) << (i * 3); // Add the GESTURE-entry's button-location to the composite var
 	}
+
 	if (all == 2824) { // If this completed a LOAD gesture...
 		LOADMODE ^= 1; // Toggle or untoggle LOAD-MODE override
 		TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
@@ -34,9 +37,17 @@ void checkForGestures() {
 	} else { // Else, if no matching gesture was found...
 		return; // Exit the function
 	}
+
 	// At this point in the function, a command was definitely found, so...
+
 	memset(GESTURE, 0, 4); // Empty out the gesture-button memory
+
+	if (KEYFLAG) { // If a note is currently being recorded with manual-duration-control in RECORD MODE...
+		recordHeldNote(); // Record the currently-held note, and clear KEYFLAG in the process
+	}
+
 	RECORDNOTES = 0; // Clear the ARMED RECORDING flag
+
 }
 
 // Update the tracking-info for all active gesture-keys
@@ -53,4 +64,3 @@ void updateGestureKeys() {
 	}
 	GESTELAPSED %= GESTDECAY; // Reduce the elapsed gesture-check time by n units of gesture-decay
 }
-

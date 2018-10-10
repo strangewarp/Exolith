@@ -82,7 +82,9 @@ void processRecAction(byte col, byte row, byte trk) {
 
 		word qp = getInsertionPoint(); // Get the QUANTIZE-adjusted insertion-point for the current tick in the current RECORDSEQ
 
-		recordToSeq(qp, CHAN, pitch, velo, trk); // Record the note into the current RECORDSEQ slot
+		// Record the note into the current RECORDSEQ slot:
+		// Also, if DURATION is set to 129, and REPEAT is active, then use the QUANTIZE-size for the note's duration
+		recordToSeq(qp, ((DURATION == 129) && REPEAT) ? QUANTIZE : DURATION, CHAN, pitch, velo, trk);
 
 		// If the quantize-point fell on this tick,
 		// then exit the function without sending the command, and without flagging GUI-updates,
@@ -91,10 +93,8 @@ void processRecAction(byte col, byte row, byte trk) {
 
 	}
 
-	// Flag GUI elements in the middle of the function, as the function may exit early
-	BLINKL |= (!trk) * 192; // Start a given-track-linked LED-BLINK that is ~12ms long
-	BLINKR |= trk * 192; // ^
-	TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for an update
+	// Flag GUI elements in the middle of the function, as the function may exit early:
+	recBlink(trk); // Blink the current TRACK's LEDs
 
 	// If this was a SWING-CHANGE command, change the local SWING values immediately to reflect its contents
 	if (CHAN == 96) {
@@ -128,7 +128,20 @@ void processRecAction(byte col, byte row, byte trk) {
 
 }
 
+// Record the currently-held note, when DURATION is in manual-mode
+void recordHeldNote() {
 
+	byte note[4] = {byte(128 + (CHAN & 15)), KEYNOTE, KEYVELO, 0}; // Create a NOTE-OFF command for the no-longer-held note
+	Serial.write(note, 3); // Send the NOTE-OFF
+
+	if (RECORDNOTES) { // If RECORDNOTES is currently armed (this means notes are being recorded)...
+		recordToSeq(KEYPOS, KEYCOUNT, byte(144 + (CHAN & 15)), KEYNOTE, KEYVELO, TRACK); // Record the currently-held note
+		recBlink(TRACK); // Blink the current TRACK's LEDs
+	}
+
+	KEYFLAG = 0; // Reset KEYFLAG, to show that a manual-duration note is no longer being held
+
+}
 
 // Get the QUANTIZE-adjusted insertion-point for the current tick in the current RECORDSEQ
 word getInsertionPoint() {
@@ -139,8 +152,8 @@ word getInsertionPoint() {
 		p += (down <= up) ? (-down) : up; // Make the shortest distance into an offset for the note-insertion point
 		p %= word(STATS[RECORDSEQ] & 63) * 16; // Wrap the insertion-point around the seq's length
 	}
+	return p; // Return the QUANTIZE-adjusted insertion point
 }
-
 
 // Get a note that corresponds to a keystroke, organized from bottom-left to top-right, with all modifiers applied
 byte modKeyPitch(byte row, byte col) {
@@ -153,7 +166,7 @@ byte modKeyPitch(byte row, byte col) {
 
 // Get a velocity-value with all current modifiers applied
 byte modVelo() {
-	byte velo = REPEAT ? RPTVELO : VELO; // Get VELO for regular notes, or RPTVELO for REPEAT-notes
+	byte velo = REPEAT ? RPTVELO : VELO; // Get the given-velocity for regular notes, or RPTVELO for REPEAT-notes
 	// Subtract a random humanize-offset from the note's velocity, and return it
 	return velo - min(velo - 1, byte(GLOBALRAND & 255) % (HUMANIZE + 1));
 }
@@ -162,7 +175,7 @@ byte modVelo() {
 void setRawKeyNote(byte pitch, byte velo) {
 
 	// Send a NOTE-ON for the given pitch and velocity
-	byte note[4] = {144 + CHAN, pitch, velo, 0};
+	byte note[4] = {byte(144 + (CHAN & 15)), pitch, velo, 0};
 	Serial.write(note, 3);
 
 	KEYFLAG = 1; // Toggle the flag for "a note is currently being held in manual-duration-mode"
@@ -171,10 +184,12 @@ void setRawKeyNote(byte pitch, byte velo) {
 	KEYVELO = velo; // ^
 	KEYCOUNT = 0; // Reset the counter that tracks how many ticks the note has been held for
 
+	recBlink(TRACK); // Blink the current TRACK's LEDs
+
 }
 
 // Set a held-recording-note, based on a keypress, and apply all of RECORD-MODE's pitch and velocity modifiers
-void setKeyNote(byte col, byte row, byte velo) {
-	setRawKeyNote(modKeyPitch(col, row), modVelo(velo));
+void setKeyNote(byte col, byte row) {
+	setRawKeyNote(modKeyPitch(col, row), modVelo());
 }
 

@@ -189,21 +189,6 @@ void loadPrefs() {
 // Load a given song, or create its savefile if it doesn't exist
 void loadSong(byte slot) {
 
-	haltAllSustains(); // Clear all currently-sustained notes
-	resetAllSeqs(); // Reset all seqs' internal activity variables of all kinds
-
-	// Display a fully-lit screen while loading data
-	sendRow(0, 255);
-	sendRow(1, 255);
-	sendRow(2, 255);
-	sendRow(3, 255);
-	sendRow(4, 255);
-	sendRow(5, 255);
-	sendRow(6, 255);
-	sendRow(7, 255);
-
-	delay(10); // Wait for a long enough time for the screen-flash to be visible
-
 	if (file.isOpen()) { // If a savefile is already open...
 		file.close(); // Close it
 	}
@@ -211,31 +196,40 @@ void loadSong(byte slot) {
 	char name[8];
 	getFilename(name, slot); // Get the name of the target song-slot's savefile
 
-	// Put the header-bytes from the savefile into the global BPM, SWING, and STATS vars
-	file.open(name, O_RDWR);
+	file.open(name, O_RDWR); // Open the new savefile
+
 	file.seekSet(FILE_BPM_BYTE); // Go to the BPM-byte location
 	BPM = file.read(); // Read it
-	if (BPM == 255) { // If the BPM is set to an erroneous value (this is a known bug that occurs for an unknown reason)...
+	if (BPM == 255) { // If the BPM is set to an erroneous value (this is a known bug that occurs on startup for an unknown reason)...
 		restart(); // Restart the entire device
 	}
+
 	file.seekSet(FILE_SGRAN_BYTE); // Go to the SWING GRANULARITY byte
 	SGRAN = file.read(); // Read it
 	file.seekSet(FILE_SAMOUNT_BYTE); // Go to the SWING AMOUNT byte
 	SAMOUNT = file.read(); // Read it
-	file.seekSet(FILE_SQS_START); // Go to the start of the SEQ-SIZE block
-	file.read(STATS, 48); // Read it
+
+	byte sbuf[49]; // Create a buffer for incoming STATS bytes, to save read-time
+	file.seekSet(FILE_SQS_START); // Go to the file-header's SEQ-SIZE block
+	file.read(sbuf, 48); // Read every seq's new size
+	for (byte i = 0; i < 48; i++) { // For each sequence...
+		POS[i] %= sbuf[i] * 16; // Wrap each seq's previous position by its new length
+		STATS[i] = (STATS[i] & 128) | sbuf[i]; // Combine the new size-value with the seq's current on/off byte
+	}
+
+	memset(CMD, 0, 48); // Clear every seq's CUED-COMMANDS...
+	memset(SCATTER, 0, 48); // ...And SCATTER-values
 
 	updateTickSize(); // Update the internal tick-size (in microseconds) to match the new BPM value
 
 	SPART = 0; // Set the current SWING PART to 0, as all timing elements are being reset
-	CUR16 = 127; // Set the global cue-position to arrive at 1 immediately
-	ELAPSED = 0; // Reset the elapsed-time-since-last-16th-note counter
+	//CUR16 = 127; // Set the global cue-position to arrive at 1 immediately
+	//ELAPSED = 0; // Reset the elapsed-time-since-last-16th-note counter
 
 	SONG = slot; // Set the currently-active SONG-position to the given save-slot
 
-	displayLoadNumber(); // Display the number of the newly-loaded savefile
+	LOADHOLD = 9500; // Give LOADHOLD around 2/3 of a second of decay, so the song-number is displayed for that long
 
 	TO_UPDATE = 255; // Flag entire GUI for an LED-update
 
 }
-

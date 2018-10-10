@@ -19,7 +19,7 @@
 		You should have received a copy of the GNU General Public License along
 		with this program; if not, write to the Free Software Foundation, Inc.,
 		51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-		
+
 */
 
 
@@ -76,6 +76,7 @@ byte GESTURE[5]; // Tracks currently-active button-gesture events
 byte PAGE = 0; // Tracks currently-active page of sequences
 byte BLINKL = 0; // When filled, this will count down to 0, illuminating the left side of the LEDs
 byte BLINKR = 0; // ^ This, but right side
+int LOADHOLD = 0; // Track how long to hold a just-loaded savefile's file-number onscreen
 byte TO_UPDATE = 0; // Tracks which rows of LEDs should be updated at the end of a given tick
 
 // Timing vars
@@ -212,7 +213,7 @@ void setup() {
 	memset(SCATTER, 0, 49);
 	memset(CMD, 0, 49);
 	memset(STATS, 0, 49);
-	memset(POS, 0, 49);
+	memset(POS, 0, 98);
 	memset(MOUT, 0, 25);
 	memset(SUST, 0, 25);
 	memset(INBYTES, 0, 4);
@@ -239,7 +240,7 @@ void setup() {
 	Serial.begin(31250); // Start serial comms at the MIDI baud rate
 
 	midiPanic(); // Send NOTE-OFFs to every MIDI note on every MIDI channel
-	
+
 	createFiles(); // Check whether the savefiles exist, and if they don't, then create them
 
 	loadPrefs(); // Load whatever prefsarein P.DAT, or create PRF.DAT if it doesn't exist yet
@@ -262,4 +263,3 @@ void loop() {
 	updateGlobalRand(); // Update the global semirandom value
 
 }
-

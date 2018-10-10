@@ -2,9 +2,9 @@
 
 // Reset every sequence, including SCATTER values
 void resetAllSeqs() {
-	memset(CMD, 0, sizeof(CMD) - 1);
-	memset(POS, 0, sizeof(POS) - 1);
-	memset(SCATTER, 0, sizeof(SCATTER) - 1);
+	memset(CMD, 0, 48);
+	memset(POS, 0, 96);
+	memset(SCATTER, 0, 48);
 	for (byte i = 0; i < 48; i++) {
 		STATS[i] &= 63; // Reset all seqs' PLAYING flags
 	}
@@ -268,4 +268,3 @@ void iterateAll() {
 	processSustains(); // Process one 16th-note's worth of duration for all sustained notes
 
 }
-

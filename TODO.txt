@@ -11,63 +11,21 @@ Software:
 
 	. is tempo actually being clocked at the right speed?
 		. test with a MIDI-IN apparatus that measures actual BPM from TEMPO ticks
-			-- 
+			--
 		. if yes, then:
 			. should the global cue have 256 rather than 128 16th-notes, to be more useable at tempos above ~120?
 
-	. change all DURATION-related routines to treat DURATION as a byte with boundaries of [0 to 129]
-		-- done
-	. change GUI routines to display DURATION's new properties (on 129, entire top-row should be lit)
-		-- done
-	. rewrite note-entry system in RECORD MODE:
-		. if DURATION is set to 129, and REPEAT is active, then use the QUANTIZE-size for the note's duration
-			-- 
-		. if DURATION is set to 129, and REPEAT *isn't* active, then...
-			-- 
-			. when a note-key is pressed, or a MIDI-IN NOTE-ON is received:
-				. [function setKeyNote(pitch, velo) should be created for the following:]
-					. [function setRawKeyNote(pitch, velo) should be created for the following:]
-						. play a NOTE-ON for the note
-							-- ok
-						. flag byteKEYFLAG (this will be necessary in case a control-column button is pressed while the note-button is held)
-							-- ok
-						. store in wordKEYPOS: the tick within the active seq where the keystroke occurred (offset by QUANTIZE)
-							-- ok
-						. store in byteKEYNOTE: the note-value corresponding to the button-press
-							-- done
-						. store in byteKEYVELO: the velocity-value corresponding to the button-press
-							-- done
-						. set byteKEYCOUNT to 0
-							-- done
-					. modKeyPitch(): make note-modulation from processRecAction() into a new function, called by both processRecAction() and setKeyNote() [for KEYNOTE]
-						-- done
-					. modVelo(): make velo-modulation from processRecAction() into a new function, called by both processRecAction() and setKeyNote() [for KEYVELO]
-						-- done
-			. on every tick:
-				. increase KEYCOUNT by 1
-				. if KEYCOUNT has reached a value of 128...
-					. call recordHeldNote()
-			. when a note-key is released, or a MIDI-IN NOTE-OFF is received:
-				. if KEYFLAG is flagged (even if a control-column button is held)...
-					. and if getNote(BUTTON) corresponds to the key that has been released...
-						. [function recordHeldNote() should be created for the following:]
-							. send a NOTE-OFF
-							. use contents of KEYTRACK and POS[seq] to find a NewPosition for the note
-							. offset NewPosition by KEYQ
-							. if (int(KEYQ) + KEYTRACK) < 0 then NewDuration = 0
-								. else NewDuration = max(128, KEYTRACK + KEYQ)
-							. reset KEYFLAG, KEYPOS, KEYQ, KEYTRACK, KEYNOTE, and KEYVELO
-							. call recordToSeq() with the reconstructed note-information, from NewPosition, NewDuration, KEYNOTE, KEYVELO
-			. if a new control-button is pressed:
-				. call recordHeldNote() for the current KEYNOTE (this prevents any conflicts)
-			. if a new note-key is pressed (or a new MIDI-IN NOTE-ON is received) while KEYFLAG is still flagged:
-				. call recordHeldNote() for the current KEYNOTE
-				. call setKeyButton() for the new KEYNOTE
-		. rewrite every other recordToSeq() call, to call the function with a DURATION value, since the funtion had to be rewritten to take a given duration
-			-- 
-		. on mode-toggle:
-			. if KEYFLAG is flagged (even if a control-column button is held)...
-				. call recordHeldNote()
+	. test the new manual-duration system:
+		. does it cooperate with auto-durations?
+			--
+		. does mashing of multiple keys in manual-mode have the expected outcome? (many tiny notes plus one regular note for the last button hit)
+			--
+		. does hitting a control-column key cut off the held note-button and record its note?
+			--
+		. does mode-toggle cut off the held note-button and record its note?
+			--
+		. do notes get cut off and recorded after becoming 128 ticks long?
+			--
 
 	. test changes to the timing system
 		-- doing
@@ -81,61 +39,72 @@ Software:
 				-- fixed: the second while-loop in removeDuplicates() was removing the MOUT-queue entry for the note it was checking
 		. synth usage-case:
 			. sustains
-				-- 
+				--
 			. chords
-				-- 
+				--
 			. z-fighting
-				-- 
+				--
 		. overloaded usage-case
-			-- 
+			--
 		. special case: multiple duplicate notes on the same tick:
 			. in RECORD MODE:
 				. same note on both TRACKs
-					-- 
+					--
 			. in PLAY MODE:
 				. same note in two separate seqs
-					-- 
+					--
 				. same note on both tracks, in multiple separate seqs
-					-- 
+					--
 
 	. test REPEAT-SWEEP
-		-- 
+		--
 	. test recordable SWING-commands
-		-- 
+		--
 	. test REPEAT-SWEEP on:
 		. recorded regular MIDI commands
-			-- 
+			--
 		. recorded special MIDI commands
-			-- 
+			--
 		. recorded BPM commands
-			-- 
+			--
 		. recorded SWING commands
-			-- 
+			--
 
 	. re-test all recording mechanisms
-		-- 
+		--
 		. note-recording
 			. TRACK 1
-				-- 
+				--
 			. TRACK 2
-				-- 
+				--
 		. ERASE WHILE HELD
 			. TRACK 1
-				-- 
+				--
 			. TRACK 2
-				-- 
+				--
 		. CLEAR SEQ
 			. clears both tracks simultaneously?
-				-- 
+				--
 		. COPY/PASTE
 			. straightforward standard usage
-				-- 
+				--
 			. with COPY size too long for PASTE size (should be discarded)
-				-- 
+				--
 			. with COPY size too short for PASTE size (should repeat until the end of the PASTE area)
-				-- 
+				--
 			. with COPY in another sequence than PASTE
-				-- 
+				--
+
+	. remove the PLAYING var, and the GLOBAL PLAY/STOP mechanism
+	. instead of toggling PLAYING on or off, introduce a RESET TIMING command. this should:
+		. reset GLOBAL CUE
+		. reset all seq-positions
+		. NOT reset all pending cues (would be more useful this way, in weird performance-cases)
+		. send a CLOCK STOP command
+		. send a SONG-POSITION POINTER
+		. send a CLOCK START command
+			. plus a dummy-CLOCK-tick? research this again
+	. is resetAllSeqs() even necessary at this point?
 
 	. reassign the RECORD-MODE control-commands to make logical sense around the new BPM keychord
 		. change button-key.txt:
@@ -262,7 +231,7 @@ Software:
 Hardware:
 
 	. clear/clean/update todo tasks
-		-- 
+		--
 
 	. update KiCad/Inkscape files:
 		. both boards:
@@ -281,26 +250,26 @@ Hardware:
 					. top-board
 						-- done
 					. bottom-board
-						-- 
+						--
 			. make sure stacking-headers have the same pin-positions, signifying the same pin-contents (keeping in mind that the top-board's header is reversed)
-				-- 
+				--
 			. move model-number text to bottom-board - if it were still on the top-board, any sort of transparent plexiglas would make it look tacky
-				-- 
+				--
 				. model-number text should be in the following format:
 					. basilisk tine sequencer
 					  production run number - production run name
 			. make sure all edge-cuts reflect the rearrangement of ports/standoffs
-				-- 
+				--
 			. add edge-cuts to top-board for all electrolytic capacitors on the bottom-board
 				-- done
 				. double-check that the capacitors in the parts-list are actually slim enough to fit into this space
-					-- 
+					--
 			. double-check that ports aren't competing for space with standoffs
 		. bottom-board:
 			. update R-SET resistor's value based on the new diffused LEDs
-				-- 
+				--
 			. double-check all pin assignments on both regulators, comparing datasheets directly to footprints
-				-- 
+				--
 			. place thermal-plates that accomodate new smaller heatsinks
 			. remember to include screw-holes inside the thermal-plates (these may be part of the regulators' footprints)
 			. place all capacitors beneath edge-cuts, so they have enough room to stand
@@ -320,7 +289,7 @@ Hardware:
 		. longer screws for the two top-back screw-holes, since these will have several additional layers of enclosure to cover the MIDI ports
 		. small screws and nuts, for securing the heatsinks to the regulators and their underlying circuit-board
 		. 5v regulator: L7805ABV
-		. 3.3v regulator: 
+		. 3.3v regulator:
 		. heatsinks for TO-220-shaped regulators!
 		. B3F-5050 buttons (these have a longer life than B3F-4050 buttons)
 			. use different-color button-caps on the note-keys, to differentiate between "white notes" and "black notes" like on a piano
@@ -363,5 +332,3 @@ Hardware:
 	. order all parts by copy-pasting part-names from the master parts-list, to avoid mental errors (like missing the inner second "P" in "ATMEGA328P-PU")
 
 	. every unit should have its own serial-number written onto a sticker somewhere on its circuit-board
-
-
