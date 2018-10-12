@@ -49,6 +49,8 @@
 #define UPPER_BITS_LOW 96 // Limits to the range of valid UPPER COMMAND BITS values
 #define UPPER_BITS_HIGH 224 // ^
 
+#define DEFAULT_BPM 80 // Default BPM-value, for cases where a coherent BPM value is not available
+
 #define SCANRATE 7000 // Amount of time between keystroke-scans, in microseconds
 
 #define GESTDECAY 250000UL // Amount of time between gesture-decay ticks, in microseconds
@@ -120,7 +122,7 @@ byte SONG = 0; // Current song-slot whose data-files are being played
 byte PLAYING = 1; // Controls whether the sequences and global tick-counter are iterating
 byte DUMMYTICK = 0; // Tracks whether to expect a dummy MIDI CLOCK tick before starting to iterate through sequences
 byte CLOCKMASTER = 1; // Toggles whether to generate MIDI CLOCK ticks, or respond to incoming CLOCK ticks from an external device
-byte BPM = 80; // Beats-per-minute value: one beat is 96 tempo-ticks
+byte BPM = DEFAULT_BPM; // Beats-per-minute value: one beat is 96 tempo-ticks
 byte TICKCOUNT = 5; // Current global tick, bounded within the size of a 16th-note
 byte CUR16 = 127; // Current global sixteenth-note (bounded to 128, or 8 beats)
 word GLOBALRAND = 12345; // Global all-purpose semirandom value; gets changed on every tick
@@ -199,11 +201,6 @@ const char PREFS_FILENAME[] PROGMEM = {80, 46, 68, 65, 84, 0}; // Filename of th
 
 SdFat sd; // Initialize SdFat object
 SdFile file; // Initialize an SdFile File object, to control default data read/write processes
-
-
-
-// A restart-function, which is used when encountering unusual bugs on startup
-void (*restart)(void) = 0;
 
 
 
