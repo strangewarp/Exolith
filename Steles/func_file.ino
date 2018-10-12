@@ -205,14 +205,12 @@ void loadSong(byte slot) {
 	BPM = file.read(); // Read it
 	// If this is an erroneous value that falls outside of the valid BPM range...
 	if ((BPM < BPM_LIMIT_LOW) || (BPM > BPM_LIMIT_HIGH)) {
-		sendRow(0, B00000000); // Send a fullscreen glyph with the "invalid BPM" symbol
-		sendRow(1, B00000000);
-		sendRow(2, B01010001);
-		sendRow(3, B01001010);
-		sendRow(4, B01000100);
-		sendRow(5, B01001010);
-		sendRow(6, B11010001);
-		sendRow(7, B11000000);
+		sendRow(2, B00000000); // Send a glyph with the "invalid BPM" symbol
+		sendRow(3, B01010001);
+		sendRow(4, B01001010);
+		sendRow(5, B01000100);
+		sendRow(6, B11001010);
+		sendRow(7, B11010001);
 		delay(1000); // Hold the glyph for a full second
 		BPM = DEFAULT_BPM; // Set the BPM to the default value
 	}
