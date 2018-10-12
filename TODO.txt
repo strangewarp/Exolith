@@ -9,6 +9,12 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
+	-- the "restart-function" solution to the rare on-startup BPM bug just results in an infinite restart-loop
+		-- so: I have replaced it with a function that just sets erroneous BPMs to a default value,
+		-- and then throws a glyph to screen, to indicate that this is what has occurred.
+			-- this is not ideal, but since this bug only occurs on startup, it should not happen during performance,
+			-- and should be obvious if it happens during setup.
+
 	. is tempo actually being clocked at the right speed?
 		. test with a MIDI-IN apparatus that measures actual BPM from TEMPO ticks
 			--
@@ -332,3 +338,13 @@ Hardware:
 	. order all parts by copy-pasting part-names from the master parts-list, to avoid mental errors (like missing the inner second "P" in "ATMEGA328P-PU")
 
 	. every unit should have its own serial-number written onto a sticker somewhere on its circuit-board
+
+Packaging:
+
+	. look into services that create custom-printed, custom-sized cardboard boxes
+		. any DIY kits will have to be sealed tightly so parts don't escape during transport
+			. will just have to use plastic baggies for this probably
+				. look into bulk suppliers for non-static plastic baggies
+		. fully-assembled units won't need baggies, but will still need a way to retain loose elements (stickers, manual, et al)
+
+	. look into custom stickers and various other goodies

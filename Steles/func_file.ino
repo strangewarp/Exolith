@@ -198,10 +198,23 @@ void loadSong(byte slot) {
 
 	file.open(name, O_RDWR); // Open the new savefile
 
+	// There is rarely a bug where the BPM is set to an erroneous value (this occurs on startup for unknown reasons),
+	// so we have to compensate for that while loading BPM from a savefile.
+	// At the same time, we will compensate for files where the BPM value has been edited to fall outside the valid BPM-range.
 	file.seekSet(FILE_BPM_BYTE); // Go to the BPM-byte location
 	BPM = file.read(); // Read it
-	if (BPM == 255) { // If the BPM is set to an erroneous value (this is a known bug that occurs on startup for an unknown reason)...
-		restart(); // Restart the entire device
+	// If this is an erroneous value that falls outside of the valid BPM range...
+	if ((BPM < BPM_LIMIT_LOW) || (BPM > BPM_LIMIT_HIGH)) {
+		sendRow(0, B00000000); // Send a fullscreen glyph with the "invalid BPM" symbol
+		sendRow(1, B00000000);
+		sendRow(2, B01010001);
+		sendRow(3, B01001010);
+		sendRow(4, B01000100);
+		sendRow(5, B01001010);
+		sendRow(6, B11010001);
+		sendRow(7, B11000000);
+		delay(1000); // Hold the glyph for a full second
+		BPM = DEFAULT_BPM; // Set the BPM to the default value
 	}
 
 	file.seekSet(FILE_SGRAN_BYTE); // Go to the SWING GRANULARITY byte
