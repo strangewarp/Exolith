@@ -178,24 +178,13 @@ byte SYSIGNORE = 0; // Ignores SYSEX messages when toggled
 //     because the Arduino compiler's linking system gets broken by some functions that are called by the CmdFunc construct,
 //     which, in practical terms, means that functions in func_cmds.ino that call writeCommands() won't get linked to it,
 //     unless writeCommands() is linked manually with an extern command right here.
-extern void writeCommands(unsigned long pos, byte amt, byte b[], byte onchan);
+//extern void writeCommands(unsigned long pos, byte amt, byte b[], byte onchan);
 
 
 
 // Typedef for a generic function that takes "column" and "row" arguments.
 // This will be used to select RECORD-MODE functions based on which keychords are active.
 typedef void (*CmdFunc) (byte col, byte row);
-
-extern const CmdFunc COMMANDS[]; // Use the list of RECORD-MODE commands from data_cmds.ino
-extern const byte KEYTAB[]; // Use the list of binary-to-decimal function-keys from data_cmds.ino
-
-extern const byte LOGO[]; // Use the logo from data_gui.ino
-extern const byte GLYPH_ERASE[]; // Use the ERASE-glyph from data_gui.ino
-extern const byte NUMBER_GLYPHS[]; // Use the number-multiglyph from data_gui.ino
-
-
-
-const char PREFS_FILENAME[] PROGMEM = {80, 46, 68, 65, 84, 0}; // Filename of the preferences-file, in PROGMEM to save RAM
 
 
 
