@@ -6,6 +6,7 @@ Software:
 
 	!!! DO NOT CHANGE list:
 		-- RECORD TOGGLE's glyph and ERASE WHILE HELD's chord need to conflict, so that the file.sync() on ERASE WHILE HELD's key-up doesn't get skipped when toggling
+			-- if the key-chord for ERASE WHILE HELD is changed, then the file.sync() call in unassignKey() must also be changed
 
 	. prove I'm not a dipshit: actually finish the project
 
@@ -21,7 +22,9 @@ Software:
 			. figure out what's up
 				-- modKeyPitch() had badly-ordered args in some calls. brought them in line with standard [col, row] ordering
 				. re-test
-					-- 
+					-- still having the same bug, somehow.
+					. figure it out
+						-- unassignKey() needs to subtract 1 from "col" before it works correctly in modKeyPitch(). fixed
 		. does it cooperate with auto-durations?
 			--
 		. does mashing of multiple keys in manual-mode have the expected outcome? (many tiny notes plus one regular note for the last button hit)
