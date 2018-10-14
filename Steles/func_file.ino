@@ -198,20 +198,26 @@ void loadSong(byte slot) {
 
 	file.open(name, O_RDWR); // Open the new savefile
 
-	// There is rarely a bug where the BPM is set to an erroneous value (this occurs on startup for unknown reasons),
+	// There is rarely a bug where the BPM is set to an erroneous value (this can occur on startup for unknown reasons),
 	// so we have to compensate for that while loading BPM from a savefile.
 	// At the same time, we will compensate for files where the BPM value has been edited to fall outside the valid BPM-range.
 	file.seekSet(FILE_BPM_BYTE); // Go to the BPM-byte location
 	BPM = file.read(); // Read it
 	// If this is an erroneous value that falls outside of the valid BPM range...
 	if ((BPM < BPM_LIMIT_LOW) || (BPM > BPM_LIMIT_HIGH)) {
-		sendRow(2, B00000000); // Send a glyph with the "invalid BPM" symbol
-		sendRow(3, B01010001);
-		sendRow(4, B01001010);
-		sendRow(5, B01000100);
-		sendRow(6, B11001010);
-		sendRow(7, B11010001);
-		delay(1000); // Hold the glyph for a full second
+		sendRow(0, 0); // Clear the top 3 LED-rows
+		sendRow(1, 0);
+		sendRow(2, 0);
+		for (byte i = 1; i < 21; i++) { // Iterate through 20 on-or-off blink-states...
+			byte i2 = !!(i % 4); // Get whether this is an on-blink or an off-blink
+			// Depending on blink-status, either send an "invalid BPM" glyph to the screen, or totally clear the screen
+			sendRow(3, i2 * B01010001);
+			sendRow(4, i2 * B01001010);
+			sendRow(5, i2 * B01000100);
+			sendRow(6, i2 * B11001010);
+			sendRow(7, i2 * B11010001);
+			delay(250); // Hold the glyph's current state for a quarter-second
+		}
 		BPM = DEFAULT_BPM; // Set the BPM to the default value
 	}
 

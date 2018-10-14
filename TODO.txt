@@ -14,6 +14,7 @@ Software:
 		-- and then throws a glyph to screen, to indicate that this is what has occurred.
 			-- this is not ideal, but since this bug only occurs on startup, it should not happen during performance,
 			-- and should be obvious if it happens during setup.
+	-- updated this to make the invalid-BPM warning blink, and stick around for 2 seconds
 
 	-- removed all manual "extern" compile-commands, since newer versions of Arduino seem to have made those superfluous
 
