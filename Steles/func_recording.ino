@@ -75,7 +75,7 @@ void recordToSeq(word pstn, byte dur, byte chan, byte b1, byte b2, byte trk) {
 // Parse all of the possible actions that signal the recording of commands
 void processRecAction(byte col, byte row, byte trk) {
 
-	byte pitch = modKeyPitch(row, col); // Get a note-value that corresponds to the keystroke, with all modifiers applied
+	byte pitch = modKeyPitch(col, row); // Get a note-value that corresponds to the keystroke, with all modifiers applied
 	byte velo = modVelo(); // Get a velocity-value with all current modifiers applied
 
 	if (PLAYING && RECORDNOTES) { // If notes are being recorded into a playing sequence...
@@ -156,7 +156,7 @@ word getInsertionPoint() {
 }
 
 // Get a note that corresponds to a keystroke, organized from bottom-left to top-right, with all modifiers applied
-byte modKeyPitch(byte row, byte col) {
+byte modKeyPitch(byte col, byte row) {
 	byte pitch = (OCTAVE * 12) + ((23 - ((row * 4) + col)) ^ 3); // Translate row and col into a pitch, plus current octave
 	while (pitch > 127) { // If the pitch is above 127, which is the limit for MIDI notes...
 		pitch -= 12; // Reduce it by an octave until it is at or below 127
@@ -192,4 +192,3 @@ void setRawKeyNote(byte pitch, byte velo) {
 void setKeyNote(byte col, byte row) {
 	setRawKeyNote(modKeyPitch(col, row), modVelo());
 }
-

@@ -9,15 +9,6 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	-- the "restart-function" solution to the rare on-startup BPM bug just results in an infinite restart-loop
-		-- so: I have replaced it with a function that just sets erroneous BPMs to a default value,
-		-- and then throws a glyph to screen, to indicate that this is what has occurred.
-			-- this is not ideal, but since this bug only occurs on startup, it should not happen during performance,
-			-- and should be obvious if it happens during setup.
-	-- updated this to make the invalid-BPM warning blink, and stick around for 2 seconds
-
-	-- removed all manual "extern" compile-commands, since newer versions of Arduino seem to have made those superfluous
-
 	. is tempo actually being clocked at the right speed?
 		. test with a MIDI-IN apparatus that measures actual BPM from TEMPO ticks
 			--
@@ -25,6 +16,12 @@ Software:
 			. should the global cue have 256 rather than 128 16th-notes, to be more useable at tempos above ~120?
 
 	. test the new manual-duration system:
+		. does it work straightforwardly?
+			-- no: note-offs aren't being sent on key-release, and are only being sent on duration-timeout
+			. figure out what's up
+				-- modKeyPitch() had badly-ordered args in some calls. brought them in line with standard [col, row] ordering
+				. re-test
+					-- 
 		. does it cooperate with auto-durations?
 			--
 		. does mashing of multiple keys in manual-mode have the expected outcome? (many tiny notes plus one regular note for the last button hit)

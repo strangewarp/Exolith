@@ -598,6 +598,15 @@ Software:
 		. needs an extra GUI tracking var, to display the file-number on the screen for half a second after loading, rather than being gated behind a delay()
 			-- done
 
+	-- the "restart-function" solution to the rare on-startup BPM bug just results in an infinite restart-loop
+		-- so: I have replaced it with a function that just sets erroneous BPMs to a default value,
+		-- and then throws a glyph to screen, to indicate that this is what has occurred.
+			-- this is not ideal, but since this bug only occurs on startup, it should not happen during performance,
+			-- and should be obvious if it happens during setup.
+	-- updated this to make the invalid-BPM warning blink, and stick around for 2 seconds
+
+	-- removed all manual "extern" compile-commands, since newer versions of Arduino seem to have made those superfluous
+
 Hardware:
 
 	. print out the alpha-prototype's schematic for reference while making updates (KiCad can corrupt a project if more than 1 is open)
