@@ -6,7 +6,7 @@ Steles prefs-file spec
 		/P.DAT
 
 	File contents:
-		(11 total bytes)
+		(13 total bytes)
 		byte 0:  PAGE
 		byte 1:  OCTAVE
 		byte 2:  VELO
@@ -19,4 +19,4 @@ Steles prefs-file spec
 		byte 9:  COPYSEQ
 		byte 10: SONG
 		byte 11: CLOCKMASTER
-
+		byte 12: GRIDCONFIG

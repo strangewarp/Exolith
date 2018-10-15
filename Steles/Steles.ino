@@ -98,6 +98,7 @@ byte TRACK = 0; // Current track within the active sequence to edit with RECORDM
 byte REPEAT = 0; // Toggles whether held-down note-buttons should repeat a NOTE-ON every QUANTIZE ticks, in RECORD-MODE
 
 // Recording vars
+byte GRIDCONFIG = 0; // Current rotation of the note-key grid in RECORD-MODE (either chromatic row-based, or chromatic column-based)
 byte RPTSWEEP = 128; // Amount to modify RPTVELO by on each held-REPEAT-tick (0-127 = minus, 128-255 = plus)
 byte RPTVELO = 127; // Stored RPTSWEEP-modified VELOCITY value for the current REPEAT step (refreshed on every new REPEAT-note press)
 byte OCTAVE = 3; // Octave-offset value for RECORD MODE notes

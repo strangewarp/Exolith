@@ -80,6 +80,12 @@ void genericCmd(byte col, byte row) {
 	}
 }
 
+// Parse a GRID-CONFIG press
+void gridConfigCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row) {
+	GRIDCONFIG ^= 1; // Toggle the GRID-CONFIGURATION between chromatic-row and chromatic-column
+	TO_UPDATE |= 1; // Flag the topmost row for updating
+}
+
 // Parse a HUMANIZE press
 void humanizeCmd(byte col, byte row) {
 	char change = toChange(col, row); // Convert a column and row into a CHANGE value
@@ -240,4 +246,3 @@ void veloCmd(byte col, byte row) {
 	VELO = applyChange(VELO, change, 0, 127); // Modify the VELO value
 	TO_UPDATE |= 1; // Flag the topmost row for updating
 }
-

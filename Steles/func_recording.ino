@@ -157,7 +157,8 @@ word getInsertionPoint() {
 
 // Get a note that corresponds to a keystroke, organized from bottom-left to top-right, with all modifiers applied
 byte modKeyPitch(byte col, byte row) {
-	byte pitch = (OCTAVE * 12) + ((23 - ((row * 4) + col)) ^ 3); // Translate row and col into a pitch, plus current octave
+	// Translate row and col into a pitch, plus current octave, based on the current grid-configuration
+	byte pitch = (OCTAVE * 12) + (GRIDCONFIG ? ((col * 6) + (5 - row)) : ((23 - ((row * 4) + col)) ^ 3));
 	while (pitch > 127) { // If the pitch is above 127, which is the limit for MIDI notes...
 		pitch -= 12; // Reduce it by an octave until it is at or below 127
 	}

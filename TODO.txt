@@ -10,11 +10,33 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
+	-- increased LOADHOLD's decay-time to 18000
+
 	. is tempo actually being clocked at the right speed?
 		. test with a MIDI-IN apparatus that measures actual BPM from TEMPO ticks
 			--
 		. if yes, then:
 			. should the global cue have 256 rather than 128 16th-notes, to be more useable at tempos above ~120?
+
+	. add a GRID-CONFIGURATION command, to rotate the button-grid's note-entry positions
+		. update buttons-key.text
+			-- done
+		. add it to the CmdFunc list, and update the rest of the CmdFunc entries to compensate
+			-- done
+		. add a CmdFunc that toggles GRIDCONFIG (in func_cmds.ino)
+			-- done
+		. add a sigil for GRIDCONFIG (in data_gui.ino)
+			-- done
+		. add top-row case for displaying GRIDCONFIG status (in func_gui.ino)
+			-- done
+		. offset direct reads of other glyphs' memory-positions (BPM glyph, in func_gui.ino)
+			-- done
+		. update PREFS-file, and all related functions, to save GRIDCONFIG to P.DAT and also to read it correctly
+			-- done
+		. wipe SD-card again, because P.DAT's format has been updated
+			--
+		. test the two different GRID-CONFIGs
+			--
 
 	. test the new manual-duration system:
 		. does it work straightforwardly?

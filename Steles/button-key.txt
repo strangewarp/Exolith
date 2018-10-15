@@ -72,7 +72,7 @@ Button combinations (RECORD MODE):
 	000011: SEQ-SIZE
 
 	3-keypress:
-	...
+	111000: GRID-CONFIGURATION
 
 	4-keypress:
 	111100: CLEAR NOTES
@@ -94,4 +94,3 @@ Button combinations (LOAD MODE):
 	000100: PAGE 3
 	000010: PAGE 4
 	000001: PAGE 5
-
