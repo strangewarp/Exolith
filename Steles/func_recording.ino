@@ -167,9 +167,9 @@ byte modKeyPitch(byte col, byte row) {
 
 // Get a velocity-value with all current modifiers applied
 byte modVelo() {
-	byte velo = REPEAT ? RPTVELO : VELO; // Get the given-velocity for regular notes, or RPTVELO for REPEAT-notes
+	byte v = REPEAT ? RPTVELO : VELO; // Get the given-velocity for regular notes, or RPTVELO for REPEAT-notes
 	// Subtract a random humanize-offset from the note's velocity, and return it
-	return velo - min(velo - 1, byte(GLOBALRAND & 255) % (HUMANIZE + 1));
+	return v - min(v - 1, byte(GLOBALRAND & 255) % (HUMANIZE + 1));
 }
 
 // Set a held-recording-note, using the given pitch and velocity values, without any modifications

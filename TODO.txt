@@ -11,6 +11,7 @@ Software:
 	. prove I'm not a dipshit: actually finish the project
 
 	-- increased LOADHOLD's decay-time to 18000
+	-- added RPTVELO to P.DAT
 
 	. is tempo actually being clocked at the right speed?
 		. test with a MIDI-IN apparatus that measures actual BPM from TEMPO ticks

@@ -20,3 +20,4 @@ Steles prefs-file spec
 		byte 10: SONG
 		byte 11: CLOCKMASTER
 		byte 12: GRIDCONFIG
+		byte 13: RPTVELO
