@@ -15,9 +15,9 @@ Software:
 	-- added RPTSWEEP to P.DAT as well (forgot to do this)
 
 	. wipe SD-card and update firmware again, due to forgetting to add RPTSWEEP to P.DAT
-		--
+		-- done
 		. give file-creation and file-load another cursory test
-			--
+			-- seems to work
 
 	. is tempo actually being clocked at the right speed?
 		. test with a MIDI-IN apparatus that measures actual BPM from TEMPO ticks
@@ -37,7 +37,11 @@ Software:
 		. does it cooperate with auto-durations?
 			-- seems to
 		. does mashing of multiple keys in manual-mode have the expected outcome? (many tiny notes plus one regular note for the last button hit)
-			--
+			-- seems to
+		. does it cooperate with REPEAT?
+			-- notes with manual-duration are triggered on REPEAT ticks as though they have a duration of 128. this is wrong
+			. figure out what's going on
+				-- 
 		. does it record into a sequence coherently?
 			--
 			. do clusters of keymashes also record into sequences coherently?

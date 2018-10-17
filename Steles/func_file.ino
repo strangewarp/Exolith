@@ -7,10 +7,10 @@ void createFiles() {
 
 	for (byte i = 0; i < 168; i++) { // For every song-slot...
 
-		if (!(i % 21)) { // After a certain amount of files, switch to the next logo letter
+		if (!(i % 7)) { // After a certain amount of files, switch to the next logo letter
 			for (byte row = 0; row < 7; row++) { // For each row in the 7-row-tall logo text...
 				// Set the corresponding row to the corresponding letter slice
-				sendRow(row + 1, pgm_read_byte_near(LOGO + (row * 4) + ((i / 21) % 4)));
+				sendRow(row + 1, pgm_read_byte_near(LOGO + (row * 4) + ((i / 7) % 4)));
 			}
 		}
 
