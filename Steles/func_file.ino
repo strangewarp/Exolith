@@ -97,6 +97,7 @@ void makePrefBuf(byte buf[]) {
 	buf[11] = CLOCKMASTER;
 	buf[12] = GRIDCONFIG;
 	buf[13] = RPTVELO;
+	buf[14] = RPTSWEEP;
 }
 
 // Get the prefs-file's filename out of PROGMEM
@@ -111,10 +112,10 @@ void writePrefs() {
 
 	file.close(); // Temporarily close the current song-file
 
-	byte buf[15]; // Make a buffer that will contain all the prefs
+	byte buf[16]; // Make a buffer that will contain all the prefs
 	makePrefBuf(buf); // Fill it with all the relevant pref values
 
-	byte cbuf[15]; // Make a buffer for checking the old prefs-contents
+	byte cbuf[16]; // Make a buffer for checking the old prefs-contents
 
 	char pn[6]; // Will contain the prefs-file's filename
 	getPrefsFilename(pn); // Get the prefs-file's filename out of PROGMEM
@@ -122,9 +123,9 @@ void writePrefs() {
 	file.open(pn, O_RDWR); // Open the prefs-file in read-write mode
 
 	file.seekSet(0); // Ensure we're on the first byte of the file
-	file.read(cbuf, 14); // Read the old prefs-values
+	file.read(cbuf, 15); // Read the old prefs-values
 
-	for (byte i = 0; i < 14; i++) { // For every byte in the prefs-file...
+	for (byte i = 0; i < 15; i++) { // For every byte in the prefs-file...
 		if (buf[i] != cbuf[i]) { // If the new byte doesn't match the old byte...
 			file.seekSet(i); // Go to the byte's location
 			file.write(buf[i]); // Replace the old byte
@@ -148,7 +149,7 @@ void writePrefs() {
 // Load the contents of the preferences file ("PRF.DAT"), and put its contents into global variables
 void loadPrefs() {
 
-	byte buf[15]; // Make a buffer that will contain all the prefs
+	byte buf[16]; // Make a buffer that will contain all the prefs
 
 	char pn[6]; // Will contain the prefs-file's filename
 	getPrefsFilename(pn); // Get the prefs-file's filename out of PROGMEM
@@ -157,16 +158,16 @@ void loadPrefs() {
 
 		makePrefBuf(buf); // Fill the prefs-data buffer with the current user-prefs
 
-		file.createContiguous(sd.vwd(), pn, 14); // Create a contiguous prefs-file
+		file.createContiguous(sd.vwd(), pn, 15); // Create a contiguous prefs-file
 		file.close(); // Close the newly-created file
 
 		file.open(pn, O_WRITE); // Create a prefs file and open it in write-mode
-		file.write(buf, 14); // Write the pref vars into the file
+		file.write(buf, 15); // Write the pref vars into the file
 
 	} else { // Else, if the prefs-file does exist...
 
 		file.open(pn, O_READ); // Open the prefs-file in read-mode
-		file.read(buf, 14); // Read all the prefs-bytes into the buffer
+		file.read(buf, 15); // Read all the prefs-bytes into the buffer
 
 		// Assign the buffer's-worth of pref-bytes to their respective global-vars
 		PAGE = buf[0];
