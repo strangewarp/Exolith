@@ -41,7 +41,8 @@ Software:
 		. does it cooperate with REPEAT?
 			-- notes with manual-duration are triggered on REPEAT ticks as though they have a duration of 128. this is wrong
 			. figure out what's going on
-				-- 
+				-- in processRecAction(), when RECORDNOTES wasn't armed, regular NOTE-ONs were playing with a duration of "DURATION" rather than "QUANTIZE"...
+				-- ...this has now been fixed
 		. does it record into a sequence coherently?
 			--
 			. do clusters of keymashes also record into sequences coherently?

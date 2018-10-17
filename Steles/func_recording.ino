@@ -77,14 +77,14 @@ void processRecAction(byte col, byte row, byte trk) {
 
 	byte pitch = modKeyPitch(col, row); // Get a note-value that corresponds to the keystroke, with all modifiers applied
 	byte velo = modVelo(); // Get a velocity-value with all current modifiers applied
+	byte dur = ((DURATION == 129) && REPEAT) ? QUANTIZE : DURATION; // Get a duration-value, or QUANTIZE if manual-mode is enabled
 
 	if (PLAYING && RECORDNOTES) { // If notes are being recorded into a playing sequence...
 
 		word qp = getInsertionPoint(); // Get the QUANTIZE-adjusted insertion-point for the current tick in the current RECORDSEQ
 
 		// Record the note into the current RECORDSEQ slot:
-		// Also, if DURATION is set to 129, and REPEAT is active, then use the QUANTIZE-size for the note's duration
-		recordToSeq(qp, ((DURATION == 129) && REPEAT) ? QUANTIZE : DURATION, CHAN, pitch, velo, trk);
+		recordToSeq(qp, dur, CHAN, pitch, velo, trk);
 
 		// If the quantize-point fell on this tick,
 		// then exit the function without sending the command, and without flagging GUI-updates,
@@ -119,7 +119,7 @@ void processRecAction(byte col, byte row, byte trk) {
 		memmove(SUST + 3, SUST, SUST_COUNT * 3); // Move all sustains one space downward
 		SUST[0] = CHAN - 16; // Fill the topmost sustain-slot with the user-pressed note's corresponding OFF command
 		SUST[1] = pitch; // ^
-		SUST[2] = DURATION; // ^
+		SUST[2] = dur; // ^
 		SUST_COUNT++; // Increase the number of active sustains, to accurately reflect the new note
 	}
 
