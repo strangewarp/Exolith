@@ -100,6 +100,9 @@ void assignKey(byte col, byte row, byte oldcmds) {
 
 	if (col == 0) { // If the keystroke is in the leftmost column...
 
+		// (Checking for KEYFLAG is done before checking for GESTUREs,
+		// just in case a note was pressed immediately before a mode-toggle)
+
 		if (KEYFLAG) { // If this button's note is currently held in manual-mode...
 			recordHeldNote(); // Record the currently-held-note-key's note, to prevent bad conflicts with other commands
 		}

@@ -35,9 +35,9 @@ Software:
 		. update PREFS-file, and all related functions, to save GRIDCONFIG to P.DAT and also to read it correctly
 			-- done
 		. wipe SD-card again, because P.DAT's format has been updated
-			--
+			-- done
 		. test the two different GRID-CONFIGs
-			--
+			-- they work
 
 	. test the new manual-duration system:
 		. does it work straightforwardly?
@@ -49,13 +49,17 @@ Software:
 					. figure it out
 						-- unassignKey() needs to subtract 1 from "col" before it works correctly in modKeyPitch(). fixed
 		. does it cooperate with auto-durations?
-			--
+			-- seems to
 		. does mashing of multiple keys in manual-mode have the expected outcome? (many tiny notes plus one regular note for the last button hit)
+			-- 
+		. does it record into a sequence coherently?
 			--
+			. do clusters of keymashes also record into sequences coherently?
+				--
 		. does hitting a control-column key cut off the held note-button and record its note?
 			--
 		. does mode-toggle cut off the held note-button and record its note?
-			--
+			-- this is a subset of "hitting a control-column key", so logically absolutely yes
 		. do notes get cut off and recorded after becoming 128 ticks long?
 			--
 
@@ -263,6 +267,9 @@ Software:
 Hardware:
 
 	. clear/clean/update todo tasks
+		--
+
+	. check sizes of the pin-holes for the B3F-5050 buttons, and if they're too small, slightly widen them to compensate for kerf. (just remembered that these were too tight on the alpha prototype)
 		--
 
 	. update KiCad/Inkscape files:
