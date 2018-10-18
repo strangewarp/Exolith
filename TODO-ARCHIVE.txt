@@ -636,6 +636,41 @@ Software:
 		. give file-creation and file-load another cursory test
 			-- seems to work
 
+	. test the new manual-duration system:
+		. does it work straightforwardly?
+			-- no: note-offs aren't being sent on key-release, and are only being sent on duration-timeout
+			. figure out what's up
+				-- modKeyPitch() had badly-ordered args in some calls. brought them in line with standard [col, row] ordering
+				. re-test
+					-- still having the same bug, somehow.
+					. figure it out
+						-- unassignKey() needs to subtract 1 from "col" before it works correctly in modKeyPitch(). fixed
+		. does it cooperate with auto-durations?
+			-- seems to
+		. does mashing of multiple keys in manual-mode have the expected outcome? (many tiny notes plus one regular note for the last button hit)
+			-- seems to
+		. does it cooperate with REPEAT?
+			-- notes with manual-duration are triggered on REPEAT ticks as though they have a duration of 128. this is wrong
+			. figure out what's going on
+				-- in processRecAction(), when RECORDNOTES wasn't armed, regular NOTE-ONs were playing with a duration of "DURATION" rather than "QUANTIZE"...
+				-- ...this has now been fixed
+		. does it record into a sequence coherently?
+			-- yes
+			. do clusters of keymashes also record into sequences coherently?
+				-- seem to
+			. does REPEAT-mode still record notes into sequences coherently?
+				-- seems to
+				. what about when DURATION is in manual-mode? do notes have the default QUANTIZE value for their duration when recorded?
+					-- seem to
+		. does hitting a control-column key cut off the held note-button?
+			-- yes
+			. does its note get recorded only when RECORDNOTES is armed, and not any other time?
+				-- yes
+			. do notes get cut off and recorded after becoming 128 ticks long, only when RECORDNOTES is toggled?
+				-- yes
+		. does mode-toggle cut off the held note-button and record its note?
+			-- this is a subset of "hitting a control-column key", so logically absolutely yes
+
 Hardware:
 
 	. print out the alpha-prototype's schematic for reference while making updates (KiCad can corrupt a project if more than 1 is open)
