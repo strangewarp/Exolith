@@ -45,11 +45,11 @@ Software:
 				. what about when DURATION is in manual-mode? do notes have the default QUANTIZE value for their duration when recorded?
 					-- seem to
 		. does hitting a control-column key cut off the held note-button?
-			--
+			-- yes
 			. does its note get recorded only when RECORDNOTES is armed, and not any other time?
-				--
+				-- yes
 			. do notes get cut off and recorded after becoming 128 ticks long, only when RECORDNOTES is toggled?
-				--
+				-- yes
 		. does mode-toggle cut off the held note-button and record its note?
 			-- this is a subset of "hitting a control-column key", so logically absolutely yes
 
