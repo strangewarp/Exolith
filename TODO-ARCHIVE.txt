@@ -627,6 +627,15 @@ Software:
 		. test the two different GRID-CONFIGs
 			-- they work
 
+	-- increased LOADHOLD's decay-time to 18000
+	-- added RPTVELO to P.DAT
+	-- added RPTSWEEP to P.DAT as well (forgot to do this)
+
+	. wipe SD-card and update firmware again, due to forgetting to add RPTSWEEP to P.DAT
+		-- done
+		. give file-creation and file-load another cursory test
+			-- seems to work
+
 Hardware:
 
 	. print out the alpha-prototype's schematic for reference while making updates (KiCad can corrupt a project if more than 1 is open)

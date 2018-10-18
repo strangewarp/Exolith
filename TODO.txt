@@ -10,14 +10,7 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	-- increased LOADHOLD's decay-time to 18000
-	-- added RPTVELO to P.DAT
-	-- added RPTSWEEP to P.DAT as well (forgot to do this)
-
-	. wipe SD-card and update firmware again, due to forgetting to add RPTSWEEP to P.DAT
-		-- done
-		. give file-creation and file-load another cursory test
-			-- seems to work
+	-- set the default GRIDCONFIG back to 0
 
 	. is tempo actually being clocked at the right speed?
 		. test with a MIDI-IN apparatus that measures actual BPM from TEMPO ticks
@@ -44,15 +37,21 @@ Software:
 				-- in processRecAction(), when RECORDNOTES wasn't armed, regular NOTE-ONs were playing with a duration of "DURATION" rather than "QUANTIZE"...
 				-- ...this has now been fixed
 		. does it record into a sequence coherently?
-			--
+			-- yes
 			. do clusters of keymashes also record into sequences coherently?
-				--
-		. does hitting a control-column key cut off the held note-button and record its note?
+				-- seem to
+			. does REPEAT-mode still record notes into sequences coherently?
+				-- seems to
+				. what about when DURATION is in manual-mode? do notes have the default QUANTIZE value for their duration when recorded?
+					-- seem to
+		. does hitting a control-column key cut off the held note-button?
 			--
+			. does its note get recorded only when RECORDNOTES is armed, and not any other time?
+				--
+			. do notes get cut off and recorded after becoming 128 ticks long, only when RECORDNOTES is toggled?
+				--
 		. does mode-toggle cut off the held note-button and record its note?
 			-- this is a subset of "hitting a control-column key", so logically absolutely yes
-		. do notes get cut off and recorded after becoming 128 ticks long?
-			--
 
 	. test changes to the timing system
 		-- doing
