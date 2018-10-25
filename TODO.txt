@@ -36,18 +36,18 @@ Software:
 			. z-fighting
 				-- seems to compensate for this well
 		. overloaded usage-case: >8 active SUSTAINs
-			--
+			-- seems okay
 		. overloaded usage-case: >8 MOUTs on the same tick
-			--
+			-- seems okay
 		. special case: multiple duplicate notes on the same tick:
 			. in RECORD MODE:
-				. same note on both TRACKs
-					--
+				. same note on both TRACKs within the same seq
+					-- seems ok
 			. in PLAY MODE:
 				. same note in two separate seqs
-					--
+					-- seems fine
 				. same note on both tracks, in multiple separate seqs
-					--
+					-- seems fine
 
 	. test REPEAT-SWEEP
 		--
