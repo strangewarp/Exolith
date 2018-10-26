@@ -702,6 +702,25 @@ Software:
 				. same note on both tracks, in multiple separate seqs
 					-- seems fine
 
+	-- set the default GRIDCONFIG back to 0
+	-- changed the BLINK settings in activateStep() to blink both sides of the screen when RECORDNOTES is armed, but with a longer BLINK on the active TRACK's side
+	-- changed recBlink() to use global TRACK instead of a given "trk", since its context in processRecAction() now also uses global TRACK rather than a given "trk"
+
+	. when REPEAT is active, held note-chords should arpeggiate, rather than recording into separate tracks (the latter behavior is unintuitive and finicky in-practice)
+		-- am implementing
+		. add an ARPNEXT var, which tracks the next arpeggiation-note to play from within the ARP array on the next REPEAT-tick
+			-- done
+		. on every key-release when REPEAT is active, ARPNEXT should be reduced by 1 if a key "underneath" it is released, to keep the arpeggiation on-track
+			-- ok
+		. ARPNEXT should be set to 0, and ARP emptied, when any col=0 keypress is done in RECORD-MODE (check whether ARP[0] exists before clearing ARP, though)
+			-- done
+		. when DURATION=129, arpeggiation should not occur
+			-- ok
+		. otherwise, arpeggiation should happen at the QUANTIZE rate
+			-- ok
+	. when REPEAT is active, multiple held notes should NOT record into both tracks: this is too finicky in practice
+		-- ok
+
 Hardware:
 
 	. print out the alpha-prototype's schematic for reference while making updates (KiCad can corrupt a project if more than 1 is open)
