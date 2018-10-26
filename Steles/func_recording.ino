@@ -51,10 +51,10 @@ void writeCommands(
 }
 
 // Record a given MIDI command into the tempdata-file of the current RECORDSEQ sequence
-void recordToSeq(word pstn, byte dur, byte chan, byte b1, byte b2, byte trk) {
+void recordToSeq(word pstn, byte dur, byte chan, byte b1, byte b2) {
 
 	// Get the position of the first of this tick's bytes within the active track in the data-file
-	unsigned long tickstart = (FILE_BODY_START + (FILE_SEQ_BYTES * RECORDSEQ)) + (((unsigned long)pstn) * 8) + (trk * 4);
+	unsigned long tickstart = (FILE_BODY_START + (FILE_SEQ_BYTES * RECORDSEQ)) + (((unsigned long)pstn) * 8) + (TRACK * 4);
 
 	byte cstrip = chan & 240; // Get the command-type, stripped of any MIDI CHANNEL information
 
@@ -73,9 +73,8 @@ void recordToSeq(word pstn, byte dur, byte chan, byte b1, byte b2, byte trk) {
 }
 
 // Parse all of the possible actions that signal the recording of commands
-void processRecAction(byte col, byte row, byte trk) {
+void processRecAction(byte pitch) {
 
-	byte pitch = modKeyPitch(col, row); // Get a note-value that corresponds to the keystroke, with all modifiers applied
 	byte velo = modVelo(); // Get a velocity-value with all current modifiers applied
 	byte dur = ((DURATION == 129) && REPEAT) ? QUANTIZE : DURATION; // Get a duration-value, or QUANTIZE if manual-mode is enabled
 
@@ -84,7 +83,7 @@ void processRecAction(byte col, byte row, byte trk) {
 		word qp = getInsertionPoint(); // Get the QUANTIZE-adjusted insertion-point for the current tick in the current RECORDSEQ
 
 		// Record the note into the current RECORDSEQ slot:
-		recordToSeq(qp, dur, CHAN, pitch, velo, trk);
+		recordToSeq(qp, dur, CHAN, pitch, velo);
 
 		// If the quantize-point fell on this tick,
 		// then exit the function without sending the command, and without flagging GUI-updates,
@@ -94,11 +93,11 @@ void processRecAction(byte col, byte row, byte trk) {
 	}
 
 	// Flag GUI elements in the middle of the function, as the function may exit early:
-	recBlink(trk); // Blink the current TRACK's LEDs
+	recBlink(); // Blink the current TRACK's LEDs
 
 	// If this was a SWING-CHANGE command, change the local SWING values immediately to reflect its contents
 	if (CHAN == 96) {
-		SGRAN = col + 1; // Derive SWING GRANULARITY from the keystroke's column
+		SGRAN = (pitch % 4) + 1; // Derive SWING GRANULARITY from the note's corresponding column
 		SAMOUNT = velo; // Derive SWING AMOUNT from the HUMANIZE-modified VELOCITY
 		updateTickSize(); // Update the global tick-size to reflect the new SWING values
 		updateSwingPart(); // Update the SWING-PART var based on the current SWING GRANULARITY and CUR16 tick
@@ -135,7 +134,7 @@ void recordHeldNote() {
 	Serial.write(note, 3); // Send the NOTE-OFF
 
 	if (RECORDNOTES) { // If RECORDNOTES is currently armed (this means notes are being recorded)...
-		recordToSeq(KEYPOS, KEYCOUNT, byte(144 + (CHAN & 15)), KEYNOTE, KEYVELO, TRACK); // Record the currently-held note
+		recordToSeq(KEYPOS, KEYCOUNT, byte(144 + (CHAN & 15)), KEYNOTE, KEYVELO); // Record the currently-held note
 		recBlink(TRACK); // Blink the current TRACK's LEDs
 	}
 

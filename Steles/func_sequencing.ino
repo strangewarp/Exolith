@@ -97,7 +97,7 @@ void parseTickContents(byte s, byte buf[]) {
 
 		// If the MIDI-OUT queue is full, then ignore this command, since we're now sure that it's a MIDI command
 		// (This is checked here, instead of in iterateAll(), and using "continue" instead of "return",
-		//  because all BPM-CHANGE commands need to be caught, regardless of how full MOUT_COUNT gets)
+		//  because all BPM-CHANGE and SWING-CHANGE commands need to be caught, regardless of how full MOUT_COUNT gets)
 		if (MOUT_COUNT == 8) { continue; }
 
 		memcpy(MOUT + (MOUT_COUNT * 3), buf + bn, 3); // Copy the event into the MIDI buffer's lowest empty MOUT location
@@ -157,47 +157,26 @@ void parseScatter(byte s, byte didscatter) {
 }
 
 // Process a REPEAT or REPEAT-RECORD command, and send its resulting button-key to processRecAction()
-void processRepeats(byte ctrl, unsigned long held) {
-
+void processRepeats(byte ctrl) {
 	if (
 		(!distFromQuantize()) // If this tick occupies a QUANTIZE or QRESET tick...
 		&& (!ctrl) // And no command-button is currently held...
 	) { // Then this is a valid REPEAT position. So...
-
-		byte found = 0; // Track how many held-buttons were found, up to a recording-limit of 2
-
-		for (byte row = 0; row < 6; row++) { // For every row...
-			byte i = row; // Create a new value that will check all BUTTONS-formatted button-bits in order
-			for (byte col = 0; col < 4; col++) { // For every column...
-				if (held & (1UL << i)) { // If the internal BUTTONS-value for this note is held...
-					// Put the first note into the current track, or the second note into the alternate track
-					processRecAction(col, row, TRACK ^ found);
-					found++; // Increase the number that tracks how many note-presses have been found on this tick
-				}
-				if (found > 1) { break; } // If the second tick-note is filled, exit the loops
-				i += 6; // Increment this row-loop's BUTTON-bit counter to the next note
-			}
-			if (found > 1) { break; } // If the second tick-note is filled, exit the loops
-		}
-
-		if (found) { // If any held-REPEAT-notes were found...
-			// Change the stored REPEAT-VELOCITY by the REPEAT-SWEEP amount
-			RPTVELO = applyChange(RPTVELO, char(int(RPTSWEEP) - 128), 0, 127);
-		}
-
+		processRecAction(ARP[ARPNEXT]); // Put the current repeat-note or arpeggiation-note into the current track
+		ARPNEXT = (ARPNEXT + 1) % ARPCOUNT; // Advance the ARPNEXT value, so that when multiple notes are held, they will arpeggiate
+		RPTVELO = applyChange(RPTVELO, char(int(RPTSWEEP) - 128), 0, 127); // Change the stored REPEAT-VELOCITY by the REPEAT-SWEEP amount
 	}
-
 }
 
 // Get the notes from the current tick in a given seq, and add them to the MIDI-OUT buffer
-void getTickNotes(byte ctrl, unsigned long held, byte s, byte buf[]) {
+void getTickNotes(byte ctrl, byte s, byte buf[]) {
 
 	byte didscatter = 0; // Flag that tracks whether this tick has had a SCATTER effect
 
 	if (RECORDMODE) { // If RECORD MODE is active...
 		if (RECORDSEQ == s) { // If this is the current RECORDSEQ...
-			if (REPEAT && held) { // If REPEAT is toggled, and a note-button is being held...
-				processRepeats(ctrl, held); // Process a REPEAT-RECORD
+			if (REPEAT && ARPCOUNT) { // If REPEAT is toggled, and any note-buttons are being held...
+				processRepeats(ctrl); // Process a REPEAT-RECORD action
 			} else if (RECORDNOTES && (ctrl == B00111100)) { // Else, if RECORDNOTES is armed, and ERASE-NOTES is held...
 				byte b[5]; // Make a buffer the size of a note...
 				memset(b, 0, 4); // ...And clear it of any junk-data
@@ -231,7 +210,6 @@ void iterateAll() {
 	if (PLAYING) { // If the sequencer is currently in PLAYING mode...
 
 		byte ctrl = BUTTONS & B00111111; // Get the control-row buttons' activity
-		unsigned long held = BUTTONS >> 6; // Get the note-buttons that are currently held
 
 		byte buf[9]; // Buffer for reading note-events from the datafile
 
@@ -247,7 +225,7 @@ void iterateAll() {
 			memset(buf, 0, 8); // Clear the buffer of junk data
 
 			// Get the notes from this tick in a given seq, and add them to the MIDI-OUT buffer
-			getTickNotes(ctrl, held, i, buf);
+			getTickNotes(ctrl, i, buf);
 
 			// Increase the seq's 16th-note position by one increment, wrapping it around its top limit
 			POS[i] = (POS[i] + 1) % (word(size) * 16);

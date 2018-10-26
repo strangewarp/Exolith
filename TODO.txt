@@ -11,6 +11,8 @@ Software:
 	. prove I'm not a dipshit: actually finish the project
 
 	-- set the default GRIDCONFIG back to 0
+	-- changed the BLINK settings in activateStep() to blink both sides of the screen when RECORDNOTES is armed, but with a longer BLINK on the active TRACK's side
+	-- changed recBlink() to use global TRACK instead of a given "trk", since its context in processRecAction() now also uses global TRACK rather than a given "trk"
 
 	. is tempo actually being clocked at the right speed?
 		. test with a MIDI-IN apparatus that measures actual BPM from TEMPO ticks
@@ -18,36 +20,29 @@ Software:
 		. if yes, then:
 			. should the global cue have 256 rather than 128 16th-notes, to be more useable at tempos above ~120?
 
-	. test changes to the timing system
-		-- doing
-	. is the newly-moved BPM-glyph still displaying right?
-		-- yes
-	. re-test the SUSTAIN and MOUT systems:
-		-- am doing
-		. percussion usage-case
-			-- is not sending recorded notes for some reason
-			. figure it out
-				-- fixed: the second while-loop in removeDuplicates() was removing the MOUT-queue entry for the note it was checking
-		. synth usage-case:
-			. sustains
-				-- seems fine
-			. chords
-				-- seems fine
-			. z-fighting
-				-- seems to compensate for this well
-		. overloaded usage-case: >8 active SUSTAINs
-			-- seems okay
-		. overloaded usage-case: >8 MOUTs on the same tick
-			-- seems okay
-		. special case: multiple duplicate notes on the same tick:
-			. in RECORD MODE:
-				. same note on both TRACKs within the same seq
-					-- seems ok
-			. in PLAY MODE:
-				. same note in two separate seqs
-					-- seems fine
-				. same note on both tracks, in multiple separate seqs
-					-- seems fine
+	. when REPEAT is active, held note-chords should arpeggiate, rather than recording into separate tracks (the latter behavior is unintuitive and finicky in-practice)
+		-- am implementing
+		. add an ARPNEXT var, which tracks the next arpeggiation-note to play from within the ARP array on the next REPEAT-tick
+			-- done
+		. on every key-release when REPEAT is active, ARPNEXT should be reduced by 1 if a key "underneath" it is released, to keep the arpeggiation on-track
+			-- ok
+		. ARPNEXT should be set to 0, and ARP emptied, when any col=0 keypress is done in RECORD-MODE (check whether ARP[0] exists before clearing ARP, though)
+			-- done
+		. when DURATION=129, arpeggiation should not occur
+			-- ok
+		. otherwise, arpeggiation should happen at the QUANTIZE rate
+			-- ok
+	. when REPEAT is active, multiple held notes should NOT record into both tracks: this is too finicky in practice
+		-- ok
+
+	. test arpeggiation:
+		. does it drop old notes when released?
+		. does it drop old notes when pushed out of the ARP array by new notes?
+		. does it stay on-track when a single note is released?
+	. increase total arpeggiation keypresses to 8 (in the #define block of Steles.ino)
+
+	. simplify: instead of GESTURE system, just have 5-button-large keychords for its commands
+	. remove all subsequent GESTURE-related TODOs
 
 	. test REPEAT-SWEEP
 		--

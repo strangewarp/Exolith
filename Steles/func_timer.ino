@@ -70,11 +70,8 @@ void activateStep() {
 			TO_UPDATE |= 2; // Flag the second LED-row for updating
 		}
 		if (RECORDNOTES && (!distFromQuantize())) { // If we are recording notes, and on a QUANTIZE or QRESET tick...
-			if (TRACK) { // If TRACK 2 is active...
-				BLINKR = 192; // Cue a ~12ms RIGHT-BLINK
-			} else { // Else, if TRACK 1 is active...
-				BLINKL = 192; // Cue a ~12ms LEFT-BLINK
-			}
+			BLINKR = 63 | (192 * TRACK); // Cue either a short or long RIGHT-BLINK, depending on which TRACK is active
+			BLINKL = 63 | (192 * (!TRACK)); // ^ Same, but for LEFT-BLINK
 			TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
 		}
 	}

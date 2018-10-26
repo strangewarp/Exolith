@@ -51,6 +51,10 @@
 
 #define DEFAULT_BPM 80 // Default BPM-value, for cases where a coherent BPM value is not available
 
+#define ARPEG_KEYS_1 4 // Number of keystrokes to store for arpeggiation: 1-indexed
+#define ARPEG_KEYS_0 3 // ^ Same, but 0-indexed
+#define ARPEG_KEYS_PLUS 5 // ^ Same, but 1-indexed and with 1 added (used while declaring global vars)
+
 #define SCANRATE 7000 // Amount of time between keystroke-scans, in microseconds
 
 #define GESTDECAY 250000UL // Amount of time between gesture-decay ticks, in microseconds
@@ -98,6 +102,9 @@ byte TRACK = 0; // Current track within the active sequence to edit with RECORDM
 byte REPEAT = 0; // Toggles whether held-down note-buttons should repeat a NOTE-ON every QUANTIZE ticks, in RECORD-MODE
 
 // Recording vars
+byte ARP[ARPEG_KEYS_PLUS]; // Stores the order that any currently-held buttons have been pressed in, to track arpeggiation for REPEAT
+byte ARPCOUNT = 0; // Tracks the number of arpeggiation-notes currently held
+byte ARPNEXT = 0; // Tracks the next arpeggiation-note to play from within the ARP array on the next REPEAT-tick
 byte GRIDCONFIG = 0; // Current rotation of the note-key grid in RECORD-MODE (0 = chromatic row-based, 1 = chromatic column-based)
 byte RPTSWEEP = 128; // Amount to modify RPTVELO by on each held-REPEAT-tick (0-127 = minus, 128-255 = plus)
 byte RPTVELO = 127; // Stored RPTSWEEP-modified VELOCITY value for the current REPEAT step (refreshed on every new REPEAT-note press)

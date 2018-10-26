@@ -100,8 +100,7 @@ void assignKey(byte col, byte row, byte oldcmds) {
 
 	if (col == 0) { // If the keystroke is in the leftmost column...
 
-		// (Checking for KEYFLAG is done before checking for GESTUREs,
-		// just in case a note was pressed immediately before a mode-toggle)
+		arpClear(); // Clear the arpeggiation-system's contents
 
 		if (KEYFLAG) { // If this button's note is currently held in manual-mode...
 			recordHeldNote(); // Record the currently-held-note-key's note, to prevent bad conflicts with other commands
@@ -139,22 +138,34 @@ void assignKey(byte col, byte row, byte oldcmds) {
 
 // Interpret a key-release according to whatever command-mode is active
 void unassignKey(byte col, byte row, byte oldcmds) {
+
 	if (RECORDMODE) { // If RECORD-MODE is active...
+
 		if (col == 0) { // If this up-keystroke was in the leftmost column...
+
 			if (oldcmds == B00111100) { // If this was an ERASE WHILE HELD press...
 				file.sync(); // Sync any stored unwritten savefile-data
 			}
+
 			TO_UPDATE |= 253; // Flag the top LED-row, and bottom 6 LED-rows, for updating
+
 		} else { // Else, if this was a regular button-press...
+
+			arpRelease(col, row); // Release the arpeggiation-note that corresponds to the key-release's column and row
+
 			if (KEYFLAG && (modKeyPitch(col - 1, row) == KEYNOTE)) { // If this button's note is currently held in manual-mode...
 				recordHeldNote(); // Record the released-key's note
 			}
+
 			if ((!oldcmds) && (!BUTTONS)) { // If no command-buttons are held, and no notes are remaining...
 				file.sync(); // Sync any stored unwritten savefile-data (this includes data from recordHeldNote() calls)
 			}
+
 		}
+
 	} else { // Else, if this is PLAY MODE...
 		byte ctrl = BUTTONS & B00111111; // Get the currently-held control-buttons
 		refreshPlayCustoms(ctrl, oldcmds); // If any custom PLAY MODE commands were held, flag their GUI to be refreshed
 	}
+
 }

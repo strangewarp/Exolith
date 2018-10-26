@@ -56,10 +56,10 @@ void displayLoadNumber() {
 	}
 }
 
-// Flag the LEDs that correspond to the given TRACK to blink for ~12ms
-void recBlink(byte trk) {
-	BLINKL |= (!trk) * 192; // Start a given-track-linked LED-BLINK that is ~12ms long
-	BLINKR |= trk * 192; // ^
+// Flag the LEDs that correspond to the current TRACK to blink for ~12ms
+void recBlink() {
+	BLINKL |= (!TRACK) * 192; // Start a given-track-linked LED-BLINK that is ~12ms long
+	BLINKR |= TRACK * 192; // ^
 	TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for an update
 }
 

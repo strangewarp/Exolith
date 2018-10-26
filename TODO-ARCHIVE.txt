@@ -671,6 +671,37 @@ Software:
 		. does mode-toggle cut off the held note-button and record its note?
 			-- this is a subset of "hitting a control-column key", so logically absolutely yes
 
+	. test changes to the timing system
+		-- doing
+	. is the newly-moved BPM-glyph still displaying right?
+		-- yes
+	. re-test the SUSTAIN and MOUT systems:
+		-- am doing
+		. percussion usage-case
+			-- is not sending recorded notes for some reason
+			. figure it out
+				-- fixed: the second while-loop in removeDuplicates() was removing the MOUT-queue entry for the note it was checking
+		. synth usage-case:
+			. sustains
+				-- seems fine
+			. chords
+				-- seems fine
+			. z-fighting
+				-- seems to compensate for this well
+		. overloaded usage-case: >8 active SUSTAINs
+			-- seems okay
+		. overloaded usage-case: >8 MOUTs on the same tick
+			-- seems okay
+		. special case: multiple duplicate notes on the same tick:
+			. in RECORD MODE:
+				. same note on both TRACKs within the same seq
+					-- seems ok
+			. in PLAY MODE:
+				. same note in two separate seqs
+					-- seems fine
+				. same note on both tracks, in multiple separate seqs
+					-- seems fine
+
 Hardware:
 
 	. print out the alpha-prototype's schematic for reference while making updates (KiCad can corrupt a project if more than 1 is open)

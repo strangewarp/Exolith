@@ -37,7 +37,7 @@ void parseMidiCommand(byte &rcd) {
 				} else { // Else, if REPEAT is active, or DURATION is in auto-mode...
 					if ((cmd >= 144) && (cmd <= 239)) { // If this is a valid command for auto-mode recording...
 						// Record the incoming MIDI command, clamping DURATION for situations where REPEAT=1,DURATION=129
-						recordToSeq(POS[RECORDSEQ], min(128, DURATION), chn, INBYTES[1], INBYTES[2], TRACK % 2);
+						recordToSeq(POS[RECORDSEQ], min(128, DURATION), chn, INBYTES[1], INBYTES[2]);
 						rcd++; // Flag that at least one command has been recorded on this tick
 					}
 				}
@@ -142,4 +142,3 @@ void parseRawMidi() {
 	}
 
 }
-
