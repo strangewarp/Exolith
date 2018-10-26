@@ -17,9 +17,9 @@ Software:
 			. should the global cue have 256 rather than 128 16th-notes, to be more useable at tempos above ~120?
 
 	. re-test the sequencing mechanisms, especially around TRACK
-		--
-	. test arpeggiation:
 		-- 
+	. test arpeggiation:
+		--
 		. does it drop old notes when released?
 		. does it drop old notes when pushed out of the ARP array by new notes?
 		. does it stay on-track when a single note is released?

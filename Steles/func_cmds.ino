@@ -76,7 +76,7 @@ void genericCmd(byte col, byte row) {
 			}
 			setKeyNote(col, row); // Set a held-recording-note for the given button-position
 		} else { // Else, if DURATION is in auto-mode...
-			processRecAction(col, row, TRACK); // Parse the key as a recording-action into the current TRACK
+			processRecAction(modKeyPitch(col, row)); // Parse the key as a recording-action into the current TRACK
 		}
 	}
 }

@@ -19,7 +19,7 @@ void arpPress(byte col, byte row) {
 }
 
 // Parse a new key-release in the arpeggiation-system
-void arpRelease() {
+void arpRelease(byte col, byte row) {
 	if (
       REPEAT // If REPEAT is currently enabled...
       && (DURATION < 129) // And DURATION isn't in manual-mode...

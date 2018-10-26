@@ -135,7 +135,7 @@ void recordHeldNote() {
 
 	if (RECORDNOTES) { // If RECORDNOTES is currently armed (this means notes are being recorded)...
 		recordToSeq(KEYPOS, KEYCOUNT, byte(144 + (CHAN & 15)), KEYNOTE, KEYVELO); // Record the currently-held note
-		recBlink(TRACK); // Blink the current TRACK's LEDs
+		recBlink(); // Blink the current TRACK's LEDs
 	}
 
 	KEYFLAG = 0; // Reset KEYFLAG, to show that a manual-duration note is no longer being held
@@ -184,7 +184,7 @@ void setRawKeyNote(byte pitch, byte velo) {
 	KEYVELO = velo; // ^
 	KEYCOUNT = 0; // Reset the counter that tracks how many ticks the note has been held for
 
-	recBlink(TRACK); // Blink the current TRACK's LEDs
+	recBlink(); // Blink the current TRACK's LEDs
 
 }
 
