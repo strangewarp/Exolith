@@ -32,10 +32,10 @@ void arpRelease(byte col, byte row) {
 					memmove(ARP + i, ARP + i + 1, ARPEG_KEYS_0 - i); // Move all higher-up notes downward by one index
 				}
 				ARPNEXT -= ARPNEXT > amin; // If ARPNEXT is above the array-shift-point, then reduce it by 1, to keep arpeggiating without stutters
+		      ARPCOUNT--; // Reduce the ARP-note-tracking var by 1, since we have definitely removed one of the current arpeggiation notes
 				break; // Stop looking for matching ARP notes, since one has already been found
 			}
 		}
-		ARPCOUNT--; // Reduce the ARP-note-tracking var by 1, since we have removed one of the arpeggiation notes
 	}
 }
 

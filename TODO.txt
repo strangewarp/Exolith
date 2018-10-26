@@ -17,13 +17,21 @@ Software:
 			. should the global cue have 256 rather than 128 16th-notes, to be more useable at tempos above ~120?
 
 	. re-test the sequencing mechanisms, especially around TRACK
-		-- 
-	. test arpeggiation:
 		--
+	. test arpeggiation:
+		-- buggy
+		. figure out what's going on
+			-- was reducing ARPCOUNT on every key-release, regardless of whether that key's note was still in ARP[]. fixed it
+			. test again
+				-- 
 		. does it drop old notes when released?
-		. does it drop old notes when pushed out of the ARP array by new notes?
+			--
 		. does it stay on-track when a single note is released?
+			--
+		. are all the correct held-notes still playing when a single note is released?
+			--
 	. increase total arpeggiation keypresses to 8 (in the #define block of Steles.ino)
+		--
 
 	. simplify: instead of GESTURE system, just have 5-button-large keychords for its commands
 	. remove all subsequent GESTURE-related TODOs
