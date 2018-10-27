@@ -10,31 +10,35 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	. is tempo actually being clocked at the right speed?
-		. test with a MIDI-IN apparatus that measures actual BPM from TEMPO ticks
-			--
-		. if yes, then:
-			. should the global cue have 256 rather than 128 16th-notes, to be more useable at tempos above ~120?
+	-- the arpeggiator was being buggy, finicky, and awful, so I totally rewrote it using a different and superior technique
+	-- rewrote GRIDCONFIG, and all functions that translate buttons into notes, to store multiple grid-configurations in PROGMEM, and to translate buttons to notes
+	-- changed updateGlobalRand() into xorShift(), which now takes a pointer to the random-word that is to be updated
 
 	. re-test the sequencing mechanisms, especially around TRACK
 		--
 	. test arpeggiation:
-		-- buggy
-		. figure out what's going on
-			-- was reducing ARPCOUNT on every key-release, regardless of whether that key's note was still in ARP[]. fixed it
-			. test again
-				-- 
+		--
 		. does it drop old notes when released?
 			--
 		. does it stay on-track when a single note is released?
 			--
 		. are all the correct held-notes still playing when a single note is released?
 			--
-	. increase total arpeggiation keypresses to 8 (in the #define block of Steles.ino)
-		--
+		. test both UP and DOWN arps
+			--
+		. test REPEATING-RANDOM arps
+			--
+
+	. is tempo actually being clocked at the right speed?
+		. test with a MIDI-IN apparatus that measures actual BPM from TEMPO ticks
+			--
+		. if yes, then:
+			. should the global cue have 256 rather than 128 16th-notes, to be more useable at tempos above ~120?
 
 	. simplify: instead of GESTURE system, just have 5-button-large keychords for its commands
+		--
 	. remove all subsequent GESTURE-related TODOs
+		--
 
 	. test REPEAT-SWEEP
 		--

@@ -34,11 +34,10 @@ byte distFromQuantize() {
 	return POS[RECORDSEQ] % QUANTIZE;
 }
 
-// Create a global semirandom number, which will stay the same until the function is called again
-void updateGlobalRand() {
-	GLOBALRAND = ABSOLUTETIME % 65536;
-	GLOBALRAND ^= GLOBALRAND << 2;
-	GLOBALRAND ^= GLOBALRAND >> 7;
-	GLOBALRAND ^= GLOBALRAND << 7;
+// Modify a given number into a semi-randomized form, using the xorshift algorithm
+void xorShift(word &r) {
+	r = ABSOLUTETIME % 65536;
+	r ^= r << 2;
+	r ^= r >> 7;
+	r ^= r << 7;
 }
-

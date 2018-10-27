@@ -1,5 +1,42 @@
 
 
+// Holds which bits in the button-var correspond to which raw notes, for any given grid-configuration.
+// (Within a given block in this array: first value = top left; each rightward row of note-values here represents a physical downward column of buttons)
+const byte GRIDS[] PROGMEM = {
+
+	0,  1,  2,  3,  4,  5,  // Config 0: Guitar-like, with horizontally adjacent fourths
+	5,  6,  7,  8,  9,  10,
+	10, 11, 12, 13, 14, 15,
+	15, 16, 17, 18, 19, 20,
+
+	5,  4,  3,  2,  1,  0,  // Config 1: Reverse-guitar-like, with horizontally adjacent fourths
+	10, 9,  8,  7,  6,  5,
+	15, 14, 13, 12, 11, 10,
+	20, 19, 18, 17, 16, 15,
+
+	0,  1,  2,  3,  4,  5,  // Config 2: Guitar-like, with horizontally adjacent tritones
+	6,  7,  8,  9,  10, 11,
+	12, 13, 14, 15, 16, 17,
+	18, 19, 20, 21, 22, 23,
+
+	5,  4,  3,  2,  1,  0,  // Config 3: Reverse-guitar-like, with horizontally adjacent tritones
+	11, 10, 9,  8,  7,  6,
+	17, 16, 15, 14, 13, 12,
+	23, 22, 21, 20, 19, 18,
+
+	20, 16, 12, 8,  4,  0,  // Config 4: Ascending grid, bottom-left to top-right
+	21, 17, 13, 9,  5,  1,
+	22, 18, 14, 10, 6,  2,
+	23, 19, 15, 11, 7,  3,
+
+	0,  4,  8,  12, 16, 20, // Config 5: Descending grid, top-left to bottom-right
+	1,  5,  9,  13, 17, 21,
+	2,  6,  10, 14, 18, 22,
+	3,  7,  11, 15, 19, 23,
+
+};
+
+
 // Long glyph: logo to display on startup
 const byte LOGO[] PROGMEM = {
 	B01111110, B01111110, B01000110, B01111110,

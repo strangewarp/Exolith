@@ -65,7 +65,7 @@ void durationCmd(byte col, byte row) {
 
 // Parse all of the possible actions that signal the recording of commands
 void genericCmd(byte col, byte row) {
-	arpPress(col, row); // Parse a new keypress in the arpeggiation-system
+	arpPress(); // Parse a new keypress in the arpeggiation-system
 	if (REPEAT) { // If REPEAT is active...
 		RPTVELO = VELO; // Reset the REPEAT-VELOCITY tracking var to be equal to the user-defined VELOCITY amount
 		return; // Exit the function, since no commands should be sent instantly
@@ -82,8 +82,9 @@ void genericCmd(byte col, byte row) {
 }
 
 // Parse a GRID-CONFIG press
-void gridConfigCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row) {
-	GRIDCONFIG ^= 1; // Toggle the GRID-CONFIGURATION between chromatic-row and chromatic-column
+void gridConfigCmd(byte col, byte row) {
+	char change = toChange(col, row); // Convert a column and row into a CHANGE value
+	GRIDCONFIG = applyChange(GRIDCONFIG, change, 0, GRID_TOTAL); // Modify the GRIDCONFIG value
 	TO_UPDATE |= 1; // Flag the topmost row for updating
 }
 

@@ -100,7 +100,7 @@ void assignKey(byte col, byte row, byte oldcmds) {
 
 	if (col == 0) { // If the keystroke is in the leftmost column...
 
-		arpClear(); // Clear the arpeggiation-system's contents
+		arpClear(); // Clear the arpeggiation-system's variables
 
 		if (KEYFLAG) { // If this button's note is currently held in manual-mode...
 			recordHeldNote(); // Record the currently-held-note-key's note, to prevent bad conflicts with other commands
@@ -151,7 +151,7 @@ void unassignKey(byte col, byte row, byte oldcmds) {
 
 		} else { // Else, if this was a regular button-press...
 
-			arpRelease(col, row); // Release the arpeggiation-note that corresponds to the key-release's column and row
+			arpRelease(); // Check whether this was the last released arp-note
 
 			if (KEYFLAG && (modKeyPitch(col - 1, row) == KEYNOTE)) { // If this button's note is currently held in manual-mode...
 				recordHeldNote(); // Record the released-key's note

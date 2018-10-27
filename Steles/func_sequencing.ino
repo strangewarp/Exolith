@@ -158,14 +158,22 @@ void parseScatter(byte s, byte didscatter) {
 
 // Process a REPEAT or REPEAT-RECORD command, and send its resulting button-key to processRecAction()
 void processRepeats(byte ctrl) {
+
 	if (
 		(!distFromQuantize()) // If this tick occupies a QUANTIZE or QRESET tick...
 		&& (!ctrl) // And no command-button is currently held...
 	) { // Then this is a valid REPEAT position. So...
-		processRecAction(ARP[ARPNEXT]); // Put the current repeat-note or arpeggiation-note into the current track
-		ARPNEXT = (ARPNEXT + 1) % ARPCOUNT; // Advance the ARPNEXT value, so that when multiple notes are held, they will arpeggiate
+
+		arpAdvance(); // Advance the arpeggio-position
+
+		// Put the current repeat-note or arpeggiation-note into the current track,
+		// based on the current GRIDCONFIG setting's button-to-raw-note conversion.
+		processRecAction(pgm_read_byte_near(GRIDS + (GRIDCONFIG * 24) + (ARPPOS & 31)));
+
 		RPTVELO = applyChange(RPTVELO, char(int(RPTSWEEP) - 128), 0, 127); // Change the stored REPEAT-VELOCITY by the REPEAT-SWEEP amount
+
 	}
+
 }
 
 // Get the notes from the current tick in a given seq, and add them to the MIDI-OUT buffer
@@ -175,7 +183,7 @@ void getTickNotes(byte ctrl, byte s, byte buf[]) {
 
 	if (RECORDMODE) { // If RECORD MODE is active...
 		if (RECORDSEQ == s) { // If this is the current RECORDSEQ...
-			if (REPEAT && ARPCOUNT) { // If REPEAT is toggled, and any note-buttons are being held...
+			if (REPEAT && ARPPOS) { // If REPEAT is toggled, and any note-buttons are being held...
 				processRepeats(ctrl); // Process a REPEAT-RECORD action
 			} else if (RECORDNOTES && (ctrl == B00111100)) { // Else, if RECORDNOTES is armed, and ERASE-NOTES is held...
 				byte b[5]; // Make a buffer the size of a note...
