@@ -166,9 +166,7 @@ void processRepeats(byte ctrl) {
 
 		arpAdvance(); // Advance the arpeggio-position
 
-		// Put the current repeat-note or arpeggiation-note into the current track,
-		// based on the current GRIDCONFIG setting's button-to-raw-note conversion.
-		processRecAction(pgm_read_byte_near(GRIDS + (GRIDCONFIG * 24) + (ARPPOS & 31)));
+		processRecAction(modPitch(ARPPOS & 31)); // Put the current raw repeat-note or arpeggiation-note into the current track
 
 		RPTVELO = applyChange(RPTVELO, char(int(RPTSWEEP) - 128), 0, 127); // Change the stored REPEAT-VELOCITY by the REPEAT-SWEEP amount
 

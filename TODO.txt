@@ -12,13 +12,20 @@ Software:
 
 	-- added arpModeCmd(), its corresponding CmdFunc, and its corresponding GUI routines, since I forgot to do that
 	-- compensated for new glyph-presence by offsetting the manual access of the BPM-glyph in updatePlayBottomRows() again
+	-- added top-row GUI for ARP-MODE as well (oops)
 
 	. re-test the sequencing mechanisms, especially around TRACK
 		--
+
 	. test arpeggiation:
 		-- borked: plays only very low notes for some reason
 		. figure out what's wrong
-			-- 
+			-- parseRepeats() wasn't applying OCTAVE to the raw held-note. fixed
+			. however:
+				. both UP and DOWN arpeggiation get stuck on their initial note. figure out what's wrong
+					--
+				. REPEATING-RANDOM arpeggiation seems to be applying itself nonrandomly to most button-chords. fix this
+					--
 		. does it drop old notes when released?
 			--
 		. does it stay on-track when a single note is released?
