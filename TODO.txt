@@ -10,14 +10,15 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	-- the arpeggiator was being buggy, finicky, and awful, so I totally rewrote it using a different and superior technique
-	-- rewrote GRIDCONFIG, and all functions that translate buttons into notes, to store multiple grid-configurations in PROGMEM, and to translate buttons to notes
-	-- changed updateGlobalRand() into xorShift(), which now takes a pointer to the random-word that is to be updated
+	-- added arpModeCmd(), its corresponding CmdFunc, and its corresponding GUI routines, since I forgot to do that
+	-- compensated for new glyph-presence by offsetting the manual access of the BPM-glyph in updatePlayBottomRows() again
 
 	. re-test the sequencing mechanisms, especially around TRACK
 		--
 	. test arpeggiation:
-		--
+		-- borked: plays only very low notes for some reason
+		. figure out what's wrong
+			-- 
 		. does it drop old notes when released?
 			--
 		. does it stay on-track when a single note is released?

@@ -6,6 +6,12 @@ void armCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row) 
 	TO_UPDATE |= 252; // Flag the bottom 6 rows for LED updates
 }
 
+// Parse an ARPEGGIATOR MODE press
+void arpModeCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row) {
+	ARPMODE = (ARPMODE + 1) % 3; // Toggle the ARPEGGIATOR MODE
+	TO_UPDATE |= 1; // Flag the topmost row for updating
+}
+
 // Parse a CHAN press
 void chanCmd(byte col, byte row) {
 	// Modify the CHAN value, keeping it within the range of valid/supported commands

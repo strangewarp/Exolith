@@ -721,6 +721,10 @@ Software:
 	. when REPEAT is active, multiple held notes should NOT record into both tracks: this is too finicky in practice
 		-- ok
 
+	-- the arpeggiator was being buggy, finicky, and awful, so I totally rewrote it using a different and superior technique
+	-- rewrote GRIDCONFIG, and all functions that translate buttons into notes, to store multiple grid-configurations in PROGMEM, and to translate buttons to notes
+	-- changed updateGlobalRand() into xorShift(), which now takes a pointer to the random-word that is to be updated
+
 Hardware:
 
 	. print out the alpha-prototype's schematic for reference while making updates (KiCad can corrupt a project if more than 1 is open)
