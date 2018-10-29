@@ -61,21 +61,14 @@ void arpPress() {
 
          if (ARPMODE < 2) { // If the current ARP MODE is either 0 (up) or 1 (down)...
 
-            ARPPOS = 0; // Reset ARPPOS to 0, to prepare to fill it with the highest currently-held note-value
-            byte most = 0; // Will end up holding the highest held-note for "down" mode, or the lowest held-note for "up" mode
-            for (byte i = 0; i < 24; i++) { // For every note-button...
-               if (nbuts & (1 << i)) { // If this note-button is held...
-                  byte realnote = pgm_read_byte_near(GRIDS + (GRIDCONFIG * 24) + i); // Get the note that corresponds to the button according to the current GRIDCONFIG
-                  if (
-                     (ARPMODE && (most < realnote)) // If this is "down" mode, and a higher realnote has been found,
-                     || ((!ARPMODE) && (most > realnote)) // Or if this is "up" mode, and a lower realnote has been found...
-                  ) {
-                     most = realnote; // Set the note-comparison value to the new realnote
-                     ARPPOS = i; // Set ARPPOS to the note's button-value
-                  }
+            char pos = ARPPOS & 31; // Mask out the "active" bit from ARPPOS, to get the current raw-note-button position
+            for (byte i = 0; i < 24; i++) { // For each raw-note-button position... (this loop searches for the next held raw-note-button)
+               pos = (((pos + (-1 * ARPMODE) + (!ARPMODE)) % 24) + 24) % 24; // Either increase or reduce the search-position, depending on up/down ARPMODE, and wrap it
+               if (nbuts & (1 << pos)) { // If this note-button is held...
+                  ARPPOS = 128 | pgm_read_byte_near(GRIDS + (GRIDCONFIG * 24) + pos); // Set ARPPOS to the note that corresponds to the button in its GRIDCONFIG
+                  break; // The next raw-note-button has been found, so stop searching for it
                }
             }
-            ARPPOS |= 128; // Flag ARPPOS as "filled"
 
          } else { // Else, if the current ARP MODE is "repeating random"...
 

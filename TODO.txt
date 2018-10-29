@@ -23,7 +23,9 @@ Software:
 			-- parseRepeats() wasn't applying OCTAVE to the raw held-note. fixed
 			. however:
 				. both UP and DOWN arpeggiation get stuck on their initial note. figure out what's wrong
-					--
+					-- original algorithm was throwing false-positives. rewrote entire algorithm
+					. test it
+						-- 
 				. REPEATING-RANDOM arpeggiation seems to be applying itself nonrandomly to most button-chords. fix this
 					--
 		. does it drop old notes when released?
