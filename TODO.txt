@@ -25,7 +25,14 @@ Software:
 				. both UP and DOWN arpeggiation get stuck on their initial note. figure out what's wrong
 					-- original algorithm was throwing false-positives. rewrote entire algorithm
 					. test it
-						-- 
+						-- still seems to get "stuck" on notes, usually the first-pressed note
+						. figure out what's going on
+							-- I'm an idiot: was editing arpPress() while thinking it was arpAdvance() for some reason
+							. fix everything
+								-- rewrote the right algorithm this time.
+								-- also: applied a GRIDCONFIG-conversion to the "repeating-random" ARPMODE's algorithm inside arpAdvance()
+								. test the things again
+									-- 
 				. REPEATING-RANDOM arpeggiation seems to be applying itself nonrandomly to most button-chords. fix this
 					--
 		. does it drop old notes when released?

@@ -9,16 +9,42 @@ void arpAdvance() {
 
 	if (ARPMODE < 2) { // If the current ARP MODE is either "up" or "down"...
 
-		char i = ARPPOS; // Set the iterator's start-position to the current ARP POSITION button
-		byte times = 1; // Keep a tally of how many buttons will have been searched (this intentionally skips the current button, whose value is in ARPPOS)
-		while (times < 23) { // While the other 23 buttons have not yet been searched...
-			if (nbuts & (1 << i)) { // If this button is currently pressed...
-				ARPPOS = i; // Set the new ARP POSITION to this button's position
-				break; // Stop looking for the next held button, since one has been found
-			}
-			i = (i + (ARPMODE ? -1 : 1) + 24) % 24; // Advance the button-search var by either -1 or 1, depending on whether ARP MODE is "up" or "down", then wrap it
-			times++; // Increase the "number of buttons searched" counter
-		}
+      byte high = ARPPOS; // Highest found-note (holds ARPPOS by defaut, for when no notes are found)
+      byte low = ARPPOS; // Lowest found-note (holds ARPPOS by default, for when no notes are found)
+      byte dist = 255; // Distance to closest found-note (255 by default, larger than any note-distance could possibly be)
+      byte closest = 0; // Closest found-note's note value (0 by default, and will either be filled or remain unused)
+
+      for (byte i = 0; i < 24; i++) { // For every raw-note-button slot...
+         if (nbuts & (1 << i)) { // If this note-button is held...
+
+            byte note = pgm_read_byte_near(GRIDS + (GRIDCONFIG * 24) + i); // Get the button's note, according to the current GRIDCONFIG
+
+            if (note == ARPPOS) { continue; } // If this is the current ARPPOS-note, ignore it
+
+            high = max(high, note); // If this is the highest found-note, save it
+            low = min(low, note); // If this is the lowest found-note, save it
+
+            byte newdist = abs(ARPPOS - note); // Get this note's distance from ARPPOS
+
+            if (
+               (newdist < dist) // If the new distance is smaller than the old distance...
+               && ( // And...
+                  (ARPMODE && (note < ARPPOS)) // Either, [ARPMODE is "down", and the note is lower than ARPPOS]...
+                  || ((!ARPMODE) && (note > ARPPOS)) // Or, [ARPMODE is "up", and the note is higher than ARPPOS]...
+               )
+            ) {
+               closest = note; // Update "closest" to hold the new closest note
+               dist = newdist; // Update "dist" to hold the new closest note's distance
+            }
+
+         }
+      }
+
+      if (dist == 255) { // If dist is still 255, then no nearby note candidate has been found. So...
+         ARPPOS = ARPMODE ? high : low; // Wrap around to the highest note in "down"-mode, or the lowest note in "up"-mode
+      } else { // Else, if a nearby-note has been found...
+         ARPPOS = closest; // Put it into ARPPOS
+      }
 
 	} else { // Else, if the current ARP MODE is "repeating-random"...
 
@@ -39,7 +65,9 @@ void arpAdvance() {
 		char dist = (ARPRAND >> (rpos % 4)) & 15; // Get a slice of the ARP RANDOM value that corresponds to the button's position among held-buttons
       dist -= 8 - (dist >= 8); // Change the random-value into an offset of -8 to +8, without any possibility of landing on 0
       dist = ((dist % f) + 128) % f; // Wrap the dist-value within the bounds of 0-to-f, even if dist is negative
-      ARPPOS = found[byte(dist)]; // Set the new ARPPOS value to the next button within the repeating-random system
+
+      // Set the new ARPPOS value to the next button within the repeating-random system, converted to a note-value by the current GRIDCONFIG
+      ARPPOS = pgm_read_byte_near(GRIDS + (GRIDCONFIG * 24) + found[byte(dist)]);
 
 	}
 
@@ -61,12 +89,10 @@ void arpPress() {
 
          if (ARPMODE < 2) { // If the current ARP MODE is either 0 (up) or 1 (down)...
 
-            char pos = ARPPOS & 31; // Mask out the "active" bit from ARPPOS, to get the current raw-note-button position
-            for (byte i = 0; i < 24; i++) { // For each raw-note-button position... (this loop searches for the next held raw-note-button)
-               pos = (((pos + (-1 * ARPMODE) + (!ARPMODE)) % 24) + 24) % 24; // Either increase or reduce the search-position, depending on up/down ARPMODE, and wrap it
-               if (nbuts & (1 << pos)) { // If this note-button is held...
-                  ARPPOS = 128 | pgm_read_byte_near(GRIDS + (GRIDCONFIG * 24) + pos); // Set ARPPOS to the note that corresponds to the button in its GRIDCONFIG
-                  break; // The next raw-note-button has been found, so stop searching for it
+            for (byte i = 0; i < 24; i++) { // For every raw button-position...
+               if (nbuts & (1 << i)) { // If this note-button is held...
+                  ARPPOS = 128 | pgm_read_byte_near(GRIDS + (GRIDCONFIG * 24) + i); // Get the ARPPOS that corresponds to this button's GRIDCONFIG entry
+                  break; // An initial ARPPOS has been found, so don't search for any more
                }
             }
 
@@ -80,7 +106,7 @@ void arpPress() {
                   held++; // Increment the index-number in which to store the next found-button
                }
             }
-            ARPPOS = 128 | b[GLOBALRAND % held]; // Set ARPPOS to a random filled button-value
+            ARPPOS = 128 | pgm_read_byte_near(GRIDS + (GRIDCONFIG * 24) + b[GLOBALRAND % held]); // Set ARPPOS to a random held-button-value's GRIDCONFIG note
             xorShift(ARPRAND); // Re-randomize the arp's repeating-random value
 
          }

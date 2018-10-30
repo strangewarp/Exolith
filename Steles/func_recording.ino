@@ -154,15 +154,15 @@ word getInsertionPoint() {
 	return p; // Return the QUANTIZE-adjusted insertion point
 }
 
-// Get a note that corresponds to a raw keypress
+// Get a note that corresponds to a raw keypress, and also apply OCTAVE via modPitch()
 byte modKeyPitch(byte col, byte row) {
-	return modPitch((col * 6) + row); // Return a raw-note value based on the keypress
+	// Return a note-value based on the keypress within the current GRIDCONFIG
+	return modPitch(pgm_read_byte_near(GRIDS + (GRIDCONFIG * 24) + (col * 6) + row));
 }
 
-// Modify a given raw-note by applying a grid-configuration and an OCTAVE value
-byte modPitch(byte note) {
-	// Translate row and col into a pitch, plus current octave, based on the current grid-configuration
-	byte pitch = (OCTAVE * 12) + pgm_read_byte_near(GRIDS + (GRIDCONFIG * 24) + note);
+// Modify a given pitch by applying an OCTAVE value
+byte modPitch(byte pitch) {
+	pitch += OCTAVE * 12; // Add the current octave to the given pitch
 	while (pitch > 127) { // If the pitch is above 127, which is the limit for MIDI notes...
 		pitch -= 12; // Reduce it by an octave until it is at or below 127
 	}
