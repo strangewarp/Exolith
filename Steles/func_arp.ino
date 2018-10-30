@@ -54,7 +54,7 @@ void arpAdvance() {
 
 		byte found[25]; // Temp array that will hold all held-button locations
 		byte f = 0; // Counts the number of button-locations that will be found and placed into the temp array
-      byte rpos = 0; // Will hold the random-slice-position, from counting held butons only, that is used as the basis for grabbing a random value from ARPRAND
+      byte rpos = 0; // Will hold the random-position, from counting held buttons only, that is used as the basis for grabbing a random value from ARPRAND
 
 		for (byte i = 0; i < 24; i++) { // For every button-location...
 			if (nbuts & (1UL << i)) { // If this button is currently pressed...
@@ -66,12 +66,10 @@ void arpAdvance() {
 			}
 		}
 
-		char dist = (ARPRAND >> (rpos % 4)) & 15; // Get a slice of the ARP RANDOM value that corresponds to the button's position among held-buttons
-      dist -= 8 - (dist >= 8); // Change the random-value into an offset of -8 to +8, without any possibility of landing on 0
-      dist = ((dist % f) + 128) % f; // Wrap the dist-value within the bounds of 0-to-f, even if dist is negative
+		byte dist = ((ARPRAND >> ((rpos % 4) * 4)) & 15) % f; // Get a slice of the ARP RANDOM value that corresponds to the button's position among held-buttons
 
       // Set the new ARPPOS value to the next button within the repeating-random system, converted to a note-value by the current GRIDCONFIG
-      ARPPOS = pgm_read_byte_near(GRIDS + (GRIDCONFIG * 24) + found[byte(dist)]);
+      ARPPOS = pgm_read_byte_near(GRIDS + (GRIDCONFIG * 24) + found[dist]);
 
 	}
 

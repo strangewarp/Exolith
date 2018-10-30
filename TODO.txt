@@ -10,44 +10,12 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	-- in assignKey(), clarified pgm_read_word() into pgm_read_word_near
-
-	. test arpeggiation:
-		-- borked: plays only very low notes for some reason
-		. figure out what's wrong
-			-- parseRepeats() wasn't applying OCTAVE to the raw held-note. fixed
-			. however:
-				. both UP and DOWN arpeggiation get stuck on their initial note. figure out what's wrong
-					-- original algorithm was throwing false-positives. rewrote entire algorithm
-					. test it
-						-- still seems to get "stuck" on notes, usually the first-pressed note
-						. figure out what's going on
-							-- I'm an idiot: was editing arpPress() while thinking it was arpAdvance() for some reason
-							. fix everything
-								-- rewrote the right algorithm this time.
-								-- also: applied a GRIDCONFIG-conversion to the "repeating-random" ARPMODE's algorithm inside arpAdvance()
-								. test the things again:
-									. up-arpeggiation
-										-- seems to work, but: partially corrupted GRIDCONFIGs are being applied only when REPEAT is active. even on single notes.
-										. figure out what's causing this
-											-- all notes above absolute-button-position 16 get converted into the note at position 15, regardless of GRIDCONFIG
-											-- I can tell this happens in the GRIDCONFIG conversion-process because: the arpeggiation-system isn't duplicating them
-											-- so: what the living hell is going on???
-											-- (todo contents note: too many tabs. returning to baseline)
-		. from immediately above: what the hell is going on
-			-- it was a type error: in func_arp.ino, in the "if (nbuts << (1 << i))" lines, "1" should have been "1UL". this has now been fixed.
-			. test up/down arpeggiation
-				-- seems to work fine now
-		. when several notes are pressed simultaneously, the first note is always the second-from-bottom note, rather than the bottom note. fix it
-			-- fixed this by adding a simple ARPLATCH variable, which tracks whether any notes in the current keystroke-cluster have been played yet
-		. does it drop old notes when released?
-			-- yes
-		. does it stay on-track when a single note is released?
-			-- yes
-		. are all the correct held-notes still playing when a single note is released?
-			-- seems like it
-
 	. REPEATING-RANDOM arpeggiation seems to be applying itself nonrandomly to most button-chords. fix this
+		--
+
+	. ARPMODE should be saved to the prefs-file
+		--
+	. wipe SD-card again
 		--
 
 	. re-test the sequencing/recording mechanisms, especially around TRACK
