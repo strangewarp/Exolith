@@ -102,6 +102,7 @@ byte REPEAT = 0; // Toggles whether held-down note-buttons should repeat a NOTE-
 // Arpeggiation vars
 byte ARPMODE = 0; // Arp system's current mode: 0 = up, 1 = down, 2 = repeating random
 byte ARPPOS = 0; // Holds the most-recent bit in the BUTTONS array that the arpeggiator has acted upon (0 = none)
+byte ARPLATCH = 0; // Tracks whether any ARP-notes have played yet within the current cluster of keystrokes
 word ARPRAND = 0; // Holds the current pattern for repeating-random traversal, in 4 nibbles (per nibble: 0 to 7 = down; 8 to 15 = up)
 
 // Recording vars

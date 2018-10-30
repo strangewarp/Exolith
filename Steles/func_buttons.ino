@@ -127,7 +127,7 @@ void assignKey(byte col, byte row, byte oldcmds) {
 			// Get a key that will be used to match the ctrl-row buttons to a function in the COMMANDS table
 			byte kt = pgm_read_byte_near(KEYTAB + (BUTTONS & 63));
 			if (!kt) { return; } // If the key from the key-table was not assigned to a function, exit this function
-			((CmdFunc) pgm_read_word(&COMMANDS[kt])) (col - 1, row); // Run a function that corresponds to the keypress
+			((CmdFunc) pgm_read_word_near(&COMMANDS[kt])) (col - 1, row); // Run a function that corresponds to the keypress
 		} else { // Else, if PLAY MODE is active...
 			parsePlayPress(col - 1, row); // Parse the PLAY-MODE button-press
 		}

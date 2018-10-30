@@ -40,8 +40,12 @@ void arpAdvance() {
          }
       }
 
-      if (dist == 255) { // If dist is still 255, then no nearby note candidate has been found. So...
-         ARPPOS = ARPMODE ? high : low; // Wrap around to the highest note in "down"-mode, or the lowest note in "up"-mode
+      if (
+         (!ARPLATCH) // If this is the first ARP-note to be played in the current keystroke-cluster...
+         || (dist == 255) // Or dist is still 255, and no nearby note candidate has been found...
+      ) {
+         ARPPOS = ARPMODE ? high : low; // Set the new ARPPOS to the highest note in "down"-mode, or the lowest note in "up"-mode
+         ARPLATCH = 1; // Set a flag that signifies: "notes have played during the current keypress-cluster"
       } else { // Else, if a nearby-note has been found...
          ARPPOS = closest; // Put it into ARPPOS
       }
@@ -98,16 +102,8 @@ void arpPress() {
 
          } else { // Else, if the current ARP MODE is "repeating random"...
 
-            byte b[25]; // Temp array to store the notes from found-buttons
-            byte held = 0; // Var to track the number of held-buttons
-            for (byte i = 0; i < 24; i++) { // For every note-button...
-               if (nbuts & (1 << i)) { // If this note-button is held...
-                  b[held] = i; // Temporarily store the button-value
-                  held++; // Increment the index-number in which to store the next found-button
-               }
-            }
-            ARPPOS = 128 | pgm_read_byte_near(GRIDS + (GRIDCONFIG * 24) + b[GLOBALRAND % held]); // Set ARPPOS to a random held-button-value's GRIDCONFIG note
             xorShift(ARPRAND); // Re-randomize the arp's repeating-random value
+            arpAdvance(); // Advance the arpeggiator's position (in a specifically random way, since the "repeating-random" ARPMODE is active)
 
          }
 
@@ -124,6 +120,7 @@ void arpRelease() {
       && ARPPOS // And notes are currently being arpeggiated...
       && (!(BUTTONS >> 6)) // And the last note-button has been released...
    ) {
+      xorShift(ARPRAND); // Re-randomize the arp's repeating-random value
       arpClear(); // Clear the arpeggiation-system's contents
 	}
 }
@@ -133,5 +130,6 @@ void arpClear() {
 	if (REPEAT) { // If REPEAT is currently enabled...
       ARPPOS = 0; // Clear the var that tracks the current arpeggiation-position
       ARPRAND = 0; // Clear the arpeggiator's repeating-random value
+      ARPLATCH = 0; // Clear the "notes have played during the current keystroke-cluster" flag
 	}
 }

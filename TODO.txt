@@ -10,8 +10,7 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	. re-test the sequencing mechanisms, especially around TRACK
-		--
+	-- in assignKey(), clarified pgm_read_word() into pgm_read_word_near
 
 	. test arpeggiation:
 		-- borked: plays only very low notes for some reason
@@ -31,11 +30,16 @@ Software:
 									. up-arpeggiation
 										-- seems to work, but: partially corrupted GRIDCONFIGs are being applied only when REPEAT is active. even on single notes.
 										. figure out what's causing this
-											-- 
-									. down-arpeggiation
-										--
-				. REPEATING-RANDOM arpeggiation seems to be applying itself nonrandomly to most button-chords. fix this
-					--
+											-- all notes above absolute-button-position 16 get converted into the note at position 15, regardless of GRIDCONFIG
+											-- I can tell this happens in the GRIDCONFIG conversion-process because: the arpeggiation-system isn't duplicating them
+											-- so: what the living hell is going on???
+											-- (todo contents note: too many tabs. returning to baseline)
+		. from immediately above: what the hell is going on
+			--
+		. when several notes are pressed simultaneously, the first note is always the second-from-bottom note, rather than the bottom note. fix it
+			-- fixed this by adding a simple ARPLATCH variable, which tracks whether any notes in the current keystroke-cluster have been played yet
+		. REPEATING-RANDOM arpeggiation seems to be applying itself nonrandomly to most button-chords. fix this
+			--
 		. does it drop old notes when released?
 			--
 		. does it stay on-track when a single note is released?
@@ -46,6 +50,9 @@ Software:
 			--
 		. test REPEATING-RANDOM arps
 			--
+
+	. re-test the sequencing/recording mechanisms, especially around TRACK
+		--
 
 	. is tempo actually being clocked at the right speed?
 		. test with a MIDI-IN apparatus that measures actual BPM from TEMPO ticks
