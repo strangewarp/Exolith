@@ -725,6 +725,10 @@ Software:
 	-- rewrote GRIDCONFIG, and all functions that translate buttons into notes, to store multiple grid-configurations in PROGMEM, and to translate buttons to notes
 	-- changed updateGlobalRand() into xorShift(), which now takes a pointer to the random-word that is to be updated
 
+	-- added arpModeCmd(), its corresponding CmdFunc, and its corresponding GUI routines, since I forgot to do that
+	-- compensated for new glyph-presence by offsetting the manual access of the BPM-glyph in updatePlayBottomRows() again
+	-- added top-row GUI for ARP-MODE as well (oops)
+
 Hardware:
 
 	. print out the alpha-prototype's schematic for reference while making updates (KiCad can corrupt a project if more than 1 is open)
