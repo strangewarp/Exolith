@@ -35,21 +35,20 @@ Software:
 											-- so: what the living hell is going on???
 											-- (todo contents note: too many tabs. returning to baseline)
 		. from immediately above: what the hell is going on
-			--
+			-- it was a type error: in func_arp.ino, in the "if (nbuts << (1 << i))" lines, "1" should have been "1UL". this has now been fixed.
+			. test up/down arpeggiation
+				-- seems to work fine now
 		. when several notes are pressed simultaneously, the first note is always the second-from-bottom note, rather than the bottom note. fix it
 			-- fixed this by adding a simple ARPLATCH variable, which tracks whether any notes in the current keystroke-cluster have been played yet
-		. REPEATING-RANDOM arpeggiation seems to be applying itself nonrandomly to most button-chords. fix this
-			--
 		. does it drop old notes when released?
-			--
+			-- yes
 		. does it stay on-track when a single note is released?
-			--
+			-- yes
 		. are all the correct held-notes still playing when a single note is released?
-			--
-		. test both UP and DOWN arps
-			--
-		. test REPEATING-RANDOM arps
-			--
+			-- seems like it
+
+	. REPEATING-RANDOM arpeggiation seems to be applying itself nonrandomly to most button-chords. fix this
+		--
 
 	. re-test the sequencing/recording mechanisms, especially around TRACK
 		--
