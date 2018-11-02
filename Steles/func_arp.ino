@@ -45,7 +45,6 @@ void arpAdvance() {
          || (dist == 255) // Or dist is still 255, and no nearby note candidate has been found...
       ) {
          ARPPOS = ARPMODE ? high : low; // Set the new ARPPOS to the highest note in "down"-mode, or the lowest note in "up"-mode
-         ARPLATCH = 1; // Set a flag that signifies: "notes have played during the current keypress-cluster"
       } else { // Else, if a nearby-note has been found...
          ARPPOS = closest; // Put it into ARPPOS
       }
@@ -54,26 +53,36 @@ void arpAdvance() {
 
 		byte found[25]; // Temp array that will hold all held-button locations
 		byte f = 0; // Counts the number of button-locations that will be found and placed into the temp array
-      byte rpos = 0; // Will hold the random-position, from counting held buttons only, that is used as the basis for grabbing a random value from ARPRAND
+      byte rpos = 0; // Will hold the random-position that is used as the basis for grabbing a random value from ARPRAND
 
 		for (byte i = 0; i < 24; i++) { // For every button-location...
 			if (nbuts & (1UL << i)) { // If this button is currently pressed...
-            if (ARPPOS == i) { // If this is the current ARP POSITION button...
-               rpos = f; // Set the random-slice-position to the current button-count (before increasing the count)
-            }
 				found[f] = i; // Put the button-location into the temp-array
+            if (
+               ARPLATCH // If notes have already been played by the current keypress-cluster...
+               && (ARPPOS == pgm_read_byte_near(GRIDS + (GRIDCONFIG * 24) + i)) // And the previous ARPPOS corresponds to this key's note...
+            ) {
+               rpos = i % 4; // Set the random-position to the button's corresponding rand-slice (0 thru 3, for getting a nibble out of ARPRAND later)
+            }
 				f++; // Increase the "number of buttons found" counter
 			}
 		}
 
-		byte dist = ((ARPRAND >> ((rpos % 4) * 4)) & 15) % f; // Get a slice of the ARP RANDOM value that corresponds to the button's position among held-buttons
-
-      // Set the new ARPPOS value to the next button within the repeating-random system, converted to a note-value by the current GRIDCONFIG
-      ARPPOS = pgm_read_byte_near(GRIDS + (GRIDCONFIG * 24) + found[dist]);
+      if (ARPLATCH) { // If notes have already been played by the current keypress-cluster...
+         // Set the new ARPPOS value to the next button within the repeating-random system,
+         // with the next button being decided by a random-value from the "rpos"-directed nibble of ARPRAND,
+         // and converted to a note-value by the current GRIDCONFIG.
+         ARPPOS = pgm_read_byte_near(GRIDS + (GRIDCONFIG * 24) + found[((ARPRAND >> ((rpos % 4) * 4)) & 15) % f]);
+      } else { // Else, if no notes have yet been played by the current keypress-cluster...
+         // Get a random start-point from within the found-notes, based on a GLOBALRAND seed-value
+         ARPPOS = pgm_read_byte_near(GRIDS + (GRIDCONFIG * 24) + found[GLOBALRAND % f]);
+      }
 
 	}
 
 	ARPPOS |= 128; // Add the "ARPPOS is active" bit back to ARPPOS
+
+   ARPLATCH = 1; // Set a flag that signifies: "notes have played during the current keypress-cluster"
 
 }
 
@@ -100,7 +109,6 @@ void arpPress() {
 
          } else { // Else, if the current ARP MODE is "repeating random"...
 
-            xorShift(ARPRAND); // Re-randomize the arp's repeating-random value
             arpAdvance(); // Advance the arpeggiator's position (in a specifically random way, since the "repeating-random" ARPMODE is active)
 
          }

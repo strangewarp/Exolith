@@ -34,7 +34,7 @@ byte distFromQuantize() {
 	return POS[RECORDSEQ] % QUANTIZE;
 }
 
-// Modify a given number into a semi-randomized form, using the xorshift algorithm
+// Set a given var to contain a semi-random number, by using a xorshift algorithm on the smallest digits of ABSOLUTETIME
 void xorShift(word &r) {
 	r = ABSOLUTETIME % 65536;
 	r ^= r << 2;

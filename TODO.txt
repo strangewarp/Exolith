@@ -11,7 +11,9 @@ Software:
 	. prove I'm not a dipshit: actually finish the project
 
 	. REPEATING-RANDOM arpeggiation seems to be applying itself nonrandomly to most button-chords. fix this
-		--
+		-- rewrote REPEATING-RANDOM algorithm.
+		. test it
+			-- 
 
 	. ARPMODE should be saved to the prefs-file
 		--
