@@ -72,7 +72,7 @@ void arpAdvance() {
          // Set the new ARPPOS value to the next button within the repeating-random system,
          // with the next button being decided by a random-value from the "rpos"-directed nibble of ARPRAND,
          // and converted to a note-value by the current GRIDCONFIG.
-         ARPPOS = pgm_read_byte_near(GRIDS + (GRIDCONFIG * 24) + found[((ARPRAND >> ((rpos % 4) * 4)) & 15) % f]);
+         ARPPOS = pgm_read_byte_near(GRIDS + (GRIDCONFIG * 24) + found[((ARPRAND >> (rpos * 4)) & 15) % f]);
       } else { // Else, if no notes have yet been played by the current keypress-cluster...
          // Get a random start-point from within the found-notes, based on a GLOBALRAND seed-value
          ARPPOS = pgm_read_byte_near(GRIDS + (GRIDCONFIG * 24) + found[GLOBALRAND % f]);
