@@ -16,6 +16,12 @@ Software:
 			-- still doesn't work
 			-- restructured logic in all func_arp.ino funcs
 		. test again
+			-- still not working
+			-- rethinking this prospect: is there much value to specifically *repeating* random?
+			-- no
+			. restructure arp funcs so "random" is just plain-random
+				-- done
+		. test again
 			-- 
 
 	. ARPMODE should be saved to the prefs-file
