@@ -22,12 +22,14 @@ Software:
 			. restructure arp funcs so "random" is just plain-random
 				-- done
 		. test again
-			-- 
+			-- it works
 
 	. ARPMODE should be saved to the prefs-file
-		--
+		-- ok
 	. wipe SD-card again
 		--
+	. test whether ARPMODE is saved and loaded correctly
+		-- 
 
 	. re-test the sequencing/recording mechanisms, especially around TRACK
 		--
@@ -108,6 +110,8 @@ Software:
 		. test CC/PC/other advanced MIDI commands
 		. test entering CC/PC/other advanced MIDI commands with REPEAT-SWEEP active
 		. test file-load
+			. test sequence-position preservation on load
+			. test this with oddly-shaped seqs, and seqs that will definitely wrap
 		. test auto-loading of most recent savefile on startup
 		. test that the number of the savefile is displayed correctly on startup
 			. also for savefiles in file-slots >= 100

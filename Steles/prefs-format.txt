@@ -22,3 +22,4 @@ Steles prefs-file spec
 		byte 12: GRIDCONFIG
 		byte 13: RPTVELO
 		byte 14: RPTSWEEP
+		byte 15: ARPMODE
