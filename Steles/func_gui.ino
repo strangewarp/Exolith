@@ -65,7 +65,7 @@ void recBlink() {
 
 // Get the LED-value for a single seq, adjusted based on whether it's active and whether it has a dormant cue-command
 byte getSeqVal(byte s) {
-	return (CMD[s] && (!(CUR16 % 8))) ? (((CUR16 + (!(STATS[s] & 128))) % 2) * 128) : (STATS[s] & 128);
+	return (CMD[s] && (!(CUR32 % 8))) ? (((CUR32 + (!(STATS[s] & 128))) % 2) * 128) : (STATS[s] & 128);
 }
 
 // Get the SEQUENCE-ACTIVITY LED-values for a given GUI row within the lower 6 rows
@@ -146,13 +146,13 @@ void updateFirstRow(byte ctrl) {
 			// If ARM-RECORDING or ERASE WHILE HELD is held...
 			// Or some other unassigned button-combination is held...
 			// Or no control-buttons are held...
-			sendRow(0, 128 >> (CUR16 >> 4)); // Display the global cue's current beat
+			sendRow(0, 128 >> (CUR32 >> 4)); // Display the global cue's current beat
 		}
 	} else { // Else, if this isn't RECORD-MODE...
 		if ((!LOADMODE) && (ctrl == B00000101)) { // If this isn't LOAD MODE (then this is PLAY MODE), and if BPM is held...
 			sendRow(0, BPM); // Display BPM value
 		} else { // Else, if this is LOAD MODE, or if this is PLAY MODE and a BPM command isn't held...
-			sendRow(0, 128 >> (CUR16 >> 4)); // Display the global cue's current beat
+			sendRow(0, 128 >> (CUR32 >> 4)); // Display the global cue's current beat
 		}
 	}
 }

@@ -33,7 +33,7 @@ void clearCmd(byte col, byte row) {
 	word pos = (POS[RECORDSEQ] >> 4) << 4; // Get the bottom-point of the current beat in RECORDSEQ
 	byte t4 = TRACK * 4; // Get a bitwise offset based on whether track 1 or 2 is active
 
-	for (word i = 0; i < (word(min(abs(toChange(col, row)), len)) * 128); i += 8) { // For every 16th-note in the clear-area...
+	for (word i = 0; i < (word(min(abs(toChange(col, row)), len)) * 128); i += 8) { // For every 32nd-note in the clear-area...
 		writeCommands(rspos + ((pos + i + t4) % blen), 4, buf, 1); // Overwrite it if it matches the TRACK and CHAN
 	}
 
@@ -149,13 +149,13 @@ void pasteCmd(__attribute__((unused)) byte col, byte row) {
 // Parse a SHIFT RECORDING POSITION press
 void posCmd(byte col, byte row) {
 
-	int change = int(toChange(col, row)) * 16; // Convert a column and row into a CHANGE value, in 16th-notes
+	int change = int(toChange(col, row)) * 16; // Convert a column and row into a CHANGE value, in 32nd-notes
 
-	CUR16 = byte(word(((int(CUR16) + change) % 128) + 128) % 128); // Shift the global cue-point, wrapping in either direction
+	CUR32 = byte(word(((int(CUR32) + change) % 128) + 128) % 128); // Shift the global cue-point, wrapping in either direction
 
 	for (byte seq = 0; seq < 48; seq++) { // For each seq...
 		if (STATS[seq] & 128) { // If the seq is playing...
-			word size = (STATS[seq] & 63) * 16; // Get the seq's size, in 16th-notes
+			word size = (STATS[seq] & 63) * 16; // Get the seq's size, in 32nd-notes
 			// Shift the seq's position, wrapping in either direction
 			POS[seq] = word(((long(POS[seq]) + change) % size) + size) % size;
 		}
@@ -212,7 +212,7 @@ void swAmtCmd(byte col, byte row) {
 // Parse a SWING GRANULARITY press
 void swGranCmd(byte col, byte row) {
 	SGRAN = applyChange(SGRAN, toChange(col, row), 1, 4); // Apply the column-and-row's CHANGE value to the SGRAN value
-	updateSwingPart(); // Update the SWING-PART var based on the current SWING GRANULARITY and CUR16 tick
+	updateSwingPart(); // Update the SWING-PART var based on the current SWING GRANULARITY and CUR32 tick
 	TO_UPDATE |= 1; // Flag the topmost row for updating
 }
 

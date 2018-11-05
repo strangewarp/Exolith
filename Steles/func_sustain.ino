@@ -55,7 +55,7 @@ void arrayNoteOff(byte a[], byte pos) {
 
 // End the sustain in a given SUST-slot
 void endSustain(byte n) {
-	arrayNoteOff(SUST, n); // Send a NOTE-OFF for the given SUST entry 
+	arrayNoteOff(SUST, n); // Send a NOTE-OFF for the given SUST entry
 	arrayRemoveEntry(SUST, n, SUST_COUNT); // Remove the duplicate SUST-entry
 	TO_UPDATE |= 2 * (!RECORDMODE); // If RECORD-MODE isn't active, flag the sustain-row for a GUI update
 }
@@ -70,7 +70,7 @@ void clipBottomSustain() {
 	SUST_COUNT--; // Reduce the number of active sustains by 1
 }
 
-// Process one 16th-note worth of duration for all notes in the SUSTAIN system
+// Process one 32nd-note worth of duration for all notes in the SUSTAIN system
 void processSustains() {
 	byte n = 0; // Value to iterate through each sustain-position
 	while (n < (SUST_COUNT * 3)) { // For every sustain-entry in the SUST array (if there are any)...
@@ -84,4 +84,3 @@ void processSustains() {
 		}
 	}
 }
-

@@ -8,8 +8,8 @@ void toggleMidiClock(byte usercmd) {
 	if (CLOCKMASTER) { // If in CLOCK MASTER mode...
 		if (PLAYING) { // If playing has just been enabled...
 			ELAPSED = TICKSZ2; // Cue the next tick-update to occur on the next timer-check
-			TICKCOUNT = 5; // Set the next 16th-note to be cued on the next timer-check
-			CUR16 = 127; // Ensure that the global 16th-note position will reach 0 on the next timer-check
+			TICKCOUNT = 5; // Set the next 32nd-note to be cued on the next timer-check
+			CUR32 = 127; // Ensure that the global 32nd-note position will reach 0 on the next timer-check
 			ABSOLUTETIME = micros(); // Set the ABSOLUTETIME to the current time, to prevent changes to ELAPSED in the next timer-check
 			Serial.write(250); // Send a MIDI CLOCK START command
 			Serial.write(248); // Send a MIDI CLOCK TICK (dummy-tick immediately following START command, as per MIDI spec)
@@ -20,8 +20,8 @@ void toggleMidiClock(byte usercmd) {
 		}
 	} else { // If in CLOCK FOLLOW mode...
 		if (PLAYING) { // If PLAYING has just been enabled...
-			TICKCOUNT = 5; // Set the next 16th-note to be cued on the next clock-tick
-			CUR16 = 127; // Set the global 16th-note to a position where it will wrap around to 0
+			TICKCOUNT = 5; // Set the next 32nd-note to be cued on the next clock-tick
+			CUR32 = 127; // Set the global 32nd-note to a position where it will wrap around to 0
 			if (!usercmd) { // If this toggle was sent by an external device...
 				DUMMYTICK = true; // Flag the sequencer to wait for an incoming dummy-tick, as per MIDI spec
 			}
@@ -56,12 +56,12 @@ void updateTickSize() {
 
 }
 
-// Engage all timed elements of a 16th-note-sized granularity
+// Engage all timed elements of a 32nd-note-sized granularity
 void activateStep() {
 
-	updateSwingPart(); // Update the SWING-PART var based on the current SWING GRANULARITY and CUR16 tick
+	updateSwingPart(); // Update the SWING-PART var based on the current SWING GRANULARITY and CUR32 tick
 
-	if (!(CUR16 % 16)) { // It we're on the first tick within a global cue...
+	if (!(CUR32 % 16)) { // It we're on the first tick within a global cue...
 		TO_UPDATE |= 1; // Flag the top LED-row for updating
 	}
 
@@ -85,12 +85,12 @@ void advanceTick() {
 
 	Serial.write(248); // Send a MIDI CLOCK pulse
 
-	TICKCOUNT = (TICKCOUNT + 1) % 6; // Increase the value that tracks ticks, bounded to the size of a 16th-note
+	TICKCOUNT = (TICKCOUNT + 1) % 3; // Increase the value that tracks ticks, bounded to the size of a 32nd-note
 
-	if (TICKCOUNT) { return; } // If the current tick doesn't fall on a 16th-note, exit the function
+	if (TICKCOUNT) { return; } // If the current tick doesn't fall on a 32nd-note, exit the function
 
-	// Since we're sure we're on a new 16th-note, advance the global current-16th-note variable
-	CUR16 = (CUR16 + 1) % 128;
+	// Since we're sure we're on a new 32nd-note, advance the global current-32nd-note variable
+	CUR32 = (CUR32 + 1) % 128;
 
 	if (KEYFLAG) { // If a note is currently being recorded in manual-duration-mode...
 		KEYCOUNT++; // Increase the note's tick-counter by 1
@@ -99,7 +99,7 @@ void advanceTick() {
 		}
 	}
 
-	activateStep(); // Engage all timed elements of a 16th-note-sized granularity
+	activateStep(); // Engage all timed elements of a 32nd-note-sized granularity
 
 }
 
@@ -183,6 +183,6 @@ void updateTimer() {
 	// If CLOCK-FOLLOW mode is active, then exit the function without updating the sequencing mechanisms
 	if (!CLOCKMASTER) { return; }
 
-	advanceOwnTick(); // Check all timing elements of a tick-sized granularity (1/6 of a 16th note), and advance the tick-counter
+	advanceOwnTick(); // Check all timing elements of a tick-sized granularity (1/3 of a 32nd note), and advance the tick-counter
 
 }

@@ -114,7 +114,7 @@ byte HUMANIZE = 0; // Maximum velocity-humanize value for RECORD MODE notes
 byte CHAN = 151; // MIDI-COMMAND byte (including current CHANNEL) for RECORD MODE notes
 byte QUANTIZE = B00000100; // Time-quantize value for RECORD MODE notes (1 to 16)
 byte QRESET = 0; // Tracks how many beats must elapse within RECORDSEQ before the QUANTIZE anchor gets reset (0 = whole sequence)
-byte DURATION = 4; // Duration value for RECORD MODE notes, in 16th-notes (0 to 128; and 129 = special behavior)
+byte DURATION = 4; // Duration value for RECORD MODE notes, in 32nd-notes (0 to 128; and 129 = special behavior)
 byte COPYPOS = 0; // Copy-position within the copy-sequence
 byte COPYSEQ = 0; // Sequence from which to copy data
 
@@ -131,8 +131,8 @@ byte PLAYING = 1; // Controls whether the sequences and global tick-counter are 
 byte DUMMYTICK = 0; // Tracks whether to expect a dummy MIDI CLOCK tick before starting to iterate through sequences
 byte CLOCKMASTER = 1; // Toggles whether to generate MIDI CLOCK ticks, or respond to incoming CLOCK ticks from an external device
 byte BPM = DEFAULT_BPM; // Beats-per-minute value: one beat is 96 tempo-ticks
-byte TICKCOUNT = 5; // Current global tick, bounded within the size of a 16th-note
-byte CUR16 = 127; // Current global sixteenth-note (bounded to 128, or 8 beats)
+byte TICKCOUNT = 2; // Current global tick, bounded within the size of a 32nd-note
+byte CUR32 = 127; // Current global 32nd-note (bounded to 128, or 16 beats)
 word GLOBALRAND = 12345; // Global all-purpose semirandom value; gets changed on every tick
 
 // Swing vars
@@ -159,7 +159,7 @@ byte CMD[49];
 byte STATS[49];
 
 // Holds the 48 seqs' internal tick-positions
-// bits 0-9: current 16th-note position (0-1023)
+// bits 0-9: current 32nd-note position (0-1023)
 // bits 10-15: reserved
 word POS[49];
 

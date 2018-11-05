@@ -100,7 +100,7 @@ void processRecAction(byte pitch) {
 		SGRAN = (pitch % 4) + 1; // Derive SWING GRANULARITY from the note's corresponding column
 		SAMOUNT = velo; // Derive SWING AMOUNT from the HUMANIZE-modified VELOCITY
 		updateTickSize(); // Update the global tick-size to reflect the new SWING values
-		updateSwingPart(); // Update the SWING-PART var based on the current SWING GRANULARITY and CUR16 tick
+		updateSwingPart(); // Update the SWING-PART var based on the current SWING GRANULARITY and CUR32 tick
 		return; // Exit the function, since SWING-CHANGE commands require neither a SUSTAIN nor a MIDI-OUT message
 	}
 

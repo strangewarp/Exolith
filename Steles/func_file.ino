@@ -248,8 +248,6 @@ void loadSong(byte slot) {
 	updateTickSize(); // Update the internal tick-size (in microseconds) to match the new BPM value
 
 	SPART = 0; // Set the current SWING PART to 0, as all timing elements are being reset
-	//CUR16 = 127; // Set the global cue-position to arrive at 1 immediately
-	//ELAPSED = 0; // Reset the elapsed-time-since-last-16th-note counter
 
 	SONG = slot; // Set the currently-active SONG-position to the given save-slot
 

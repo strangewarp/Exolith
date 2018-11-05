@@ -20,14 +20,14 @@ void resetSeq(byte s) {
 
 // Reset the timing of all seqs and the global cue-point
 void resetAllTiming() {
-	CUR16 = 127; // Reset the global cue-point
+	CUR32 = 127; // Reset the global cue-point
 	SPART = 0; // Reset the global SWING PART to 0 (its initial state)
 	memset(POS, 0, 96); // Reset each seq's internal tick-position
 }
 
-// Update the SWING-PART var based on the current SWING GRANULARITY and CUR16 tick
+// Update the SWING-PART var based on the current SWING GRANULARITY and CUR32 tick
 void updateSwingPart() {
-	SPART = !!((CUR16 % (1 << SGRAN)) >> (SGRAN - 1));
+	SPART = !!((CUR32 % (1 << SGRAN)) >> (SGRAN - 1));
 }
 
 // Compare a seq's CUE-commands to the global CUE-point, and parse them if the timing is correct
@@ -35,7 +35,7 @@ void parseCues(byte s, byte size) {
 
 	if (CMD[s]) { // If the sequence has any cued commands...
 
-		if (CUR16 == ((CMD[s] & B11100000) >> 1)) { // If the global 16th-note corresponds to the seq's cue-point...
+		if (CUR32 == ((CMD[s] & B11100000) >> 1)) { // If the global 32nd-note corresponds to the seq's cue-point...
 
 			// Enable or disable the sequence's playing-bit
 			STATS[s] = (STATS[s] & B00111111) | ((CMD[s] & 2) << 6);
@@ -48,7 +48,7 @@ void parseCues(byte s, byte size) {
 			TO_UPDATE |= 4 << ((s % 24) >> 2); // Flag the sequence's corresponding LED-row for an update
 
 		} else { // Else, the seq's cue-command is still dormant, so...
-			if ((CUR16 % 8) <= 1) { // If the global tick is on a half-note, or the 16th-note immediately afterward...
+			if ((CUR32 % 8) <= 1) { // If the global tick is on a quarter-note, or the 32nd-note immediately afterward...
 				TO_UPDATE |= 4 << ((s % 24) >> 2); // Flag the sequence's corresponding LED-row for an update
 			}
 		}
@@ -233,7 +233,7 @@ void iterateAll() {
 			// Get the notes from this tick in a given seq, and add them to the MIDI-OUT buffer
 			getTickNotes(ctrl, i, buf);
 
-			// Increase the seq's 16th-note position by one increment, wrapping it around its top limit
+			// Increase the seq's 32nd-note position by one increment, wrapping it around its top limit
 			POS[i] = (POS[i] + 1) % (word(size) * 16);
 
 		}
@@ -249,6 +249,6 @@ void iterateAll() {
 		MOUT_COUNT = 0; // Clear the MIDI buffer's command-counter
 	}
 
-	processSustains(); // Process one 16th-note's worth of duration for all sustained notes
+	processSustains(); // Process one 32nd-note's worth of duration for all sustained notes
 
 }

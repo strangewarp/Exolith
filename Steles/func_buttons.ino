@@ -22,8 +22,8 @@ void parsePlayPress(byte col, byte row) {
 		PAGE ^= 1; // Toggle between page A and page B
 		TO_UPDATE |= 2; // Flag the second LED-row for updates
 	} else if (ctrl == B00000011) { // If SHIFT is held...
-		// Shift the CUR16 value by a number of GLOBAL CUE slices equal to the column of the keystroke (-2, -1, +1, +2)
-		CUR16 = byte(((int(CUR16) + (((int(col) - 2) + (col >= 2)) * 16)) + 128) % 128);
+		// Shift the CUR32 value by a number of GLOBAL CUE slices equal to the column of the keystroke (-2, -1, +1, +2)
+		CUR32 = byte(((int(CUR32) + (((int(col) - 2) + (col >= 2)) * 32)) + 128) % 128);
 		TO_UPDATE |= 1; // Flag the top LED-row for updates
 	} else if (ctrl == B00000101) { // If BPM is held...
 		tempoCmd(col, row); // Cue a global BPM modification command, using the same function as in RECORD MODE
@@ -56,10 +56,10 @@ void parsePlayPress(byte col, byte row) {
 		} else { // Else, if the sequence has no cued ON value, then this is a pure beatslice, so...
 
 			word beats = STATS[seq] & 63; // Get the number of beats in the seq
-			byte slice = beats * 2; // Get the number of 16th-notes in one of the seq's slice-chunks
+			byte slice = beats * 2; // Get the number of 32nd-notes in one of the seq's slice-chunks
 
 			// Set the seq's given slice-position to correspond with the start of the curent global beat
-			POS[seq] = ((slice * nums) + ((CUR16 % 16) % min(slice, 16)) + 1) % (beats * 16);
+			POS[seq] = ((slice * nums) + ((CUR32 % 16) % min(slice, 16)) + 1) % (beats * 16);
 
 			if (!(STATS[seq] & 128)) { // If the seq was previously turned off...
 				TO_UPDATE |= 4 << row; // Flag the seq's corresponding LED-row for an update
