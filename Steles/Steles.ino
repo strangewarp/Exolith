@@ -44,7 +44,7 @@
 #define FILE_SEQ_BYTES 4096UL // Bytes within each sequence (UL because large values get added to this)
 
 #define BPM_LIMIT_LOW 32 // Limits to the range of valid BPM values
-#define BPM_LIMIT_HIGH 200 // ^
+#define BPM_LIMIT_HIGH 255 // ^
 
 #define UPPER_BITS_LOW 96 // Limits to the range of valid UPPER COMMAND BITS values
 #define UPPER_BITS_HIGH 224 // ^

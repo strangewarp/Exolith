@@ -212,7 +212,7 @@ void loadSong(byte slot) {
 	file.seekSet(FILE_BPM_BYTE); // Go to the BPM-byte location
 	BPM = file.read(); // Read it
 	// If this is an erroneous value that falls outside of the valid BPM range...
-	if ((BPM < BPM_LIMIT_LOW) || (BPM > BPM_LIMIT_HIGH)) {
+	if ((BPM < BPM_LIMIT_LOW) || (word(BPM) > BPM_LIMIT_HIGH)) {
 		sendRow(0, 0); // Clear the top 3 LED-rows
 		sendRow(1, 0);
 		sendRow(2, 0);

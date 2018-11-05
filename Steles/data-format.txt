@@ -37,7 +37,7 @@ Steles data-file spec
 									112: BPM (internal non-MIDI cmd)
 										(2-byte command)
 										0: 112
-										1: new BPM (32-200)
+										1: new BPM (32-255)
 									128: NOTE-OFF
 										(3-byte command)
 									144: NOTE-ON
@@ -55,4 +55,3 @@ Steles data-file spec
 						1: Command byte 1 (0-127)
 						2: Command byte 2 (0-127)
 						3: Duration (0-255)
-

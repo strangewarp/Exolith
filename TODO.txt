@@ -27,26 +27,39 @@ Software:
 	. ARPMODE should be saved to the prefs-file
 		-- ok
 	. wipe SD-card again
-		--
+		-- ok
 	. test whether ARPMODE is saved and loaded correctly
-		-- 
-
-	. re-test the sequencing/recording mechanisms, especially around TRACK
-		--
+		-- seems to be fine
 
 	. is tempo actually being clocked at the right speed?
 		. test with a MIDI-IN apparatus that measures actual BPM from TEMPO ticks
-			--
-		. if yes, then:
-			. should the global cue have 256 rather than 128 16th-notes, to be more useable at tempos above ~120?
+			-- hmm...
+			. try treating each quarter-note as a "beat", which is usually the standard. Like: BPM -> Quarter-Notes Per Minute
+				-- this seems more reasonable
+				. ack: tempo freaks out above 200. figure out why
+					-- forgot to add tempo consts for BPMs of 201-255. fixed
+				-- also: changed upper BPM limit to 255
+	. change everything to have a base granularity of 32nd-notes
+		--
+	. change boundaries of CmdFuncs to deal with 32nd-note granularity, rather than 16th-note
+		--
+	. either halve max seq length in beats, or double each seq's size in the savefiles
+		-- 
 
 	. simplify: instead of GESTURE system, just have 5-button-large keychords for its commands
 		--
 	. remove all subsequent GESTURE-related TODOs
 		--
 
+	. send SONG POSITION POINTER commands to MIDI-OUT...
+		. immediately after startup
+		. after concluding a file-load operation
+		. every time RECORD MODE or PLAY MODE is toggled into
+
 	. test REPEAT-SWEEP
 		--
+		. with various arpeggiation types
+			--
 	. test recordable SWING-commands
 		--
 	. test REPEAT-SWEEP on:

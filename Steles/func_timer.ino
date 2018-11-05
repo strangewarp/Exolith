@@ -45,7 +45,7 @@ void updateTickSize() {
 		sw = 1.0 + pgm_read_float_near(SWING_TABLE + (SAMOUNT - 64)); // Reduce SAMOUNT by 64, and add its SWING value to 1
 	}
 
-	// Get a micros-per-tick value that corresponds to the current BPM
+	// Get a micros-per-tick value that corresponds to the current BPM (with each "beat" being a quarter-note long)
 	float mcpb = pgm_read_float_near(MCS_TABLE + (BPM - BPM_LIMIT_LOW));
 
 	// Modify the micros-per-tick-value by the SWING-multiplier, to get the left-tick's new absolute size
