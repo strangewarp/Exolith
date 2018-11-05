@@ -68,14 +68,16 @@ void arpAdvance() {
 			}
 		}
 
+      //ARPPOS = pgm_read_byte_near(GRIDS + (GRIDCONFIG * 24) + found[GLOBALRAND % f]);
+
       if (ARPLATCH) { // If notes have already been played by the current keypress-cluster...
          // Set the new ARPPOS value to the next button within the repeating-random system,
          // with the next button being decided by a random-value from the "rpos"-directed nibble of ARPRAND,
          // and converted to a note-value by the current GRIDCONFIG.
          ARPPOS = pgm_read_byte_near(GRIDS + (GRIDCONFIG * 24) + found[((ARPRAND >> (rpos * 4)) & 15) % f]);
       } else { // Else, if no notes have yet been played by the current keypress-cluster...
-         // Get a random start-point from within the found-notes, based on a GLOBALRAND seed-value
-         ARPPOS = pgm_read_byte_near(GRIDS + (GRIDCONFIG * 24) + found[GLOBALRAND % f]);
+         // Get a random start-point from within the found-notes, based on a seed-value
+         ARPPOS = pgm_read_byte_near(GRIDS + (GRIDCONFIG * 24) + found[ARPRAND % f]);
       }
 
 	}
@@ -109,6 +111,10 @@ void arpPress() {
 
          } else { // Else, if the current ARP MODE is "repeating random"...
 
+            if (!ARPLATCH) { // If no notes have yet been played by the current keypress-cluster...
+               ARPRAND = GLOBALRAND; // Lock ARPRAND into a new repeating-random value
+            }
+
             arpAdvance(); // Advance the arpeggiator's position (in a specifically random way, since the "repeating-random" ARPMODE is active)
 
          }
@@ -126,7 +132,6 @@ void arpRelease() {
       && ARPPOS // And notes are currently being arpeggiated...
       && (!(BUTTONS >> 6)) // And the last note-button has been released...
    ) {
-      xorShift(ARPRAND); // Re-randomize the arp's repeating-random value
       arpClear(); // Clear the arpeggiation-system's contents
 	}
 }
@@ -135,7 +140,6 @@ void arpRelease() {
 void arpClear() {
 	if (REPEAT) { // If REPEAT is currently enabled...
       ARPPOS = 0; // Clear the var that tracks the current arpeggiation-position
-      ARPRAND = 0; // Clear the arpeggiator's repeating-random value
       ARPLATCH = 0; // Clear the "notes have played during the current keystroke-cluster" flag
 	}
 }
