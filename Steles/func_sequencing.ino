@@ -221,7 +221,7 @@ void iterateAll() {
 
 		for (byte i = 47; i != 255; i--) { // For every sequence in the song, in reverse order...
 
-			byte size = STATS[i] & 63; // Get seq's absolute size, in beats
+			byte size = STATS[i] & 63; // Get seq's absolute size, in half-notes
 
 			parseCues(i, size); // Parse a sequence's cued commands, if any
 

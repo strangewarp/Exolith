@@ -40,25 +40,21 @@ Software:
 					-- forgot to add tempo consts for BPMs of 201-255. fixed
 				-- also: changed upper BPM limit to 255
 	. change everything to have a base granularity of 32nd-notes
-		--
+		-- done
 	. change boundaries of CmdFuncs to deal with 32nd-note granularity, rather than 16th-note
 		--
 	. halve max seq length in beats, across the board
-		--
+		-- done by default
 	. change SWING GRANULARITY:
 		. base granularity of 16ths, not 8ths
-		. keep max granularity where it is
-		. update SGRAN's GUI top-row element in RECORD MODE
+			-- done
+		. update SGRAN's GUI top-row element for RECORD MODE
+			--
 
 	. simplify: instead of GESTURE system, just have 5-button-large keychords for its commands
 		--
 	. remove all subsequent GESTURE-related TODOs
 		--
-
-	. send SONG POSITION POINTER commands to MIDI-OUT...
-		. immediately after startup
-		. after concluding a file-load operation
-		. every time RECORD MODE or PLAY MODE is toggled into
 
 	. test REPEAT-SWEEP
 		--
@@ -77,29 +73,26 @@ Software:
 			--
 
 	. re-test all recording mechanisms
-		--
 		. note-recording
 			. TRACK 1
-				--
 			. TRACK 2
-				--
 		. ERASE WHILE HELD
 			. TRACK 1
-				--
 			. TRACK 2
-				--
 		. CLEAR SEQ
 			. clears both tracks simultaneously?
-				--
 		. COPY/PASTE
 			. straightforward standard usage
-				--
 			. with COPY size too long for PASTE size (should be discarded)
-				--
 			. with COPY size too short for PASTE size (should repeat until the end of the PASTE area)
-				--
 			. with COPY in another sequence than PASTE
-				--
+		. SEQ POSITION
+		. SWITCH RECORDSEQ
+
+	. send SONG POSITION POINTER commands to MIDI-OUT...
+		. immediately after startup
+		. after concluding a file-load operation
+		. every time RECORD MODE or PLAY MODE is toggled into
 
 	. remove the PLAYING var, and the GLOBAL PLAY/STOP mechanism
 	. instead of toggling PLAYING on or off, introduce a RESET TIMING command. this should:

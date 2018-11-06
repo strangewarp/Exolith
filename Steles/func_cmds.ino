@@ -26,11 +26,11 @@ void clearCmd(byte col, byte row) {
 	byte buf[5]; // Create a note-sized data buffer...
 	memset(buf, 0, 4); // ...And clear it of any junk-data
 
-	byte len = STATS[RECORDSEQ] & 63; // Get the RECORDSEQ's length, in beats
+	byte len = STATS[RECORDSEQ] & 63; // Get the RECORDSEQ's length, in half-notes
 	word blen = word(len) * 128; // Get the RECORDSEQ's length, in bytes
 
 	unsigned long rspos = FILE_BODY_START + (FILE_SEQ_BYTES * RECORDSEQ); // Get the RECORDSEQ's absolute data-position
-	word pos = (POS[RECORDSEQ] >> 4) << 4; // Get the bottom-point of the current beat in RECORDSEQ
+	word pos = POS[RECORDSEQ] & 1008; // Get the bottom-point of the current beat in RECORDSEQ
 	byte t4 = TRACK * 4; // Get a bitwise offset based on whether track 1 or 2 is active
 
 	for (word i = 0; i < (word(min(abs(toChange(col, row)), len)) * 128); i += 8) { // For every 32nd-note in the clear-area...
@@ -55,7 +55,7 @@ void clockCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row
 
 // Parse a COPY press
 void copyCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row) {
-	COPYPOS = POS[RECORDSEQ] - (POS[RECORDSEQ] % 16); // Set the COPY-position to the start of the beat
+	COPYPOS = POS[RECORDSEQ] - (POS[RECORDSEQ] % 16); // Set the COPY-position to the start of the half-note
 	COPYSEQ = RECORDSEQ; // Set the COPY-seq to the curent RECORD-seq
 	BLINKL = 255; // Start an LED-BLINK that is ~16ms long
 	BLINKR = 255; // ^
@@ -111,26 +111,26 @@ void octaveCmd(byte col, byte row) {
 // Parse a PASTE press
 void pasteCmd(__attribute__((unused)) byte col, byte row) {
 
-	byte b1[33]; // Create a quarter-note-sized copy-data buffer...
+	byte b1[33]; // Create an eighth-note-sized copy-data buffer...
 	memset(b1, 0, 32); // ...And clear it of any junk-data
 
 	unsigned long copybase = FILE_BODY_START + (word(COPYSEQ) * FILE_SEQ_BYTES); // Get the literal position of the copy-seq
 	unsigned long pastebase = FILE_BODY_START + (word(RECORDSEQ) * FILE_SEQ_BYTES); // Get the literal position of the paste-seq
 
-	byte clen = 128 >> row; // Get the length of the copy/paste, in quarter-notes
+	byte clen = 128 >> row; // Get the length of the copy/paste, in eighth-notes
 
-	byte csize = STATS[COPYSEQ] & 63; // Get the copy-seq's size, in beats
-	byte psize = STATS[RECORDSEQ] & 63; // Get the paste-seq's size, in beats
+	byte csize = STATS[COPYSEQ] & 63; // Get the copy-seq's size, in half-notes
+	byte psize = STATS[RECORDSEQ] & 63; // Get the paste-seq's size, in half-notes
 
-	byte pstart = (POS[RECORDSEQ] - (POS[RECORDSEQ] % 16)) >> 4; // Get the start of the paste-location, in beats
+	byte pstart = (POS[RECORDSEQ] - (POS[RECORDSEQ] % 16)) >> 4; // Get the start of the paste-location, in half-notes
 
-	for (byte filled = 0; filled < clen; filled++) { // For every quarter-note in the copypaste's area...
+	for (byte filled = 0; filled < clen; filled++) { // For every eighth-note in the copypaste's area...
 
 		file.seekSet(copybase + (word((COPYPOS + filled) % csize) * 32)); // Navigate to the current copy-position
 		file.read(b1, 32); // Read the copy-data
 
 		writeCommands( // Write this chunk of copy-data to the corresponding paste-area of the file
-			pastebase + (word((pstart + filled) % psize) * 32), // Bitwise file-position for quarter-note's paste-location
+			pastebase + (word((pstart + filled) % psize) * 32), // Bitwise file-position for the eighth-note's paste-location
 			32, // Size of the data-buffer, in bytes
 			b1, // The data-buffer itself
 			0 // Apply this to notes on all channels
@@ -175,7 +175,7 @@ void qrstCmd(byte col, byte row) {
 // Parse a QUANTIZE press
 void quantizeCmd(byte col, byte row) {
 	char change = toChange(col, row); // Convert a column and row into a CHANGE value
-	QUANTIZE = applyChange(QUANTIZE, change, 1, 16); // Modify the QUANTIZE value
+	QUANTIZE = applyChange(QUANTIZE, change, 1, 32); // Modify the QUANTIZE value
 	TO_UPDATE |= 1; // Flag the topmost row for updating
 }
 
@@ -188,16 +188,15 @@ void repeatCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte ro
 // Parse a REPEAT-SWEEP press
 void rSweepCmd(byte col, byte row) {
 	char change = toChange(col, row); // Convert a column and row into a CHANGE value
-	RPTSWEEP = applyChange(RPTSWEEP, change, 0, 255); // Modify the RPTSWEEP value by the CHANGE amount
+	RPTSWEEP = applyChange(RPTSWEEP, change, 0, 127); // Modify the RPTSWEEP value by the CHANGE amount
 	TO_UPDATE |= 253; // Flag the top row, and bottom 6 rows, for LED updates
 }
 
 // Parse a SEQ-SIZE press
 void sizeCmd(byte col, byte row) {
 	char change = toChange(col, row); // Convert a column and row into a CHANGE value
-	// Get the new value for the currently-recording-seq's size
-	byte newsize = applyChange(STATS[RECORDSEQ] & 63, change, 1, 32);
-	STATS[RECORDSEQ] = 128 | newsize; // Modify the currently-recording seq's size
+	// Get the new value for the currently-recording-seq's size, and modify the seq's stats
+	STATS[RECORDSEQ] = 128 | applyChange(STATS[RECORDSEQ] & 63, change, 1, 32);
 	resetAllTiming(); // Reset the timing of all seqs and the global cue-point
 	TO_UPDATE |= 3; // Flag top two rows for updating
 }
@@ -211,7 +210,7 @@ void swAmtCmd(byte col, byte row) {
 
 // Parse a SWING GRANULARITY press
 void swGranCmd(byte col, byte row) {
-	SGRAN = applyChange(SGRAN, toChange(col, row), 1, 4); // Apply the column-and-row's CHANGE value to the SGRAN value
+	SGRAN = applyChange(SGRAN, toChange(col, row), 1, 5); // Apply the column-and-row's CHANGE value to the SGRAN value
 	updateSwingPart(); // Update the SWING-PART var based on the current SWING GRANULARITY and CUR32 tick
 	TO_UPDATE |= 1; // Flag the topmost row for updating
 }

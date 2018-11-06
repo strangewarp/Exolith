@@ -114,7 +114,7 @@ byte HUMANIZE = 0; // Maximum velocity-humanize value for RECORD MODE notes
 byte CHAN = 151; // MIDI-COMMAND byte (including current CHANNEL) for RECORD MODE notes
 byte QUANTIZE = B00000100; // Time-quantize value for RECORD MODE notes (1 to 16)
 byte QRESET = 0; // Tracks how many beats must elapse within RECORDSEQ before the QUANTIZE anchor gets reset (0 = whole sequence)
-byte DURATION = 4; // Duration value for RECORD MODE notes, in 32nd-notes (0 to 128; and 129 = special behavior)
+byte DURATION = 4; // Duration value for RECORD MODE notes, in 32nd-notes (0 to 128; and 129 = "manually-held durations mode")
 byte COPYPOS = 0; // Copy-position within the copy-sequence
 byte COPYSEQ = 0; // Sequence from which to copy data
 
@@ -153,7 +153,7 @@ byte SCATTER[49];
 byte CMD[49];
 
 // Holds 48 seqs' sizes and activity-flags
-// bits 0-5: 1, 2, 4, 8, 16, 32 (= size, in beats) (range limits: 1 to 32)
+// bits 0-5: 1, 2, 4, 8, 16, 32 (= size, in half-notes, where each quarter-note is a "beat") (range limits: 1 to 32)
 // bit 6: reserved
 // bit 7: on/off flag
 byte STATS[49];
