@@ -42,14 +42,24 @@ Software:
 	. change everything to have a base granularity of 32nd-notes
 		-- done
 	. change boundaries of CmdFuncs to deal with 32nd-note granularity, rather than 16th-note
-		--
+		-- done
 	. halve max seq length in beats, across the board
 		-- done by default
 	. change SWING GRANULARITY:
 		. base granularity of 16ths, not 8ths
 			-- done
 		. update SGRAN's GUI top-row element for RECORD MODE
-			--
+			-- done
+	. test everything after the 32nd-note granularity changes:
+		. RECORD-MODE:
+			. QUANTIZE
+			. QUANTIZE-RESET
+			. note-recording
+			. SWING GRANULARITY
+		. PLAY-MODE:
+			. sequence playback
+			. CUE
+			. beatslicing
 
 	. simplify: instead of GESTURE system, just have 5-button-large keychords for its commands
 		--
