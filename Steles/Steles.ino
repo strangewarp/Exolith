@@ -142,7 +142,7 @@ byte SPART = 0; // Tracks which section of the SWING is currently active
 
 // Beat-scattering flags, one per seq.
 // bits 0-3: scatter chance
-// bits 4-7: scatter distance (0=off; 1,2,4,8 = 8th,4th,half,whole [these can stack with each other])
+// bits 4-7: scatter distance (0=off; 1,2,4 = 8th,4th,half [these can stack with each other])
 byte SCATTER[49];
 
 // Cued-command flags, one per seq.

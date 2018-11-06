@@ -45,13 +45,11 @@ void parseCues(byte s, byte size) {
 
 			CMD[s] = 0; // Clear the sequence's CUED-COMMANDS byte
 
-			TO_UPDATE |= 4 << ((s % 24) >> 2); // Flag the sequence's corresponding LED-row for an update
-
-		} else { // Else, the seq's cue-command is still dormant, so...
-			if ((CUR32 % 8) <= 1) { // If the global tick is on a quarter-note, or the 32nd-note immediately afterward...
-				TO_UPDATE |= 4 << ((s % 24) >> 2); // Flag the sequence's corresponding LED-row for an update
-			}
+		} else if ((CUR32 % 8) >= 2) { // Else, the cue-command is still dormant. So if the global tick isn't on an eighth-note or the 32nd-note immediately afterward...
+			return; // Exit the function without flagging any TO_UPDATE rows
 		}
+
+		TO_UPDATE |= 4 << ((s % 24) >> 2); // Flag the sequence's corresponding LED-row for an update
 
 	}
 
@@ -146,6 +144,7 @@ void parseScatter(byte s, byte didscatter) {
 		// Quarter-note: 1/2 of the time
 		// Eighth-note: 1/4 of the time
 		byte dist = (rnd & 6) | (!(rnd & 24));
+
 		if (!dist) { // If the new SCATTER-distance doesn't contain anything...
 			SCATTER[s] |= 32; // Set the SCATTER-distance to a quarter-note
 		} else { // Else, if the new SCATTER-distance contains something...
@@ -198,8 +197,8 @@ void getTickNotes(byte ctrl, byte s, byte buf[]) {
 		}
 		readTick(s, 0, buf); // Read the tick with no offset
 	} else { // Else, if RECORD MODE is inactive...
-		// Read the tick with SCATTER-offset (>> 3, not 4, because we want a minimum of an 8th-note granularity)
-		readTick(s, (SCATTER[s] & 240) >> 3, buf);
+		// Read the tick with SCATTER-offset (>> 2, not 3 or 4, because we want a minimum of an 8th-note granularity)
+		readTick(s, (SCATTER[s] & 240) >> 2, buf);
 		didscatter = 1;
 	}
 
