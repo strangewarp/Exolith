@@ -10,26 +10,7 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	. REPEATING-RANDOM arpeggiation seems to be applying itself nonrandomly to most button-chords. fix this
-		-- rewrote REPEATING-RANDOM algorithm.
-		. test it
-			-- still doesn't work
-			-- restructured logic in all func_arp.ino funcs
-		. test again
-			-- still not working
-			-- rethinking this prospect: is there much value to specifically *repeating* random?
-			-- no
-			. restructure arp funcs so "random" is just plain-random
-				-- done
-		. test again
-			-- it works
-
-	. ARPMODE should be saved to the prefs-file
-		-- ok
-	. wipe SD-card again
-		-- ok
-	. test whether ARPMODE is saved and loaded correctly
-		-- seems to be fine
+	-- changed the second-LED-row in RECORD MODE to have a blink-based effect when a large seq's LED-wrapping would fill the entire row
 
 	. is tempo actually being clocked at the right speed?
 		. test with a MIDI-IN apparatus that measures actual BPM from TEMPO ticks
@@ -50,7 +31,8 @@ Software:
 			-- done
 		. update SGRAN's GUI top-row element for RECORD MODE
 			-- done
-	. test everything after the 32nd-note granularity changes:
+	. test everything after the 32nd-note granularity changes have been made
+		--
 		. RECORD-MODE:
 			. QUANTIZE
 			. QUANTIZE-RESET

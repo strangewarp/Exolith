@@ -44,7 +44,7 @@ void displayLoadNumber() {
 	byte c1 = SONG % 10; // Get the ones digit
 	byte c2 = byte(floor(SONG / 10)) % 10; // Get the tens digit
 	byte c3 = SONG >= 100; // Get the hundreds digit (only 0 or 1)
-	sendRow(0, 0); // Blank out top row
+	//sendRow(0, 0); // Blank out top row
 	sendRow(1, 0); // Blank out second row
 	for (byte i = 0; i < 6; i++) { // For each of the bottom 6 rows of the GUI...
 		sendRow(
@@ -146,7 +146,7 @@ void updateFirstRow(byte ctrl) {
 			// If ARM-RECORDING or ERASE WHILE HELD is held...
 			// Or some other unassigned button-combination is held...
 			// Or no control-buttons are held...
-			sendRow(0, 128 >> (CUR32 >> 4)); // Display the global cue's current beat
+			sendRow(0, 128 >> (CUR32 >> 4)); // Display the global cue's current half-note
 		}
 	} else { // Else, if this isn't RECORD-MODE...
 		if ((!LOADMODE) && (ctrl == B00000101)) { // If this isn't LOAD MODE (then this is PLAY MODE), and if BPM is held...
@@ -160,10 +160,11 @@ void updateFirstRow(byte ctrl) {
 // Update the second row of LEDs
 void updateSecondRow() {
 	if (RECORDMODE) { // If RECORDMODE is active...
-		byte beat = POS[RECORDSEQ] >> 4; // Get the current beat in the RECORDSEQ
-		byte b2 = beat % 8; // Get the current beat, wrapped by 8
-		byte join = (2 << (POS[RECORDSEQ] >> 7)) - 1; // Light a number of LEDs equal to the number of times the beat has wrapped around
-		sendRow(1, (join << (7 - b2)) | (join >> (b2 + 1))); // Display the RECORDSEQ's spatially-wrapped beat-value
+		byte braw = POS[RECORDSEQ] >> 3; // Get the seq's current beat (quarter-note)
+		byte b2 = braw % 8; // Get the seq's current beat (quarter-note), wrapped by 8
+		byte join = (2 << (POS[RECORDSEQ] >> 6)) - 1; // Get the number of times the beat has wrapped around
+		// Display the RECORDSEQ's spatially-wrapped beat-value, or blink when the spatial-wrapping would fill all LEDs in the row
+		sendRow(1, ((braw >= 56) ? (!(b2 % 2)) : 1) * ((join << (7 - b2)) | (join >> (b2 + 1))));
 	} else { // Else, if RECORDMODE isn't active...
 		if ((BUTTONS & B00000011) == 3) { // If any SCATTER-shaped command is held...
 			sendRow(1, SCATTER[RECORDSEQ]); // Display the most-recently-touched seq's SCATTER value

@@ -766,6 +766,27 @@ Software:
 		. are all the correct held-notes still playing when a single note is released?
 			-- seems like it
 
+	. REPEATING-RANDOM arpeggiation seems to be applying itself nonrandomly to most button-chords. fix this
+		-- rewrote REPEATING-RANDOM algorithm.
+		. test it
+			-- still doesn't work
+			-- restructured logic in all func_arp.ino funcs
+		. test again
+			-- still not working
+			-- rethinking this prospect: is there much value to specifically *repeating* random?
+			-- no
+			. restructure arp funcs so "random" is just plain-random
+				-- done
+		. test again
+			-- it works
+
+	. ARPMODE should be saved to the prefs-file
+		-- ok
+	. wipe SD-card again
+		-- ok
+	. test whether ARPMODE is saved and loaded correctly
+		-- seems to be fine
+
 Hardware:
 
 	. print out the alpha-prototype's schematic for reference while making updates (KiCad can corrupt a project if more than 1 is open)
