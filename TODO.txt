@@ -11,6 +11,7 @@ Software:
 	. prove I'm not a dipshit: actually finish the project
 
 	-- changed the second-LED-row in RECORD MODE to have a blink-based effect when a large seq's LED-wrapping would fill the entire row
+	-- rSweepCmd() could only be set to negative REPEAT-SWEEP values. fixed this
 
 	. is tempo actually being clocked at the right speed?
 		. test with a MIDI-IN apparatus that measures actual BPM from TEMPO ticks
@@ -32,12 +33,18 @@ Software:
 		. update SGRAN's GUI top-row element for RECORD MODE
 			-- done
 	. test everything after the 32nd-note granularity changes have been made
-		--
+		-- am doing
 		. RECORD-MODE:
 			. QUANTIZE
+				-- seems fine
 			. QUANTIZE-RESET
+				--
 			. note-recording
+				--
+			. note-recording with REPEAT
+				--
 			. SWING GRANULARITY
+				--
 		. PLAY-MODE:
 			. sequence playback
 			. CUE
