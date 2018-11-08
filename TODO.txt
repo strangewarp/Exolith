@@ -13,6 +13,9 @@ Software:
 	-- changed the second-LED-row in RECORD MODE to have a blink-based effect when a large seq's LED-wrapping would fill the entire row
 	-- rSweepCmd() could only be set to negative REPEAT-SWEEP values. fixed this
 
+	. should there be an extra user-toggleable var to control whether RPTVELO only gets reset when ARPLATCH=0?
+		--
+
 	. is tempo actually being clocked at the right speed?
 		. test with a MIDI-IN apparatus that measures actual BPM from TEMPO ticks
 			-- hmm...
