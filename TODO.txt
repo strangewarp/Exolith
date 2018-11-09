@@ -28,9 +28,9 @@ Software:
 		. change prefs-file-related functions again
 			-- done
 		. wipe SD-card again
-			--
+			-- ok
 		. test ARPREFRESH functionality
-			--
+			-- seems to work
 
 	. is tempo actually being clocked at the right speed?
 		. test with a MIDI-IN apparatus that measures actual BPM from TEMPO ticks
