@@ -49,6 +49,9 @@
 #define UPPER_BITS_LOW 96 // Limits to the range of valid UPPER COMMAND BITS values
 #define UPPER_BITS_HIGH 224 // ^
 
+#define PREFS_ITEMS_1 17 // Number of items in the PREFS-file (1-indexed)
+#define PREFS_ITEMS_2 18 // ^ (1-indexed + 1, for buffer assembly)
+
 #define DEFAULT_BPM 80 // Default BPM-value, for cases where a coherent BPM value is not available
 
 #define GRID_TOTAL 5 // Number of GRIDCONFIG grids within the GRIDS[] array (this value is 0-indexed!!!)
@@ -103,6 +106,7 @@ byte REPEAT = 0; // Toggles whether held-down note-buttons should repeat a NOTE-
 byte ARPMODE = 0; // Arp system's current mode: 0 = up, 1 = down, 2 = repeating random
 byte ARPPOS = 0; // Holds the most-recent bit in the BUTTONS array that the arpeggiator has acted upon (0 = none)
 byte ARPLATCH = 0; // Tracks whether any ARP-notes have played yet within the current cluster of keystrokes
+byte ARPREFRESH = 0; // Controls how RPTVELO gets refreshed (0 = only on note-keystrokes where ARPLATCH is false; 1 = on every new note-keystroke)
 
 // Recording vars
 byte GRIDCONFIG = 0; // Current rotation of the note-key grid in RECORD-MODE (0 = chromatic row-based, 1 = chromatic column-based)

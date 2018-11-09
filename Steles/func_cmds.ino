@@ -12,6 +12,12 @@ void arpModeCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte r
 	TO_UPDATE |= 1; // Flag the topmost row for updating
 }
 
+// Parse an ARPEGGIATOR REFRESH press
+void arpRefCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row) {
+	ARPREFRESH ^= 1; // Toggle the ARPEGGIATOR REFRESH behavior (whether or not RPTVELO is refreshed on every new keypress in REPEAT-mode)
+	TO_UPDATE |= 1; // Flag the topmost row for updating
+}
+
 // Parse a CHAN press
 void chanCmd(byte col, byte row) {
 	// Modify the CHAN value, keeping it within the range of valid/supported commands
@@ -73,7 +79,9 @@ void durationCmd(byte col, byte row) {
 void genericCmd(byte col, byte row) {
 	arpPress(); // Parse a new keypress in the arpeggiation-system
 	if (REPEAT) { // If REPEAT is active...
-		RPTVELO = VELO; // Reset the REPEAT-VELOCITY tracking var to be equal to the user-defined VELOCITY amount
+		if ((!ARPLATCH) || ARPREFRESH) { // If ARPLATCH isn't active, or if ARPREFRESH is active, then RPTVELO needs to be refreshed. So...
+			RPTVELO = VELO; // Refresh the REPEAT-VELOCITY tracking var to be equal to the user-defined VELOCITY amount
+		}
 		return; // Exit the function, since no commands should be sent instantly
 	} else { // Else, if REPEAT isn't active...
 		if (DURATION == 129) { // If DURATION is in manual-mode...
