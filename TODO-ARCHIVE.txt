@@ -787,6 +787,28 @@ Software:
 	. test whether ARPMODE is saved and loaded correctly
 		-- seems to be fine
 
+	-- changed the second-LED-row in RECORD MODE to have a blink-based effect when a large seq's LED-wrapping would fill the entire row
+	-- rSweepCmd() could only be set to negative REPEAT-SWEEP values. fixed this
+
+	. create a new user-toggleable var, ARPREFRESH, to control whether RPTVELO only gets reset when ARPLATCH equals 0
+		-- done
+		. update the sequencing process that refreshes RPTVELO, and make the refresh-behavior dependent on the ARPREFRESH flag
+			-- done
+		. write an arpRefCmd() function, which changes the state of ARPREFRESH
+			-- done
+		. make a CmdFunc entry for ARPREFRESH, and reposition all other CmdFuncs
+			-- done
+		. update func_gui.ino for the ARPREFRESH's top-row stuff, and to update that one manual call to a glyph's position (the BPM glyph)
+			-- done
+		. save ARPREFRESH to the prefs-file
+			-- done
+		. change prefs-file-related functions again
+			-- done
+		. wipe SD-card again
+			-- ok
+		. test ARPREFRESH functionality
+			-- seems to work
+
 Hardware:
 
 	. print out the alpha-prototype's schematic for reference while making updates (KiCad can corrupt a project if more than 1 is open)

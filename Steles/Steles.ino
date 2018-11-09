@@ -43,7 +43,7 @@
 
 #define FILE_SEQ_BYTES 4096UL // Bytes within each sequence (UL because large values get added to this)
 
-#define BPM_LIMIT_LOW 32 // Limits to the range of valid BPM values
+#define BPM_LIMIT_LOW 60 // Limits to the range of valid BPM values
 #define BPM_LIMIT_HIGH 255 // ^
 
 #define UPPER_BITS_LOW 96 // Limits to the range of valid UPPER COMMAND BITS values
@@ -52,7 +52,7 @@
 #define PREFS_ITEMS_1 17 // Number of items in the PREFS-file (1-indexed)
 #define PREFS_ITEMS_2 18 // ^ (1-indexed + 1, for buffer assembly)
 
-#define DEFAULT_BPM 80 // Default BPM-value, for cases where a coherent BPM value is not available
+#define DEFAULT_BPM 130 // Default BPM-value, for cases where a coherent BPM value is not available
 
 #define GRID_TOTAL 5 // Number of GRIDCONFIG grids within the GRIDS[] array (this value is 0-indexed!!!)
 
@@ -91,8 +91,8 @@ unsigned long ABSOLUTETIME = 0; // Absolute time elapsed: wraps around after rea
 unsigned long ELAPSED = 0; // Time elapsed since last tick
 word KEYELAPSED = 0; // Time elapsed since last keystroke-scan
 unsigned long GESTELAPSED = 0; // Time elapsed since last gesture-decay
-word TICKSZ1 = 6250; // Current size of pre-SWING-modified ticks
-word TICKSZ2 = 6250; // Current size of post-SWING-modified ticks
+word TICKSZ1 = 19231; // Current size of pre-SWING-modified ticks
+word TICKSZ2 = 19231; // Current size of post-SWING-modified ticks
 
 // Mode flag vars
 byte LOADMODE = 0; // Tracks whether LOAD MODE is active
@@ -112,13 +112,13 @@ byte ARPREFRESH = 0; // Controls how RPTVELO gets refreshed (0 = only on note-ke
 byte GRIDCONFIG = 0; // Current rotation of the note-key grid in RECORD-MODE (0 = chromatic row-based, 1 = chromatic column-based)
 byte RPTSWEEP = 128; // Amount to modify RPTVELO by on each held-REPEAT-tick (0-127 = minus, 128-255 = plus)
 byte RPTVELO = 127; // Stored RPTSWEEP-modified VELOCITY value for the current REPEAT step (refreshed on every new REPEAT-note press)
-byte OCTAVE = 3; // Octave-offset value for RECORD MODE notes
+byte OCTAVE = 4; // Octave-offset value for RECORD MODE notes
 byte VELO = 127; // Baseline velocity-value for RECORD MODE notes
 byte HUMANIZE = 0; // Maximum velocity-humanize value for RECORD MODE notes
-byte CHAN = 151; // MIDI-COMMAND byte (including current CHANNEL) for RECORD MODE notes
-byte QUANTIZE = B00000100; // Time-quantize value for RECORD MODE notes (1 to 16)
+byte CHAN = 144; // MIDI-COMMAND byte (including current CHANNEL) for RECORD MODE notes
+byte QUANTIZE = 4; // Time-quantize value for RECORD MODE notes (1 to 16)
 byte QRESET = 0; // Tracks how many beats must elapse within RECORDSEQ before the QUANTIZE anchor gets reset (0 = whole sequence)
-byte DURATION = 4; // Duration value for RECORD MODE notes, in 32nd-notes (0 to 128; and 129 = "manually-held durations mode")
+byte DURATION = 1; // Duration value for RECORD MODE notes, in 32nd-notes (0 to 128; and 129 = "manually-held durations mode")
 byte COPYPOS = 0; // Copy-position within the copy-sequence
 byte COPYSEQ = 0; // Sequence from which to copy data
 
@@ -135,12 +135,12 @@ byte PLAYING = 1; // Controls whether the sequences and global tick-counter are 
 byte DUMMYTICK = 0; // Tracks whether to expect a dummy MIDI CLOCK tick before starting to iterate through sequences
 byte CLOCKMASTER = 1; // Toggles whether to generate MIDI CLOCK ticks, or respond to incoming CLOCK ticks from an external device
 byte BPM = DEFAULT_BPM; // Beats-per-minute value: one beat is 96 tempo-ticks
-byte TICKCOUNT = 2; // Current global tick, bounded within the size of a 32nd-note
-byte CUR32 = 127; // Current global 32nd-note (bounded to 128, or 16 beats)
+byte TICKCOUNT = 2; // Current global tick, bounded within the size of a 32nd-note (3 ticks, 0-indexed)
+byte CUR32 = 127; // Current global 32nd-note (bounded to 128, or 16 beats, beats being quarter-notes)
 word GLOBALRAND = 12345; // Global all-purpose semirandom value; gets changed on every tick
 
 // Swing vars
-byte SGRAN = 1; // Current SWING granularity (1 = 8th; 2 = 4th; 3 = half note; 4 = whole note)
+byte SGRAN = 1; // Current SWING granularity (1 = 16th; 2 = 8th; 3 = quarter note; 4 = half note; 5 = whole note)
 byte SAMOUNT = 64; // Current SWING amount (0 = full negative swing; 128 = full positive swing; 64 = no swing)
 byte SPART = 0; // Tracks which section of the SWING is currently active
 

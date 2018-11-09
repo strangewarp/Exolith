@@ -10,27 +10,7 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	-- changed the second-LED-row in RECORD MODE to have a blink-based effect when a large seq's LED-wrapping would fill the entire row
-	-- rSweepCmd() could only be set to negative REPEAT-SWEEP values. fixed this
-
-	. create a new user-toggleable var, ARPREFRESH, to control whether RPTVELO only gets reset when ARPLATCH equals 0
-		-- done
-		. update the sequencing process that refreshes RPTVELO, and make the refresh-behavior dependent on the ARPREFRESH flag
-			-- done
-		. write an arpRefCmd() function, which changes the state of ARPREFRESH
-			-- done
-		. make a CmdFunc entry for ARPREFRESH, and reposition all other CmdFuncs
-			-- done
-		. update func_gui.ino for the ARPREFRESH's top-row stuff, and to update that one manual call to a glyph's position (the BPM glyph)
-			-- done
-		. save ARPREFRESH to the prefs-file
-			-- done
-		. change prefs-file-related functions again
-			-- done
-		. wipe SD-card again
-			-- ok
-		. test ARPREFRESH functionality
-			-- seems to work
+	-- removed below-60 BPMs, to head off the possibility of type-conversion weirdness in lowest BPMs, which would likely not be used anyway
 
 	. is tempo actually being clocked at the right speed?
 		. test with a MIDI-IN apparatus that measures actual BPM from TEMPO ticks
@@ -57,7 +37,7 @@ Software:
 			. QUANTIZE
 				-- seems fine
 			. QUANTIZE-RESET
-				--
+				-- seems fine
 			. note-recording
 				--
 			. note-recording with REPEAT
@@ -66,8 +46,11 @@ Software:
 				--
 		. PLAY-MODE:
 			. sequence playback
+				--
 			. CUE
+				--
 			. beatslicing
+				--
 
 	. simplify: instead of GESTURE system, just have 5-button-large keychords for its commands
 		--
