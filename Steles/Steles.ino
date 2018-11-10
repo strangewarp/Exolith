@@ -89,10 +89,10 @@ byte TO_UPDATE = 0; // Tracks which rows of LEDs should be updated at the end of
 // Timing vars
 unsigned long ABSOLUTETIME = 0; // Absolute time elapsed: wraps around after reaching its limit
 unsigned long ELAPSED = 0; // Time elapsed since last tick
-word KEYELAPSED = 0; // Time elapsed since last keystroke-scan
+unsigned long KEYELAPSED = 0; // Time elapsed since last keystroke-scan
 unsigned long GESTELAPSED = 0; // Time elapsed since last gesture-decay
-word TICKSZ1 = 19231; // Current size of pre-SWING-modified ticks
-word TICKSZ2 = 19231; // Current size of post-SWING-modified ticks
+unsigned long TICKSZ1 = 19231; // Current size of pre-SWING-modified ticks
+unsigned long TICKSZ2 = 19231; // Current size of post-SWING-modified ticks
 
 // Mode flag vars
 byte LOADMODE = 0; // Tracks whether LOAD MODE is active

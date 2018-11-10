@@ -49,9 +49,9 @@ Software:
 				. certain SWING AMOUNT values are causing SWING to be computed wrong.
 				. this is probably because TICKSZ1 and TICKSZ2 are being kept as words instead of floats...
 				. fix this in every function that interacts with them
-					-- 
+					-- done
 				. test again
-					--
+					-- seems to work now
 		. PLAY-MODE:
 			. sequence playback
 				--

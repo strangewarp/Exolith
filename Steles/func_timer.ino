@@ -46,13 +46,13 @@ void updateTickSize() {
 	}
 
 	// Get a micros-per-tick value that corresponds to the current BPM (with each "beat" being a quarter-note long)
-	float mcpb = pgm_read_float_near(MCS_TABLE + (BPM - BPM_LIMIT_LOW));
+	double mcpb = pgm_read_float_near(MCS_TABLE + (BPM - BPM_LIMIT_LOW));
 
 	// Modify the micros-per-tick-value by the SWING-multiplier, to get the left-tick's new absolute size
-	float mcmod = mcpb * sw;
+	double mcmod = mcpb * sw;
 
-	TICKSZ1 = word(round(mcmod)); // Set the leftmost SWING-tick size
-	TICKSZ2 = word(round((mcpb * 2) - mcmod)); // Get and set the rightmost SWING-tick size
+	TICKSZ1 = (unsigned long) round(mcmod); // Set the leftmost SWING-tick size
+	TICKSZ2 = (unsigned long) round((mcpb * 2) - mcmod); // Get and set the rightmost SWING-tick size
 
 }
 
@@ -106,7 +106,7 @@ void advanceTick() {
 // Check whether timing should currently be advanced, and if so, start applying internal timing changes
 void advanceOwnTick() {
 
-	word tlen = SPART ? TICKSZ2 : TICKSZ1; // Get the length of the current SWING-section's ticks
+	unsigned long tlen = SPART ? TICKSZ2 : TICKSZ1; // Get the length of the current SWING-section's ticks
 
 	// If the next tick hasn't been reached within the current SWING-section's tick-length, exit the function
 	if (ELAPSED < tlen) { return; }
