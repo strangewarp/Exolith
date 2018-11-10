@@ -62,8 +62,9 @@ Software:
 
 	. simplify: instead of GESTURE system, just have 5-to-6-button keychords for its commands
 		--
-		. GLOBAL PLAY/STOP and TOGGLE LOAD-MODE should both require an additional button-press while their keys are held
-			--
+		. GLOBAL PLAY/STOP and TOGGLE LOAD-MODE should both require an additional button-press while their keys are held...
+		. ...so, check for them in the main "else" case inside of assignKey(), and trigger the commands' consequences from there
+			-- 
 	. remove all subsequent GESTURE-related TODOs
 		--
 	. remove the PLAYING var, and the GLOBAL PLAY/STOP mechanism
