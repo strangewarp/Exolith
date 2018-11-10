@@ -39,11 +39,19 @@ Software:
 			. QUANTIZE-RESET
 				-- seems fine
 			. note-recording
-				--
+				-- seems to work
 			. note-recording with REPEAT
-				--
+				-- seems to work
+			. note-recording with arpeggiation
+				-- seems to work
 			. SWING GRANULARITY
-				--
+				-- this works, but...
+				. certain SWING AMOUNT values are causing SWING to be computed wrong.
+				. this is probably because TICKSZ1 and TICKSZ2 are being kept as words instead of floats...
+				. fix this in every function that interacts with them
+					-- 
+				. test again
+					--
 		. PLAY-MODE:
 			. sequence playback
 				--
