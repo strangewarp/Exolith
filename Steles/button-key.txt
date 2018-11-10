@@ -5,13 +5,6 @@ Leftmost binary digit: top row
 Note: these binary values are flipped when represented in the codebase
 
 
-Button gestures (ALL MODES):
-
-	0-1-4-5: GLOBAL PLAY/STOP
-	5-4-1-0: LOAD
-	0-5-0-5: TOGGLE RECORD-MODE
-
-
 Button combinations (PLAY MODE):
 
 	variable-keypress:
@@ -22,7 +15,10 @@ Button combinations (PLAY MODE):
 	1***00: reserved (1, 3-7)
 	1***01: PAGE-OFF (0); reserved (1-7)
 	1***10: SCATTER UNSET (0); SCATTER (1-7)
-	1***11: PAGE SCATTER UNSET (0); reserved (1-7)
+	1***11: PAGE SCATTER UNSET (0); reserved (1-7);
+	        110011 off-limits;
+			  111011 off-limits;
+	        111111 off-limits
 
 	1-keypress:
 	100000: PAGE
@@ -35,13 +31,13 @@ Button combinations (PLAY MODE):
 	...
 
 	4-keypress:
-	...
+	110011: TOGGLE LOAD-MODE
 
 	5-keypress:
-	...
+	111011: RESET TIMING
 
 	6-keypress:
-	...
+	111111: TOGGLE RECORD-MODE
 
 
 Button combinations (RECORD MODE):
@@ -84,7 +80,7 @@ Button combinations (RECORD MODE):
 	...
 
 	6-keypress:
-	...
+	111111: TOGGLE RECORD-MODE
 
 
 Button combinations (LOAD MODE):

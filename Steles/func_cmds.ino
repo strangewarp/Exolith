@@ -53,7 +53,7 @@ void clearCmd(byte col, byte row) {
 
 // Parse a CLOCK-MASTER press
 void clockCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row) {
-	CLOCKMASTER ^= 1; // Toggle the CLOCK-MASTER value
+	CLOCKLEAD ^= 1; // Toggle the CLOCK-MASTER value
 	ABSOLUTETIME = micros(); // Set the ABSOLUTETIME-tracking var to now
 	ELAPSED = 0; // Set the ELAPSED value to show that no time has elapsed since the last tick-check
 	TO_UPDATE |= 1; // Flag the topmost row for updating

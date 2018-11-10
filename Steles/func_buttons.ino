@@ -106,10 +106,9 @@ void assignKey(byte col, byte row, byte oldcmds) {
 			recordHeldNote(); // Record the currently-held-note-key's note, to prevent bad conflicts with other commands
 		}
 
-		newGestureEntry(row); // Create a new entry in the GESTURE-tracking system for this keypress
-		checkForGestures(); // Check whether any gestures have just been completed
-
-		if (RECORDMODE) { // If RECORD-MODE is active...
+		if (ctrl == B00111111) { // If this was the final keystroke in a TOGGLE RECORD-MODE command...
+			toggleRecordMode(); // Toggle into, or out of, RECORD-MODE
+		} else if (RECORDMODE) { // Else, if TOGGLE RECORD-MODE wasn't pressed, and if RECORD-MODE is active...
 			TO_UPDATE |= 253; // Flag the top LED-row, and bottom 6 LED-rows, for updating
 		} else { // Else, if this is PLAY MODE...
 			refreshPlayCustoms(ctrl, oldcmds); // If any custom PLAY MODE commands were held, flag their GUI to be refreshed

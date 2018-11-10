@@ -81,23 +81,23 @@ void parseRawMidi() {
 
 				if (b == 248) { // TIMING CLOCK command
 					// Note: The CLOCK-tick isn't passed to MIDI-OUT via Serial.write() here, since that is done by advanceTick()
-					if (!CLOCKMASTER) { // If the clock is in MIDI FOLLOW mode...
+					if (!CLOCKLEAD) { // If the clock is in MIDI FOLLOW mode...
 						advanceTick(); // Advance the concrete tick, and all its associated sequencing mechanisms
 					}
 				} else if (b == 250) { // START command
 					Serial.write(b); // Send the byte to MIDI-OUT
-					if (!CLOCKMASTER) { // If the clock is in MIDI FOLLOW mode...
+					if (!CLOCKLEAD) { // If the clock is in MIDI FOLLOW mode...
 						resetAllSeqs(); // Reset sequences to their initial positions
 						toggleMidiClock(false); // Toggle the MIDI clock, with an "external command" flag
 					}
 				} else if (b == 251) { // CONTINUE command
 					Serial.write(b); // Send the byte to MIDI-OUT
-					if (!CLOCKMASTER) { // If the clock is in MIDI FOLLOW mode...
+					if (!CLOCKLEAD) { // If the clock is in MIDI FOLLOW mode...
 						toggleMidiClock(false); // Toggle the MIDI clock, with an "external command" flag
 					}
 				} else if (b == 252) { // STOP command
 					Serial.write(b); // Send the byte to MIDI-OUT
-					if (!CLOCKMASTER) { // If the clock is in MIDI FOLLOW mode...
+					if (!CLOCKLEAD) { // If the clock is in MIDI FOLLOW mode...
 						haltAllSustains(); // Halt all currently-sustained notes
 						toggleMidiClock(false); // Toggle the MIDI clock, with an "external command" flag
 					}

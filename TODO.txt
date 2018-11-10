@@ -60,10 +60,23 @@ Software:
 			. beatslicing
 				-- seems fine
 
-	. simplify: instead of GESTURE system, just have 5-button-large keychords for its commands
+	. simplify: instead of GESTURE system, just have 5-to-6-button keychords for its commands
 		--
+		. GLOBAL PLAY/STOP and TOGGLE LOAD-MODE should both require an additional button-press while their keys are held
+			--
 	. remove all subsequent GESTURE-related TODOs
 		--
+	. remove the PLAYING var, and the GLOBAL PLAY/STOP mechanism
+	. instead of toggling PLAYING on or off, introduce a RESET TIMING command. this should:
+		. reset GLOBAL CUE
+		. reset all seq-positions
+		. NOT reset all pending cues (would be more useful this way, in weird performance-cases)
+		. send a CLOCK STOP command
+		. send a SONG-POSITION POINTER
+		. send a CLOCK START command
+			. plus a dummy-CLOCK-tick? research this again
+	. is resetAllSeqs() even necessary at this point?
+
 
 	. test REPEAT-SWEEP
 		--
@@ -103,17 +116,6 @@ Software:
 		. after concluding a file-load operation
 		. every time RECORD MODE or PLAY MODE is toggled into
 
-	. remove the PLAYING var, and the GLOBAL PLAY/STOP mechanism
-	. instead of toggling PLAYING on or off, introduce a RESET TIMING command. this should:
-		. reset GLOBAL CUE
-		. reset all seq-positions
-		. NOT reset all pending cues (would be more useful this way, in weird performance-cases)
-		. send a CLOCK STOP command
-		. send a SONG-POSITION POINTER
-		. send a CLOCK START command
-			. plus a dummy-CLOCK-tick? research this again
-	. is resetAllSeqs() even necessary at this point?
-
 	. reassign the RECORD-MODE control-commands to make logical sense around the new BPM keychord
 		. change button-key.txt:
 			. RECORD, REPEAT, and TRACK should be conceptually connected
@@ -123,11 +125,11 @@ Software:
 		. change RECORD-MODE GUI routines
 
 	. re-test things
-		. various QUANTIZE settings
 		. are old notes being knocked out of the sequence by new notes in RECORD-MODE properly?
 		. test SEQ-SIZE behavior
 		. test CC/PC/other advanced MIDI commands
-		. test entering CC/PC/other advanced MIDI commands with REPEAT-SWEEP active
+			. with REPEAT-SWEEP active
+			. with arpeggiation
 		. test file-load
 			. test sequence-position preservation on load
 			. test this with oddly-shaped seqs, and seqs that will definitely wrap

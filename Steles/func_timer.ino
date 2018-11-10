@@ -5,7 +5,7 @@ void toggleMidiClock(byte usercmd) {
 
 	PLAYING = !PLAYING; // Toggle/untoggle the var that tracks whether the MIDI CLOCK is playing
 
-	if (CLOCKMASTER) { // If in CLOCK MASTER mode...
+	if (CLOCKLEAD) { // If in CLOCK MASTER mode...
 		if (PLAYING) { // If playing has just been enabled...
 			ELAPSED = TICKSZ2; // Cue the next tick-update to occur on the next timer-check
 			TICKCOUNT = 5; // Set the next 32nd-note to be cued on the next timer-check
@@ -181,7 +181,7 @@ void updateTimer() {
 	scanKeypad(); // Scan the keypad for changes in keystroke values
 
 	// If CLOCK-FOLLOW mode is active, then exit the function without updating the sequencing mechanisms
-	if (!CLOCKMASTER) { return; }
+	if (!CLOCKLEAD) { return; }
 
 	advanceOwnTick(); // Check all timing elements of a tick-sized granularity (1/3 of a 32nd note), and advance the tick-counter
 
