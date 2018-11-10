@@ -54,11 +54,11 @@ Software:
 					-- seems to work now
 		. PLAY-MODE:
 			. sequence playback
-				--
+				-- seems fine
 			. CUE
-				--
+				-- seems fine
 			. beatslicing
-				--
+				-- seems fine
 
 	. simplify: instead of GESTURE system, just have 5-button-large keychords for its commands
 		--
