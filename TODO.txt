@@ -79,7 +79,7 @@ Software:
 		. send a CLOCK START command
 			. plus a dummy-CLOCK-tick? research this again
 	. test RESET TIMING for internal uses
-		--
+		-- 
 	. test RESET TIMING while acting as MIDI LEAD for a drum-machine that is also playing from its own internal sequencer
 		--
 	. does RESET TIMING's dummy-tick (248) cause a 32nd-note offset at low tempos? (this would imply that all such dummy-ticks must be removed - search for "248")
