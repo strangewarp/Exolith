@@ -18,11 +18,20 @@ void resetSeq(byte s) {
 	//SCATTER[s] &= 15; // Wipe all of the seq's scatter-counting and scatter-flagging bits, but not its scatter-chance bits
 }
 
-// Reset the timing of all seqs and the global cue-point
+// Reset all timing of all seqs and the global cue-point, and send a SONG-POSITION POINTER
 void resetAllTiming() {
 	CUR32 = 127; // Reset the global cue-point
 	SPART = 0; // Reset the global SWING PART to 0 (its initial state)
 	memset(POS, 0, 96); // Reset each seq's internal tick-position
+	if (CLOCKLEAD) { // If CLOCK LEAD mode is active...
+		byte spos[4] = { // Create a series of commands to stop, adjust, and restart any devices downstream:
+			252, // STOP
+			242, 0, 0, // SONG-POSITION POINTER: beginning of every sequence
+			250, // START
+			0 // (Empty array entry)
+		};
+		Serial.write(spos, 6); // Send the series of commands to the MIDI-OUT circuit
+	}
 }
 
 // Update the SWING-PART var based on the current SWING GRANULARITY and CUR32 tick

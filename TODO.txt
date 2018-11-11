@@ -61,14 +61,16 @@ Software:
 				-- seems fine
 
 	. simplify: instead of GESTURE system, just have 5-to-6-button keychords for its commands
-		--
+		-- am doing
 		. GLOBAL PLAY/STOP and TOGGLE LOAD-MODE should both require an additional button-press while their keys are held...
 		. ...so, check for them in the main "else" case inside of assignKey(), and trigger the commands' consequences from there
-			-- 
+			-- ok
 	. remove all subsequent GESTURE-related TODOs
-		--
+		-- done
 	. remove the PLAYING var, and the GLOBAL PLAY/STOP mechanism
-	. instead of toggling PLAYING on or off, introduce a RESET TIMING command. this should:
+		-- done
+	. instead of toggling PLAYING on or off, introduce a RESET TIMING command. this should be fused with resetAllTiming(), and it should:
+		-- ok
 		. reset GLOBAL CUE
 		. reset all seq-positions
 		. NOT reset all pending cues (would be more useful this way, in weird performance-cases)
@@ -76,8 +78,12 @@ Software:
 		. send a SONG-POSITION POINTER
 		. send a CLOCK START command
 			. plus a dummy-CLOCK-tick? research this again
-	. is resetAllSeqs() even necessary at this point?
-
+	. test RESET TIMING for internal uses
+		--
+	. test RESET TIMING while acting as MIDI LEAD for a drum-machine that is also playing from its own internal sequencer
+		--
+	. does RESET TIMING's dummy-tick (248) cause a 32nd-note offset at low tempos? (this would imply that all such dummy-ticks must be removed - search for "248")
+		--
 
 	. test REPEAT-SWEEP
 		--
@@ -152,10 +158,6 @@ Software:
 		. PAGE SCATTER UNSET
 		. double-pressed commands, of the same or different types, to check for unexpected behaviors
 
-	. test gesture system
-		. test LOAD-MODE TOGGLE
-		. test GLOBAL PLAY/STOP TOGGLE
-
 	. test LOAD MODE fully:
 		. check toggling into/out of LOAD MODE from both PLAY MODE and RECORD MODE
 			. PLAY MODE:
@@ -198,8 +200,6 @@ Software:
 
 	. do very slow BPMs have the expected tick-length?
 	. test whether very fast BPMs have any lag
-
-	. gestures sometimes have a sloppy response. figure out why
 
 	. double-check all functionality for sequences on the second-page
 

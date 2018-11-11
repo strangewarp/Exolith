@@ -116,19 +116,27 @@ void assignKey(byte col, byte row, byte oldcmds) {
 
 	} else { // Else, if the keystroke is in any of the other columns...
 
-		if (LOADMODE) { // If LOAD-MODE is active...
-			RECORDMODE = 0; // Toggle out of RECORD-MODE to prevent timing-mismatch bugs
-			// Load a song whose file corresponds to the button that was pressed,
-			// on a page that corresponds to the highest control-button that is being held
-			loadSong((col - 1) + (row * 4) + (24 * ctrlToButtonIndex(ctrl)));
-			LOADMODE = 0; // Exit LOAD-MODE automatically
-		} else if (RECORDMODE) { // If RECORD-MODE is active...
+		if (RECORDMODE) { // If RECORD-MODE is active...
 			// Get a key that will be used to match the ctrl-row buttons to a function in the COMMANDS table
 			byte kt = pgm_read_byte_near(KEYTAB + (BUTTONS & 63));
 			if (!kt) { return; } // If the key from the key-table was not assigned to a function, exit this function
 			((CmdFunc) pgm_read_word_near(&COMMANDS[kt])) (col - 1, row); // Run a function that corresponds to the keypress
-		} else { // Else, if PLAY MODE is active...
-			parsePlayPress(col - 1, row); // Parse the PLAY-MODE button-press
+		} else { // Else, if PLAY MODE or LOAD MODE is active...
+			if (ctrl == B00110011) { // If this is a TOGGLE LOAD-MODE press...
+				LOADMODE ^= 1; // Toggle or untoggle LOAD-MODE override
+				TO_UPDATE |= 253; // Flag LED-rows 0 and 2-7 for updating
+			} else if (LOADMODE) { // Else, if LOAD-MODE is active...
+				// Load a song whose file corresponds to the button that was pressed,
+				// on a page that corresponds to the highest control-button that is being held
+				loadSong((col - 1) + (row * 4) + (24 * ctrlToButtonIndex(ctrl)));
+				LOADMODE = 0; // Exit LOAD-MODE automatically
+			} else { // Else, if neither a TOGGLE LOAD-MODE PRESS is held, nor LOAD-MODE is active...
+				if (ctrl == B00110111) { // If a RESET TIMING command is held...
+					resetAllTiming(); // Reset all timing of all seqs and the global cue-point, and send a SONG-POSITION POINTER
+				} else { // Else, if a RESET TIMING command isn't held...
+					parsePlayPress(col - 1, row); // Parse the PLAY-MODE button-press
+				}
+			}
 		}
 
 	}
