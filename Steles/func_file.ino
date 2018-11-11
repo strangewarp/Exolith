@@ -94,7 +94,7 @@ void makePrefBuf(byte buf[]) {
 	buf[8] = COPYPOS;
 	buf[9] = COPYSEQ;
 	buf[10] = SONG;
-	buf[11] = CLOCKLEAD;
+	buf[11] = 0; // reserved
 	buf[12] = GRIDCONFIG;
 	buf[13] = RPTVELO;
 	buf[14] = RPTSWEEP;
@@ -183,7 +183,7 @@ void loadPrefs() {
 		COPYPOS = buf[8];
 		COPYSEQ = buf[9];
 		SONG = buf[10];
-		CLOCKLEAD = buf[11];
+		// xx = buf[11];
 		GRIDCONFIG = buf[12];
 		RPTVELO = buf[13];
 		RPTSWEEP = buf[14];

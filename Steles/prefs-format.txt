@@ -18,7 +18,7 @@ Steles prefs-file spec
 		byte 8:  COPYPOS
 		byte 9:  COPYSEQ
 		byte 10: SONG
-		byte 11: CLOCKLEAD
+		byte 11: (reserved)
 		byte 12: GRIDCONFIG
 		byte 13: RPTVELO
 		byte 14: RPTSWEEP
