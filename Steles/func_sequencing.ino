@@ -10,12 +10,11 @@ void resetAllSeqs() {
 	}
 }
 
-// Reset a seq's cued-commands, playing-byte, and tick-position
+// Reset a seq's cued-commands, playing-flag, and tick-position
 void resetSeq(byte s) {
 	CMD[s] = 0;
 	POS[s] = 0;
 	STATS[s] &= 63;
-	//SCATTER[s] &= 15; // Wipe all of the seq's scatter-counting and scatter-flagging bits, but not its scatter-chance bits
 }
 
 // Reset all timing of all seqs and the global cue-point, and send a SONG-POSITION POINTER
@@ -23,15 +22,13 @@ void resetAllTiming() {
 	CUR32 = 127; // Reset the global cue-point
 	SPART = 0; // Reset the global SWING PART to 0 (its initial state)
 	memset(POS, 0, 96); // Reset each seq's internal tick-position
-	if (CLOCKLEAD) { // If CLOCK LEAD mode is active (rather than CLOCK FOLLOW)...
-		byte spos[6] = { // Create a series of commands to stop, adjust, and restart any devices downstream:
-			252, // STOP
-			242, 0, 0, // SONG-POSITION POINTER: beginning of every sequence
-			250, // START
-			0 // (Empty array entry)
-		};
-		Serial.write(spos, 6); // Send the series of commands to the MIDI-OUT circuit
-	}
+	byte spos[6] = { // Create a series of commands to stop, adjust, and restart any devices downstream:
+		252, // STOP
+		242, 0, 0, // SONG-POSITION POINTER: beginning of every sequence
+		250, // START
+		0 // (Empty array entry)
+	};
+	Serial.write(spos, 5); // Send the series of commands to the MIDI-OUT circuit
 }
 
 // Compare a seq's CUE-commands to the global CUE-point, and parse them if the timing is correct
@@ -161,20 +158,14 @@ void parseScatter(byte s, byte didscatter) {
 
 // Process a REPEAT or REPEAT-RECORD command, and send its resulting button-key to processRecAction()
 void processRepeats(byte ctrl) {
-
 	if (
 		(!distFromQuantize()) // If this tick occupies a QUANTIZE or QRESET tick...
 		&& (!ctrl) // And no command-button is currently held...
 	) { // Then this is a valid REPEAT position. So...
-
 		arpAdvance(); // Advance the arpeggio-position
-
 		processRecAction(modPitch(ARPPOS & 31)); // Put the current raw repeat-note or arpeggiation-note into the current track
-
 		RPTVELO = applyChange(RPTVELO, char(int(RPTSWEEP) - 128), 0, 127); // Change the stored REPEAT-VELOCITY by the REPEAT-SWEEP amount
-
 	}
-
 }
 
 // Get the notes from the current tick in a given seq, and add them to the MIDI-OUT buffer
@@ -216,30 +207,26 @@ void getTickNotes(byte ctrl, byte s, byte buf[]) {
 // Advance global tick, and iterate through all currently-active sequences
 void iterateAll() {
 
-	if (PLAYING) { // If the sequencer is currently in PLAYING mode...
+	byte ctrl = BUTTONS & B00111111; // Get the control-row buttons' activity
 
-		byte ctrl = BUTTONS & B00111111; // Get the control-row buttons' activity
+	byte buf[9]; // Buffer for reading note-events from the datafile
 
-		byte buf[9]; // Buffer for reading note-events from the datafile
+	for (byte i = 47; i != 255; i--) { // For every sequence in the song, in reverse order...
 
-		for (byte i = 47; i != 255; i--) { // For every sequence in the song, in reverse order...
+		byte size = STATS[i] & 63; // Get seq's absolute size, in half-notes
 
-			byte size = STATS[i] & 63; // Get seq's absolute size, in half-notes
+		parseCues(i, size); // Parse a sequence's cued commands, if any
 
-			parseCues(i, size); // Parse a sequence's cued commands, if any
+		// If the seq isn't currently playing, go to the next seq's iteration-routine
+		if (!(STATS[i] & 128)) { continue; }
 
-			// If the seq isn't currently playing, go to the next seq's iteration-routine
-			if (!(STATS[i] & 128)) { continue; }
+		memset(buf, 0, 8); // Clear the buffer of junk data
 
-			memset(buf, 0, 8); // Clear the buffer of junk data
+		// Get the notes from this tick in a given seq, and add them to the MIDI-OUT buffer
+		getTickNotes(ctrl, i, buf);
 
-			// Get the notes from this tick in a given seq, and add them to the MIDI-OUT buffer
-			getTickNotes(ctrl, i, buf);
-
-			// Increase the seq's 32nd-note position by one increment, wrapping it around its top limit
-			POS[i] = (POS[i] + 1) % (word(size) * 16);
-
-		}
+		// Increase the seq's 32nd-note position by one increment, wrapping it around its top limit
+		POS[i] = (POS[i] + 1) % (word(size) * 16);
 
 	}
 

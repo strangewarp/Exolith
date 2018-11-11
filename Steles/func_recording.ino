@@ -94,7 +94,7 @@ void processRecAction(byte pitch) {
 	byte velo = modVelo(); // Get a velocity-value with all current modifiers applied
 	byte dur = ((DURATION == 129) && REPEAT) ? QUANTIZE : DURATION; // Get a duration-value, or QUANTIZE if manual-mode is enabled
 
-	if (PLAYING && RECORDNOTES) { // If notes are being recorded into a playing sequence...
+	if (RECORDNOTES) { // If notes are being recorded into a sequence...
 
 		word qp = getInsertionPoint(); // Get the QUANTIZE-adjusted insertion-point for the current tick in the current RECORDSEQ
 
