@@ -43,9 +43,9 @@ const byte KEYTAB[] PROGMEM = {
 	25, //  4, 000100: 25, veloCmd
 	22, //  5, 000101: 22, tempoCmd
 	17, //  6, 000110: 17, rSweepCmd
-	9,  //  7, 000111:  9, gridConfigCmd
+	3,  //  7, 000111:  3, arpRefCmd
 	11, //  8, 001000: 11, octaveCmd
-	0,  //  9, 001001:  0, ignore
+	9,  //  9, 001001:  9, gridConfigCmd
 	12, // 10, 001010: 12, pasteCmd
 	0,  // 11, 001011:  0, ignore
 	10, // 12, 001100: 10, humanizeCmd
@@ -88,7 +88,7 @@ const byte KEYTAB[] PROGMEM = {
 	0,  // 49, 110001:  0, ignore
 	0,  // 50, 110010:  0, ignore
 	0,  // 51, 110011:  0, ignore
-	3,  // 52, 110100:  3, arpRefCmd
+	0,  // 52, 110100:  0, ignore
 	0,  // 53, 110101:  0, ignore
 	0,  // 54, 110110:  0, ignore
 	0,  // 55, 110111:  0, ignore

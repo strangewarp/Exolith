@@ -83,7 +83,9 @@ Software:
 			. plus a dummy-CLOCK-tick? research this again
 		-- ok
 	. remove all CLOCK-IN mechanisms, and all PLAYING and DUMMYTICK mechanisms
-		--
+		-- done
+	. shift around RECORD-MODE command-chords to fill the void left by the removal of CLOCKLEAD
+		-- done
 	. test RESET TIMING for internal uses
 		--
 	. test RESET TIMING while acting as MIDI LEAD for a drum-machine that is also playing from its own internal sequencer
