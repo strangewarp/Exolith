@@ -22,9 +22,6 @@ void toggleMidiClock(byte usercmd) {
 		if (PLAYING) { // If PLAYING has just been enabled...
 			TICKCOUNT = 5; // Set the next 32nd-note to be cued on the next clock-tick
 			CUR32 = 127; // Set the global 32nd-note to a position where it will wrap around to 0
-			if (!usercmd) { // If this toggle was sent by an external device...
-				DUMMYTICK = true; // Flag the sequencer to wait for an incoming dummy-tick, as per MIDI spec
-			}
 		} else { // Else, if playing has just been disabled...
 			haltAllSustains(); // Halt all currently-broadcasting MIDI sustains
 			if (!usercmd) {
@@ -175,8 +172,6 @@ void updateTimer() {
 
 	// Send a bit-shifted version of the offset value to blinkDecay(), to decrement the BLINK counters correctly
 	blinkDecay(word(offset >> 6)); // Decay any currrently-active BLINKL/BLINKR counters
-
-	updateGestureKeys(); // Update the tracking-info for all active gesture-keys
 
 	scanKeypad(); // Scan the keypad for changes in keystroke values
 

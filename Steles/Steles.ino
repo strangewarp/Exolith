@@ -130,6 +130,7 @@ byte KEYCOUNT = 0; // Holds the number of ticks for which a recording-note has b
 
 // Sequencing vars
 byte SONG = 0; // Current song-slot whose data-files are being played
+byte PLAYING = 1; // Controls whether the sequences and global tick-counter are iterating
 byte CLOCKLEAD = 1; // Toggles whether to generate MIDI CLOCK ticks, or respond to incoming CLOCK ticks from an external device
 byte BPM = DEFAULT_BPM; // Beats-per-minute value: one beat is 96 tempo-ticks
 byte TICKCOUNT = 2; // Current global tick, bounded within the size of a 32nd-note (3 ticks, 0-indexed)

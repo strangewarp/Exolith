@@ -3,12 +3,9 @@
 // MIDI PANIC: Send "ALL NOTES OFF" CC-commands on every MIDI channel.
 void midiPanic() {
 
-	byte note[4]; // Create a note-buffer to hold a single note's worth of data at a time
+	byte note[4] = {176, 123, 0, 0}; // Create a generic "ALL NOTES OFF" CC command
 
-	note[1] = 123; // Set byte 2 to the "ALL NOTES OFF" CC command
-	note[2] = 0; // As per MIDI spec, set byte 3 to "0" (empty)
-	for (byte i = 0; i <= 15; i++) { // For every MIDI channel...
-		note[0] = 176 + i; // Create a CC command-byte for the current channel
+	for (; note[0] <= 15; note[0]++) { // For every MIDI channel...
 		Serial.write(note, 3); // Send the ALL-NOTES-OFF CC command to MIDI-OUT immediately
 	}
 

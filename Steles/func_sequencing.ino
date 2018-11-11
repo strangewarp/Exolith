@@ -24,7 +24,7 @@ void resetAllTiming() {
 	SPART = 0; // Reset the global SWING PART to 0 (its initial state)
 	memset(POS, 0, 96); // Reset each seq's internal tick-position
 	if (CLOCKLEAD) { // If CLOCK LEAD mode is active (rather than CLOCK FOLLOW)...
-		byte spos[4] = { // Create a series of commands to stop, adjust, and restart any devices downstream:
+		byte spos[6] = { // Create a series of commands to stop, adjust, and restart any devices downstream:
 			252, // STOP
 			242, 0, 0, // SONG-POSITION POINTER: beginning of every sequence
 			250, // START
