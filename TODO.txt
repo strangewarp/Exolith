@@ -78,17 +78,14 @@ Software:
 		. send a SONG-POSITION POINTER
 		. send a CLOCK START command
 			. plus a dummy-CLOCK-tick? research this again
+		-- ok
 	. test RESET TIMING for internal uses
-		-- 
+		--
 	. test RESET TIMING while acting as MIDI LEAD for a drum-machine that is also playing from its own internal sequencer
 		--
 	. does RESET TIMING's dummy-tick (248) cause a 32nd-note offset at low tempos? (this would imply that all such dummy-ticks must be removed - search for "248")
 		--
 
-	. test REPEAT-SWEEP
-		--
-		. with various arpeggiation types
-			--
 	. test recordable SWING-commands
 		--
 	. test REPEAT-SWEEP on:
@@ -118,9 +115,8 @@ Software:
 		. SEQ POSITION
 		. SWITCH RECORDSEQ
 
-	. send SONG POSITION POINTER commands to MIDI-OUT...
+	. send SONG POSITION POINTER commands (resetAllSeqs()?) to MIDI-OUT...
 		. immediately after startup
-		. after concluding a file-load operation
 		. every time RECORD MODE or PLAY MODE is toggled into
 
 	. reassign the RECORD-MODE control-commands to make logical sense around the new BPM keychord
