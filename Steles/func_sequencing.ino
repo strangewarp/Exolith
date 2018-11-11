@@ -34,11 +34,6 @@ void resetAllTiming() {
 	}
 }
 
-// Update the SWING-PART var based on the current SWING GRANULARITY and CUR32 tick
-void updateSwingPart() {
-	SPART = !!((CUR32 % (1 << SGRAN)) >> (SGRAN - 1));
-}
-
 // Compare a seq's CUE-commands to the global CUE-point, and parse them if the timing is correct
 void parseCues(byte s, byte size) {
 

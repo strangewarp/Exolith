@@ -60,7 +60,7 @@ void parseRawMidi() {
 
 		if (SYSIGNORE) { // If this is an ignoreable SYSEX command...
 			if (b == 247) { // If this was an END SYSEX byte, clear SYSIGNORE and stop ignoring new bytes
-				SYSIGNORE = false;
+				SYSIGNORE = 0;
 			}
 		} else { // Else, accumulate arbitrary commands...
 
@@ -69,46 +69,20 @@ void parseRawMidi() {
 				INCOUNT++;
 				if (INCOUNT == INTARGET) { // If all the command's bytes have been received...
 					parseMidiCommand(recced); // Parse the command
-					memset(INBYTES, 0, sizeof(INBYTES) - 1); // Reset incoming-command-tracking vars
+					memset(INBYTES, 0, 3); // Reset incoming-command-tracking vars
 					INCOUNT = 0;
 				}
 			} else { // Else, if this is either a single-byte command, or a multi-byte command's first byte...
 
 				byte cmd = b & 240; // Get the command-type of any given non-SYSEX command
 
-				if (b == 248) { // TIMING CLOCK command
-					// Note: The CLOCK-tick isn't passed to MIDI-OUT via Serial.write() here, since that is done by advanceTick()
-					if (!CLOCKLEAD) { // If the clock is in MIDI FOLLOW mode...
-						advanceTick(); // Advance the concrete tick, and all its associated sequencing mechanisms
-					}
-				} else if (b == 250) { // START command
-					Serial.write(b); // Send the byte to MIDI-OUT
-					if (!CLOCKLEAD) { // If the clock is in MIDI FOLLOW mode...
-						resetAllSeqs(); // Reset sequences to their initial positions
-						toggleMidiClock(false); // Toggle the MIDI clock, with an "external command" flag
-					}
-				} else if (b == 251) { // CONTINUE command
-					Serial.write(b); // Send the byte to MIDI-OUT
-					if (!CLOCKLEAD) { // If the clock is in MIDI FOLLOW mode...
-						toggleMidiClock(false); // Toggle the MIDI clock, with an "external command" flag
-					}
-				} else if (b == 252) { // STOP command
-					Serial.write(b); // Send the byte to MIDI-OUT
-					if (!CLOCKLEAD) { // If the clock is in MIDI FOLLOW mode...
-						haltAllSustains(); // Halt all currently-sustained notes
-						toggleMidiClock(false); // Toggle the MIDI clock, with an "external command" flag
-					}
-				} else if (b == 247) { // END SYSEX MESSAGE command
-					// If you're dealing with an END-SYSEX command while SYSIGNORE is inactive,
-					// then that implies you've received either an incomplete or corrupt SYSEX message,
-					// and so nothing should be done here.
-				} else if (
+				if (
 					(b == 244) // MISC SYSEX command
 					|| (b == 240) // START SYSEX MESSAGE command
 				) { // Anticipate an incoming SYSEX message
-					SYSIGNORE = true;
+					SYSIGNORE = 1;
 				} else if (
-					(b == 242) // SONG POSITION POINTER command
+					(b >= 240)      // Any special-command
 					|| (cmd == 224) // PITCH BEND command
 					|| (cmd == 176) // CONTROL CHANGE command
 					|| (cmd == 160) // POLY-KEY PRESSURE command

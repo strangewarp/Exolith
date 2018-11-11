@@ -130,8 +130,6 @@ byte KEYCOUNT = 0; // Holds the number of ticks for which a recording-note has b
 
 // Sequencing vars
 byte SONG = 0; // Current song-slot whose data-files are being played
-byte PLAYING = 1; // Controls whether the sequences and global tick-counter are iterating
-byte CLOCKLEAD = 1; // Toggles whether to generate MIDI CLOCK ticks, or respond to incoming CLOCK ticks from an external device
 byte BPM = DEFAULT_BPM; // Beats-per-minute value: one beat is 96 tempo-ticks
 byte TICKCOUNT = 2; // Current global tick, bounded within the size of a 32nd-note (3 ticks, 0-indexed)
 byte CUR32 = 127; // Current global 32nd-note (bounded to 128, or 16 beats, beats being quarter-notes)
@@ -181,14 +179,6 @@ byte INBYTES[4]; // Buffer for incoming MIDI commands
 byte INCOUNT = 0; // Number of MIDI bytes received from current incoming command
 byte INTARGET = 0; // Number of expected incoming MIDI bytes
 byte SYSIGNORE = 0; // Ignores SYSEX messages when toggled
-
-
-
-// Manual extern reference to the writeCommands function,
-//     because the Arduino compiler's linking system gets broken by some functions that are called by the CmdFunc construct,
-//     which, in practical terms, means that functions in func_cmds.ino that call writeCommands() won't get linked to it,
-//     unless writeCommands() is linked manually with an extern command right here.
-//extern void writeCommands(unsigned long pos, byte amt, byte b[], byte onchan);
 
 
 

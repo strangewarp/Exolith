@@ -1,37 +1,5 @@
 
 
-// Toggle whether the MIDI CLOCK is playing, provided that this unit is in CLOCK MASTER mode
-void toggleMidiClock(byte usercmd) {
-
-	PLAYING = !PLAYING; // Toggle/untoggle the var that tracks whether the MIDI CLOCK is playing
-
-	if (CLOCKLEAD) { // If in CLOCK MASTER mode...
-		if (PLAYING) { // If playing has just been enabled...
-			ELAPSED = TICKSZ2; // Cue the next tick-update to occur on the next timer-check
-			TICKCOUNT = 5; // Set the next 32nd-note to be cued on the next timer-check
-			CUR32 = 127; // Ensure that the global 32nd-note position will reach 0 on the next timer-check
-			ABSOLUTETIME = micros(); // Set the ABSOLUTETIME to the current time, to prevent changes to ELAPSED in the next timer-check
-			Serial.write(250); // Send a MIDI CLOCK START command
-			Serial.write(248); // Send a MIDI CLOCK TICK (dummy-tick immediately following START command, as per MIDI spec)
-		} else { // Else, if playing has just been disabled...
-			haltAllSustains(); // Halt all currently-broadcasting MIDI sustains
-			Serial.write(252); // Send a MIDI CLOCK STOP command
-			resetAllSeqs(); // Reset the internal pointers of all sequences
-		}
-	} else { // If in CLOCK FOLLOW mode...
-		if (PLAYING) { // If PLAYING has just been enabled...
-			TICKCOUNT = 5; // Set the next 32nd-note to be cued on the next clock-tick
-			CUR32 = 127; // Set the global 32nd-note to a position where it will wrap around to 0
-		} else { // Else, if playing has just been disabled...
-			haltAllSustains(); // Halt all currently-broadcasting MIDI sustains
-			if (!usercmd) {
-				resetAllSeqs(); // Reset the internal pointers of all sequences
-			}
-		}
-	}
-
-}
-
 // Update the internal tick-sizes (in microseconds) to match a new BPM and/or SWING AMOUNT value
 void updateTickSize() {
 
@@ -51,6 +19,11 @@ void updateTickSize() {
 	TICKSZ1 = (unsigned long) round(mcmod); // Set the leftmost SWING-tick size
 	TICKSZ2 = (unsigned long) round((mcpb * 2) - mcmod); // Get and set the rightmost SWING-tick size
 
+}
+
+// Update the SWING-PART var based on the current SWING GRANULARITY and CUR32 tick
+void updateSwingPart() {
+	SPART = !!((CUR32 % (1 << SGRAN)) >> (SGRAN - 1));
 }
 
 // Engage all timed elements of a 32nd-note-sized granularity
@@ -80,6 +53,13 @@ void activateStep() {
 // Advance the concrete tick, and all its associated sequencing mechanisms
 void advanceTick() {
 
+	unsigned long tlen = SPART ? TICKSZ2 : TICKSZ1; // Get the length of the current SWING-section's ticks
+
+	// If the next tick hasn't been reached within the current SWING-section's tick-length, exit the function
+	if (ELAPSED < tlen) { return; }
+
+	ELAPSED -= tlen; // Subtract the current tick-length from the elapsed-time variable
+
 	Serial.write(248); // Send a MIDI CLOCK pulse
 
 	TICKCOUNT = (TICKCOUNT + 1) % 3; // Increase the value that tracks ticks, bounded to the size of a 32nd-note
@@ -100,49 +80,25 @@ void advanceTick() {
 
 }
 
-// Check whether timing should currently be advanced, and if so, start applying internal timing changes
-void advanceOwnTick() {
-
-	unsigned long tlen = SPART ? TICKSZ2 : TICKSZ1; // Get the length of the current SWING-section's ticks
-
-	// If the next tick hasn't been reached within the current SWING-section's tick-length, exit the function
-	if (ELAPSED < tlen) { return; }
-
-	ELAPSED -= tlen; // Subtract the current tick-length from the elapsed-time variable
-
-	if (!PLAYING) { return; } // If the sequencer isn't in PLAYING mode, exit the function
-
-	advanceTick(); // Advance the concrete tick, and all its associated sequencing mechanisms
-
+// Reduce the given BLINK-counter (left or right), and if it has reached 0, flag an LED-update fro its associated rows
+void blinkReduce(byte &b, word omod) {
+	if (b) { // If the given BLINK var is active...
+		if (b > omod) { // If the BLINK-counter is greater than the bit-shifted offset value...
+			b -= omod; // Subtract the offset from the BLINK-var
+		} else { // Else, if the BLINK-counter is lower than the offset...
+			b = 0; // Clear the BLINK-counter
+			TO_UPDATE |= 252; // Flag the bottom 6 rows for LED updates
+		}
+	}
 }
 
 // Decay any currrently-active BLINKL/BLINKR counters
 void blinkDecay(word omod) {
-
 	if (BLINKL || BLINKR) { // If an LED-BLINK is active...
-
 		omod |= !omod; // If the bit-shifted offset value is empty, set it to 1
-
-		if (BLINKL) { // If BLINK-LEFT is active...
-			if (BLINKL > omod) { // If the BLINKL-counter is greater than the bit-shifted offset value...
-				BLINKL -= omod; // Subtract the offset from the BLINKL-counter
-			} else { // Else, if the BLINKL-counter is lower than the offset...
-				BLINKL = 0; // Clear the BLINKL-counter
-				TO_UPDATE |= 252; // Flag the bottom 6 rows for LED updates
-			}
-		}
-
-		if (BLINKR) { // If BLINK-RIGHT is active...
-			if (BLINKR > omod) { // If the BLINKR-counter is greater than the bit-shifted offset value...
-				BLINKR -= omod; // Subtract the offset from the BLINKR-counter
-			} else { // Else, if the BLINKR-counter is lower than the offset...
-				BLINKR = 0; // Clear the BLINKR-counter
-				TO_UPDATE |= 252; // Flag the bottom 6 rows for LED updates
-			}
-		}
-
+		blinkReduce(BLINKL, omod); // Update the BLINKL counter
+		blinkReduce(BLINKR, omod); // Update the BLINKR counter
 	}
-
 }
 
 // Update the internal timer system, and trigger various events
@@ -175,9 +131,6 @@ void updateTimer() {
 
 	scanKeypad(); // Scan the keypad for changes in keystroke values
 
-	// If CLOCK-FOLLOW mode is active, then exit the function without updating the sequencing mechanisms
-	if (!CLOCKLEAD) { return; }
-
-	advanceOwnTick(); // Check all timing elements of a tick-sized granularity (1/3 of a 32nd note), and advance the tick-counter
+	advanceTick(); // Check all timing elements of a tick-sized granularity (1/3 of a 32nd note), and advance the tick-counter
 
 }

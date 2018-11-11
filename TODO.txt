@@ -11,6 +11,9 @@ Software:
 	. prove I'm not a dipshit: actually finish the project
 
 	-- removed below-60 BPMs, to head off the possibility of type-conversion weirdness in lowest BPMs, which would likely not be used anyway
+	-- removed the commented-out typedef for writeCommands() in Steles.ino, since it's definitely unnecessary now, and I'd forgotten about it
+	-- refactored blinkDecay() by turning some duplicate-code into the new blinkReduce() function
+	-- moved updateSwingPart() from func_sequencing.ino to func_timer.ino
 
 	. is tempo actually being clocked at the right speed?
 		. test with a MIDI-IN apparatus that measures actual BPM from TEMPO ticks
@@ -79,6 +82,8 @@ Software:
 		. send a CLOCK START command
 			. plus a dummy-CLOCK-tick? research this again
 		-- ok
+	. remove all CLOCK-IN mechanisms, and all PLAYING and DUMMYTICK mechanisms
+		--
 	. test RESET TIMING for internal uses
 		--
 	. test RESET TIMING while acting as MIDI LEAD for a drum-machine that is also playing from its own internal sequencer
