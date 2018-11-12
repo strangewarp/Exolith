@@ -131,7 +131,7 @@ byte KEYCOUNT = 0; // Holds the number of ticks for which a recording-note has b
 // Sequencing vars
 byte SONG = 0; // Current song-slot whose data-files are being played
 byte BPM = DEFAULT_BPM; // Beats-per-minute value: one beat is 96 tempo-ticks
-byte TICKCOUNT = 2; // Current global tick, bounded within the size of a 32nd-note (3 ticks, 0-indexed)
+byte TICKCOUNT = 2; // Current global tick, bounded within the size of a 32nd-note (3 ticks, 0-indexed) (must be set to 2 initially, to lapse into the first note)
 byte CUR32 = 127; // Current global 32nd-note (bounded to 128, or 16 beats, beats being quarter-notes)
 word GLOBALRAND = 12345; // Global all-purpose semirandom value; gets changed on every tick
 
@@ -232,6 +232,8 @@ void setup() {
 	loadPrefs(); // Load whatever prefsarein P.DAT, or create PRF.DAT if it doesn't exist yet
 
 	loadSong(SONG); // Load whatever song-slot was in P.DAT, or the default song-slot if PRF.DAT didn't exist
+
+	sendClockReset(); // Send a MIDI CLOCK reset command to MIDI-OUT
 
 	ABSOLUTETIME = micros(); // Make sure ABSOLUTETIME matches the current time, so tempo doesn't have an initial jerk
 

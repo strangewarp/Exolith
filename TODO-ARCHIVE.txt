@@ -809,6 +809,59 @@ Software:
 		. test ARPREFRESH functionality
 			-- seems to work
 
+	-- removed below-60 BPMs, to head off the possibility of type-conversion weirdness in lowest BPMs, which would likely not be used anyway
+	-- removed the commented-out typedef for writeCommands() in Steles.ino, since it's definitely unnecessary now, and I'd forgotten about it
+	-- refactored blinkDecay() by turning some duplicate-code into the new blinkReduce() function
+	-- moved updateSwingPart() from func_sequencing.ino to func_timer.ino
+
+	. is tempo actually being clocked at the right speed?
+		. test with a MIDI-IN apparatus that measures actual BPM from TEMPO ticks
+			-- hmm...
+			. try treating each quarter-note as a "beat", which is usually the standard. Like: BPM -> Quarter-Notes Per Minute
+				-- this seems more reasonable
+				. ack: tempo freaks out above 200. figure out why
+					-- forgot to add tempo consts for BPMs of 201-255. fixed
+				-- also: changed upper BPM limit to 255
+	. change everything to have a base granularity of 32nd-notes
+		-- done
+	. change boundaries of CmdFuncs to deal with 32nd-note granularity, rather than 16th-note
+		-- done
+	. halve max seq length in beats, across the board
+		-- done by default
+	. change SWING GRANULARITY:
+		. base granularity of 16ths, not 8ths
+			-- done
+		. update SGRAN's GUI top-row element for RECORD MODE
+			-- done
+	. test everything after the 32nd-note granularity changes have been made
+		-- am doing
+		. RECORD-MODE:
+			. QUANTIZE
+				-- seems fine
+			. QUANTIZE-RESET
+				-- seems fine
+			. note-recording
+				-- seems to work
+			. note-recording with REPEAT
+				-- seems to work
+			. note-recording with arpeggiation
+				-- seems to work
+			. SWING GRANULARITY
+				-- this works, but...
+				. certain SWING AMOUNT values are causing SWING to be computed wrong.
+				. this is probably because TICKSZ1 and TICKSZ2 are being kept as words instead of floats...
+				. fix this in every function that interacts with them
+					-- done
+				. test again
+					-- seems to work now
+		. PLAY-MODE:
+			. sequence playback
+				-- seems fine
+			. CUE
+				-- seems fine
+			. beatslicing
+				-- seems fine
+
 Hardware:
 
 	. print out the alpha-prototype's schematic for reference while making updates (KiCad can corrupt a project if more than 1 is open)

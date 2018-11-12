@@ -17,11 +17,8 @@ void resetSeq(byte s) {
 	STATS[s] &= 63;
 }
 
-// Reset all timing of all seqs and the global cue-point, and send a SONG-POSITION POINTER
-void resetAllTiming() {
-	CUR32 = 127; // Reset the global cue-point
-	SPART = 0; // Reset the global SWING PART to 0 (its initial state)
-	memset(POS, 0, 96); // Reset each seq's internal tick-position
+// Send a MIDI-CLOCK reset command to MIDI-OUT
+void sendClockReset() {
 	byte spos[6] = { // Create a series of commands to stop, adjust, and restart any devices downstream:
 		252, // STOP
 		242, 0, 0, // SONG-POSITION POINTER: beginning of every sequence
@@ -29,6 +26,15 @@ void resetAllTiming() {
 		0 // (Empty array entry)
 	};
 	Serial.write(spos, 5); // Send the series of commands to the MIDI-OUT circuit
+}
+
+// Reset all timing of all seqs and the global cue-point, and send a SONG-POSITION POINTER
+void resetAllTiming() {
+	TICKCOUNT = 2; // Set the TICK-counter to lapse into a new 32nd-note on the next tick
+	CUR32 = 127; // Reset the global cue-point
+	SPART = 0; // Reset the global SWING PART to 0 (its initial state)
+	memset(POS, 0, 96); // Reset each seq's internal tick-position
+	sendClockReset(); // Send a MIDI-CLOCK reset command to MIDI-OUT
 }
 
 // Compare a seq's CUE-commands to the global CUE-point, and parse them if the timing is correct
