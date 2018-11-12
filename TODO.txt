@@ -93,7 +93,11 @@ Software:
 		. glyph doesn't show up, because I forgot to put one in
 			-- fixed
 		. re-test RESET TIMING
-			-- 
+			-- button-presses aren't throwing up the right glyph
+			. fix them
+			-- fixed
+		. test RESET TIMING again
+			-- seems to work
 	. test RESET TIMING while acting as MIDI LEAD for a drum-machine that is also playing from its own internal sequencer
 		--
 	. does RESET TIMING's lack of a dummy-tick (248) cause a 32nd-note offset at low tempos?
