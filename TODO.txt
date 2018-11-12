@@ -86,11 +86,17 @@ Software:
 		-- done
 	. shift around RECORD-MODE command-chords to fill the void left by the removal of CLOCKLEAD
 		-- done
+	. re-test changes to the sequencing system
+		-- seems fine
 	. test RESET TIMING for internal uses
-		--
+		-- am doing
+		. glyph doesn't show up, because I forgot to put one in
+			-- fixed
+		. re-test RESET TIMING
+			-- 
 	. test RESET TIMING while acting as MIDI LEAD for a drum-machine that is also playing from its own internal sequencer
 		--
-	. does RESET TIMING's dummy-tick (248) cause a 32nd-note offset at low tempos? (this would imply that all such dummy-ticks must be removed - search for "248")
+	. does RESET TIMING's lack of a dummy-tick (248) cause a 32nd-note offset at low tempos?
 		--
 
 	. test recordable SWING-commands

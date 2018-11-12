@@ -58,6 +58,16 @@ const byte GLYPH_ERASE[] PROGMEM = {
 	B11101010
 };
 
+// Standalone glyph: RESET TIMING
+const byte GLYPH_RESET_TIMING[] PROGMEM = {
+	B00000000,
+	B11100111,
+	B10010010,
+	B11100010,
+	B10010010,
+	B10010010,
+};
+
 // Standalone glyph: SHIFT GLOBAL CUE
 const byte GLYPH_SHIFT[] PROGMEM = {
 	B00000000,
