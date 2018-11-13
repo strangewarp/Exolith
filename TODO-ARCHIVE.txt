@@ -862,6 +862,49 @@ Software:
 			. beatslicing
 				-- seems fine
 
+	-- added a "sendClockReset()" call to the end of setup(), to boot up the timing mechanisms of downstream MIDI-CLOCK devices on startup
+
+	. simplify: instead of GESTURE system, just have 5-to-6-button keychords for its commands
+		-- am doing
+		. GLOBAL PLAY/STOP and TOGGLE LOAD-MODE should both require an additional button-press while their keys are held...
+		. ...so, check for them in the main "else" case inside of assignKey(), and trigger the commands' consequences from there
+			-- ok
+	. remove all subsequent GESTURE-related TODOs
+		-- done
+	. remove the PLAYING var, and the GLOBAL PLAY/STOP mechanism
+		-- done
+	. instead of toggling PLAYING on or off, introduce a RESET TIMING command. this should be fused with resetAllTiming(), and it should:
+		-- ok
+		. reset GLOBAL CUE
+		. reset all seq-positions
+		. NOT reset all pending cues (would be more useful this way, in weird performance-cases)
+		. send a CLOCK STOP command
+		. send a SONG-POSITION POINTER
+		. send a CLOCK START command
+			. plus a dummy-CLOCK-tick? research this again
+		-- ok
+	. remove all CLOCK-IN mechanisms, and all PLAYING and DUMMYTICK mechanisms
+		-- done
+	. shift around RECORD-MODE command-chords to fill the void left by the removal of CLOCKLEAD
+		-- done
+	. re-test changes to the sequencing system
+		-- seems fine
+	. test RESET TIMING for internal uses
+		-- am doing
+		. glyph doesn't show up, because I forgot to put one in
+			-- fixed
+		. re-test RESET TIMING
+			-- button-presses aren't throwing up the right glyph
+			. fix them
+			-- fixed
+		. test RESET TIMING again
+			-- seems to work
+	. test RESET TIMING while acting as MIDI LEAD for a drum-machine that is also playing from its own internal sequencer
+		-- seems to mostly work
+		-- however... Tine seems to be a tick behind the following-device, somehow
+		. figure out why
+			-- TICKCOUNT wasn't being reset. tested this change and it seems to work now
+
 Hardware:
 
 	. print out the alpha-prototype's schematic for reference while making updates (KiCad can corrupt a project if more than 1 is open)

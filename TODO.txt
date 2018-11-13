@@ -10,50 +10,19 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	-- added a "sendClockReset()" call to the end of setup(), to boot up the timing mechanisms of downstream MIDI-CLOCK devices on startup
+	. sequence-LEDs are not illuminated in PLAY MODE after toggling back from RECORD MODE. figure out why
+		--
 
-	. simplify: instead of GESTURE system, just have 5-to-6-button keychords for its commands
-		-- am doing
-		. GLOBAL PLAY/STOP and TOGGLE LOAD-MODE should both require an additional button-press while their keys are held...
-		. ...so, check for them in the main "else" case inside of assignKey(), and trigger the commands' consequences from there
-			-- ok
-	. remove all subsequent GESTURE-related TODOs
-		-- done
-	. remove the PLAYING var, and the GLOBAL PLAY/STOP mechanism
-		-- done
-	. instead of toggling PLAYING on or off, introduce a RESET TIMING command. this should be fused with resetAllTiming(), and it should:
-		-- ok
-		. reset GLOBAL CUE
-		. reset all seq-positions
-		. NOT reset all pending cues (would be more useful this way, in weird performance-cases)
-		. send a CLOCK STOP command
-		. send a SONG-POSITION POINTER
-		. send a CLOCK START command
-			. plus a dummy-CLOCK-tick? research this again
-		-- ok
-	. remove all CLOCK-IN mechanisms, and all PLAYING and DUMMYTICK mechanisms
-		-- done
-	. shift around RECORD-MODE command-chords to fill the void left by the removal of CLOCKLEAD
-		-- done
-	. re-test changes to the sequencing system
-		-- seems fine
-	. test RESET TIMING for internal uses
-		-- am doing
-		. glyph doesn't show up, because I forgot to put one in
-			-- fixed
-		. re-test RESET TIMING
-			-- button-presses aren't throwing up the right glyph
-			. fix them
-			-- fixed
-		. test RESET TIMING again
-			-- seems to work
-	. test RESET TIMING while acting as MIDI LEAD for a drum-machine that is also playing from its own internal sequencer
-		-- seems to mostly work
-		-- however... Tine seems to be a tick behind the following-device, somehow
-		. figure out why
-			-- TICKCOUNT wasn't being reset. tested this change and it seems to work now
-
-	. certain sequences are not illuminated in PLAY MODE after toggling back from RECORD MODE. figure out why
+	. STATS[] should hold the seq's size in whole-notes, not half-notes
+		--
+	. change file-format, and all file functions, so seqs are 8192 large
+		--
+	. update data-key.txt
+		--
+	. change everything that engages with STATS[] to compensate for the shift to whole-note granularity
+		--
+	. change the GUI for the second LED-row in RECORD-MODE, to increment on whole-notes rather than quarter-notes...
+	. ...and get rid of its flashing behavior, which is now extraneous
 		--
 
 	. test recordable SWING-commands
@@ -68,15 +37,10 @@ Software:
 		. recorded SWING commands
 			--
 
-	. re-test all recording mechanisms
-		. note-recording
-			. TRACK 1
-			. TRACK 2
-		. ERASE WHILE HELD
-			. TRACK 1
-			. TRACK 2
-		. CLEAR SEQ
-			. clears both tracks simultaneously?
+	. re-test all tricky recording mechanisms
+		. ERASE WHILE HELD on TRACK 2
+		. CLEAR SEQ clears notes in the correct size-window?
+		. CLEAR SEQ clears both tracks simultaneously?
 		. COPY/PASTE
 			. straightforward standard usage
 			. with COPY size too long for PASTE size (should be discarded)
@@ -85,21 +49,16 @@ Software:
 		. SEQ POSITION
 		. SWITCH RECORDSEQ
 
-	. send SONG POSITION POINTER commands (resetAllSeqs()?) to MIDI-OUT...
-		. immediately after startup
-		. every time RECORD MODE or PLAY MODE is toggled into
-
-	. reassign the RECORD-MODE control-commands to make logical sense around the new BPM keychord
+	. reassign the RECORD-MODE control-commands to make logical sense (draw a chart to help with this, if necessary)
 		. change button-key.txt:
 			. RECORD, REPEAT, and TRACK should be conceptually connected
 			. CHAN and UPPER-CHAN should be conceptually connected
 			. OCTAVE, VELOCITY, DURATION, HUMANIZE, and QUANTIZE should be conceptually connected
-		. change KEYTAB array
-		. change RECORD-MODE GUI routines
+		. change KEYTAB array for this
+		. change RECORD-MODE GUI routines for this
 
 	. re-test things
 		. are old notes being knocked out of the sequence by new notes in RECORD-MODE properly?
-		. test SEQ-SIZE behavior
 		. test CC/PC/other advanced MIDI commands
 			. with REPEAT-SWEEP active
 			. with arpeggiation
@@ -109,8 +68,6 @@ Software:
 		. test auto-loading of most recent savefile on startup
 		. test that the number of the savefile is displayed correctly on startup
 			. also for savefiles in file-slots >= 100
-
-	. does HUMANIZE apply to REPEAT notes correctly?
 
 	. re-test all cue-commands
 		. OFF
@@ -138,10 +95,6 @@ Software:
 		. are notes recorded only when RECORDNOTES is armed?
 		. make sure that notes are not erroneously recorded when PLAY MODE or LOAD MODE is active
 			. especially after toggling into LOAD MODE from RECORD MODE with RECORDNOTES armed
-	. test MIDI-IN (clock)
-		. does it synchronize correctly with other clocked gear, without jumping forward or behind by a tick? (test at very low tempo)
-			. ...when receiving CLOCK?
-			. ...when sending CLOCK to other gear?
 
 	. check whether sequences function correctly with non-multiple-of-2 lengths, under all RECORD MODE and PLAY MODE processes
 	. check that, when a deeper savefile is loaded and is running many complex sequences, there's no extra lag for whatever reason
@@ -179,19 +132,11 @@ Software:
 
 	. add SONG POSITION POINTER functionality while in CLOCK FOLLOW mode, to orient the global cue-position correctly?
 
-	. re-test problem areas:
-		. GLOBAL PLAY/STOP
-		. MIDI-IN
-		. GLOBAL PLAY/STOP under conditions of complex MIDI-IN
-
-	. very rarely, the tempo will be far too fast upon power-up. figure out why
-
 	. double-check that there are no remaining "todo" or "test" comments in the codebase
 	. remove "THIS CODE IS UNDER DEVELOPMENT AND DOESN'T DO ANYTHING" from license-statement
 	. double-check that everything compiles correctly in the latest version of Arduino
 	. test overloading the 8-events-per-tick system
 	. test overloading the SUSTAIN system with simultaneous sequencing and notes-from-RECORD-MODE
-	. test overloading the MIDI-IN system
 	. soak-test the physical prototype
 
 	. add a note to tutorials on wear-leveling:
