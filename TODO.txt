@@ -24,6 +24,10 @@ Software:
 	. change the GUI for the second LED-row in RECORD-MODE, to increment on whole-notes rather than quarter-notes...
 	. ...and get rid of its flashing behavior, which is now extraneous
 		--
+	. wipe SD-card again, and upload new firmware while doing so
+		--
+	. test the changes
+		--
 
 	. test recordable SWING-commands
 		--
