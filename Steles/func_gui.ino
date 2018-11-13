@@ -229,7 +229,9 @@ void updateRecBottomRows(byte ctrl) {
 // Update the bottom LED-rows for PLAY-MODE
 void updatePlayBottomRows(byte ctrl) {
 
-	byte heldsc = (ctrl & B00000011) == B00000011; // Make sure this is, indeed, a command with SCATTER shape
+	// Check whether a command with SCATTER-shape is held, and chec that it's not a RECORD-TOGGLE command
+	byte heldsc = ((ctrl & B00010001) == B00010001) && (ctrl != B00111111);
+
 	byte row = 0; // Will hold the binary value to be sent to the row's LEDs
 	byte blnk = (240 * (!!BLINKL)) | (15 * (!!BLINKR)); // If there are any active BLINKs, create a row-template for them
 

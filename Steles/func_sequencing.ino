@@ -26,6 +26,8 @@ void sendClockReset() {
 		0 // (Empty array entry)
 	};
 	Serial.write(spos, 5); // Send the series of commands to the MIDI-OUT circuit
+	BLINKL = 255; // Start a relatively-long LED-blink
+	BLINKR = 255; // ^
 }
 
 // Reset all timing of all seqs and the global cue-point, and send a SONG-POSITION POINTER

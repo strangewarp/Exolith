@@ -10,8 +10,11 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
+	-- added a BLINK to sendClockReset()
+	-- fixed the SHIFT command in PLAY-MODE to shift the global-CUE point by the correct amount again
+
 	. sequence-LEDs are not illuminated in PLAY MODE after toggling back from RECORD MODE. figure out why
-		--
+		-- refreshPlayCustoms() wasn't checking for a TOGGLE RECORD-MODE keychord. fixed now
 
 	. STATS[] should hold the seq's size in whole-notes, not half-notes
 		--
