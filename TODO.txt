@@ -14,6 +14,23 @@ Software:
 	-- took a block of code from the middle of loadSong() and made it into sendInvalidBPMGlyph()
 	-- changed clearCmd() to have a whole-note granularity in both its erase-point and its erase-size
 
+	. COPY/PASTE is really extraneous to any sane workflow, so...
+		. remove COPY/PASTE funcs from func_cmd.ino
+			-- done
+		. remove COPY/PASTE CmdFunc entries, and restructure other funcs around them
+			--
+			. reflect these changes in button-key.txt
+				--
+			. move other commands around in button-key.txt once the keychords for COPY/PASTE have been freed up
+				--
+				. reflect this change in the CmdFunc entries
+					--
+		. remove COPY/PASTE glyphs
+			--
+		. change that one manual call to the BPM-glyph's position again
+			--
+
+
 	. STATS[] should hold the seq's size in whole-notes, not half-notes
 		-- am doing
 	. change file-format, and all file functions, so seqs are 8192 large
