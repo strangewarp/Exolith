@@ -905,6 +905,12 @@ Software:
 		. figure out why
 			-- TICKCOUNT wasn't being reset. tested this change and it seems to work now
 
+	-- added a BLINK to sendClockReset()
+	-- fixed the SHIFT command in PLAY-MODE to shift the global-CUE point by the correct amount again
+
+	. sequence-LEDs are not illuminated in PLAY MODE after toggling back from RECORD MODE. figure out why
+		-- refreshPlayCustoms() wasn't checking for a TOGGLE RECORD-MODE keychord. fixed now
+
 Hardware:
 
 	. print out the alpha-prototype's schematic for reference while making updates (KiCad can corrupt a project if more than 1 is open)

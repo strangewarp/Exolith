@@ -8,7 +8,7 @@ Steles data-file spec
 		/167.DAT: highest datafile number
 
 	File contents:
-		(196659 total bytes)
+		(393267 total bytes)
 		Header bytes:
 			(51 total bytes)
 			0: BPM (32-200)
@@ -17,9 +17,9 @@ Steles data-file spec
 			3-50:
 				Seq's size, in whole-notes (0-63 = 1-64)
 		Body bytes:
-			48 sequences (196608 total bytes)
+			48 sequences (393216 total bytes)
 			Per sequence (for 48 sequences):
-				512 tick-slots (4096 total bytes)
+				1024 tick-slots (8192 total bytes)
 				Per tick-slot:
 					2 notes (8 total bytes)
 					Per note:

@@ -10,27 +10,49 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	-- added a BLINK to sendClockReset()
-	-- fixed the SHIFT command in PLAY-MODE to shift the global-CUE point by the correct amount again
-
-	. sequence-LEDs are not illuminated in PLAY MODE after toggling back from RECORD MODE. figure out why
-		-- refreshPlayCustoms() wasn't checking for a TOGGLE RECORD-MODE keychord. fixed now
+	-- changed lower BPM boundary back to 32
+	-- took a block of code from the middle of loadSong() and made it into sendInvalidBPMGlyph()
+	-- changed clearCmd() to have a whole-note granularity in both its erase-point and its erase-size
 
 	. STATS[] should hold the seq's size in whole-notes, not half-notes
-		--
+		-- am doing
 	. change file-format, and all file functions, so seqs are 8192 large
-		--
-	. update data-key.txt
-		--
+		-- done
+	. update data-format.txt
+		-- done
 	. change everything that engages with STATS[] to compensate for the shift to whole-note granularity
 		--
 	. change the GUI for the second LED-row in RECORD-MODE, to increment on whole-notes rather than quarter-notes...
 	. ...and get rid of its flashing behavior, which is now extraneous
 		--
+	. change CUR32 to go to 256 rather than 128
+		--
+	. change all CUR32-related mechanisms to compensate for CUR32's new max size
+		--
 	. wipe SD-card again, and upload new firmware while doing so
 		--
-	. test the changes
+	. test regular-sequence recording
 		--
+	. test regular-sequence playback
+		--
+	. test long-sequence recording
+		--
+	. test long-sequence playback
+		--
+	. test long-sequence timed cues and beatslicing
+		--
+
+	. GLOBAL CUE should wrap every 256 32nd-notes, not every 128 32nd-notes
+		--
+
+	. design decision: remove COPY/PASTE?
+		. pros:
+			. convenient when using partial-overwrite techniques to make variations on a theme
+		. cons:
+			. discourages creative sequencing
+			. encourages user-behaviors that would degrade the SD-card when used excessively in the long-term
+			. adds UI/UX/tutorial complexity
+			. unintuitive interface would probably require referencing the manual for all but the most hardcore users
 
 	. test recordable SWING-commands
 		--

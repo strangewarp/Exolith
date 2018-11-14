@@ -30,7 +30,7 @@
 // These values may need to be changed in the course of programming/debugging,
 // but will always stay the same at runtime.
 
-#define FILE_BYTES 196659UL // Number of bytes in each savefile
+#define FILE_BYTES 393267UL // Number of bytes in each savefile
 
 // Location of bytes in a given savefile's header-block:
 #define FILE_BPM_BYTE 0 // BPM byte
@@ -41,9 +41,9 @@
 
 #define FILE_BODY_START 51UL // Start of the file's body-block (UL because large values get added to this)
 
-#define FILE_SEQ_BYTES 4096UL // Bytes within each sequence (UL because large values get added to this)
+#define FILE_SEQ_BYTES 8192UL // Bytes within each sequence (UL because large values get added to this)
 
-#define BPM_LIMIT_LOW 60 // Limits to the range of valid BPM values
+#define BPM_LIMIT_LOW 32 // Limits to the range of valid BPM values
 #define BPM_LIMIT_HIGH 255 // ^
 
 #define UPPER_BITS_LOW 96 // Limits to the range of valid UPPER COMMAND BITS values
@@ -153,7 +153,7 @@ byte SCATTER[49];
 byte CMD[49];
 
 // Holds 48 seqs' sizes and activity-flags
-// bits 0-5: 1, 2, 4, 8, 16, 32 (= size, in half-notes, where each quarter-note is a "beat") (range limits: 1 to 32)
+// bits 0-5: 1, 2, 4, 8, 16, 32 (= size, in whole-notes, where each quarter-note is a "beat") (range limits: 1 to 32)
 // bit 6: reserved
 // bit 7: on/off flag
 byte STATS[49];

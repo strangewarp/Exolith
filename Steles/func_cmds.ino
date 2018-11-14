@@ -32,14 +32,14 @@ void clearCmd(byte col, byte row) {
 	byte buf[5]; // Create a note-sized data buffer...
 	memset(buf, 0, 4); // ...And clear it of any junk-data
 
-	byte len = STATS[RECORDSEQ] & 63; // Get the RECORDSEQ's length, in half-notes
+	byte len = STATS[RECORDSEQ] & 63; // Get the RECORDSEQ's length, in whole-notes
 	word blen = word(len) * 128; // Get the RECORDSEQ's length, in bytes
 
 	unsigned long rspos = FILE_BODY_START + (FILE_SEQ_BYTES * RECORDSEQ); // Get the RECORDSEQ's absolute data-position
-	word pos = POS[RECORDSEQ] & 1008; // Get the bottom-point of the current beat in RECORDSEQ
+	word pos = POS[RECORDSEQ] & 2040; // Get the bottom-point of the current whole-note in RECORDSEQ
 	byte t4 = TRACK * 4; // Get a bitwise offset based on whether track 1 or 2 is active
 
-	for (word i = 0; i < (word(min(abs(toChange(col, row)), len)) * 128); i += 8) { // For every 32nd-note in the clear-area...
+	for (word i = 0; i < (word(min(abs(toChange(col, row)), len)) * 256); i += 8) { // For every whole-note in the clear-area...
 		writeCommands(rspos + ((pos + i + t4) % blen), 4, buf, 1); // Overwrite it if it matches the TRACK and CHAN
 	}
 
@@ -49,15 +49,6 @@ void clearCmd(byte col, byte row) {
 	BLINKR = TRACK * 255; // ^
 	TO_UPDATE |= 252; // Flag the bottom 6 rows for LED updates
 
-}
-
-// Parse a COPY press
-void copyCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row) {
-	COPYPOS = POS[RECORDSEQ] - (POS[RECORDSEQ] % 16); // Set the COPY-position to the start of the half-note
-	COPYSEQ = RECORDSEQ; // Set the COPY-seq to the curent RECORD-seq
-	BLINKL = 255; // Start an LED-BLINK that is ~16ms long
-	BLINKR = 255; // ^
-	TO_UPDATE |= 252; // Flag the bottom 6 rows for LED updates
 }
 
 // Parse a DURATION press
@@ -108,44 +99,6 @@ void octaveCmd(byte col, byte row) {
 	TO_UPDATE |= 1; // Flag the topmost row for updating
 }
 
-// Parse a PASTE press
-void pasteCmd(__attribute__((unused)) byte col, byte row) {
-
-	byte b1[33]; // Create an eighth-note-sized copy-data buffer...
-	memset(b1, 0, 32); // ...And clear it of any junk-data
-
-	unsigned long copybase = FILE_BODY_START + (word(COPYSEQ) * FILE_SEQ_BYTES); // Get the literal position of the copy-seq
-	unsigned long pastebase = FILE_BODY_START + (word(RECORDSEQ) * FILE_SEQ_BYTES); // Get the literal position of the paste-seq
-
-	byte clen = 128 >> row; // Get the length of the copy/paste, in eighth-notes
-
-	byte csize = STATS[COPYSEQ] & 63; // Get the copy-seq's size, in half-notes
-	byte psize = STATS[RECORDSEQ] & 63; // Get the paste-seq's size, in half-notes
-
-	byte pstart = (POS[RECORDSEQ] - (POS[RECORDSEQ] % 16)) >> 4; // Get the start of the paste-location, in half-notes
-
-	for (byte filled = 0; filled < clen; filled++) { // For every eighth-note in the copypaste's area...
-
-		file.seekSet(copybase + (word((COPYPOS + filled) % csize) * 32)); // Navigate to the current copy-position
-		file.read(b1, 32); // Read the copy-data
-
-		writeCommands( // Write this chunk of copy-data to the corresponding paste-area of the file
-			pastebase + (word((pstart + filled) % psize) * 32), // Bitwise file-position for the eighth-note's paste-location
-			32, // Size of the data-buffer, in bytes
-			b1, // The data-buffer itself
-			0 // Apply this to notes on all channels
-		);
-
-	}
-
-	file.sync(); // Sync any still-buffered data to the savefile
-
-	BLINKL = 255; // Start an LED-BLINK that is ~16ms long
-	BLINKR = 255; // ^
-	TO_UPDATE |= 252; // Flag the bottom 6 rows for LED updates
-
-}
-
 // Parse a SHIFT RECORDING POSITION press
 void posCmd(byte col, byte row) {
 
@@ -155,7 +108,7 @@ void posCmd(byte col, byte row) {
 
 	for (byte seq = 0; seq < 48; seq++) { // For each seq...
 		if (STATS[seq] & 128) { // If the seq is playing...
-			word size = (STATS[seq] & 63) * 16; // Get the seq's size, in 32nd-notes
+			word size = (STATS[seq] & 63) * 32; // Get the seq's size, in 32nd-notes
 			// Shift the seq's position, wrapping in either direction
 			POS[seq] = word(((long(POS[seq]) + change) % size) + size) % size;
 		}

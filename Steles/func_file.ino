@@ -215,19 +215,7 @@ void loadSong(byte slot) {
 	BPM = file.read(); // Read it
 	// If this is an erroneous value that falls outside of the valid BPM range...
 	if ((BPM < BPM_LIMIT_LOW) || (word(BPM) > BPM_LIMIT_HIGH)) {
-		sendRow(0, 0); // Clear the top 3 LED-rows
-		sendRow(1, 0);
-		sendRow(2, 0);
-		for (byte i = 1; i < 21; i++) { // Iterate through 20 on-or-off blink-states...
-			byte i2 = !!(i % 4); // Get whether this is an on-blink or an off-blink
-			// Depending on blink-status, either send an "invalid BPM" glyph to the screen, or totally clear the screen
-			sendRow(3, i2 * B01010001);
-			sendRow(4, i2 * B01001010);
-			sendRow(5, i2 * B01000100);
-			sendRow(6, i2 * B11001010);
-			sendRow(7, i2 * B11010001);
-			delay(250); // Hold the glyph's current state for a quarter-second
-		}
+		sendInvalidBPMGlyph(); // Send a blinking glyph that signifies an invalid BPM has been loaded
 		BPM = DEFAULT_BPM; // Set the BPM to the default value
 	}
 
