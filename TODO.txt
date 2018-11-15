@@ -58,18 +58,6 @@ Software:
 	. test long-sequence timed cues and beatslicing
 		--
 
-	. GLOBAL CUE should wrap every 256 32nd-notes, not every 128 32nd-notes
-		--
-
-	. design decision: remove COPY/PASTE?
-		. pros:
-			. convenient when using partial-overwrite techniques to make variations on a theme
-		. cons:
-			. discourages creative sequencing
-			. encourages user-behaviors that would degrade the SD-card when used excessively in the long-term
-			. adds UI/UX/tutorial complexity
-			. unintuitive interface would probably require referencing the manual for all but the most hardcore users
-
 	. test recordable SWING-commands
 		--
 	. test REPEAT-SWEEP on:
