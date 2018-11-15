@@ -177,11 +177,18 @@ void updateFirstRow(byte ctrl) {
 // Update the second row of LEDs
 void updateSecondRow() {
 	if (RECORDMODE) { // If RECORDMODE is active...
+		/*
 		byte braw = POS[RECORDSEQ] >> 3; // Get the seq's current beat (quarter-note)
 		byte b2 = braw % 8; // Get the seq's current beat (quarter-note), wrapped by 8
 		byte join = (2 << (POS[RECORDSEQ] >> 6)) - 1; // Get the number of times the beat has wrapped around
 		// Display the RECORDSEQ's spatially-wrapped beat-value, or blink when the spatial-wrapping would fill all LEDs in the row
 		sendRow(1, ((braw >= 56) ? (!(b2 % 2)) : 1) * ((join << (7 - b2)) | (join >> (b2 + 1))));
+		*/
+		byte braw = POS[RECORDSEQ] >> 5; // Get the seq's current whole-note
+		byte b2 = braw % 8; // Get the seq's current whole-note, wrapped by 8
+		byte join = (2 << (POS[RECORDSEQ] >> 8)) - 1; // Get the number of times the seq's display has wrapped around
+		// Display the RECORDSEQ's spatially-wrapped whole-note, alternating its blinking-activity on every quarter-note
+		sendRow(1, (!(POS[RECORDSEQ] % 16)) * ((join << (7 - b2)) | (join >> (b2 + 1))));
 	} else { // Else, if RECORDMODE isn't active...
 		if ((BUTTONS & B00000011) == 3) { // If any SCATTER-shaped command is held...
 			sendRow(1, SCATTER[RECORDSEQ]); // Display the most-recently-touched seq's SCATTER value

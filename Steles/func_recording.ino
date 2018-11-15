@@ -165,7 +165,7 @@ word getInsertionPoint() {
 		char down = distFromQuantize(); // Get distance to previous QUANTIZE point
 		byte up = min(QRESET - down, QUANTIZE - down); // Get distance to next QUANTIZE point, compensating for QRESET
 		p += (down <= up) ? (-down) : up; // Make the shortest distance into an offset for the note-insertion point
-		p %= word(STATS[RECORDSEQ] & 63) * 16; // Wrap the insertion-point around the seq's length
+		p %= word(STATS[RECORDSEQ] & 63) * 32; // Wrap the insertion-point around the seq's length
 	}
 	return p; // Return the QUANTIZE-adjusted insertion point
 }

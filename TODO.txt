@@ -37,14 +37,14 @@ Software:
 	. update data-format.txt
 		-- done
 	. change everything that engages with STATS[] to compensate for the shift to whole-note granularity
-		--
+		-- done afaict
 	. change the GUI for the second LED-row in RECORD-MODE, to increment on whole-notes rather than quarter-notes...
 	. ...and get rid of its flashing behavior, which is now extraneous
-		--
+		-- done
 	. change CUR32 to go to 256 rather than 128
-		--
+		-- done
 	. change all CUR32-related mechanisms to compensate for CUR32's new max size
-		--
+		-- done afaict
 	. wipe SD-card again, and upload new firmware while doing so
 		--
 	. test regular-sequence recording

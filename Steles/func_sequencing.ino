@@ -44,13 +44,13 @@ void parseCues(byte s, byte size) {
 
 	if (CMD[s]) { // If the sequence has any cued commands...
 
-		if (CUR32 == ((CMD[s] & B11100000) >> 1)) { // If the global 32nd-note corresponds to the seq's cue-point...
+		if (CUR32 == (CMD[s] & B11100000)) { // If the global 32nd-note corresponds to the seq's cue-point...
 
 			// Enable or disable the sequence's playing-bit
-			STATS[s] = (STATS[s] & B00111111) | ((CMD[s] & 2) << 6);
+			STATS[s] = (STATS[s] & 63) | ((CMD[s] & 2) << 6);
 
 			// Set the sequence's internal tick to a position based on the incoming SLICE bits
-			POS[s] = word(size) * ((CMD[s] & B00011100) >> 1);
+			POS[s] = word(size) * (CMD[s] & B00011100);
 
 			CMD[s] = 0; // Clear the sequence's CUED-COMMANDS byte
 
@@ -69,7 +69,7 @@ void readTick(byte s, byte offset, byte buf[]) {
 	word loc = POS[s]; // Get the sequence's current internal tick-location
 	if (offset) { // If an offset was given...
 		// Apply the offset to the tick-location, wrapping around the sequence's size-boundary
-		loc = (loc + offset) % (word(STATS[s] & 63) * 16);
+		loc = (loc + offset) % (word(STATS[s] & 63) * 32);
 	}
 	// Navigate to the note's absolute position,
 	// and compensate for the fact that each tick contains 8 bytes
@@ -221,7 +221,7 @@ void iterateAll() {
 
 	for (byte i = 47; i != 255; i--) { // For every sequence in the song, in reverse order...
 
-		byte size = STATS[i] & 63; // Get seq's absolute size, in half-notes
+		byte size = STATS[i] & 63; // Get seq's absolute size, in whole-notes
 
 		parseCues(i, size); // Parse a sequence's cued commands, if any
 
@@ -234,7 +234,7 @@ void iterateAll() {
 		getTickNotes(ctrl, i, buf);
 
 		// Increase the seq's 32nd-note position by one increment, wrapping it around its top limit
-		POS[i] = (POS[i] + 1) % (word(size) * 16);
+		POS[i] = (POS[i] + 1) % (word(size) * 32);
 
 	}
 

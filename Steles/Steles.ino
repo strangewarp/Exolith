@@ -132,7 +132,7 @@ byte KEYCOUNT = 0; // Holds the number of ticks for which a recording-note has b
 byte SONG = 0; // Current song-slot whose data-files are being played
 byte BPM = DEFAULT_BPM; // Beats-per-minute value: one beat is 96 tempo-ticks
 byte TICKCOUNT = 2; // Current global tick, bounded within the size of a 32nd-note (3 ticks, 0-indexed) (must be set to 2 initially, to lapse into the first note)
-byte CUR32 = 127; // Current global 32nd-note (bounded to 128, or 16 beats, beats being quarter-notes)
+byte CUR32 = 255; // Current global 32nd-note (bounded to 256, or 8 whole-notes)
 word GLOBALRAND = 12345; // Global all-purpose semirandom value; gets changed on every tick
 
 // Swing vars

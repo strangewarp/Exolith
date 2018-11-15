@@ -31,12 +31,12 @@ void activateStep() {
 
 	updateSwingPart(); // Update the SWING-PART var based on the current SWING GRANULARITY and CUR32 tick
 
-	if (!(CUR32 % 16)) { // It we're on the first tick within a global cue...
+	if (!(CUR32 % 32)) { // It we're on the first tick within a global cue-point...
 		TO_UPDATE |= 1; // Flag the top LED-row for updating
 	}
 
 	if (RECORDMODE) { // If we're in RECORD-MODE...
-		if (!(POS[RECORDSEQ] % 8)) { // If this is the start of a new beat (quarter-note)...
+		if (!(POS[RECORDSEQ] % 8)) { // If this is the start of a new quarter-note...
 			TO_UPDATE |= 2; // Flag the second LED-row for updating
 		}
 		if (RECORDNOTES && (!distFromQuantize())) { // If we are recording notes, and on a QUANTIZE or QRESET tick...
@@ -66,8 +66,9 @@ void advanceTick() {
 
 	if (TICKCOUNT) { return; } // If the current tick doesn't fall on a 32nd-note, exit the function
 
-	// Since we're sure we're on a new 32nd-note, advance the global current-32nd-note variable
-	CUR32 = (CUR32 + 1) % 128;
+	// Since we're sure we're on a new 32nd-note, advance the global current-32nd-note variable;
+	// it will wrap around after reaching 255, limiting it to 256 32nd-notes, or 8 whole-notes
+	CUR32++;
 
 	if (KEYFLAG) { // If a note is currently being recorded in manual-duration-mode...
 		KEYCOUNT++; // Increase the note's tick-counter by 1
