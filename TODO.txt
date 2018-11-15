@@ -18,18 +18,17 @@ Software:
 		. remove COPY/PASTE funcs from func_cmd.ino
 			-- done
 		. remove COPY/PASTE CmdFunc entries, and restructure other funcs around them
-			--
+			-- done
 			. reflect these changes in button-key.txt
-				--
+				-- done
 			. move other commands around in button-key.txt once the keychords for COPY/PASTE have been freed up
-				--
+				-- done
 				. reflect this change in the CmdFunc entries
-					--
+					-- done
 		. remove COPY/PASTE glyphs
-			--
+			-- done
 		. change that one manual call to the BPM-glyph's position again
-			--
-
+			-- done
 
 	. STATS[] should hold the seq's size in whole-notes, not half-notes
 		-- am doing
