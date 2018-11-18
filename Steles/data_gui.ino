@@ -68,16 +68,6 @@ const byte GLYPH_RESET_TIMING[] PROGMEM = {
 	B10010010,
 };
 
-// Standalone glyph: SHIFT GLOBAL CUE
-const byte GLYPH_SHIFT[] PROGMEM = {
-	B00000000,
-	B11101110,
-	B10001000,
-	B11101000,
-	B00101000,
-	B11101110,
-};
-
 // Multiglyph array: holds all straightforward command-glyphs
 const byte GLYPHS[] PROGMEM = {
 
@@ -164,7 +154,7 @@ const byte GLYPHS[] PROGMEM = {
 	B10101000,
 	B11101110,
 
-	// Glyph: SHIFT RECORDING POSITION
+	// Glyph: SHIFT POSITION
 	B00000000,
 	B00100100,
 	B01100110,

@@ -22,9 +22,7 @@ void parsePlayPress(byte col, byte row) {
 		PAGE ^= 1; // Toggle between page A and page B
 		TO_UPDATE |= 2; // Flag the second LED-row for updates
 	} else if (ctrl == B00000011) { // If SHIFT is held...
-		// Shift the CUR32 value by a number of GLOBAL CUE slices equal to the column of the keystroke (-2, -1, +1, +2)
-		CUR32 = byte(((int(CUR32) + (((int(col) - 2) + (col >= 2)) * 16)) + 128) % 128);
-		TO_UPDATE |= 1; // Flag the top LED-row for updates
+		posCmd(col, row); // Shift the CUR32 value by calling posCmd(), which works in both PLAY MODE and RECORD MODE
 	} else if (ctrl == B00000101) { // If BPM is held...
 		tempoCmd(col, row); // Cue a global BPM modification command, using the same function as in RECORD MODE
 	} else if (ctrl == B00100001) { // If PAGE-OFF is held, and a regular button-press was made to signal intent...

@@ -99,22 +99,25 @@ void octaveCmd(byte col, byte row) {
 	TO_UPDATE |= 1; // Flag the topmost row for updating
 }
 
-// Parse a SHIFT RECORDING POSITION press
+// Parse a SHIFT POSITION press
 void posCmd(byte col, byte row) {
 
-	int change = int(toChange(col, row)) * 16; // Convert a column and row into a CHANGE value, in 32nd-notes
+	int change = int(toChange(col, row)) * 32; // Convert a column and row into a CHANGE value, in 32nd-notes
 
-	CUR32 = byte(word(((int(CUR32) + change) % 128) + 128) % 128); // Shift the global cue-point, wrapping in either direction
+	CUR32 = byte(word(((int(CUR32) + change) % 256) + 256) % 256); // Shift the global cue-point, wrapping in either direction
 
-	for (byte seq = 0; seq < 48; seq++) { // For each seq...
-		if (STATS[seq] & 128) { // If the seq is playing...
-			word size = (STATS[seq] & 63) * 32; // Get the seq's size, in 32nd-notes
-			// Shift the seq's position, wrapping in either direction
-			POS[seq] = word(((long(POS[seq]) + change) % size) + size) % size;
+	if (RECORDMODE) { // If RECORDMODE is active... (This check is necessary because posCmd() is called from both RECORD MODE and PLAY MODE)
+		for (byte seq = 0; seq < 48; seq++) { // For each seq...
+			if (STATS[seq] & 128) { // If the seq is playing...
+				word size = (STATS[seq] & 63) * 32; // Get the seq's size, in 32nd-notes
+				// Shift the seq's position, wrapping in either direction
+				POS[seq] = word(((long(POS[seq]) + change) % size) + size) % size;
+			}
 		}
+		TO_UPDATE |= 2; // Flag the SEQ row (in RECORD MODE) for LED updates
 	}
 
-	TO_UPDATE |= 3; // Flag the top two rows for LED updates
+	TO_UPDATE |= 1; // Flag the GLOBAL-CUE row for LED updates
 
 }
 

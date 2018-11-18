@@ -33,7 +33,7 @@ void sendClockReset() {
 // Reset all timing of all seqs and the global cue-point, and send a SONG-POSITION POINTER
 void resetAllTiming() {
 	TICKCOUNT = 2; // Set the TICK-counter to lapse into a new 32nd-note on the next tick
-	CUR32 = 127; // Reset the global cue-point
+	CUR32 = 255; // Reset the global cue-point
 	SPART = 0; // Reset the global SWING PART to 0 (its initial state)
 	memset(POS, 0, 96); // Reset each seq's internal tick-position
 	sendClockReset(); // Send a MIDI-CLOCK reset command to MIDI-OUT

@@ -120,6 +120,11 @@ void sendVirtualCharRow(byte n, byte mid) {
 	}
 }
 
+// Send a regular GLOBAL CUE value to the top LED-row
+void sendRegularCueRow() {
+	sendRow(0, 128 >> (CUR32 >> 5)); // Display the global cue's current beat
+}
+
 // Update the first row of LEDs
 void updateFirstRow(byte ctrl) {
 	if (RECORDMODE) { // If this is RECORD-MODE...
@@ -163,13 +168,13 @@ void updateFirstRow(byte ctrl) {
 			// If ARM-RECORDING or ERASE WHILE HELD is held...
 			// Or some other unassigned button-combination is held...
 			// Or no control-buttons are held...
-			sendRow(0, 128 >> (CUR32 >> 4)); // Display the global cue's current half-note
+			sendRegularCueRow(); // Send a regular GLOBAL CUE value to the top LED-row
 		}
 	} else { // Else, if this isn't RECORD-MODE...
 		if ((!LOADMODE) && (ctrl == B00000101)) { // If this isn't LOAD MODE (then this is PLAY MODE), and if BPM is held...
 			sendRow(0, BPM); // Display BPM value
 		} else { // Else, if this is LOAD MODE, or if this is PLAY MODE and a BPM command isn't held...
-			sendRow(0, 128 >> (CUR32 >> 4)); // Display the global cue's current beat
+			sendRegularCueRow(); // Send a regular GLOBAL CUE value to the top LED-row
 		}
 	}
 }
@@ -177,13 +182,6 @@ void updateFirstRow(byte ctrl) {
 // Update the second row of LEDs
 void updateSecondRow() {
 	if (RECORDMODE) { // If RECORDMODE is active...
-		/*
-		byte braw = POS[RECORDSEQ] >> 3; // Get the seq's current beat (quarter-note)
-		byte b2 = braw % 8; // Get the seq's current beat (quarter-note), wrapped by 8
-		byte join = (2 << (POS[RECORDSEQ] >> 6)) - 1; // Get the number of times the beat has wrapped around
-		// Display the RECORDSEQ's spatially-wrapped beat-value, or blink when the spatial-wrapping would fill all LEDs in the row
-		sendRow(1, ((braw >= 56) ? (!(b2 % 2)) : 1) * ((join << (7 - b2)) | (join >> (b2 + 1))));
-		*/
 		byte braw = POS[RECORDSEQ] >> 5; // Get the seq's current whole-note
 		byte b2 = braw % 8; // Get the seq's current whole-note, wrapped by 8
 		byte join = (2 << (POS[RECORDSEQ] >> 8)) - 1; // Get the number of times the seq's display has wrapped around
@@ -264,8 +262,8 @@ void updatePlayBottomRows(byte ctrl) {
 			row = blnk; // If a BLINK is active, add it to the row's contents (also: this line clears the previous loop's row value)
 			if (ctrl == B00000101) { // If a BPM command is held...
 				row |= pgm_read_byte_near(GLYPHS + 118 + i); // Display a line from the BPM glyph
-			} else if (ctrl == B00000011) { // Else, if a SHIFT GLOBAL CUE command is held...
-				row |= pgm_read_byte_near(GLYPH_SHIFT + (i - 2)); // Display a line from the SHIFT glyph
+			} else if (ctrl == B00000011) { // Else, if a SHIFT POSITION command is held...
+				row |= pgm_read_byte_near(GLYPHS + 66 + i); // Display a line from the SHIFT POSITION glyph
 			} else if (ctrl == B00110111) { // Else, if a RESET TIMING command is held...
 				row |= pgm_read_byte_near(GLYPH_RESET_TIMING + (i - 2)); // Display a line from the RESET TIMING glyph
 			} else { // Else, if a regular PLAY MODE command is held...

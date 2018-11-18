@@ -10,26 +10,6 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	-- changed lower BPM boundary back to 32
-	-- took a block of code from the middle of loadSong() and made it into sendInvalidBPMGlyph()
-	-- changed clearCmd() to have a whole-note granularity in both its erase-point and its erase-size
-
-	. COPY/PASTE is really extraneous to any sane workflow, so...
-		. remove COPY/PASTE funcs from func_cmd.ino
-			-- done
-		. remove COPY/PASTE CmdFunc entries, and restructure other funcs around them
-			-- done
-			. reflect these changes in button-key.txt
-				-- done
-			. move other commands around in button-key.txt once the keychords for COPY/PASTE have been freed up
-				-- done
-				. reflect this change in the CmdFunc entries
-					-- done
-		. remove COPY/PASTE glyphs
-			-- done
-		. change that one manual call to the BPM-glyph's position again
-			-- done
-
 	. STATS[] should hold the seq's size in whole-notes, not half-notes
 		-- am doing
 	. change file-format, and all file functions, so seqs are 8192 large
@@ -46,7 +26,28 @@ Software:
 	. change all CUR32-related mechanisms to compensate for CUR32's new max size
 		-- done afaict
 	. wipe SD-card again, and upload new firmware while doing so
-		--
+		-- sd-card wiped. firmware uploaded
+	. initial test of updates
+		-- PLAY MODE's top-row GUI is displaying wrong
+		. fix it
+			-- fixed
+		. re-test
+			-- RECORD MODE's top-row GUI has a similar problem
+			. fix it
+				-- fixed. also, refactored some duplicate code into sendRegularCueRow()
+		. re-test
+			-- on mode-toggle, GLOBAL CUE seems to get set to 127 instead of 255
+			. fix it
+				-- fixed: CUR32's value was being set to 127 instead of 255 in resetAllTiming()
+		. re-test
+			-- SHIFT POSITION doesn't move GLOBAL CUE by the right amount, and its movement wraps halfway through the GLOBAL CUE point
+			. fix these problems
+				-- fixed both of these in posCmd().
+				-- also, SHIFT POSITION now applies across both PLAY MODE and RECORD MODE without any duplicate code
+					-- also updated the GUI for SHIFT POSITION in PLAY MODE
+			-- in RECORD-MODE, the seq-position LED-row isn't working
+			. fix seq-position LED-row
+				--
 	. test regular-sequence recording
 		--
 	. test regular-sequence playback
@@ -74,11 +75,6 @@ Software:
 		. ERASE WHILE HELD on TRACK 2
 		. CLEAR SEQ clears notes in the correct size-window?
 		. CLEAR SEQ clears both tracks simultaneously?
-		. COPY/PASTE
-			. straightforward standard usage
-			. with COPY size too long for PASTE size (should be discarded)
-			. with COPY size too short for PASTE size (should repeat until the end of the PASTE area)
-			. with COPY in another sequence than PASTE
 		. SEQ POSITION
 		. SWITCH RECORDSEQ
 
@@ -129,6 +125,8 @@ Software:
 		. make sure that notes are not erroneously recorded when PLAY MODE or LOAD MODE is active
 			. especially after toggling into LOAD MODE from RECORD MODE with RECORDNOTES armed
 
+	. reinsert a simple MIDI-IN (clock) system?
+
 	. check whether sequences function correctly with non-multiple-of-2 lengths, under all RECORD MODE and PLAY MODE processes
 	. check that, when a deeper savefile is loaded and is running many complex sequences, there's no extra lag for whatever reason
 	. look at all note-recording routines again, to triple-check for any stupid mistakes that would lead to unnecessary wear
@@ -173,17 +171,12 @@ Software:
 	. soak-test the physical prototype
 
 	. add a note to tutorials on wear-leveling:
-		. extreme repetitive use of PASTE or CLEAR will lead to faster card degradation
+		. extreme repetitive use of note-insertion and CLEAR will lead to comparatively faster card degradation (~10 years, versus the card's natural material lifespan)
 
 	. research how to back-up the contents of the SD-card in a manner that recombines the savefiles without losing their contiguous nature
 		-- files could be copied off the disk manually, and then transferred back onto the disk file-by-file using XVI32 to paste their contents into blank files
 		-- files could be copied en masse as a disk-image, and then reapplied en masse with a disk-imager
 			. write a tutorial on both of these methods
-
-	. tutorial section for COPY/PASTE:
-		. note that mashing PASTE constantly will accelerate SD-card wear
-		. variable COPY size
-		. variable PASTE size
 
 Hardware:
 
