@@ -46,8 +46,9 @@ Software:
 				-- also, SHIFT POSITION now applies across both PLAY MODE and RECORD MODE without any duplicate code
 					-- also updated the GUI for SHIFT POSITION in PLAY MODE
 			-- in RECORD-MODE, the seq-position LED-row isn't working
-			. fix seq-position LED-row
-				--
+			. fix seq-position LED-row in RECORD MODE
+				-- fixed: updateSecondRow() was checking for a 0 in the seq's POS when that value would have been set to 1 earlier in the tick's iteration-routine
+				-- also tweaked the bitwise arithmetic in updateSecondRow() to give the seq-LED-row correct positioning
 	. test regular-sequence recording
 		--
 	. test regular-sequence playback

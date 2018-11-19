@@ -184,9 +184,9 @@ void updateSecondRow() {
 	if (RECORDMODE) { // If RECORDMODE is active...
 		byte braw = POS[RECORDSEQ] >> 5; // Get the seq's current whole-note
 		byte b2 = braw % 8; // Get the seq's current whole-note, wrapped by 8
-		byte join = (2 << (POS[RECORDSEQ] >> 8)) - 1; // Get the number of times the seq's display has wrapped around
+		byte join = (2 << (POS[RECORDSEQ] >> 8)) - 1; // Get a series of illuminated LEDs that correspond to the number of times the seq's display has wrapped around
 		// Display the RECORDSEQ's spatially-wrapped whole-note, alternating its blinking-activity on every quarter-note
-		sendRow(1, (!(POS[RECORDSEQ] % 16)) * ((join << (7 - b2)) | (join >> (b2 + 1))));
+		sendRow(1, (!((POS[RECORDSEQ] & 8) >> 3)) * ((join << (7 - b2)) | (join >> (b2 + 1))));
 	} else { // Else, if RECORDMODE isn't active...
 		if ((BUTTONS & B00000011) == 3) { // If any SCATTER-shaped command is held...
 			sendRow(1, SCATTER[RECORDSEQ]); // Display the most-recently-touched seq's SCATTER value
