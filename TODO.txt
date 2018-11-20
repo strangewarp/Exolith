@@ -10,6 +10,9 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
+	-- SHIFT POSITION's glyph was off by a couple rows in PLAY MODE. fixed it
+	-- ARP MODE and ARP REFRESH weren't displaying their upper-row GUI. fixed it
+
 	. STATS[] should hold the seq's size in whole-notes, not half-notes
 		-- am doing
 	. change file-format, and all file functions, so seqs are 8192 large
@@ -50,12 +53,16 @@ Software:
 				-- fixed: updateSecondRow() was checking for a 0 in the seq's POS when that value would have been set to 1 earlier in the tick's iteration-routine
 				-- also tweaked the bitwise arithmetic in updateSecondRow() to give the seq-LED-row correct positioning
 	. test regular-sequence recording
-		--
+		-- QUANTIZE doesn't extend any further than a half-note, at settings larger than a half-note.
+		. figure out why
+			-- 
 	. test regular-sequence playback
 		--
 	. test long-sequence recording
 		--
 	. test long-sequence playback
+		--
+	. test regular-sequence timed cues and beatslicing
 		--
 	. test long-sequence timed cues and beatslicing
 		--
