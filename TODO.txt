@@ -53,9 +53,14 @@ Software:
 				-- fixed: updateSecondRow() was checking for a 0 in the seq's POS when that value would have been set to 1 earlier in the tick's iteration-routine
 				-- also tweaked the bitwise arithmetic in updateSecondRow() to give the seq-LED-row correct positioning
 	. test regular-sequence recording
-		-- QUANTIZE doesn't extend any further than a half-note, at settings larger than a half-note.
+		-- in the context of how it controls REPEAT distance, QUANTIZE doesn't extend any further than a half-note, at settings larger than a half-note.
 		. figure out why
-			-- 
+			-- could it just be a case of QRESET being smaller than QUANTIZE during the testing-event that uncovered the "bug"? if so, then this isn't a bug
+				. test for this
+					-- yes, this seems to be the case. so nothing is actually going wrong here.
+		-- RECORDNOTES doesn't seem to get unset when RECORD-MODE is toggled
+		. figure out why
+			--
 	. test regular-sequence playback
 		--
 	. test long-sequence recording

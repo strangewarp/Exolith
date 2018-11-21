@@ -65,6 +65,10 @@ Tutorial Outline
 			* A random velocity amount, from 0 to the HUMANIZE value, will be subtracted from every VELOCITY as it's recorded
 
 
+		QUANTIZE
+			* QUANTIZE-RESET will need to be larger than QUANTIZE, or else QUANTIZE will just start resetting at the QUANTIZE-RESET point
+
+
 		SHIFT POSITION
 
 
