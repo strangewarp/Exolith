@@ -12,6 +12,12 @@ Software:
 
 	-- SHIFT POSITION's glyph was off by a couple rows in PLAY MODE. fixed it
 	-- ARP MODE and ARP REFRESH weren't displaying their upper-row GUI. fixed it
+	-- removed outdated COPYPOS/COPYSEQ from the prefs-file (forgot to do this earlier)
+
+	. in RECORD-MODE, single-note presses should display that note's pitch as a conventional note-name in the GUI
+		-- added this to the code
+		. test it
+			-- 
 
 	. STATS[] should hold the seq's size in whole-notes, not half-notes
 		-- am doing

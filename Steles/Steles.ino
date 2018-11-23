@@ -118,8 +118,7 @@ byte CHAN = 144; // MIDI-COMMAND byte (including current CHANNEL) for RECORD MOD
 byte QUANTIZE = 4; // Time-quantize value for RECORD MODE notes (1 to 16)
 byte QRESET = 0; // Tracks how many beats must elapse within RECORDSEQ before the QUANTIZE anchor gets reset (0 = whole sequence)
 byte DURATION = 1; // Duration value for RECORD MODE notes, in 32nd-notes (0 to 128; and 129 = "manually-held durations mode")
-byte COPYPOS = 0; // Copy-position within the copy-sequence
-byte COPYSEQ = 0; // Sequence from which to copy data
+byte RECPRESS = 0; // Tracks the latest pressed-note within RECORD-MODE
 
 // Manual-note-recording vars
 byte KEYFLAG = 0; // Flags whether a note is currently being recorded in manual-DURATION-mode

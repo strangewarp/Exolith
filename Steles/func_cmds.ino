@@ -60,7 +60,11 @@ void durationCmd(byte col, byte row) {
 
 // Parse all of the possible actions that signal the recording of commands
 void genericCmd(byte col, byte row) {
+
+	RECPRESS = modKeyPitch(col, row); // Save the col and row's corresponding pitch, as the latest note pressed in RECORD-MODE
+
 	arpPress(); // Parse a new keypress in the arpeggiation-system
+
 	if (REPEAT) { // If REPEAT is active...
 		if ((!ARPLATCH) || ARPREFRESH) { // If ARPLATCH isn't active, or if ARPREFRESH is active, then RPTVELO needs to be refreshed. So...
 			RPTVELO = VELO; // Refresh the REPEAT-VELOCITY tracking var to be equal to the user-defined VELOCITY amount
@@ -73,9 +77,12 @@ void genericCmd(byte col, byte row) {
 			}
 			setKeyNote(col, row); // Set a held-recording-note for the given button-position
 		} else { // Else, if DURATION is in auto-mode...
-			processRecAction(modKeyPitch(col, row)); // Parse the key as a recording-action into the current TRACK
+			processRecAction(RECPRESS); // Parse the key as a recording-action into the current TRACK
 		}
 	}
+
+	TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for an update
+
 }
 
 // Parse a GRID-CONFIG press

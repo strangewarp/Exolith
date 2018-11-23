@@ -15,8 +15,8 @@ Steles prefs-file spec
 		byte 5:  QUANTIZE-RESET
 		byte 6:  QUANTIZE
 		byte 7:  DURATION
-		byte 8:  COPYPOS
-		byte 9:  COPYSEQ
+		byte 8:  (reserved)
+		byte 9:  (reserved)
 		byte 10: SONG
 		byte 11: (reserved)
 		byte 12: GRIDCONFIG

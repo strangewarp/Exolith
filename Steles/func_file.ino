@@ -91,8 +91,8 @@ void makePrefBuf(byte buf[]) {
 	buf[5] = QRESET;
 	buf[6] = QUANTIZE;
 	buf[7] = DURATION;
-	buf[8] = COPYPOS;
-	buf[9] = COPYSEQ;
+	buf[8] = 0; // reserved
+	buf[9] = 0; // reserved
 	buf[10] = SONG;
 	buf[11] = 0; // reserved
 	buf[12] = GRIDCONFIG;
@@ -180,10 +180,10 @@ void loadPrefs() {
 		QRESET = buf[5];
 		QUANTIZE = buf[6];
 		DURATION = buf[7];
-		COPYPOS = buf[8];
-		COPYSEQ = buf[9];
+		// reserved = buf[8];
+		// reserved = buf[9];
 		SONG = buf[10];
-		// xx = buf[11];
+		// reserved = buf[11];
 		GRIDCONFIG = buf[12];
 		RPTVELO = buf[13];
 		RPTSWEEP = buf[14];
