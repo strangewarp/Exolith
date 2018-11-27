@@ -62,9 +62,14 @@ Software:
 				-- works now
 		-- sequence-activity sometimes doesn't get displayed when the GUI toggles back into PLAY-MODE
 		. figure out why
-			--
+			-- updatePlayBottomRows() seems to be interpreting certain held-key-combos as SCATTER chords on the key-release after mode-toggle.
+			-- need to update the bottom 6 GUI-rows whenever a SCATTER chord is released.
+			. do this
+				-- simplified refreshPlayCustoms() because catching every special-case is no longer worth it
+				. re-test
+					-- seems to work now
 	. test regular-sequence playback
-		--
+		-- 
 	. test long-sequence recording
 		--
 	. test long-sequence playback
