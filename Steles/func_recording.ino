@@ -12,6 +12,7 @@ void toggleRecordMode() {
 		SCATTER[RECORDSEQ] = 0; // Unset the most-recently-touched seq's SCATTER values before starting to record
 		STATS[RECORDSEQ] |= 128; // Set the sequence to active, if it isn't already
 	}
+	RECORDNOTES = 0; // Disarm note-recording, regardless of which way the mode is being toggled
 	RECORDMODE ^= 1; // Toggle or untoggle RECORD-MODE
 	TO_UPDATE |= 255; // Flag all LED-rows for updating
 }

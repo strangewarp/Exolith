@@ -57,10 +57,12 @@ Software:
 					-- yes, this seems to be the case. so nothing is actually going wrong here.
 		-- RECORDNOTES doesn't seem to get unset when RECORD-MODE is toggled
 		. figure out why
-			--
+			-- forgot to disarm note-recording in toggleRecordMode(). fixed now
+			. re-test
+				-- works now
 		-- sequence-activity sometimes doesn't get displayed when the GUI toggles back into PLAY-MODE
 		. figure out why
-			-- 
+			--
 	. test regular-sequence playback
 		--
 	. test long-sequence recording
