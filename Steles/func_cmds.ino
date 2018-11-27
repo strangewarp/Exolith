@@ -61,7 +61,8 @@ void durationCmd(byte col, byte row) {
 // Parse all of the possible actions that signal the recording of commands
 void genericCmd(byte col, byte row) {
 
-	RECPRESS = modKeyPitch(col, row); // Save the col and row's corresponding pitch, as the latest note pressed in RECORD-MODE
+	RECPRESS = 1; // Set the "a note is currently being pressed" flag
+	RECNOTE = modKeyPitch(col, row); // Save the col and row's corresponding pitch, as the latest note pressed in RECORD-MODE
 
 	arpPress(); // Parse a new keypress in the arpeggiation-system
 
@@ -77,7 +78,7 @@ void genericCmd(byte col, byte row) {
 			}
 			setKeyNote(col, row); // Set a held-recording-note for the given button-position
 		} else { // Else, if DURATION is in auto-mode...
-			processRecAction(RECPRESS); // Parse the key as a recording-action into the current TRACK
+			processRecAction(RECNOTE); // Parse the key as a recording-action into the current TRACK
 		}
 	}
 

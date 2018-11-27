@@ -31,8 +31,8 @@ Software:
 		. test again
 			-- seems to work
 			-- also: changed some of the note-glyph and number-glyph shapes
-			. when holding a note-ubtton and releasing a control-button, it displays the wrong value. fix this
-				-- 
+			. when holding a note-button and releasing a control-button, it displays the wrong value. fix this
+				-- fixed: added a tracking-flag and tweaked some logic-flow
 
 	. STATS[] should hold the seq's size in whole-notes, not half-notes
 		-- am doing

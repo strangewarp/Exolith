@@ -109,7 +109,8 @@ byte ARPREFRESH = 0; // Controls how RPTVELO gets refreshed (0 = only on note-ke
 
 // Recording vars
 byte GRIDCONFIG = 0; // Current rotation of the note-key grid in RECORD-MODE (0 = chromatic row-based, 1 = chromatic column-based)
-byte RECPRESS = 0; // Tracks the latest pressed-note within RECORD-MODE
+byte RECPRESS = 0; // Tracks whether a note is currently being pressed in RECORD-MODE
+byte RECNOTE = 0; // Tracks the latest pressed-note within RECORD-MODE
 byte RPTSWEEP = 128; // Amount to modify RPTVELO by on each held-REPEAT-tick (0-127 = minus, 128-255 = plus)
 byte RPTVELO = 127; // Stored RPTSWEEP-modified VELOCITY value for the current REPEAT step (refreshed on every new REPEAT-note press)
 byte OCTAVE = 4; // Octave-offset value for RECORD MODE notes

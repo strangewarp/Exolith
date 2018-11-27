@@ -174,6 +174,8 @@ void unassignKey(byte col, byte row, byte oldcmds) {
 
 		}
 
+		RECPRESS = 0; // Regardless of which note was released, clear the "a note is being pressed" flag
+
 	} else { // Else, if this is PLAY MODE...
 		byte ctrl = BUTTONS & B00111111; // Get the currently-held control-buttons
 		refreshPlayCustoms(ctrl, oldcmds); // If any custom PLAY MODE commands were held, flag their GUI to be refreshed
