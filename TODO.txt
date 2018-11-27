@@ -16,8 +16,23 @@ Software:
 
 	. in RECORD-MODE, single-note presses should display that note's pitch as a conventional note-name in the GUI
 		-- added this to the code
+		. wait: does C = 12, 24, 36 etc. in the MIDI spec?
+			-- yes. just had to make sure
 		. test it
-			-- 
+			-- the GUI code for note-glyphs is messed up somehow
+			. figure out what's wrong
+				-- note-button GUI checker was selecting GLYPH_PITCHES rows wrong
+		. test again
+			-- still not working right
+			. find the issue
+				-- forgot to use pgm_read_byte_near()
+				-- I am an idiot
+			-- also added a TO_UPDATE flag to unassignKey()'s RECORD-MODE block, so note-glyphs are wiped off the screen when the keystroke is lifted
+		. test again
+			-- seems to work
+			-- also: changed some of the note-glyph and number-glyph shapes
+			. when holding a note-ubtton and releasing a control-button, it displays the wrong value. fix this
+				-- 
 
 	. STATS[] should hold the seq's size in whole-notes, not half-notes
 		-- am doing

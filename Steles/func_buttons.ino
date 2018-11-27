@@ -170,6 +170,8 @@ void unassignKey(byte col, byte row, byte oldcmds) {
 				file.sync(); // Sync any stored unwritten savefile-data (this includes data from recordHeldNote() calls)
 			}
 
+			TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
+
 		}
 
 	} else { // Else, if this is PLAY MODE...

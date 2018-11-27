@@ -109,6 +109,7 @@ byte ARPREFRESH = 0; // Controls how RPTVELO gets refreshed (0 = only on note-ke
 
 // Recording vars
 byte GRIDCONFIG = 0; // Current rotation of the note-key grid in RECORD-MODE (0 = chromatic row-based, 1 = chromatic column-based)
+byte RECPRESS = 0; // Tracks the latest pressed-note within RECORD-MODE
 byte RPTSWEEP = 128; // Amount to modify RPTVELO by on each held-REPEAT-tick (0-127 = minus, 128-255 = plus)
 byte RPTVELO = 127; // Stored RPTSWEEP-modified VELOCITY value for the current REPEAT step (refreshed on every new REPEAT-note press)
 byte OCTAVE = 4; // Octave-offset value for RECORD MODE notes
@@ -118,7 +119,6 @@ byte CHAN = 144; // MIDI-COMMAND byte (including current CHANNEL) for RECORD MOD
 byte QUANTIZE = 4; // Time-quantize value for RECORD MODE notes (1 to 16)
 byte QRESET = 0; // Tracks how many beats must elapse within RECORDSEQ before the QUANTIZE anchor gets reset (0 = whole sequence)
 byte DURATION = 1; // Duration value for RECORD MODE notes, in 32nd-notes (0 to 128; and 129 = "manually-held durations mode")
-byte RECPRESS = 0; // Tracks the latest pressed-note within RECORD-MODE
 
 // Manual-note-recording vars
 byte KEYFLAG = 0; // Flags whether a note is currently being recorded in manual-DURATION-mode

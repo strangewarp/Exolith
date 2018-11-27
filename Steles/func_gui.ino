@@ -239,7 +239,10 @@ void updateRecBottomRows(byte ctrl) {
 				row |= 15 * REPEAT; // Add a blaze to the REPEAT glyph, if REPEAT is ARMED
 			}
 		} else if (BUTTONS >> 6) { // Else, if control-buttons aren't held, but note-buttons are held...
-			row |= GLYPH_PITCHES[(RECPRESS + i) % 12]; // Display a pitch-letter that corresponds to the currently-held note-button 
+			byte rmod = RECPRESS % 12; // Get a number that corresponds to the keypress's in-octave note-value
+			row =
+				pgm_read_byte_near(GLYPH_PITCHES + (rmod * 6) + i) // Display a pitch-letter that corresponds to the currently-held note-button...
+				| ((i == 5) ? min(9, byte(floor(RECPRESS / 12))) : 0); // ...Combined with the binary value of the note's octave
 		} else { // Else, if no control-buttons or note-buttons are held...
 			row = getRowSeqVals(i); // Get the row's standard SEQ values
 		}
