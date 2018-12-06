@@ -13,12 +13,6 @@ char toChange(byte col, byte row) {
 	return char(32 >> row) * (char(col & 2) - 1);
 }
 
-// Adjust the SWING AMOUNT to fall within the boundaries of the current SWING GRANULARITY value
-void swingAdjust(char adj) {
-	char limit = (1 << SGRAN) - 1; // Get the maximum number of SWING-ticks in the current SWING-space
-	SAMOUNT = max(-limit, min(limit, adj + SAMOUNT));
-}
-
 // Return a button-number that corresponds to the most-significant pressed control-button's bitwise value
 byte ctrlToButtonIndex(byte ctrl) {
 	return (ctrl & 32) ? 6 : (
