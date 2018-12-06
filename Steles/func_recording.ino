@@ -5,7 +5,6 @@ void toggleRecordMode() {
 	resetAllTiming(); // Reset the timing of all seqs, and the global cue-point
 	if (RECORDMODE) { // If RECORDMODE is about to be untoggled...
 		writePrefs(); // Write the current relevant global vars into PRF.DAT
-		updateSwingVals(); // Update the savefile's SWING-data, if it has been changed
 		updateSeqSize(); // Update the size-data of all sequences in the savefile
 	} else { // Else, if RECORD-MODE is about to be toggled...
 		resetSeq(RECORDSEQ); // If the most-recently-touched seq is already playing, reset it to prepare for timing-wrapping
@@ -48,12 +47,6 @@ void writeCommands(
 				) || ( // Or...
 					(buf[i] == 112) // The command-to-be-replaced is a channel-independent internal BPM command...
 					&& (buf[i + 1] != b[i + 1]) // And its value doesn't match the given BPM-value...
-				) || ( // Or...
-					(buf[i] == 96) // The command-to-be-replaced is a channel-independent internal SWING command...
-					&& ( // And...
-						(buf[i + 1] != b[i + 1]) // Its first byte doesn't match the given SGRAN-value...
-						|| (buf[i + 2] != b[i + 2]) // Or its second byte doesn't match the given SAMOUNT-value...
-					)
 				)
 			)
 		) {
@@ -77,7 +70,7 @@ void recordToSeq(word pstn, byte dur, byte chan, byte b1, byte b2) {
 
 	// Construct a virtual MIDI command
 	byte note[5] = {
-		(cstrip <= 112) ? cstrip : chan, // Channel-byte (stripped of CHAN-info for any internal BPM or SWING commands)
+		(cstrip == 112) ? cstrip : chan, // Channel-byte (stripped of CHAN-info for any internal BPM commands)
 		byte((cstrip == 112) ? max(BPM_LIMIT_LOW, min(BPM_LIMIT_HIGH, b1 + b2)) : b1), // Pitch-byte, or BPM-byte in a BPM-CHANGE command
 		byte(b2 * (((cstrip % 224) <= 176) && (cstrip != 112))), // Velocity-byte, or 0 if this is a 2-byte command
 		byte((cstrip == 144) * dur) // Duration-byte, or 0 if this is a non-NOTE-ON command
@@ -111,15 +104,6 @@ void processRecAction(byte pitch) {
 
 	// Flag GUI elements in the middle of the function, as the function may exit early:
 	recBlink(); // Blink the current TRACK's LEDs
-
-	// If this was a SWING-CHANGE command, change the local SWING values immediately to reflect its contents
-	if (CHAN == 96) {
-		SGRAN = (pitch % 4) + 1; // Derive SWING GRANULARITY from the note's corresponding column
-		SAMOUNT = velo; // Derive SWING AMOUNT from the HUMANIZE-modified VELOCITY
-		updateTickSize(); // Update the global tick-size to reflect the new SWING values
-		updateSwingPart(); // Update the SWING-PART var based on the current SWING GRANULARITY and CUR32 tick
-		return; // Exit the function, since SWING-CHANGE commands require neither a SUSTAIN nor a MIDI-OUT message
-	}
 
 	// If this was a BPM-CHANGE command, change the local BPM immediately to reflect its contents
 	if (CHAN == 112) {

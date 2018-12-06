@@ -10,81 +10,12 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	-- changed activateStep() to give more human-readable BLINKL/BLINKR performance when RECORDNOTES is armed
-
-	. STATS[] should hold the seq's size in whole-notes, not half-notes
-		-- am doing
-	. change file-format, and all file functions, so seqs are 8192 large
-		-- done
-	. update data-format.txt
-		-- done
-	. change everything that engages with STATS[] to compensate for the shift to whole-note granularity
-		-- done afaict
-	. change the GUI for the second LED-row in RECORD-MODE, to increment on whole-notes rather than quarter-notes...
-	. ...and get rid of its flashing behavior, which is now extraneous
-		-- done
-	. change CUR32 to go to 256 rather than 128
-		-- done
-	. change all CUR32-related mechanisms to compensate for CUR32's new max size
-		-- done afaict
-	. wipe SD-card again, and upload new firmware while doing so
-		-- sd-card wiped. firmware uploaded
-	. initial test of updates
-		-- PLAY MODE's top-row GUI is displaying wrong
-		. fix it
-			-- fixed
-		. re-test
-			-- RECORD MODE's top-row GUI has a similar problem
-			. fix it
-				-- fixed. also, refactored some duplicate code into sendRegularCueRow()
-		. re-test
-			-- on mode-toggle, GLOBAL CUE seems to get set to 127 instead of 255
-			. fix it
-				-- fixed: CUR32's value was being set to 127 instead of 255 in resetAllTiming()
-		. re-test
-			-- SHIFT POSITION doesn't move GLOBAL CUE by the right amount, and its movement wraps halfway through the GLOBAL CUE point
-			. fix these problems
-				-- fixed both of these in posCmd().
-				-- also, SHIFT POSITION now applies across both PLAY MODE and RECORD MODE without any duplicate code
-					-- also updated the GUI for SHIFT POSITION in PLAY MODE
-			-- in RECORD-MODE, the seq-position LED-row isn't working
-			. fix seq-position LED-row in RECORD MODE
-				-- fixed: updateSecondRow() was checking for a 0 in the seq's POS when that value would have been set to 1 earlier in the tick's iteration-routine
-				-- also tweaked the bitwise arithmetic in updateSecondRow() to give the seq-LED-row correct positioning
-	. test regular-sequence recording
-		-- in the context of how it controls REPEAT distance, QUANTIZE doesn't extend any further than a half-note, at settings larger than a half-note.
-		. figure out why
-			-- could it just be a case of QRESET being smaller than QUANTIZE during the testing-event that uncovered the "bug"? if so, then this isn't a bug
-				. test for this
-					-- yes, this seems to be the case. so nothing is actually going wrong here.
-		-- RECORDNOTES doesn't seem to get unset when RECORD-MODE is toggled
-		. figure out why
-			-- forgot to disarm note-recording in toggleRecordMode(). fixed now
-			. re-test
-				-- works now
-		-- sequence-activity sometimes doesn't get displayed when the GUI toggles back into PLAY-MODE
-		. figure out why
-			-- updatePlayBottomRows() seems to be interpreting certain held-key-combos as SCATTER chords on the key-release after mode-toggle.
-			-- need to update the bottom 6 GUI-rows whenever a SCATTER chord is released.
-			. do this
-				-- simplified refreshPlayCustoms() because catching every special-case is no longer worth it
-				. re-test
-					-- seems to work now
-	. test regular-sequence playback
-		-- seems okay
-	. test long-sequence recording
-		-- seems to work
-	. test long-sequence playback
-		-- seems to work
-	. test regular-sequence timed cues and beatslicing
-		-- seem to work
-
 	. test long-sequence timed cues and beatslicing
 		--
 
 	. change SWING:
 		. remove recordable SWING-commands
-			-- 
+			-- done
 		. change the UPPER CHANNEL BITS CmdFunc to exclude the block that was previously taken up by recordable SWING commands
 			-- done
 		. update data-key.txt accordingly
@@ -94,6 +25,8 @@ Software:
 		. simplify the way tempo is calculated
 			-- done
 		. change SWING AMOUNT and SWING GRANULARITY CmdFuncs, to deal with 32nd-notes rather than abstract swing-values
+			-- done
+		. change files so that SGRAN and SAMOUNT are saved as global prefs, rather than per-file prefs
 			-- done
 		. make SWING AMOUNT and SWING GRANULARITY apply to all QUANTIZE calculations in RECORD-MODE, including those associated with REPEAT
 			--

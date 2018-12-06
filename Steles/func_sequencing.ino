@@ -34,7 +34,6 @@ void sendClockReset() {
 void resetAllTiming() {
 	TICKCOUNT = 2; // Set the TICK-counter to lapse into a new 32nd-note on the next tick
 	CUR32 = 255; // Reset the global cue-point
-	SPART = 0; // Reset the global SWING PART to 0 (its initial state)
 	memset(POS, 0, 96); // Reset each seq's internal tick-position
 	sendClockReset(); // Send a MIDI-CLOCK reset command to MIDI-OUT
 }
@@ -91,12 +90,7 @@ void parseTickContents(byte s, byte buf[]) {
 			TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for an update
 		}
 
-		if (buf[bn] == 96) { // If this is a SWING-CHANGE command...
-			SGRAN = buf[bn + 1]; // Set SWING GRANULARITY to its new value
-			SAMOUNT = buf[bn + 2]; // Set SWING AMOUNT to its new value
-			updateTickSize(); // Update the global tick-size to reflect the new SWING values
-			continue; // Either check the next command-slot or exit the loop
-		} else if (buf[bn] == 112) { // If this is a BPM-CHANGE command...
+		if (buf[bn] == 112) { // If this is a BPM-CHANGE command...
 			BPM = buf[bn + 1]; // Set the global BPM to the new BPM-value
 			updateTickSize(); // Update the global tick-size to reflect the new BPM value
 			continue; // Either check the next command-slot or exit the loop
@@ -104,7 +98,7 @@ void parseTickContents(byte s, byte buf[]) {
 
 		// If the MIDI-OUT queue is full, then ignore this command, since we're now sure that it's a MIDI command
 		// (This is checked here, instead of in iterateAll(), and using "continue" instead of "return",
-		//  because all BPM-CHANGE and SWING-CHANGE commands need to be caught, regardless of how full MOUT_COUNT gets)
+		//  because all BPM-CHANGE commands need to be caught, regardless of how full MOUT_COUNT gets)
 		if (MOUT_COUNT == 8) { continue; }
 
 		memcpy(MOUT + (MOUT_COUNT * 3), buf + bn, 3); // Copy the event into the MIDI buffer's lowest empty MOUT location

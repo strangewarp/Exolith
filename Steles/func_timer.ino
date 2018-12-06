@@ -1,6 +1,6 @@
 
 
-// Update the internal tick-sizes (in microseconds) to match a new BPM and/or SWING AMOUNT value
+// Update the internal tick-size (in microseconds) to match a new BPM value
 void updateTickSize() {
 
 	// Get a micros-per-tick value that corresponds to the current BPM (with each "beat" being a quarter-note long)
@@ -54,7 +54,7 @@ void activateStep() {
 // Advance the concrete tick, and all its associated sequencing mechanisms
 void advanceTick() {
 
-	// If the next tick hasn't been reached within the current SWING-section's tick-length, exit the function
+	// If the next tick hasn't been reached within the current tick-length, exit the function
 	if (ELAPSED < TICKSIZE) { return; }
 
 	ELAPSED -= TICKSIZE; // Subtract the current tick-length from the elapsed-time variable

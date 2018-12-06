@@ -34,8 +34,6 @@
 
 // Location of bytes in a given savefile's header-block:
 #define FILE_BPM_BYTE 0 // BPM byte
-#define FILE_SGRAN_BYTE 1 // SWING GRANULARITY byte
-#define FILE_SAMOUNT_BYTE 2 // SWING AMOUNT byte
 #define FILE_SQS_START 3 // Start-byte of the seq-size-values block
 #define FILE_SQS_END 50 // End-byte of the seq-size-values block
 

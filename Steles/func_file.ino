@@ -25,10 +25,6 @@ void createFiles() {
 
 		file.seekSet(FILE_BPM_BYTE); // Go to the BPM-byte
 		file.write(byte(80)); // Write a default BPM value of 80
-		file.seekSet(FILE_SGRAN_BYTE); // Go to the SWING-GRANULARITY byte
-		file.write(byte(1)); // Write a default SWING-GRANULARITY value of 1
-		file.seekSet(FILE_SAMOUNT_BYTE); // Go to the SWING AMOUNT byte
-		file.write(byte(64)); // Write a default SWING-AMOUNT of 64
 
 		for (byte j = FILE_SQS_START; j <= FILE_SQS_END; j++) { // For every seq-size byte in the header...
 			file.seekSet(j); // Go to that byte's position
@@ -70,12 +66,6 @@ void updateNonMatch(byte pos, byte b) {
 	}
 }
 
-// Update the savefile's SWING-data, if it has been changed
-void updateSwingVals() {
-	updateNonMatch(FILE_SGRAN_BYTE, SGRAN); // Save the SWING GRANULARITY value, if it has been changed
-	updateNonMatch(FILE_SAMOUNT_BYTE, SAMOUNT); // ^ Same, but for SWING AMOUNT
-}
-
 // Update the sequence's size-byte in the savefile, if it has been changed
 void updateSeqSize() {
 	updateNonMatch(FILE_SQS_START + RECORDSEQ, STATS[RECORDSEQ] & 63);
@@ -91,8 +81,8 @@ void makePrefBuf(byte buf[]) {
 	buf[5] = QRESET;
 	buf[6] = QUANTIZE;
 	buf[7] = DURATION;
-	buf[8] = 0; // reserved
-	buf[9] = 0; // reserved
+	buf[8] = SGRAN;
+	buf[9] = SAMOUNT;
 	buf[10] = SONG;
 	buf[11] = 0; // reserved
 	buf[12] = GRIDCONFIG;
@@ -180,8 +170,8 @@ void loadPrefs() {
 		QRESET = buf[5];
 		QUANTIZE = buf[6];
 		DURATION = buf[7];
-		// reserved = buf[8];
-		// reserved = buf[9];
+		SGRAN = buf[8];
+		SAMOUNT = buf[9];
 		SONG = buf[10];
 		// reserved = buf[11];
 		GRIDCONFIG = buf[12];
@@ -219,11 +209,6 @@ void loadSong(byte slot) {
 		BPM = DEFAULT_BPM; // Set the BPM to the default value
 	}
 
-	file.seekSet(FILE_SGRAN_BYTE); // Go to the SWING GRANULARITY byte
-	SGRAN = file.read(); // Read it
-	file.seekSet(FILE_SAMOUNT_BYTE); // Go to the SWING AMOUNT byte
-	SAMOUNT = file.read(); // Read it
-
 	byte sbuf[49]; // Create a buffer for incoming STATS bytes, to save read-time
 	file.seekSet(FILE_SQS_START); // Go to the file-header's SEQ-SIZE block
 	file.read(sbuf, 48); // Read every seq's new size
@@ -236,8 +221,6 @@ void loadSong(byte slot) {
 	memset(SCATTER, 0, 48); // ...And SCATTER-values
 
 	updateTickSize(); // Update the internal tick-size (in microseconds) to match the new BPM value
-
-	SPART = 0; // Set the current SWING PART to 0, as all timing elements are being reset
 
 	SONG = slot; // Set the currently-active SONG-position to the given save-slot
 

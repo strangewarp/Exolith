@@ -72,9 +72,6 @@ Tutorial Outline
 		SHIFT POSITION
 
 
-		SWING COMMANDS (RECORDED)
-
-
 
 	FILE FORMAT:
 
