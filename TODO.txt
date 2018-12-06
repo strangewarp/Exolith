@@ -28,13 +28,20 @@ Software:
 			-- done
 		. change files so that SGRAN and SAMOUNT are saved as global prefs, rather than per-file prefs
 			-- done
-		. make SWING AMOUNT and SWING GRANULARITY apply to all QUANTIZE calculations in RECORD-MODE, including those associated with REPEAT
-			--
+		. actually just remove all remnants of SWING, SGRAN, and SAMOUNT, since this can't even be repurposed for recording without getting too hairy:
+			. remove SGRAN/SAMOUNT vars
+				--
+			. remove SGRAN/SAMOUNT CmdFuncs, and move other CmdFuncs to compensate
+				--
+			. remove SGRAN/SAMOUNT file-vars (P.DAT, functions that modify P.DAT, prefs-format.txt, etc)
+				--
+			. change buttons-key.txt to remove SWING commands
+				--
+			. remove SWING items from func_gui.ino
+				-- 
 		. update timing system to be based on floats rather than integers
 			-- done
 	. re-test timing-system updates
-		--
-	. test new SWING system
 		--
 
 	. test REPEAT-SWEEP on:

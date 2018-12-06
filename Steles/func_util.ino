@@ -32,8 +32,7 @@ byte ctrlToButtonIndex(byte ctrl) {
 	);
 }
 
-// Get the distance from a seq's previous QUANTIZE-or-QRESET point,
-// or 0 if such a point is currently occupied.
+// Get the distance from a seq's previous QUANTIZE-or-QRESET point, or 0 if such a point is currently occupied.
 byte distFromQuantize() {
 	if (QRESET) { // If there is an active QRESET amount...
 		// Return the QRESET-adjusted QUANTIZE distance
@@ -44,9 +43,9 @@ byte distFromQuantize() {
 }
 
 // Set a given var to contain a semi-random number, by using a xorshift algorithm on the smallest digits of ABSOLUTETIME
-void xorShift(word &r) {
-	r = ABSOLUTETIME % 65536;
-	r ^= r << 2;
-	r ^= r >> 7;
-	r ^= r << 7;
+void xorShift() {
+	GLOBALRAND = ABSOLUTETIME % 65536;
+	GLOBALRAND ^= GLOBALRAND << 2;
+	GLOBALRAND ^= GLOBALRAND >> 7;
+	GLOBALRAND ^= GLOBALRAND << 7;
 }

@@ -245,6 +245,6 @@ void loop() {
 
 	updateGUI(); // Update the GUI, if applicable
 
-	xorShift(GLOBALRAND); // Update the global semirandom value
+	xorShift(); // Update the global semirandom value
 
 }
