@@ -167,15 +167,14 @@ void sizeCmd(byte col, byte row) {
 
 // Parse a SWING AMOUNT press
 void swAmtCmd(byte col, byte row) {
-	SAMOUNT = applyChange(SAMOUNT, toChange(col, row), 0, 128); // Apply the column-and-row's CHANGE value to the SAMOUNT value
-	updateTickSize(); // Update the internal tick-size (in microseconds) to match the new BPM value
+	swingAdjust(toChange(col, row)); // Modify SWING AMOUNT, within the boundaries of the current SWING GRANULARITY value
 	TO_UPDATE |= 1; // Flag the topmost row for updating
 }
 
 // Parse a SWING GRANULARITY press
 void swGranCmd(byte col, byte row) {
 	SGRAN = applyChange(SGRAN, toChange(col, row), 1, 5); // Apply the column-and-row's CHANGE value to the SGRAN value
-	updateSwingPart(); // Update the SWING-PART var based on the current SWING GRANULARITY and CUR32 tick
+	swingAdjust(0); // Adjust the SWING AMOUNT to fall within the boundaries of the current SWING GRANULARITY value
 	TO_UPDATE |= 1; // Flag the topmost row for updating
 }
 

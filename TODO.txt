@@ -10,6 +10,8 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
+	-- changed activateStep() to give more human-readable BLINKL/BLINKR performance when RECORDNOTES is armed
+
 	. STATS[] should hold the seq's size in whole-notes, not half-notes
 		-- am doing
 	. change file-format, and all file functions, so seqs are 8192 large
@@ -69,26 +71,45 @@ Software:
 				. re-test
 					-- seems to work now
 	. test regular-sequence playback
-		-- 
+		-- seems okay
 	. test long-sequence recording
-		--
+		-- seems to work
 	. test long-sequence playback
-		--
+		-- seems to work
 	. test regular-sequence timed cues and beatslicing
-		--
+		-- seem to work
+
 	. test long-sequence timed cues and beatslicing
 		--
 
-	. test recordable SWING-commands
+	. change SWING:
+		. remove recordable SWING-commands
+			-- 
+		. change the UPPER CHANNEL BITS CmdFunc to exclude the block that was previously taken up by recordable SWING commands
+			-- done
+		. update data-key.txt accordingly
+			-- done
+		. remove table of constants related to SWING
+			-- done
+		. simplify the way tempo is calculated
+			-- done
+		. change SWING AMOUNT and SWING GRANULARITY CmdFuncs, to deal with 32nd-notes rather than abstract swing-values
+			-- done
+		. make SWING AMOUNT and SWING GRANULARITY apply to all QUANTIZE calculations in RECORD-MODE, including those associated with REPEAT
+			--
+		. update timing system to be based on floats rather than integers
+			-- done
+	. re-test timing-system updates
 		--
+	. test new SWING system
+		--
+
 	. test REPEAT-SWEEP on:
-		. recorded regular MIDI commands
+		. recording regular MIDI commands
 			--
-		. recorded special MIDI commands
+		. recording special MIDI commands
 			--
-		. recorded BPM commands
-			--
-		. recorded SWING commands
+		. recording BPM commands
 			--
 
 	. re-test all tricky recording mechanisms

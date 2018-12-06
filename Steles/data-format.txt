@@ -29,12 +29,7 @@ Steles data-file spec
 								lower bits:
 									0-15: MIDI channel
 								higher bits:
-									96: SWING (internal non-MIDI cmd)
-										(3-byte command)
-										0: 96
-										1: new SGRAN (1-4)
-										2: new SAMOUNT (0-128)
-									112: BPM (internal non-MIDI cmd)
+									112: BPM (internal non-MIDI command)
 										(2-byte command)
 										0: 112
 										1: new BPM (32-255)

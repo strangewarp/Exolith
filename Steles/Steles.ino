@@ -46,7 +46,7 @@
 #define BPM_LIMIT_LOW 32 // Limits to the range of valid BPM values
 #define BPM_LIMIT_HIGH 255 // ^
 
-#define UPPER_BITS_LOW 96 // Limits to the range of valid UPPER COMMAND BITS values
+#define UPPER_BITS_LOW 112 // Limits to the range of valid UPPER COMMAND BITS values
 #define UPPER_BITS_HIGH 224 // ^
 
 #define PREFS_ITEMS_1 17 // Number of items in the PREFS-file (1-indexed)
@@ -87,11 +87,9 @@ byte TO_UPDATE = 0; // Tracks which rows of LEDs should be updated at the end of
 
 // Timing vars
 unsigned long ABSOLUTETIME = 0; // Absolute time elapsed: wraps around after reaching its limit
-unsigned long ELAPSED = 0; // Time elapsed since last tick
+float ELAPSED = 0.0; // Time elapsed since last tick (must be a float for accuracy, since float-based TICKSIZE values will be being subtracted from it)
 unsigned long KEYELAPSED = 0; // Time elapsed since last keystroke-scan
-unsigned long GESTELAPSED = 0; // Time elapsed since last gesture-decay
-unsigned long TICKSZ1 = 19231; // Current size of pre-SWING-modified ticks
-unsigned long TICKSZ2 = 19231; // Current size of post-SWING-modified ticks
+float TICKSIZE = 31250.0; // Current tick-size, in microseconds
 
 // Mode flag vars
 byte LOADMODE = 0; // Tracks whether LOAD MODE is active
@@ -121,6 +119,10 @@ byte QUANTIZE = 4; // Time-quantize value for RECORD MODE notes (1 to 16)
 byte QRESET = 0; // Tracks how many beats must elapse within RECORDSEQ before the QUANTIZE anchor gets reset (0 = whole sequence)
 byte DURATION = 1; // Duration value for RECORD MODE notes, in 32nd-notes (0 to 128; and 129 = "manually-held durations mode")
 
+// Swing vars
+byte SGRAN = 1; // Current SWING granularity (1 = 16th; 2 = 8th; 3 = quarter note; 4 = half note; 5 = whole note)
+char SAMOUNT = 32; // Current SWING amount (-31 = full negative swing; 31 = full positive swing; 0 = no swing)
+
 // Manual-note-recording vars
 byte KEYFLAG = 0; // Flags whether a note is currently being recorded in manual-DURATION-mode
 word KEYPOS = 0; // Holds the QUANTIZE-adjusted insert-point for the current recording-note
@@ -134,11 +136,6 @@ byte BPM = DEFAULT_BPM; // Beats-per-minute value: one beat is 96 tempo-ticks
 byte TICKCOUNT = 2; // Current global tick, bounded within the size of a 32nd-note (3 ticks, 0-indexed) (must be set to 2 initially, to lapse into the first note)
 byte CUR32 = 255; // Current global 32nd-note (bounded to 256, or 8 whole-notes)
 word GLOBALRAND = 12345; // Global all-purpose semirandom value; gets changed on every tick
-
-// Swing vars
-byte SGRAN = 1; // Current SWING granularity (1 = 16th; 2 = 8th; 3 = quarter note; 4 = half note; 5 = whole note)
-byte SAMOUNT = 64; // Current SWING amount (0 = full negative swing; 128 = full positive swing; 64 = no swing)
-byte SPART = 0; // Tracks which section of the SWING is currently active
 
 // Beat-scattering flags, one per seq.
 // bits 0-3: scatter chance
@@ -231,7 +228,9 @@ void setup() {
 
 	loadPrefs(); // Load whatever prefsarein P.DAT, or create PRF.DAT if it doesn't exist yet
 
-	loadSong(SONG); // Load whatever song-slot was in P.DAT, or the default song-slot if PRF.DAT didn't exist
+	loadSong(SONG); // Load whatever song-slot was in P.DAT, or the default song-slot if P.DAT didn't exist
+	// loadSong() also performs an updateTickSize(), since it's loading the song's BPM as well,
+	// so updateTickSize() doesn't need to be explicitly called on startup
 
 	sendClockReset(); // Send a MIDI CLOCK reset command to MIDI-OUT
 
