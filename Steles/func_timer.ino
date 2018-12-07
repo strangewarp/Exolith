@@ -37,14 +37,19 @@ void activateStep() {
 	}
 
 	if (RECORDMODE) { // If we're in RECORD-MODE...
+
 		if (!(POS[RECORDSEQ] % 8)) { // If this is the start of a new quarter-note...
 			TO_UPDATE |= 2; // Flag the second LED-row for updating
 		}
-		if (RECORDNOTES && (!distFromQuantize())) { // If we are recording notes, and on a QUANTIZE or QRESET tick...
-			BLINKR = 255 * TRACK; // Cue a long RIGHT-BLINK, if TRACK 2 is active
-			BLINKL = 255 * (!TRACK); // ^ Same, but for LEFT-BLINK and TRACK 1
-			TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
+
+		if (RECORDNOTES) { // If RECORD-NOTES is currently armed...
+			if (getInsertionPoint(distFromQuantize()) == POS[RECORDSEQ]) { // If we are on an OFFSET-modified insertion-point tick...
+				BLINKR = 255 * TRACK; // Cue a long RIGHT-BLINK, if TRACK 2 is active
+				BLINKL = 255 * (!TRACK); // ^ Same, but for LEFT-BLINK and TRACK 1
+				TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
+			}
 		}
+
 	}
 
 	iterateAll(); // Iterate through a step of each active sequence

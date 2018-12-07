@@ -62,9 +62,22 @@ Software:
 				-- no changes are necessary here, since processRecAction() checks only for presence on the current tick, in this regard
 		. update timing system to be based on floats rather than integers
 			-- done
-	. re-test timing-system updates
-		--
 	. test OFFSET system
+		-- OFFSET didn't display its top-row GUI correctly. already fixed it
+	. test again
+		-- OFFSET doesn't get applied to REPEAT-notes
+		. fix it
+			-- REPEAT-notes get triggered on every 32nd-note
+			. figure out why
+				-- logic-flow error: getInsertionPoint() was checking for the absence of REPEAT, which interfered with the repeat-mechanism's boolean check
+	. test again
+		-- REPEAT works now, but OFFSET still isn't being applied
+		. figure out what's going on
+			--
+
+	. save OFFSET to the PREFS-file
+		--
+	. load OFFSET when the PREFS are loaded
 		--
 
 	. test REPEAT-SWEEP on:
