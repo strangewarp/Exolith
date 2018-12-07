@@ -30,19 +30,29 @@ Software:
 			-- done
 		. actually just remove all remnants of SWING, SGRAN, and SAMOUNT, since this can't even be repurposed for recording without getting too hairy:
 			. remove SGRAN/SAMOUNT vars
-				--
-			. remove SGRAN/SAMOUNT CmdFuncs, and move other CmdFuncs to compensate
-				--
+				-- done
+			. remove SGRAN/SAMOUNT CmdFunc entries, and move other CmdFuncs to compensate
+				-- done
+			. remove SWING glyphs, and update manual glyph calls
+				-- done
+			. remove SWING-related top-row GUI events
+				-- done
+			. remove SWING CmdFuncs themselves
+				-- done
 			. remove SGRAN/SAMOUNT file-vars (P.DAT, functions that modify P.DAT, prefs-format.txt, etc)
-				--
-			. change buttons-key.txt to remove SWING commands
-				--
-			. remove SWING items from func_gui.ino
-				--
+				-- done
+			. change button-key.txt to remove SWING commands
+				-- done
 		. add a global "OFFSET" var, to change QUANTIZE's base-point
 			. add the OFFSET var itself
-				--
+				-- done
+			. change button-key.txt to add OFFSET
+				-- done
 			. add a CmdFunc entry for it, and move other CmdFuncs to compensate
+				--
+			. add an OFFSET glyph, and update manual glyph calls
+				--
+			. add an OFFSET-related top-row GUI event
 				--
 			. add the OFFSET CmdFunc itself in func_cmds.ino: OFFSET should also be bounded by QUANTIZE
 				--

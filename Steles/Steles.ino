@@ -113,13 +113,10 @@ byte OCTAVE = 4; // Octave-offset value for RECORD MODE notes
 byte VELO = 127; // Baseline velocity-value for RECORD MODE notes
 byte HUMANIZE = 0; // Maximum velocity-humanize value for RECORD MODE notes
 byte CHAN = 144; // MIDI-COMMAND byte (including current CHANNEL) for RECORD MODE notes
+char OFFSET = 0; // The number of 32nd-notes by which the base QUANTIZE-point gets offset in RECORD-MODE (-31 to 31)
 byte QUANTIZE = 4; // Time-quantize value for RECORD MODE notes (1 to 16)
 byte QRESET = 0; // Tracks how many beats must elapse within RECORDSEQ before the QUANTIZE anchor gets reset (0 = whole sequence)
 byte DURATION = 1; // Duration value for RECORD MODE notes, in 32nd-notes (0 to 128; and 129 = "manually-held durations mode")
-
-// Swing vars
-byte SGRAN = 1; // Current SWING granularity (1 = 16th; 2 = 8th; 3 = quarter note; 4 = half note; 5 = whole note)
-char SAMOUNT = 32; // Current SWING amount (-31 = full negative swing; 31 = full positive swing; 0 = no swing)
 
 // Manual-note-recording vars
 byte KEYFLAG = 0; // Flags whether a note is currently being recorded in manual-DURATION-mode
