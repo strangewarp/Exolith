@@ -75,6 +75,12 @@ Software:
 		. figure out what's going on
 			--
 
+	. changes to getInsertionPoint() have made manual-note-entry start playing duplicate notes, even while not recording. figure out a fix for this
+		--
+
+	. if OFFSET is too hairy, consider just removing it
+		--
+
 	. save OFFSET to the PREFS-file
 		--
 	. load OFFSET when the PREFS are loaded
