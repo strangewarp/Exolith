@@ -95,7 +95,7 @@ void processRecAction(byte pitch) {
 		// Record the note into the current RECORDSEQ slot:
 		recordToSeq(qp, dur, CHAN, pitch, velo);
 
-		// If the quantize-point fell on this tick,
+		// If the adjusted note-insertion-point fell on this tick,
 		// then exit the function without sending the command, and without flagging GUI-updates,
 		// since the command will be sent immediately after this anyway by a readTick() call.
 		if (qp == POS[RECORDSEQ]) { return; }
@@ -145,14 +145,29 @@ void recordHeldNote() {
 
 // Get the QUANTIZE-adjusted insertion-point for the current tick in the current RECORDSEQ
 word getInsertionPoint() {
+
 	word p = POS[RECORDSEQ]; // Will hold a QUANTIZE-modified insertion point (defaults to the seq's current position)
+
 	if (!REPEAT) { // If REPEAT isn't toggled...
+
+		word len = word(STATS[RECORDSEQ] & 63) * 32; // Get the seq's length, in 32nd-notes
+
 		char down = distFromQuantize(); // Get distance to previous QUANTIZE point
 		byte up = min(QRESET - down, QUANTIZE - down); // Get distance to next QUANTIZE point, compensating for QRESET
+
 		p += (down <= up) ? (-down) : up; // Make the shortest distance into an offset for the note-insertion point
-		p %= word(STATS[RECORDSEQ] & 63) * 32; // Wrap the insertion-point around the seq's length
+
+		int pmod = OFFSET + int(p); // Apply the OFFSET value to the QUANTIZE-adjusted note-insertion point, allowing for negative numbers
+		if (pmod < 0) { // If the OFFSET-adjusted note-insertion point is negative...
+			p = word(len + pmod); // Subtract the negative position from the seq's length to get the correct OFFSET-value, and convert it to positive-only
+		} else { // Else, if the OFFSET-adjusted note-insertion point is still positive...
+			p %= len; // If the insertion-point is beyond the seq's length, wrap it around
+		}
+
 	}
+
 	return p; // Return the QUANTIZE-adjusted insertion point
+
 }
 
 // Get a note that corresponds to a raw keypress, and also apply OCTAVE via modPitch()

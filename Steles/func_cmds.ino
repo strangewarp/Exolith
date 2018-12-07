@@ -107,6 +107,13 @@ void octaveCmd(byte col, byte row) {
 	TO_UPDATE |= 1; // Flag the topmost row for updating
 }
 
+// Parse an OFFSET press
+void offsetCmd(byte col, byte row) {
+	char change = toChange(col, row); // Convert a column and row into a CHANGE value
+	OFFSET = min(31, max(-31, OFFSET + change)); // Modify the OFFSET value
+	TO_UPDATE |= 1; // Flag the topmost row for updating
+}
+
 // Parse a SHIFT POSITION press
 void posCmd(byte col, byte row) {
 

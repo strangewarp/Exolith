@@ -55,14 +55,16 @@ Software:
 			. add an OFFSET-related top-row GUI event
 				-- done
 			. add the OFFSET CmdFunc itself in func_cmds.ino: OFFSET should also be bounded by QUANTIZE
-				--
-			. when QUANTIZE is changed in quantizeCmd(), OFFSET should also be bounded to the new QUANTIZE value there too
-				--
+				-- done
 			. add OFFSET's functionality to the recording-mechanisms: positive or negative offset gets applied to the base QUANTIZE-point
-				--
+				-- done
+			. the logic that decides whether or not to play a note while recording in realtime, should also apply the OFFSET value
+				-- no changes are necessary here, since processRecAction() checks only for presence on the current tick, in this regard
 		. update timing system to be based on floats rather than integers
 			-- done
 	. re-test timing-system updates
+		--
+	. test OFFSET system
 		--
 
 	. test REPEAT-SWEEP on:
