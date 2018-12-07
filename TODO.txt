@@ -49,11 +49,11 @@ Software:
 			. change button-key.txt to add OFFSET
 				-- done
 			. add a CmdFunc entry for it, and move other CmdFuncs to compensate
-				--
+				-- done
 			. add an OFFSET glyph, and update manual glyph calls
-				--
+				-- done
 			. add an OFFSET-related top-row GUI event
-				--
+				-- done
 			. add the OFFSET CmdFunc itself in func_cmds.ino: OFFSET should also be bounded by QUANTIZE
 				--
 			. when QUANTIZE is changed in quantizeCmd(), OFFSET should also be bounded to the new QUANTIZE value there too
