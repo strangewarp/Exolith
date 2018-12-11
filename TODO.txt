@@ -73,12 +73,8 @@ Software:
 	. test again
 		-- REPEAT works now, but OFFSET still isn't being applied
 		. figure out what's going on
-			--
-
-	. changes to getInsertionPoint() have made manual-note-entry start playing duplicate notes, even while not recording. figure out a fix for this
-		--
-
-	. if OFFSET is too hairy, consider just removing it
+			-- everything is a morass. time to rewrite the OFFSET/QUANTIZE system again
+	. rewrite the relevant portions of the OFFSET/QUANTIZE system
 		--
 
 	. save OFFSET to the PREFS-file
@@ -111,6 +107,9 @@ Software:
 
 	. re-test things
 		. are old notes being knocked out of the sequence by new notes in RECORD-MODE properly?
+		. test manual MIDI-OFF commands:
+			. keystroke-based
+			. recorded
 		. test CC/PC/other advanced MIDI commands
 			. with REPEAT-SWEEP active
 			. with arpeggiation

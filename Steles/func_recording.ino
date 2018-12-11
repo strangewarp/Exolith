@@ -90,7 +90,7 @@ void processRecAction(byte pitch) {
 
 	if (RECORDNOTES) { // If notes are being recorded into a sequence...
 
-		word qp = getInsertionPoint(distFromQuantize()); // Get the QUANTIZE-adjusted insertion-point for the current tick in the current RECORDSEQ
+		word qp = applyOffset(applyQuantize(POS[RECORDSEQ])); // Get the fully-adjusted insertion-point for the current tick in the current RECORDSEQ
 
 		// Record the note into the current RECORDSEQ slot:
 		recordToSeq(qp, dur, CHAN, pitch, velo);
@@ -140,29 +140,6 @@ void recordHeldNote() {
 	}
 
 	KEYFLAG = 0; // Reset KEYFLAG, to show that a manual-duration note is no longer being held
-
-}
-
-// Get the OFFSET-adjusted insertion-point for the current tick in the current RECORDSEQ.
-// "down" is the distance to the previous QUANTIZE-point. (This is derived by distFromQuantize() beforehand)
-word getInsertionPoint(byte down) {
-
-	word p = POS[RECORDSEQ]; // Will hold a QUANTIZE-modified insertion point (defaults to the seq's current position)
-
-	int len = word(STATS[RECORDSEQ] & 63) * 32; // Get the seq's length, in 32nd-notes (this is int, because it may go negative in subsequent lines)
-
-	byte up = min(QRESET - down, QUANTIZE - down); // Get distance to next QUANTIZE point, compensating for QRESET
-
-	p += (down <= up) ? (-down) : up; // Make the shortest distance into an offset for the note-insertion point
-
-	int pmod = OFFSET + int(p); // Apply the OFFSET value to the QUANTIZE-adjusted note-insertion point, allowing for negative numbers
-	if (pmod < 0) { // If the OFFSET-adjusted note-insertion point is negative...
-		p = word(len + pmod); // Subtract the negative position from the seq's length to get the correct OFFSET-value, and convert it to positive-only
-	} else { // Else, if the OFFSET-adjusted note-insertion point is still positive...
-		p %= len; // If the insertion-point is beyond the seq's length, wrap it around
-	}
-
-	return p; // Return the QUANTIZE-adjusted insertion point
 
 }
 
