@@ -41,7 +41,7 @@ word applyQuantize(word p) {
 	byte down = distFromQuantize(); // Get the distance from the previous QUANTIZE-point
 	byte up = min(QRESET - down, QUANTIZE - down); // Get distance to next QUANTIZE-point, compensating for QRESET
 
-	return (p + ((down <= up) ? (-down) : up)) % len; // Return the QUANTIZE-and-QRESEt-adjusted insertion-point
+	return (p + ((down <= up) ? (-down) : up)) % len; // Return the QUANTIZE-and-QRESET-adjusted insertion-point
 
 }
 

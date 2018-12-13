@@ -173,7 +173,7 @@ void setRawKeyNote(byte pitch, byte velo) {
 	Serial.write(note, 3);
 
 	KEYFLAG = 1; // Toggle the flag for "a note is currently being held in manual-duration-mode"
-	KEYPOS = getInsertionPoint(distFromQuantize()); // Get the QUANTIZE-adjusted insertion-point in the current RECORDSEQ
+	KEYPOS = applyOffset(applyQuantize(POS[RECORDSEQ])); // Get the QUANTIZE-and-OFFSET-adjusted insertion-point in the current RECORDSEQ
 	KEYNOTE = pitch; // Store the given pitch and velo
 	KEYVELO = velo; // ^
 	KEYCOUNT = 0; // Reset the counter that tracks how many ticks the note has been held for
