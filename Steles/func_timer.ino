@@ -29,8 +29,8 @@ void blinkDecay(word omod) {
 	}
 }
 
-// Engage all timed elements of a 32nd-note-sized granularity
-void activateStep() {
+// Engage all timed LED elements of a 32nd-note-sized granularity
+void activateStepLEDs() {
 
 	if (!(CUR32 % 32)) { // It we're on the first tick within a global cue-point...
 		TO_UPDATE |= 1; // Flag the top LED-row for updating
@@ -51,8 +51,6 @@ void activateStep() {
 		}
 
 	}
-
-	iterateAll(); // Iterate through a step of each active sequence
 
 }
 
@@ -81,7 +79,9 @@ void advanceTick() {
 		}
 	}
 
-	activateStep(); // Engage all timed elements of a 32nd-note-sized granularity
+	activateStepLEDs(); // Engage all timed LED elements of a 32nd-note-sized granularity
+
+	iterateAll(); // Iterate through a step of each active sequence
 
 }
 

@@ -10,8 +10,7 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	. test long-sequence timed cues and beatslicing
-		--
+	-- restructured some functions in func_timer.ino
 
 	. change SWING:
 		. remove recordable SWING-commands
@@ -75,11 +74,23 @@ Software:
 		. figure out what's going on
 			-- everything is a morass. time to rewrite the OFFSET/QUANTIZE system again
 	. rewrite the relevant portions of the OFFSET/QUANTIZE system
+		-- ok
+	. re-test OFFSET-REPEAT
+		-- OFFSET only works when it contains a value of -2 or -1.
+		. figure out why
+			-- 
+	. test OFFSET-QUANTIZE (no REPEAT) while recording notes
 		--
 
 	. save OFFSET to the PREFS-file
 		--
 	. load OFFSET when the PREFS are loaded
+		--
+
+	. add DURATION-HUMANIZE?
+		--
+
+	. test long-sequence timed cues and beatslicing
 		--
 
 	. test REPEAT-SWEEP on:
