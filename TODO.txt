@@ -81,7 +81,7 @@ Software:
 			--
 		-- also, OFFSET-REPEAT notes are playing an extra note, the tick after their correct note.
 		. figure out why
-			--
+			-- it was the goddamned testing apparatus
 	. test OFFSET-QUANTIZE (no REPEAT) while recording notes
 		--
 
