@@ -26,28 +26,27 @@ byte ctrlToButtonIndex(byte ctrl) {
 	);
 }
 
+// Check whether the current point in RECORDSEQ is an insertion-point, when adjusted for QUANTIZE, QRESET, and OFFSET
+byte isInsertionPoint() {
+	return applyOffset(applyQuantize(POS[RECORDSEQ])) == POS[RECORDSEQ];
+}
+
 // Apply an offset to a given position in the current RECORDSEQ
 word applyOffset(word p) {
 	word len = (STATS[RECORDSEQ] & 63) * 32; // Get the RECORDSEQ's length, in 32nd-notes
-	return word((((int(p) + OFFSET) % len) + len) % len); // Apply the offset to the given position, and wrap its new value (even if negative)
+	return word((int(p) + OFFSET) + len) % len; // Apply the offset to the given position, and wrap its new value (even if negative)
 }
-word applyOffset(byte p) { return applyOffset(word(p)); } // Overload function: compensates for when a byte is received instead of a word
 
-// Apply QUANTIZE and QRESET to a given point in the sequence
+// Apply QUANTIZE and QRESET to a given point in the current RECORDSEQ
 word applyQuantize(word p) {
 
 	int len = word(STATS[RECORDSEQ] & 63) * 32; // Get the seq's length, in 32nd-notes (this is int, because it may go negative in subsequent lines)
 
-	byte down = distFromQuantize(); // Get the distance from the previous QUANTIZE-point
+	byte down = (POS[RECORDSEQ] % (QRESET ? QRESET : 65535)) % QUANTIZE; // Get the distance from the previous QUANTIZE-point
 	byte up = min(QRESET - down, QUANTIZE - down); // Get distance to next QUANTIZE-point, compensating for QRESET
 
 	return (p + ((down <= up) ? (-down) : up)) % len; // Return the QUANTIZE-and-QRESET-adjusted insertion-point
 
-}
-
-// Get the distance from a seq's previous QUANTIZE-or-QRESET point, or 0 if such a point is currently occupied.
-byte distFromQuantize() {
-	return (POS[RECORDSEQ] % (QRESET ? QRESET : 65535)) % QUANTIZE; // Return the QRESET-adjusted QUANTIZE distance, or just QUANTIZE-adjusted if QRESET is 0
 }
 
 // Set a given var to contain a semi-random number, by using a xorshift algorithm on the smallest digits of ABSOLUTETIME

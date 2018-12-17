@@ -78,7 +78,10 @@ Software:
 	. re-test OFFSET-REPEAT
 		-- OFFSET only works when it contains a value of -2 or -1.
 		. figure out why
-			-- 
+			--
+		-- also, OFFSET-REPEAT notes are playing an extra note, the tick after their correct note.
+		. figure out why
+			--
 	. test OFFSET-QUANTIZE (no REPEAT) while recording notes
 		--
 
@@ -297,6 +300,7 @@ Hardware:
 			. sdfat /should/ support the FAT16 filesystems of the smaller THEMIS cards, but make sure this is indeed the case
 			. when ordering these, make sure that the SD-cards are shipped in a state identical to what results from the SD Association formatter utility
 		. look into sticky rubber spacers for the bottom of the device, to keep its screws from scraping on things and being worn down
+			. mouser part: 517-SJ-5306CL ?
 		. make entries for all other parts
 
 	. redo all Inkscape files for enclosure, making sure to retake all measurements & repeat the KiCad-to-Inkscape vector paste process
