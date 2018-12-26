@@ -78,10 +78,17 @@ Software:
 	. re-test OFFSET-REPEAT
 		-- OFFSET only works when it contains a value of -2 or -1.
 		. figure out why
-			--
+			-- might have gotten fixed
 		-- also, OFFSET-REPEAT notes are playing an extra note, the tick after their correct note.
 		. figure out why
 			-- it was the goddamned testing apparatus
+	. test OFFSET-REPEAT with various values again
+		-- it seems to work relatively well when QUANTIZE is 8...
+		-- ... but when QUANTIZE is 4, it doesn't trigger at all when held (at OFFSET values of -1, 0, 1, 2, it still works, though)
+		. figure this out
+			-- if OFFSET is more than half of QUANTIZE, then it doesn't work, regardless of QUANTIZE value
+			. what would be causing this?
+				--
 	. test OFFSET-QUANTIZE (no REPEAT) while recording notes
 		--
 
