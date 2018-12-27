@@ -88,7 +88,9 @@ Software:
 		. figure this out
 			-- if OFFSET is more than half of QUANTIZE, then it doesn't work, regardless of QUANTIZE value
 			. what would be causing this?
-				--
+				-- isInsertionPoint() was throwing false-negatives
+				. test it more thoroughly now, with steady backing beats of various granularities
+					--
 	. test OFFSET-QUANTIZE (no REPEAT) while recording notes
 		--
 

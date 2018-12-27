@@ -28,7 +28,7 @@ byte ctrlToButtonIndex(byte ctrl) {
 
 // Check whether the current point in RECORDSEQ is an insertion-point, when adjusted for QUANTIZE, QRESET, and OFFSET
 byte isInsertionPoint() {
-	return applyOffset(applyQuantize(POS[RECORDSEQ])) == POS[RECORDSEQ];
+	return !((applyOffset(POS[RECORDSEQ]) % (QRESET ? QRESET : 65535)) % QUANTIZE);
 }
 
 // Apply an offset to a given position in the current RECORDSEQ
@@ -40,16 +40,16 @@ word applyOffset(word p) {
 // Apply QUANTIZE and QRESET to a given point in the current RECORDSEQ
 word applyQuantize(word p) {
 
-	int len = word(STATS[RECORDSEQ] & 63) * 32; // Get the seq's length, in 32nd-notes (this is int, because it may go negative in subsequent lines)
+	word len = (STATS[RECORDSEQ] & 63) * 32; // Get the RECORDSEQ's length, in 32nd-notes
 
 	byte down = (POS[RECORDSEQ] % (QRESET ? QRESET : 65535)) % QUANTIZE; // Get the distance from the previous QUANTIZE-point
-	byte up = min(QRESET - down, QUANTIZE - down); // Get distance to next QUANTIZE-point, compensating for QRESET
+	byte up = min(QRESET, QUANTIZE) - down; // Get distance to next QUANTIZE-point, compensating for QRESET
 
 	return (p + ((down <= up) ? (-down) : up)) % len; // Return the QUANTIZE-and-QRESET-adjusted insertion-point
 
 }
 
-// Set a given var to contain a semi-random number, by using a xorshift algorithm on the smallest digits of ABSOLUTETIME
+// Set GLOBALRAND to contain a semi-random number, by using a xorshift algorithm on the smallest digits of ABSOLUTETIME
 void xorShift() {
 	GLOBALRAND = ABSOLUTETIME % 65536;
 	GLOBALRAND ^= GLOBALRAND << 2;
