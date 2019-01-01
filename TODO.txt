@@ -231,6 +231,12 @@ Hardware:
 	. check sizes of the pin-holes for the B3F-5050 buttons, and if they're too small, slightly widen them to compensate for kerf. (just remembered that these were too tight on the alpha prototype)
 		--
 
+	. change all standoff holes to be M3-sized, plus a bit of extra room for the threading
+		--
+
+	. make sure there is an actual screw-hole underneath each regulator
+		--
+
 	. update KiCad/Inkscape files:
 		. both boards:
 			. use connection-labels in the schematic, instead of having to make tangles of connections. faster revisions & reduces chance of overlooked errors
@@ -248,7 +254,7 @@ Hardware:
 					. top-board
 						-- done
 					. bottom-board
-						--
+						-- done
 			. make sure stacking-headers have the same pin-positions, signifying the same pin-contents (keeping in mind that the top-board's header is reversed)
 				--
 			. move model-number text to bottom-board - if it were still on the top-board, any sort of transparent plexiglas would make it look tacky
@@ -299,7 +305,7 @@ Hardware:
 		. LEDs:
 		. LSET-resistor:
 		. 16Mhz crystal oscillator: FOXSLF/160-20e ("C4ST", formerly HC49SLF) (11.35mm length, 4.65mm width)
-		. look into power-cables with a right-angle plug, since the DC-power port has been moved to the left side
+		. 9v AC adapter: WSU090-1300
 		. ATMEGA328P-PU chips, /not/ ATMEGA328-PU chips. only ATMEGA328P-PU can be easily reprogrammed by the end-user
 			. get these from DigiKey, using the "preprogrammed chip" service, to make sure the preprogrammed-bootloader-and-firmware process works
 		. sockets!
