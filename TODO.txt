@@ -241,11 +241,16 @@ Hardware:
 			-- already did it and then forgot I'd done it
 	. PCB: add stitched-vias and ground-planes to top-board
 		-- done
+	. PCB: make sure there is an actual screw-hole underneath each regulator
+		-- afaict this is the case
 	. PCB: to be extra thorough, overlay vector-drawings of both boards, and make sure the cross-board pins and capacitor placements align
-		--
+		-- they do
 
 	. brainstorm viability of building a virtual SD-card-socket out of through-hole components, so that DIY kits require no SMD soldering
 		-- would be too complex and finicky even under ideal conditions. sticking with the SMD SD-card-socket
+
+	. order circuit-boards
+		--
 
 	. look into other, cheaper, industrial-grade SD-cards. track down their rewrite hardiness on their manufacturer websites
 		--
@@ -257,12 +262,11 @@ Hardware:
 			. "master parts list" textfile (also, back up the textfile again)
 				--
 
-	. PCB: make sure there is an actual screw-hole underneath each regulator
-		-- afaict this is the case
-
-	. build a grounding-bracelet for the assembly process
+	. figure out how to build a grounding-bracelet for the prototype-assembly process
 		--
 
+	. order parts
+		--
 
 
 	. update KiCad/Inkscape files:
