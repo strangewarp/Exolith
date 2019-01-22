@@ -245,19 +245,25 @@ Hardware:
 		-- afaict this is the case
 	. PCB: to be extra thorough, overlay vector-drawings of both boards, and make sure the cross-board pins and capacitor placements align
 		-- they do
+	. PCB: change heatsink contact-pads to be approx >=13.21mm wide. they are currently much wider than they should be
+		-- done
+	. PCB: double-check that the DC-IN jack's pad-holes are large enough
+		-- yes
 
 	. brainstorm viability of building a virtual SD-card-socket out of through-hole components, so that DIY kits require no SMD soldering
 		-- would be too complex and finicky even under ideal conditions. sticking with the SMD SD-card-socket
 
+	. export gerber files, remembering to double-check that all necessary layers are being exported (edge cuts, silkscreen [both sides for topboard], etc)
+		-- done
 	. order circuit-boards
-		--
+		-- done
 
 	. look into other, cheaper, industrial-grade SD-cards. track down their rewrite hardiness on their manufacturer websites
 		--
 	. make a decision about which industrial-grade SD-card to use
 		--
 		. add it to:
-			. "tine synthesizer" Mouser project cart
+			. "tine sequencer" Mouser project cart
 				--
 			. "master parts list" textfile (also, back up the textfile again)
 				--
