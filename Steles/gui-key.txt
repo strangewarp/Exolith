@@ -33,15 +33,15 @@ Buttons (RECORD MODE):
 
 LEDs (PLAY MODE):
 
-	 I           O
-	b b b b q q q q
-	s s s s s s s s
-	x x x x x x x x
-	x x x x x x x x
-	x x x x x x x x
-	x x x x x x x x
-	x x x x x x x x
-	x x x x x x x x
+	I               O
+	 b b b b q q q q
+	 s s s s s s s s
+	 x x x x x x x x
+	 x x x x x x x x
+	 x x x x x x x x
+	 x x x x x x x x
+	 x x x x x x x x
+	 x x x x x x x x
 
 	I: Analog MIDI-IN indicator
 	O: Analog MIDI-OUT indicator
@@ -54,15 +54,15 @@ LEDs (PLAY MODE):
 
 LEDs (RECORD MODE):
 
-	 I           O
-	b b b b q q q q
-	r r r r r r r r
-	x x x x x x x x
-	x x x x x x x x
-	x x x x x x x x
-	x x x x x x x x
-	x x x x x x x x
-	x x x x x x x x
+	I               O
+	 b b b b q q q q
+	 r r r r r r r r
+	 x x x x x x x x
+	 x x x x x x x x
+	 x x x x x x x x
+	 x x x x x x x x
+	 x x x x x x x x
+	 x x x x x x x x
 
 	I: Analog MIDI-IN indicator
 	O: Analog MIDI-OUT indicator
@@ -89,4 +89,3 @@ LEDs (LOAD MODE):
 	q: Current global quarter-note
 	s: Number of active sustains
 	x: Display glyph: current page of loadfiles
-

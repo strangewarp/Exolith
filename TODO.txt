@@ -99,7 +99,18 @@ Software:
 	. load OFFSET when the PREFS are loaded
 		--
 
-	. add DURATION-HUMANIZE?
+	. limit the number of savefiles to 48 total:
+		. is LOAD-MODE even necessary at this point, wrt the possibility of simply using the PAGE system?
+			--
+			. if no:
+				. make LOAD into a PLAY-MODE keychord
+				. remove the LOAD MODE section from gui-key.txt
+			. either way:
+				. change everything in func_file.ino
+				. change all of LOAD-MODE's behaviors
+				. change LOAD-MODE's GUI functions
+
+	. add DURATION-HUMANIZE
 		--
 
 	. test long-sequence timed cues and beatslicing
@@ -226,7 +237,7 @@ Software:
 Hardware:
 
 	. clear/clean/update todo tasks
-		--
+		-- done
 
 	. PCB: change all capacitors to ULD2A100MED1TD spec: 2.5mm pin spacing, 6.3mm diameter.
 		-- done
@@ -258,107 +269,33 @@ Hardware:
 	. order circuit-boards
 		-- done
 
+	. order parts
+		-- done
+
 	. look into other, cheaper, industrial-grade SD-cards. track down their rewrite hardiness on their manufacturer websites
-		--
+		-- OK
 	. make a decision about which industrial-grade SD-card to use
-		--
+		-- done
 		. add it to:
 			. "tine sequencer" Mouser project cart
-				--
+				-- done
 			. "master parts list" textfile (also, back up the textfile again)
-				--
-
-	. figure out how to build a grounding-bracelet for the prototype-assembly process
-		--
-
-	. order parts
-		--
-
-
-	. update KiCad/Inkscape files:
-		. both boards:
-			. use connection-labels in the schematic, instead of having to make tangles of connections. faster revisions & reduces chance of overlooked errors
-				-- am using this process now
-			. move DC-IN jack and MIDI-ports to bottom-board
 				-- done
-				. change edge-cuts for both boards to accomodate the new DC-IN jack position
-					-- done
-			. add extra kerf to standoff-holes, to compensate for standoff screws always being slightly over-size due to their threading
-				-- done: increased from 2.5mm to 2.75mm
-			. change all stacking headers to occupy a 2x20 horizontal row between the buttons and LEDs, to make the assembly process less fragile
-				. do this in schematic
-					-- done
-				. do this in PCBs
-					. top-board
-						-- done
-					. bottom-board
-						-- done
-			. make sure stacking-headers have the same pin-positions, signifying the same pin-contents (keeping in mind that the top-board's header is reversed)
-				--
-			. move model-number text to bottom-board - if it were still on the top-board, any sort of transparent plexiglas would make it look tacky
-				--
-				. model-number text should be in the following format:
-					. basilisk tine sequencer
-					  production run number - production run name
-			. make sure all edge-cuts reflect the rearrangement of ports/standoffs
-				--
-			. add edge-cuts to top-board for all electrolytic capacitors on the bottom-board
-				-- done
-				. double-check that the capacitors in the parts-list are actually slim enough to fit into this space
-					--
-			. double-check that ports aren't competing for space with standoffs
-		. bottom-board:
-			. update R-SET resistor's value based on the new diffused LEDs
-				--
-			. double-check all pin assignments on both regulators, comparing datasheets directly to footprints
-				--
-			. place thermal-plates that accomodate new smaller heatsinks
-			. remember to include screw-holes inside the thermal-plates (these may be part of the regulators' footprints)
-			. place all capacitors beneath edge-cuts, so they have enough room to stand
-			. place shrouded AVR-ISP jack on the back-left edge of the bottom-board, under the same edge-cut as the capacitors
-			. SD-card should be in the center of the front-panel
-			. double-check the SD-card's footprint against its datasheet (its stabilization-holes were kind of wonky on the alpha prototype)
-			. individually label the pins on the "MIDI-EXPANDER" header
-			. move POWER-LED to center of bottom-board, and use a high-brightness white LED with a very wide visibility-cone
-		. top-board:
-			. remember to include edge-cuts for: the MIDI ports, the electrolytic capacitors, and the AVR-ISP port
 
-	. double-check that the text diagrams in button-key.txt accurately reflect the finalized LED-placement
+	. add text to back-panel of enclosure, to label MIDI ports
+		-- done
 
-	. make a list of every part needed for the prototype, with each part's specific part-number (both manufacturer and distributor)
-		. 2mm LED-standoffs
-		. regular standoffs for circuit-boards, and associated screws
-		. longer screws for the two top-back screw-holes, since these will have several additional layers of enclosure to cover the MIDI ports
-		. small screws and nuts, for securing the heatsinks to the regulators and their underlying circuit-board
-		. 5v regulator: L7805ABV
-		. 3.3v regulator:
-		. heatsinks for TO-220-shaped regulators!
-		. B3F-5050 buttons (these have a longer life than B3F-4050 buttons)
-			. use different-color button-caps on the note-keys, to differentiate between "white notes" and "black notes" like on a piano
-			. use different button-cap color for control-row?
-		. electrolytic capacitors: 5mm width, 2.5mm pin-width
-		. 20pF capacitors: SR211A200JAR (5.08mm length)
-		. 0.1uF capacitors: K104K15X7RF53H5 (5mm length)
-		. resistors!
-		. LEDs:
-		. LSET-resistor:
-		. 16Mhz crystal oscillator: FOXSLF/160-20e ("C4ST", formerly HC49SLF) (11.35mm length, 4.65mm width)
-		. 9v AC adapter: WSU090-1300
-		. ATMEGA328P-PU chips, /not/ ATMEGA328-PU chips. only ATMEGA328P-PU can be easily reprogrammed by the end-user
-			. get these from DigiKey, using the "preprogrammed chip" service, to make sure the preprogrammed-bootloader-and-firmware process works
-		. sockets!
-		. grounding-bracelets, to use while soldering beta prototypes, and while assembling finished units
-		. "industrial-grade" SD-cards: these will greatly lengthen the SD-card's wear-leveling life to something a user would be okay with
-			. something like "1GB THEMIS-A" in here: http://www.psism.com/industrialsd.htm
-			. sdfat /should/ support the FAT16 filesystems of the smaller THEMIS cards, but make sure this is indeed the case
-			. when ordering these, make sure that the SD-cards are shipped in a state identical to what results from the SD Association formatter utility
-		. look into sticky rubber spacers for the bottom of the device, to keep its screws from scraping on things and being worn down
-			. mouser part: 517-SJ-5306CL ?
-		. make entries for all other parts
+	. check whether the MIDI ports require the "divot" in the enclosure's top-panel, if the design uses 6mm spacers
+		-- it doesn't. divot removed.
 
-	. redo all Inkscape files for enclosure, making sure to retake all measurements & repeat the KiCad-to-Inkscape vector paste process
-		. make the tabs and slots for the bottom half of the side-panels the correct width for the plexiglass
-		. tabulate the heights of all internal components, to figure out how many layers of plexiglass need to go into the "bump" above the MIDI-ports
+	. order the industrial-grade SD-card and M2.5 spacers
+		-- done
+
+	. order the laser-cut enclosure
+		-- done
+
+	. double-check that the text diagrams in gui-key.txt accurately reflect the finalized LED-placement
+		-- done
 
 	==== HARDWARE BETA THRESHOLD ====
 
@@ -381,7 +318,7 @@ Packaging:
 	. look into services that create custom-printed, custom-sized cardboard boxes
 		. any DIY kits will have to be sealed tightly so parts don't escape during transport
 			. will just have to use plastic baggies for this probably
-				. look into bulk suppliers for non-static plastic baggies
+				. look into bulk suppliers for anti-static plastic baggies
 		. fully-assembled units won't need baggies, but will still need a way to retain loose elements (stickers, manual, et al)
 
 	. look into custom stickers and various other goodies
