@@ -75,15 +75,15 @@ LEDs (RECORD MODE):
 
 LEDs (LOAD MODE):
 
-	 I           O
-	b b b b q q q q
-	s s s s s s s s
-	x x x x x x x x
-	x x x x x x x x
-	x x x x x x x x
-	x x x x x x x x
-	x x x x x x x x
-	x x x x x x x x
+	I               O
+	 b b b b q q q q
+	 s s s s s s s s
+	 x x x x x x x x
+	 x x x x x x x x
+	 x x x x x x x x
+	 x x x x x x x x
+	 x x x x x x x x
+	 x x x x x x x x
 
 	b: Current global cue-point
 	q: Current global quarter-note
