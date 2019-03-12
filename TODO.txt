@@ -94,9 +94,12 @@ Software:
 	. test OFFSET-QUANTIZE (no REPEAT) while recording notes
 		--
 
-	. save OFFSET to the PREFS-file
+	. add DURATION-HUMANIZE
 		--
-	. load OFFSET when the PREFS are loaded
+
+	. save OFFSET and DURATION-HUMANIZE to the PREFS-file
+		--
+	. load OFFSET and DURATION-HUMANIZE when the PREFS are loaded
 		--
 
 	. limit the number of savefiles to 48 total:
@@ -110,7 +113,15 @@ Software:
 				. change all of LOAD-MODE's behaviors
 				. change LOAD-MODE's GUI functions
 
-	. add DURATION-HUMANIZE
+	. when two notes on the same channel with the same pitch are in the SUSTAIN queue, the nested NOTE-OFF does not behave as expected with most synths
+	. therefore, a change is necessary:
+		. whenever a note is about to be added to the SUSTAIN queue, check whether that chan/pitch combo is in SUSTAIN already.
+		. if so: send a NOTE-OFF for that note, remove its SUSTAIN entry (and shift other entries accordingly), and then and only then insert the new SUSTAIN entry
+
+	. change number of TRACKS per seq to 4 instead of 2? (chords, more complex runs, etc)
+		--
+
+	. change the "note-name" display in RECORD-MODE so that it displays the highest held-note when one of the held-notes is released
 		--
 
 	. test long-sequence timed cues and beatslicing
