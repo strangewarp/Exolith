@@ -145,7 +145,8 @@ void recordHeldNote() {
 
 // Get a duration-value with all current modifiers applied
 byte modDur() {
-	byte d =
+	// Subtract a random dur-offset from the current DURATION (decoupled from the part of GLOBALRAND used by velocity-humanize), and return it
+	return DURATION - min(DURATION - 1, byte((GLOBALRAND & 32512) >> 8) % (DURHUMANIZE + 1));
 }
 
 // Get a note that corresponds to a raw keypress, and also apply OCTAVE via modPitch()
