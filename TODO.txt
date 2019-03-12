@@ -95,6 +95,36 @@ Software:
 		--
 
 	. add DURATION-HUMANIZE
+		-- am doing
+		. add keychord to button-key.txt
+			-- done
+		. shift REPEAT-SWEEP to a different keychord, to free up DURATION-HUMANIZE's ideal keychord
+			-- am doing
+			. change REPEAT-SWEEP's CmdFunc placement
+				-- done
+			. change REPEAT-SWEEP's related GUI-func calls
+				-- done
+		. add CmdFunc listing
+			-- done
+		. shift other CmdFunc listings
+			-- done
+		. add glyph
+			-- done
+		. shift manual calls to other glyphs in func_gui.ino
+			-- done
+		. add DURATION-HUMANIZE GUI mechanisms for top row and bottom rows
+			-- done
+		. add DURATION-HUMANIZE's CmdFunc itself, to func_cmds.ino
+			-- done
+		. add DURATION-HUMANIZE behavior to all notes in RECORD-MODE
+			-- done
+		. remove "todo update" notes from button-key.txt
+			-- done
+		. test DURATION-HUMANIZE
+			-- 
+
+	. when DURAION is in manual (=129), and REPEAT is enabled, no notes can be played in RECORD MODE...
+	. apply fix: in this situation, REPEAT behavior should occur, with the note's duration being the QUANTIZE size minus 1
 		--
 
 	. save OFFSET and DURATION-HUMANIZE to the PREFS-file

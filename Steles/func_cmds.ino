@@ -58,6 +58,13 @@ void durationCmd(byte col, byte row) {
 	TO_UPDATE |= 1; // Flag the topmost row for updating
 }
 
+// Parse a DURATION-HUMANIZE press
+void durHumanizeCmd(byte col, byte row) {
+	char change = toChange(col, row); // Convert a column and row into a CHANGE value
+	DURHUMANIZE = applyChange(DURHUMANIZE, change, 0, 128); // Modify the DURATION value
+	TO_UPDATE |= 1; // Flag the topmost row for updating
+}
+
 // Parse all of the possible actions that signal the recording of commands
 void genericCmd(byte col, byte row) {
 

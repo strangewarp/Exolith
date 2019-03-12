@@ -86,7 +86,7 @@ void recordToSeq(word pstn, byte dur, byte chan, byte b1, byte b2) {
 void processRecAction(byte pitch) {
 
 	byte velo = modVelo(); // Get a velocity-value with all current modifiers applied
-	byte dur = ((DURATION == 129) && REPEAT) ? QUANTIZE : DURATION; // Get a duration-value, or QUANTIZE if manual-mode is enabled
+	byte dur = ((DURATION == 129) && REPEAT) ? QUANTIZE : modDur(); // Get a duration-value with modifiers applied, or QUANTIZE if manual-mode is enabled
 
 	if (RECORDNOTES) { // If notes are being recorded into a sequence...
 
@@ -141,6 +141,11 @@ void recordHeldNote() {
 
 	KEYFLAG = 0; // Reset KEYFLAG, to show that a manual-duration note is no longer being held
 
+}
+
+// Get a duration-value with all current modifiers applied
+byte modDur() {
+	byte d =
 }
 
 // Get a note that corresponds to a raw keypress, and also apply OCTAVE via modPitch()

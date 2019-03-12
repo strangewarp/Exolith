@@ -12,46 +12,47 @@ const CmdFunc COMMANDS[] PROGMEM = {
 	chanCmd,          //  4: CHANNEL
 	clearCmd,         //  5: CLEAR NOTES
 	durationCmd,      //  6: DURATION
-	genericCmd,       //  7: All possible note-entry commands
-	gridConfigCmd,    //  8: GRID-CONFIG
-	humanizeCmd,      //  9: HUMANIZE
-	octaveCmd,        // 10: OCTAVE
-	offsetCmd,        // 11: OFFSET
-	posCmd,           // 12: SHIFT CURRENT POSITION
-	qrstCmd,          // 13: QUANTIZE-RESET
-	quantizeCmd,      // 14: QUANTIZE
-	repeatCmd,        // 15: TOGGLE REPEAT
-	rSweepCmd,        // 16: REPEAT-SWEEP
-	sizeCmd,          // 17: SEQ-SIZE
-	switchCmd,        // 18: SWITCH RECORDING-SEQUENCE
-	tempoCmd,         // 19: BPM
-	trackCmd,         // 20: TRACK
-	upperBitsCmd,     // 21: UPPER CHAN BITS
-	veloCmd           // 22: VELOCITY
+	durHumanizeCmd,   //  7: DURATION-HUMANIZE
+	genericCmd,       //  8: All possible note-entry commands
+	gridConfigCmd,    //  9: GRID-CONFIG
+	humanizeCmd,      // 10: HUMANIZE
+	octaveCmd,        // 11: OCTAVE
+	offsetCmd,        // 12: OFFSET
+	posCmd,           // 13: SHIFT CURRENT POSITION
+	qrstCmd,          // 14: QUANTIZE-RESET
+	quantizeCmd,      // 15: QUANTIZE
+	repeatCmd,        // 16: TOGGLE REPEAT
+	rSweepCmd,        // 17: REPEAT-SWEEP
+	sizeCmd,          // 18: SEQ-SIZE
+	switchCmd,        // 19: SWITCH RECORDING-SEQUENCE
+	tempoCmd,         // 20: BPM
+	trackCmd,         // 21: TRACK
+	upperBitsCmd,     // 22: UPPER CHAN BITS
+	veloCmd           // 23: VELOCITY
 };
 
 // Matches control-row binary button-values to the decimal values that stand for their corresponding functions in COMMANDS
 // Note: These binary values are flipped versions of what is displayed in button-key.txt
 const byte KEYTAB[] PROGMEM = {
-	7,  //  0, 000000:  7, genericCmd (REGULAR NOTE)
-	15, //  1, 000001: 15, repeatCmd
-	20, //  2, 000010: 20, trackCmd
-	12, //  3, 000011: 12, posCmd
-	22, //  4, 000100: 22, veloCmd
-	19, //  5, 000101: 19, tempoCmd
-	16, //  6, 000110: 16, rSweepCmd
+	8,  //  0, 000000:  8, genericCmd (REGULAR NOTE)
+	16, //  1, 000001: 16, repeatCmd
+	21, //  2, 000010: 21, trackCmd
+	13, //  3, 000011: 13, posCmd
+	23, //  4, 000100: 23, veloCmd
+	20, //  5, 000101: 20, tempoCmd
+	7,  //  6, 000110:  7, durHumanizeCmd
 	0,  //  7, 000111:  0, ignore
-	10, //  8, 001000: 10, octaveCmd
-	8,  //  9, 001001:  9, gridConfigCmd
+	11, //  8, 001000: 11, octaveCmd
+	9,  //  9, 001001:  9, gridConfigCmd
 	3,  // 10, 001010:  3, arpRefCmd
 	0,  // 11, 001011:  0, ignore
-	9,  // 12, 001100:  9, humanizeCmd
+	10, // 12, 001100: 10, humanizeCmd
 	0,  // 13, 001101:  0, ignore
 	0,  // 14, 001110:  0, ignore
 	5,  // 15, 001111:  5, clearCmd
-	14, // 16, 010000: 14, quantizeCmd
-	0,  // 17, 010001:  0, ignore
-	13, // 18, 010010: 13, qrstCmd
+	15, // 16, 010000: 15, quantizeCmd
+	17, // 17, 010001: 17, rSweepCmd
+	14, // 18, 010010: 14, qrstCmd
 	0,  // 19, 010011:  0, ignore
 	2,  // 20, 010100:  2, arpModeCmd
 	0,  // 21, 010101:  0, ignore
@@ -66,10 +67,10 @@ const byte KEYTAB[] PROGMEM = {
 	0,  // 30, 011110:  0, ignore
 	0,  // 31, 011111:  0, ignore
 	1,  // 32, 100000:  1, armCmd
-	18, // 33, 100001: 18, switchCmd
-	11, // 34, 100010: 11, offsetCmd
+	19, // 33, 100001: 19, switchCmd
+	12, // 34, 100010: 12, offsetCmd
 	0,  // 35, 100011:  0, ignore
-	21, // 36, 100100: 21, upperBitsCmd
+	22, // 36, 100100: 22, upperBitsCmd
 	0,  // 37, 100101:  0, ignore
 	0,  // 38, 100110:  0, ignore
 	0,  // 39, 100111:  0, ignore
@@ -81,7 +82,7 @@ const byte KEYTAB[] PROGMEM = {
 	0,  // 45, 101101:  0, ignore
 	0,  // 46, 101110:  0, ignore
 	0,  // 47, 101111:  0, ignore
-	17, // 48, 110000: 17, sizeCmd
+	18, // 48, 110000: 18, sizeCmd
 	0,  // 49, 110001:  0, ignore
 	0,  // 50, 110010:  0, ignore
 	0,  // 51, 110011:  0, ignore

@@ -112,6 +112,7 @@ byte RPTVELO = 127; // Stored RPTSWEEP-modified VELOCITY value for the current R
 byte OCTAVE = 4; // Octave-offset value for RECORD MODE notes
 byte VELO = 127; // Baseline velocity-value for RECORD MODE notes
 byte HUMANIZE = 0; // Maximum velocity-humanize value for RECORD MODE notes
+byte DURHUMANIZE = 0; // Maximum duration-humanize value for RECORD MODE notes
 byte CHAN = 144; // MIDI-COMMAND byte (including current CHANNEL) for RECORD MODE notes
 char OFFSET = 0; // The number of 32nd-notes by which the base QUANTIZE-point gets offset in RECORD-MODE (-31 to 31)
 byte QUANTIZE = 4; // Time-quantize value for RECORD MODE notes (1 to 16)
