@@ -90,9 +90,18 @@ Software:
 			. what would be causing this?
 				-- isInsertionPoint() was throwing false-negatives
 				. test it more thoroughly now, with steady backing beats of various granularities
-					--
+					-- seems to work, but:
+					-- OFFSET's GUI feels "backwards" - tabbing "right" makes the offset "earlier" - "right" should mean "later"
+					. change this and test it
+						-- seems fixed
 	. test OFFSET-QUANTIZE (no REPEAT) while recording notes
+		-- OFFSET-QUANTIZE has its time-offset shifted in the opposite direction from OFFSET-REPEAT
+		. fix this
+			-- 
+	. check whether OFFSET conflicts with manual-mode DURATIONS (DURATION=129)
 		--
+		. if yes, then: decide whether to compensate for this outright, or to stop it from being applied to manual-mode durs
+			--
 
 	. add DURATION-HUMANIZE
 		-- am doing
@@ -121,7 +130,7 @@ Software:
 		. remove "todo update" notes from button-key.txt
 			-- done
 		. test DURATION-HUMANIZE
-			-- 
+			-- seems to work perfectly
 
 	. when DURAION is in manual (=129), and REPEAT is enabled, no notes can be played in RECORD MODE...
 	. apply fix: in this situation, REPEAT behavior should occur, with the note's duration being the QUANTIZE size minus 1
