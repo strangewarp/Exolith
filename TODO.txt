@@ -97,10 +97,14 @@ Software:
 	. test OFFSET-QUANTIZE (no REPEAT) while recording notes
 		-- OFFSET-QUANTIZE has its time-offset shifted in the opposite direction from OFFSET-REPEAT
 		. fix this
-			-- 
+			-- this was an artifact of weird replay behaviors with offset recorded-notes, not the bug itself.
+			-- however:
+			-- while OFFSET-QUANTIZE actually matches OFFSET-REPEAT, they're both being recorded with their OFFSETs in the wrong direction
+			. figure out why!
+				-- 
 	. check whether OFFSET conflicts with manual-mode DURATIONS (DURATION=129)
 		--
-		. if yes, then: decide whether to compensate for this outright, or to stop it from being applied to manual-mode durs
+		. if yes, then: decide whether to compensate for this outright, or to stop it from being applied to manual-mode durations
 			--
 
 	. add DURATION-HUMANIZE
