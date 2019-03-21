@@ -165,7 +165,7 @@ void processRepeats(byte ctrl) {
 		&& isInsertionPoint() // And this tick occupies an insertion-point (as modified by QUANTIZE, QRESET, and OFFSET)...
 	) { // Then this is a valid REPEAT position. So...
 		arpAdvance(); // Advance the arpeggio-position
-		processRecAction(modPitch(ARPPOS & 31)); // Put the current raw repeat-note or arpeggiation-note into the current track
+		processRecAction(0, modPitch(ARPPOS & 31)); // Put the current raw repeat-note or arpeggiation-note into the current track
 		RPTVELO = applyChange(RPTVELO, char(int(RPTSWEEP) - 128), 0, 127); // Change the stored REPEAT-VELOCITY by the REPEAT-SWEEP amount
 	}
 }

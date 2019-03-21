@@ -34,7 +34,7 @@ byte isInsertionPoint() {
 // Apply an offset to a given position in the current RECORDSEQ
 word applyOffset(word p) {
 	word len = (STATS[RECORDSEQ] & 63) * 32; // Get the RECORDSEQ's length, in 32nd-notes
-	return word((int(p) - OFFSET) + len) % len; // Apply the offset to the given position, and wrap its new value (even if negative)
+	return word((int(p) + int(OFFSET)) + len) % len; // Apply the offset to the given position, and wrap its new value (even if negative)
 }
 
 // Apply QUANTIZE and QRESET to a given point in the current RECORDSEQ

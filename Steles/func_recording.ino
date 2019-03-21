@@ -63,7 +63,7 @@ void writeCommands(
 // Record a given MIDI command into the tempdata-file of the current RECORDSEQ sequence
 void recordToSeq(word pstn, byte dur, byte chan, byte b1, byte b2) {
 
-	// Get the position of the first of this tick's bytes within the active track in the data-file
+	// Get the position of the first of this tick's bytes, within the active track in the data-file
 	unsigned long tickstart = (FILE_BODY_START + (FILE_SEQ_BYTES * RECORDSEQ)) + (((unsigned long)pstn) * 8) + (TRACK * 4);
 
 	byte cstrip = chan & 240; // Get the command-type, stripped of any MIDI CHANNEL information
@@ -83,14 +83,18 @@ void recordToSeq(word pstn, byte dur, byte chan, byte b1, byte b2) {
 }
 
 // Parse all of the possible actions that signal the recording of commands
-void processRecAction(byte pitch) {
+void processRecAction(byte dqo, byte pitch) {
 
 	byte velo = modVelo(); // Get a velocity-value with all current modifiers applied
 	byte dur = ((DURATION == 129) && REPEAT) ? QUANTIZE : modDur(); // Get a duration-value with modifiers applied, or QUANTIZE if manual-mode is enabled
 
 	if (RECORDNOTES) { // If notes are being recorded into a sequence...
 
-		word qp = applyOffset(applyQuantize(POS[RECORDSEQ])); // Get the fully-adjusted insertion-point for the current tick in the current RECORDSEQ
+		word qp = POS[RECORDSEQ]; // Get the current tick in the current RECORDSEQ
+
+		if (dqo) { // If QUANTIZE and OFFSET need to be applied to the insertion-point...
+			qp = applyOffset(applyQuantize(qp)); // Apply QUANTIZE and then OFFSET
+		}
 
 		// Record the note into the current RECORDSEQ slot:
 		recordToSeq(qp, dur, CHAN, pitch, velo);

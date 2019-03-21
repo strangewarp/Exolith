@@ -1024,6 +1024,56 @@ Software:
 	. test regular-sequence timed cues and beatslicing
 		-- seem to work
 
+	. change SWING:
+		. remove recordable SWING-commands
+			-- done
+		. change the UPPER CHANNEL BITS CmdFunc to exclude the block that was previously taken up by recordable SWING commands
+			-- done
+		. update data-key.txt accordingly
+			-- done
+		. remove table of constants related to SWING
+			-- done
+		. simplify the way tempo is calculated
+			-- done
+		. change SWING AMOUNT and SWING GRANULARITY CmdFuncs, to deal with 32nd-notes rather than abstract swing-values
+			-- done
+		. change files so that SGRAN and SAMOUNT are saved as global prefs, rather than per-file prefs
+			-- done
+		. actually just remove all remnants of SWING, SGRAN, and SAMOUNT, since this can't even be repurposed for recording without getting too hairy:
+			. remove SGRAN/SAMOUNT vars
+				-- done
+			. remove SGRAN/SAMOUNT CmdFunc entries, and move other CmdFuncs to compensate
+				-- done
+			. remove SWING glyphs, and update manual glyph calls
+				-- done
+			. remove SWING-related top-row GUI events
+				-- done
+			. remove SWING CmdFuncs themselves
+				-- done
+			. remove SGRAN/SAMOUNT file-vars (P.DAT, functions that modify P.DAT, prefs-format.txt, etc)
+				-- done
+			. change button-key.txt to remove SWING commands
+				-- done
+		. add a global "OFFSET" var, to change QUANTIZE's base-point
+			. add the OFFSET var itself
+				-- done
+			. change button-key.txt to add OFFSET
+				-- done
+			. add a CmdFunc entry for it, and move other CmdFuncs to compensate
+				-- done
+			. add an OFFSET glyph, and update manual glyph calls
+				-- done
+			. add an OFFSET-related top-row GUI event
+				-- done
+			. add the OFFSET CmdFunc itself in func_cmds.ino: OFFSET should also be bounded by QUANTIZE
+				-- done
+			. add OFFSET's functionality to the recording-mechanisms: positive or negative offset gets applied to the base QUANTIZE-point
+				-- done
+			. the logic that decides whether or not to play a note while recording in realtime, should also apply the OFFSET value
+				-- no changes are necessary here, since processRecAction() checks only for presence on the current tick, in this regard
+		. update timing system to be based on floats rather than integers
+			-- done
+
 Hardware:
 
 	. print out the alpha-prototype's schematic for reference while making updates (KiCad can corrupt a project if more than 1 is open)
