@@ -4,7 +4,7 @@
 
 		Steles is a MIDI sequencer firmware for the "Tine" hardware.
 		THIS CODE IS UNDER DEVELOPMENT AND DOESN'T DO ANYTHING!
-		Copyright (C) 2016-2018, C.D.M. Rørmose (sevenplagues@gmail.com).
+		Copyright (C) 2016-2019, C.D.M. Rørmose (sevenplagues@gmail.com).
 
 		This program is free software; you can redistribute it and/or modify
 		it under the terms of the GNU General Public License as published by

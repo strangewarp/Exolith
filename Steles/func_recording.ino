@@ -83,21 +83,16 @@ void recordToSeq(word pstn, byte dur, byte chan, byte b1, byte b2) {
 }
 
 // Parse all of the possible actions that signal the recording of commands
-void processRecAction(byte dqo, byte pitch) {
+void processRecAction(byte pitch) {
 
 	byte velo = modVelo(); // Get a velocity-value with all current modifiers applied
 	byte dur = ((DURATION == 129) && REPEAT) ? QUANTIZE : modDur(); // Get a duration-value with modifiers applied, or QUANTIZE if manual-mode is enabled
 
 	if (RECORDNOTES) { // If notes are being recorded into a sequence...
 
-		word qp = POS[RECORDSEQ]; // Get the current tick in the current RECORDSEQ
+		word qp = applyOffset(1, applyQuantize(POS[RECORDSEQ])); // Apply QUANTIZE and OFFSET to a copy of the tick-pos from the current RECORDSEQ
 
-		if (dqo) { // If QUANTIZE and OFFSET need to be applied to the insertion-point...
-			qp = applyOffset(applyQuantize(qp)); // Apply QUANTIZE and then OFFSET
-		}
-
-		// Record the note into the current RECORDSEQ slot:
-		recordToSeq(qp, dur, CHAN, pitch, velo);
+		recordToSeq(qp, dur, CHAN, pitch, velo); // Record the note into the QUANTIZE-and-OFFSET-modified RECORDSEQ slot
 
 		// If the adjusted note-insertion-point fell on this tick,
 		// then exit the function without sending the command, and without flagging GUI-updates,
@@ -183,7 +178,7 @@ void setRawKeyNote(byte pitch, byte velo) {
 	Serial.write(note, 3);
 
 	KEYFLAG = 1; // Toggle the flag for "a note is currently being held in manual-duration-mode"
-	KEYPOS = applyOffset(applyQuantize(POS[RECORDSEQ])); // Get the QUANTIZE-and-OFFSET-adjusted insertion-point in the current RECORDSEQ
+	KEYPOS = applyOffset(1, applyQuantize(POS[RECORDSEQ])); // Get the QUANTIZE-and-OFFSET-adjusted insertion-point in the current RECORDSEQ
 	KEYNOTE = pitch; // Store the given pitch and velo
 	KEYVELO = velo; // ^
 	KEYCOUNT = 0; // Reset the counter that tracks how many ticks the note has been held for

@@ -53,16 +53,12 @@ void clearCmd(byte col, byte row) {
 
 // Parse a DURATION press
 void durationCmd(byte col, byte row) {
-	char change = toChange(col, row); // Convert a column and row into a CHANGE value
-	DURATION = applyChange(DURATION, change, 0, 129); // Modify the DURATION value
-	TO_UPDATE |= 1; // Flag the topmost row for updating
+	simpleChange(col, row, DURATION, 0, 129, 1);
 }
 
 // Parse a DURATION-HUMANIZE press
 void durHumanizeCmd(byte col, byte row) {
-	char change = toChange(col, row); // Convert a column and row into a CHANGE value
-	DURHUMANIZE = applyChange(DURHUMANIZE, change, 0, 128); // Modify the DURATION value
-	TO_UPDATE |= 1; // Flag the topmost row for updating
+	simpleChange(col, row, DURHUMANIZE, 0, 128, 1);
 }
 
 // Parse all of the possible actions that signal the recording of commands
@@ -85,7 +81,7 @@ void genericCmd(byte col, byte row) {
 			}
 			setKeyNote(col, row); // Set a held-recording-note for the given button-position
 		} else { // Else, if DURATION is in auto-mode...
-			processRecAction(1, RECNOTE); // Parse the key as a recording-action into the current TRACK, and apply OFFSET (1)
+			processRecAction(RECNOTE); // Parse the key as a recording-action into the current TRACK, and apply OFFSET (1)
 		}
 	}
 
@@ -95,23 +91,17 @@ void genericCmd(byte col, byte row) {
 
 // Parse a GRID-CONFIG press
 void gridConfigCmd(byte col, byte row) {
-	char change = toChange(col, row); // Convert a column and row into a CHANGE value
-	GRIDCONFIG = applyChange(GRIDCONFIG, change, 0, GRID_TOTAL); // Modify the GRIDCONFIG value
-	TO_UPDATE |= 1; // Flag the topmost row for updating
+	simpleChange(col, row, GRIDCONFIG, 0, GRID_TOTAL, 1);
 }
 
 // Parse a HUMANIZE press
 void humanizeCmd(byte col, byte row) {
-	char change = toChange(col, row); // Convert a column and row into a CHANGE value
-	HUMANIZE = applyChange(HUMANIZE, change, 0, 127); // Modify the HUMANIZE value
-	TO_UPDATE |= 1; // Flag the topmost row for updating
+	simpleChange(col, row, HUMANIZE, 0, 127, 1);
 }
 
 // Parse an OCTAVE press
 void octaveCmd(byte col, byte row) {
-	char change = toChange(col, row); // Convert a column and row into a CHANGE value
-	OCTAVE = applyChange(OCTAVE, change, 0, 10); // Modify the OCTAVE value
-	TO_UPDATE |= 1; // Flag the topmost row for updating
+	simpleChange(col, row, OCTAVE, 0, 10, 1);
 }
 
 // Parse an OFFSET press
@@ -145,16 +135,12 @@ void posCmd(byte col, byte row) {
 
 // Parse a QRESET press
 void qrstCmd(byte col, byte row) {
-	char change = toChange(col, row); // Convert a column and row into a CHANGE value
-	QRESET = applyChange(QRESET, change, 0, 128); // Modify the QRESET value
-	TO_UPDATE |= 1; // Flag the topmost row for updating
+	simpleChange(col, row, QRESET, 0, 128, 1);
 }
 
 // Parse a QUANTIZE press
 void quantizeCmd(byte col, byte row) {
-	char change = toChange(col, row); // Convert a column and row into a CHANGE value
-	QUANTIZE = applyChange(QUANTIZE, change, 1, 32); // Modify the QUANTIZE value
-	TO_UPDATE |= 1; // Flag the topmost row for updating
+	simpleChange(col, row, QUANTIZE, 1, 32, 1);
 }
 
 // Parse a REPEAT press
@@ -165,9 +151,7 @@ void repeatCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte ro
 
 // Parse a REPEAT-SWEEP press
 void rSweepCmd(byte col, byte row) {
-	char change = toChange(col, row); // Convert a column and row into a CHANGE value
-	RPTSWEEP = applyChange(RPTSWEEP, change, 0, 255); // Modify the RPTSWEEP value by the CHANGE amount
-	TO_UPDATE |= 253; // Flag the top row, and bottom 6 rows, for LED updates
+	simpleChange(col, row, RPTSWEEP, 0, 255, 253);
 }
 
 // Parse a SEQ-SIZE press
@@ -213,7 +197,5 @@ void upperBitsCmd(byte col, byte row) {
 
 // Parse a VELOCITY press
 void veloCmd(byte col, byte row) {
-	char change = toChange(col, row); // Convert a column and row into a CHANGE value
-	VELO = applyChange(VELO, change, 0, 127); // Modify the VELO value
-	TO_UPDATE |= 1; // Flag the topmost row for updating
+	simpleChange(col, row, VELO, 0, 127, 1);
 }

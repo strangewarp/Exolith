@@ -11,6 +11,7 @@ Software:
 	. prove I'm not a dipshit: actually finish the project
 
 	-- restructured some functions in func_timer.ino
+	-- created function simpleChange() to eliminate some duplicate code in func_cmds.ino
 
 	. test OFFSET system
 		-- OFFSET didn't display its top-row GUI correctly. already fixed it
@@ -55,8 +56,9 @@ Software:
 				-- can't figure out why... something strange is going on here
 				-- made some miscellaneous changes, type-safety and so on, and now REPEAT-OFFSET works, but regular note-entry with OFFSET doesn't
 				. figure out what's up with regular note-entry with OFFSET
-					-- 
-
+					-- isInsertionPoint() was returning its positives in the opposite direction from where the insertion point was,
+					-- and in other parts of the code, this abstraction was being used straightforwardly instead!
+					-- seem to have fixed that entire problem now.
 
 	. check whether OFFSET conflicts with manual-mode DURATIONS (DURATION=129)
 		--
