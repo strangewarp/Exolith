@@ -10,98 +10,21 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	-- restructured some functions in func_timer.ino
-	-- created function simpleChange() to eliminate some duplicate code in func_cmds.ino
-
-	. test OFFSET system
-		-- OFFSET didn't display its top-row GUI correctly. already fixed it
-	. test again
-		-- OFFSET doesn't get applied to REPEAT-notes
-		. fix it
-			-- REPEAT-notes get triggered on every 32nd-note
-			. figure out why
-				-- logic-flow error: getInsertionPoint() was checking for the absence of REPEAT, which interfered with the repeat-mechanism's boolean check
-	. test again
-		-- REPEAT works now, but OFFSET still isn't being applied
-		. figure out what's going on
-			-- everything is a morass. time to rewrite the OFFSET/QUANTIZE system again
-	. rewrite the relevant portions of the OFFSET/QUANTIZE system
-		-- ok
-	. re-test OFFSET-REPEAT
-		-- OFFSET only works when it contains a value of -2 or -1.
-		. figure out why
-			-- might have gotten fixed
-		-- also, OFFSET-REPEAT notes are playing an extra note, the tick after their correct note.
-		. figure out why
-			-- it was the goddamned testing apparatus
-	. test OFFSET-REPEAT with various values again
-		-- it seems to work relatively well when QUANTIZE is 8...
-		-- ... but when QUANTIZE is 4, it doesn't trigger at all when held (at OFFSET values of -1, 0, 1, 2, it still works, though)
-		. figure this out
-			-- if OFFSET is more than half of QUANTIZE, then it doesn't work, regardless of QUANTIZE value
-			. what would be causing this?
-				-- isInsertionPoint() was throwing false-negatives
-				. test it more thoroughly now, with steady backing beats of various granularities
-					-- seems to work, but:
-					-- OFFSET's GUI feels "backwards" - tabbing "right" makes the offset "earlier" - "right" should mean "later"
-					. change this and test it
-						-- seems fixed
-	. test OFFSET-QUANTIZE (no REPEAT) while recording notes
-		-- OFFSET-QUANTIZE has its time-offset shifted in the opposite direction from OFFSET-REPEAT
-		. fix this
-			-- this was an artifact of weird replay behaviors with offset recorded-notes, not the bug itself.
-			-- however:
-			-- while OFFSET-QUANTIZE actually matches OFFSET-REPEAT, they're both being recorded with their OFFSETs in the wrong direction
-			. figure out why!
-				-- can't figure out why... something strange is going on here
-				-- made some miscellaneous changes, type-safety and so on, and now REPEAT-OFFSET works, but regular note-entry with OFFSET doesn't
-				. figure out what's up with regular note-entry with OFFSET
-					-- isInsertionPoint() was returning its positives in the opposite direction from where the insertion point was,
-					-- and in other parts of the code, this abstraction was being used straightforwardly instead!
-					-- seem to have fixed that entire problem now.
-
-	. check whether OFFSET conflicts with manual-mode DURATIONS (DURATION=129)
-		--
-		. if yes, then: decide whether to compensate for this outright, or to stop it from being applied to manual-mode durations
-			--
-
-	. add DURATION-HUMANIZE
-		-- am doing
-		. add keychord to button-key.txt
-			-- done
-		. shift REPEAT-SWEEP to a different keychord, to free up DURATION-HUMANIZE's ideal keychord
-			-- am doing
-			. change REPEAT-SWEEP's CmdFunc placement
-				-- done
-			. change REPEAT-SWEEP's related GUI-func calls
-				-- done
-		. add CmdFunc listing
-			-- done
-		. shift other CmdFunc listings
-			-- done
-		. add glyph
-			-- done
-		. shift manual calls to other glyphs in func_gui.ino
-			-- done
-		. add DURATION-HUMANIZE GUI mechanisms for top row and bottom rows
-			-- done
-		. add DURATION-HUMANIZE's CmdFunc itself, to func_cmds.ino
-			-- done
-		. add DURATION-HUMANIZE behavior to all notes in RECORD-MODE
-			-- done
-		. remove "todo update" notes from button-key.txt
-			-- done
-		. test DURATION-HUMANIZE
-			-- seems to work perfectly
-
 	. when DURAION is in manual (=129), and REPEAT is enabled, no notes can be played in RECORD MODE...
-	. apply fix: in this situation, REPEAT behavior should occur, with the note's duration being the QUANTIZE size minus 1
-		--
+	. apply fix: toggling REpEAT should bound DURATION to 128, and setting DURATION to 129 should turn off REPEAT
+		-- done
+		. test it
+			-- 
 
 	. save OFFSET and DURATION-HUMANIZE to the PREFS-file
 		--
 	. load OFFSET and DURATION-HUMANIZE when the PREFS are loaded
 		--
+
+	. check whether OFFSET conflicts with manual-mode DURATIONS (DURATION=129)
+		--
+		. if yes, then: decide whether to compensate for this outright, or to stop it from being applied to manual-mode durations
+			--
 
 	. limit the number of savefiles to 48 total:
 		. is LOAD-MODE even necessary at this point, wrt the possibility of simply using the PAGE system?

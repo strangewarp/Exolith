@@ -54,6 +54,9 @@ void clearCmd(byte col, byte row) {
 // Parse a DURATION press
 void durationCmd(byte col, byte row) {
 	simpleChange(col, row, DURATION, 0, 129, 1);
+	if (DURATION == 129) { // If DURATION has just been toggled into MANUAL-MODE...
+		REPEAT = 0; // Clear REPEAT, which is incompatible with MANUAL-MODE
+	}
 }
 
 // Parse a DURATION-HUMANIZE press
@@ -145,6 +148,9 @@ void quantizeCmd(byte col, byte row) {
 
 // Parse a REPEAT press
 void repeatCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row) {
+	if (DURATION == 129) { // If DURATION is in MANUAL-MODE...
+		DURATION--; // Remove DURATION from MANUAL-MODE, since this would be incompatible with REPEAT
+	}
 	REPEAT ^= 1; // Arm or disarm the NOTE-REPEAT flag
 	TO_UPDATE |= 252; // Flag the bottom 6 rows for LED updates
 }
