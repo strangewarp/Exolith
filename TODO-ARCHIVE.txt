@@ -1153,6 +1153,32 @@ Software:
 		. test DURATION-HUMANIZE
 			-- seems to work perfectly
 
+	. save OFFSET and DURATION-HUMANIZE to the PREFS-file
+		-- done
+	. load OFFSET and DURATION-HUMANIZE when the PREFS are loaded
+		-- done
+
+	. check whether OFFSET conflicts with manual-mode DURATIONS (DURATION=129)
+		-- doesn't seem to
+
+	. change RESET TIMING to occupy keychord "111100" (reversed in code)
+		-- done
+	. limit the number of savefiles to 48 total:
+		. is LOAD-MODE even necessary at this point, wrt the possibility of simply using the PAGE system?
+			-- it's unnecessary
+			. make LOAD into a PLAY-MODE keychord instead of a mode-toggle
+				-- done
+			. change LOAD's GUI functions (add keychords for both LOAD SONG-PAGE keychords in PLAY-MODE)
+				-- am doing
+				. check that LOAD-GUI is triggered by refreshPlayCustoms() on its corresponding chord-press
+					-- it is
+				. add elements to func_gui.ino
+					-- done
+				. make sure that the change to RESET TIMING's keychord are reflected in GUI functions, and everywhere else, too
+					-- pretty sure it is
+			. remove the LOAD MODE section from gui-key.txt
+				-- done
+
 Hardware:
 
 	. print out the alpha-prototype's schematic for reference while making updates (KiCad can corrupt a project if more than 1 is open)

@@ -16,32 +16,6 @@ Software:
 		. test it
 			--
 
-	. save OFFSET and DURATION-HUMANIZE to the PREFS-file
-		-- done
-	. load OFFSET and DURATION-HUMANIZE when the PREFS are loaded
-		-- done
-
-	. check whether OFFSET conflicts with manual-mode DURATIONS (DURATION=129)
-		-- doesn't seem to
-
-	. change RESET TIMING to occupy keychord "111100" (reversed in code)
-		-- done
-	. limit the number of savefiles to 48 total:
-		. is LOAD-MODE even necessary at this point, wrt the possibility of simply using the PAGE system?
-			-- it's unnecessary
-			. make LOAD into a PLAY-MODE keychord instead of a mode-toggle
-				-- done
-			. change LOAD's GUI functions (add keychords for both LOAD SONG-PAGE keychords in PLAY-MODE)
-				-- am doing
-				. check that LOAD-GUI is triggered by refreshPlayCustoms() on its corresponding chord-press
-					-- it is
-				. add elements to func_gui.ino
-					-- done
-				. make sure that the change to RESET TIMING's keychord are reflected in GUI functions, and everywhere else, too
-					-- pretty sure it is
-			. remove the LOAD MODE section from gui-key.txt
-				-- done
-
 	. check feasibility of: only engaging ERASE WHILE HELD based on QUANTIZE, QRESET, and OFFSET settings
 		-- seems feasible
 		. make these changes
@@ -146,15 +120,6 @@ Software:
 	. when the OFF button is used to wipe the cues from a cued seq, does that cued seq refrain from any activity correctly?
 		. if a new cue is set for the same seq, as the seq's first action after such a situation, then does the cue act as expected?
 
-	. when two note-buttons are simultaneously held during ARMED RECORDING, are they recorded simultaneously?
-		. what if more than two are held?
-		. what if they're CONTROL-CHANGES?
-			. two held?
-			. more than two?
-		. what if they're PROGRAM-CHANGES?
-			. two held?
-			. more than two?
-
 	. do very slow BPMs have the expected tick-length?
 	. test whether very fast BPMs have any lag
 
@@ -168,7 +133,7 @@ Software:
 
 	. survey all TO_UPDATE calls, for superfluous flags
 
-	. add SONG POSITION POINTER functionality while in CLOCK FOLLOW mode, to orient the global cue-position correctly?
+	. add MIDI SONG POSITION POINTER functionality while in CLOCK FOLLOW mode, to orient the global cue-position correctly?
 
 	. double-check that there are no remaining "todo" or "test" comments in the codebase
 	. remove "THIS CODE IS UNDER DEVELOPMENT AND DOESN'T DO ANYTHING" from license-statement
@@ -181,9 +146,10 @@ Software:
 		. extreme repetitive use of note-insertion and CLEAR will lead to comparatively faster card degradation (~10 years, versus the card's natural material lifespan)
 
 	. research how to back-up the contents of the SD-card in a manner that recombines the savefiles without losing their contiguous nature
-		-- files could be copied off the disk manually, and then transferred back onto the disk file-by-file using XVI32 to paste their contents into blank files
-		-- files could be copied en masse as a disk-image, and then reapplied en masse with a disk-imager
-			. write a tutorial on both of these methods
+		-- copy off the disk manually, and then transfer back onto the disk file-by-file using XVI32 to paste their contents into blank files
+		-- copy en masse as a disk-image, and then reapply en masse with a disk-imager
+		-- copy by simple drag-and-drop, though this might lead to non-contiguous files and cause lag problems?
+		. research this third option more
 
 Hardware:
 
