@@ -1210,3 +1210,64 @@ Hardware:
 			-- MIDI-IN doesn't seem to be working
 			. test with a proper IN source
 				-- it works now
+
+	. clear/clean/update todo tasks
+		-- done
+
+	. PCB: change all capacitors to ULD2A100MED1TD spec: 2.5mm pin spacing, 6.3mm diameter.
+		-- done
+	. PCB: also change the edge-cut of the top-board, where the capacitors poke through. X: 71.12 or ideally 71.755.
+		-- done
+	. PCB: check sizes of the pin-holes for the B3F-4050 buttons, and if they're too small, slightly widen them to compensate for kerf. (just remembered that these were too tight on the alpha prototype)
+		-- done: holes and pads both tweaked
+	. PCB: change all standoff holes to be M3-sized, plus a bit of extra room for the threading
+		. bottom-board?
+			-- done
+		. top-board?
+			-- already did it and then forgot I'd done it
+	. PCB: add stitched-vias and ground-planes to top-board
+		-- done
+	. PCB: make sure there is an actual screw-hole underneath each regulator
+		-- afaict this is the case
+	. PCB: to be extra thorough, overlay vector-drawings of both boards, and make sure the cross-board pins and capacitor placements align
+		-- they do
+	. PCB: change heatsink contact-pads to be approx >=13.21mm wide. they are currently much wider than they should be
+		-- done
+	. PCB: double-check that the DC-IN jack's pad-holes are large enough
+		-- yes
+
+	. brainstorm viability of building a virtual SD-card-socket out of through-hole components, so that DIY kits require no SMD soldering
+		-- would be too complex and finicky even under ideal conditions. sticking with the SMD SD-card-socket
+
+	. export gerber files, remembering to double-check that all necessary layers are being exported (edge cuts, silkscreen [both sides for topboard], etc)
+		-- done
+	. order circuit-boards
+		-- done
+
+	. order parts
+		-- done
+
+	. look into other, cheaper, industrial-grade SD-cards. track down their rewrite hardiness on their manufacturer websites
+		-- OK
+	. make a decision about which industrial-grade SD-card to use
+		-- done
+		. add it to:
+			. "tine sequencer" Mouser project cart
+				-- done
+			. "master parts list" textfile (also, back up the textfile again)
+				-- done
+
+	. add text to back-panel of enclosure, to label MIDI ports
+		-- done
+
+	. check whether the MIDI ports require the "divot" in the enclosure's top-panel, if the design uses 6mm spacers
+		-- it doesn't. divot removed.
+
+	. order the industrial-grade SD-card and M2.5 spacers
+		-- done
+
+	. order the laser-cut enclosure
+		-- done
+
+	. double-check that the text diagrams in gui-key.txt accurately reflect the finalized LED-placement
+		-- done

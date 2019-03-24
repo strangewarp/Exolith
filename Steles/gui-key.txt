@@ -71,21 +71,3 @@ LEDs (RECORD MODE):
 	q: Current global quarter-note
 	r: Current beat in the recording-seq
 	x: Display glyph related to user activity
-
-
-LEDs (LOAD MODE):
-
-	I               O
-	 b b b b q q q q
-	 s s s s s s s s
-	 x x x x x x x x
-	 x x x x x x x x
-	 x x x x x x x x
-	 x x x x x x x x
-	 x x x x x x x x
-	 x x x x x x x x
-
-	b: Current global cue-point
-	q: Current global quarter-note
-	s: Number of active sustains
-	x: Display glyph: current page of loadfiles

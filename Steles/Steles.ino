@@ -90,7 +90,6 @@ unsigned long KEYELAPSED = 0; // Time elapsed since last keystroke-scan
 float TICKSIZE = 31250.0; // Current tick-size, in microseconds
 
 // Mode flag vars
-byte LOADMODE = 0; // Tracks whether LOAD MODE is active
 byte RECORDMODE = 0; // Tracks whether RECORD MODE is active
 byte RECORDSEQ = 0; // Sequence currently being recorded into
 byte RECORDNOTES = 0; // Tracks whether notes are currently being recorded into a sequence

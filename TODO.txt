@@ -11,41 +11,57 @@ Software:
 	. prove I'm not a dipshit: actually finish the project
 
 	. when DURAION is in manual (=129), and REPEAT is enabled, no notes can be played in RECORD MODE...
-	. apply fix: toggling REpEAT should bound DURATION to 128, and setting DURATION to 129 should turn off REPEAT
+	. apply fix: toggling REPEAT should bound DURATION to 128, and setting DURATION to 129 should turn off REPEAT
 		-- done
 		. test it
-			-- 
+			--
 
 	. save OFFSET and DURATION-HUMANIZE to the PREFS-file
-		--
+		-- done
 	. load OFFSET and DURATION-HUMANIZE when the PREFS are loaded
-		--
+		-- done
 
 	. check whether OFFSET conflicts with manual-mode DURATIONS (DURATION=129)
-		--
-		. if yes, then: decide whether to compensate for this outright, or to stop it from being applied to manual-mode durations
-			--
+		-- doesn't seem to
 
+	. change RESET TIMING to occupy keychord "111100" (reversed in code)
+		-- done
 	. limit the number of savefiles to 48 total:
 		. is LOAD-MODE even necessary at this point, wrt the possibility of simply using the PAGE system?
+			-- it's unnecessary
+			. make LOAD into a PLAY-MODE keychord instead of a mode-toggle
+				-- done
+			. change LOAD's GUI functions (add keychords for both LOAD SONG-PAGE keychords in PLAY-MODE)
+				-- am doing
+				. check that LOAD-GUI is triggered by refreshPlayCustoms() on its corresponding chord-press
+					-- it is
+				. add elements to func_gui.ino
+					-- done
+				. make sure that the change to RESET TIMING's keychord are reflected in GUI functions, and everywhere else, too
+					-- pretty sure it is
+			. remove the LOAD MODE section from gui-key.txt
+				-- done
+
+	. check feasibility of: only engaging ERASE WHILE HELD based on QUANTIZE, QRESET, and OFFSET settings
+		-- seems feasible
+		. make these changes
+			-- added fully
+		. test regular-ERASE
 			--
-			. if no:
-				. make LOAD into a PLAY-MODE keychord
-				. remove the LOAD MODE section from gui-key.txt
-			. either way:
-				. change everything in func_file.ino
-				. change all of LOAD-MODE's behaviors
-				. change LOAD-MODE's GUI functions
+		. test REPEAT-ERASE
+			--
+		. test both types of ERASE with strange QUANTIZE-QRESET-OFFSET settings
+			--
 
 	. when two notes on the same channel with the same pitch are in the SUSTAIN queue, the nested NOTE-OFF does not behave as expected with most synths
 	. therefore, a change is necessary:
 		. whenever a note is about to be added to the SUSTAIN queue, check whether that chan/pitch combo is in SUSTAIN already.
 		. if so: send a NOTE-OFF for that note, remove its SUSTAIN entry (and shift other entries accordingly), and then and only then insert the new SUSTAIN entry
 
-	. change number of TRACKS per seq to 4 instead of 2? (chords, more complex runs, etc)
+	. change the "note-name" display in RECORD-MODE so that it displays the highest held-note when one of the held-notes is released
 		--
 
-	. change the "note-name" display in RECORD-MODE so that it displays the highest held-note when one of the held-notes is released
+	. bug spotted: DUR-HUMANIZE causes hanging sustains sometimes? figure out why
 		--
 
 	. test long-sequence timed cues and beatslicing
@@ -171,68 +187,7 @@ Software:
 
 Hardware:
 
-	. clear/clean/update todo tasks
-		-- done
-
-	. PCB: change all capacitors to ULD2A100MED1TD spec: 2.5mm pin spacing, 6.3mm diameter.
-		-- done
-	. PCB: also change the edge-cut of the top-board, where the capacitors poke through. X: 71.12 or ideally 71.755.
-		-- done
-	. PCB: check sizes of the pin-holes for the B3F-4050 buttons, and if they're too small, slightly widen them to compensate for kerf. (just remembered that these were too tight on the alpha prototype)
-		-- done: holes and pads both tweaked
-	. PCB: change all standoff holes to be M3-sized, plus a bit of extra room for the threading
-		. bottom-board?
-			-- done
-		. top-board?
-			-- already did it and then forgot I'd done it
-	. PCB: add stitched-vias and ground-planes to top-board
-		-- done
-	. PCB: make sure there is an actual screw-hole underneath each regulator
-		-- afaict this is the case
-	. PCB: to be extra thorough, overlay vector-drawings of both boards, and make sure the cross-board pins and capacitor placements align
-		-- they do
-	. PCB: change heatsink contact-pads to be approx >=13.21mm wide. they are currently much wider than they should be
-		-- done
-	. PCB: double-check that the DC-IN jack's pad-holes are large enough
-		-- yes
-
-	. brainstorm viability of building a virtual SD-card-socket out of through-hole components, so that DIY kits require no SMD soldering
-		-- would be too complex and finicky even under ideal conditions. sticking with the SMD SD-card-socket
-
-	. export gerber files, remembering to double-check that all necessary layers are being exported (edge cuts, silkscreen [both sides for topboard], etc)
-		-- done
-	. order circuit-boards
-		-- done
-
-	. order parts
-		-- done
-
-	. look into other, cheaper, industrial-grade SD-cards. track down their rewrite hardiness on their manufacturer websites
-		-- OK
-	. make a decision about which industrial-grade SD-card to use
-		-- done
-		. add it to:
-			. "tine sequencer" Mouser project cart
-				-- done
-			. "master parts list" textfile (also, back up the textfile again)
-				-- done
-
-	. add text to back-panel of enclosure, to label MIDI ports
-		-- done
-
-	. check whether the MIDI ports require the "divot" in the enclosure's top-panel, if the design uses 6mm spacers
-		-- it doesn't. divot removed.
-
-	. order the industrial-grade SD-card and M2.5 spacers
-		-- done
-
-	. order the laser-cut enclosure
-		-- done
-
-	. double-check that the text diagrams in gui-key.txt accurately reflect the finalized LED-placement
-		-- done
-
-	==== HARDWARE BETA THRESHOLD ====
+	==== HARDWARE BETA THRESHOLD ATTAINED ====
 
 	. make sure that you order the ATMEGA chips with the proper bootloader fuse config (along with the firmware), or else they will be 8 times too slow and incapable of sending MIDI
 		. buy a test-batch that are preprogrammed in such a way, and slot one into a Tine beta unit for testing
@@ -255,5 +210,9 @@ Packaging:
 			. will just have to use plastic baggies for this probably
 				. look into bulk suppliers for anti-static plastic baggies
 		. fully-assembled units won't need baggies, but will still need a way to retain loose elements (stickers, manual, et al)
+
+	. look into manual-printing services
+
+	. look into getting "savefile-location templates" printed, so users can write down which of their songs corresponds to which savefile-location
 
 	. look into custom stickers and various other goodies

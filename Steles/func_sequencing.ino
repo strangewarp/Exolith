@@ -158,15 +158,16 @@ void parseScatter(byte s, byte didscatter) {
 
 }
 
-// Process a REPEAT or REPEAT-RECORD command, and send its resulting button-key to processRecAction()
-void processRepeats(byte ctrl) {
-	if (
-		(!ctrl) // If no command-button is currently held...
-		&& isInsertionPoint() // And this tick occupies an insertion-point (as modified by QUANTIZE, QRESET, and OFFSET)...
-	) { // Then this is a valid REPEAT position. So...
-		arpAdvance(); // Advance the arpeggio-position
-		processRecAction(modPitch(ARPPOS & 31)); // Put the current raw repeat-note or arpeggiation-note into the current track
-		RPTVELO = applyChange(RPTVELO, char(int(RPTSWEEP) - 128), 0, 127); // Change the stored REPEAT-VELOCITY by the REPEAT-SWEEP amount
+// Process a REPEAT, REPEAT-RECORD, or REPEAT-ERASE command
+void processRepeat(byte ctrl) {
+	if (REPEAT && isInsertionPoint()) { // If REPEAT is toggled, and this is the current insertion-point...
+		if (RECORDNOTES && (ctrl == B00111100)) { // If RECORDNOTES is armed, and ERASE-NOTES is held...
+			eraseQuantTick(); // Erase any notes within the RECORDSEQ's current QUANTIZE-QRESET-OFFSET-tick
+		} else if (ARPPOS && (!ctrl)) { // Else, if any note-buttons and no control-buttons are being held (regardless of whether RECORDNOTES is armed or not)...
+			arpAdvance(); // Advance the arpeggio-position
+			processRecAction(modPitch(ARPPOS & 31)); // Put the current raw repeat-note or arpeggiation-note into the current track
+			RPTVELO = applyChange(RPTVELO, char(int(RPTSWEEP) - 128), 0, 127); // Change the stored REPEAT-VELOCITY by the REPEAT-SWEEP amount
+		}
 	}
 }
 
@@ -177,20 +178,7 @@ void getTickNotes(byte ctrl, byte s, byte buf[]) {
 
 	if (RECORDMODE) { // If RECORD MODE is active...
 		if (RECORDSEQ == s) { // If this is the current RECORDSEQ...
-			if (REPEAT && ARPPOS) { // If REPEAT is toggled, and any note-buttons are being held...
-				processRepeats(ctrl); // Process a REPEAT-RECORD action
-			} else if (RECORDNOTES && (ctrl == B00111100)) { // Else, if RECORDNOTES is armed, and ERASE-NOTES is held...
-				byte b[5]; // Make a buffer the size of a note...
-				memset(b, 0, 4); // ...And clear it of any junk-data
-				writeCommands( // Write the blank note to the savefile
-					// Write at the RECORDSEQ's current position
-					(FILE_BODY_START + (POS[RECORDSEQ] * 8)) + (FILE_SEQ_BYTES * RECORDSEQ) + (TRACK * 4),
-					4, // Write 4 bytes of data
-					b, // Use the empty buffer that was just created
-					1 // Only overwrite notes that match the global CHAN
-				);
-				// note: file.sync() is called elsewhere, for efficiency reasons
-			}
+			processRepeat(ctrl); // Process any REPEAT, REPEAT-RECORD, or REPEAT-ERASE commands that might be occurring
 		}
 		readTick(s, 0, buf); // Read the tick with no offset
 	} else { // Else, if RECORD MODE is inactive...

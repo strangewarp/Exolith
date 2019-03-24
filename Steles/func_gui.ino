@@ -171,9 +171,9 @@ void updateFirstRow(byte ctrl) {
 			sendRegularCueRow(); // Send a regular GLOBAL CUE value to the top LED-row
 		}
 	} else { // Else, if this isn't RECORD-MODE...
-		if ((!LOADMODE) && (ctrl == B00000101)) { // If this isn't LOAD MODE (then this is PLAY MODE), and if BPM is held...
+		if (ctrl == B00000101) { // If a BPM command is held...
 			sendRow(0, BPM); // Display BPM value
-		} else { // Else, if this is LOAD MODE, or if this is PLAY MODE and a BPM command isn't held...
+		} else { // Else, if a BPM command isn't held...
 			sendRegularCueRow(); // Send a regular GLOBAL CUE value to the top LED-row
 		}
 	}
@@ -194,23 +194,6 @@ void updateSecondRow() {
 			// Display the current number of sustains (0-8), with illumination inverted depending on which page is active
 			sendRow(1, (255 >> SUST_COUNT) ^ (255 * (!PAGE)));
 		}
-	}
-}
-
-// Update the bottom LED-rows for LOAD-MODE
-void updateLoadBottomRows(byte ctrl) {
-	byte ind = ctrlToButtonIndex(ctrl); // Get the number that corresponds to the currently-held LOADPAGE-button
-	for (byte i = 0; i < 6; i++) { // For each of the bottom 6 GUI rows...
-		if (!(TO_UPDATE & (4 << i))) { continue; } // If the row is not flagged for an update, continue to the next row
-		sendRow( // Set the LED-row based on the current display-row:
-			i, // LED-row corresponding to the current row...
-			pgm_read_byte_near( // Get LED data from PROGMEM:
-				NUMBER_GLYPHS // Get a number-glyph,
-				+ (6 * ind) // based on the highest pressed control-button,
-				+ i // whose contents correspond to the current row
-			)
-			>> 3 // Shifted 3 LEDs to the right from its default left-border-hugging position
-		);
 	}
 }
 
@@ -253,6 +236,13 @@ void updateRecBottomRows(byte ctrl) {
 
 }
 
+// Update an LED-row for LOAD, displaying a given SONG-PAGE
+void updateLoadBottomRow(byte row, byte page) {
+
+
+
+}
+
 // Update the bottom LED-rows for PLAY-MODE
 void updatePlayBottomRows(byte ctrl) {
 
@@ -269,8 +259,11 @@ void updatePlayBottomRows(byte ctrl) {
 				row |= pgm_read_byte_near(GLYPHS + 118 + i); // Display a line from the BPM glyph
 			} else if (ctrl == B00000011) { // Else, if a SHIFT POSITION command is held...
 				row |= pgm_read_byte_near(GLYPHS + 76 + i); // Display a line from the SHIFT POSITION glyph
-			} else if (ctrl == B00110111) { // Else, if a RESET TIMING command is held...
+			} else if (ctrl == B00001111) { // Else, if a RESET TIMING command is held...
 				row |= pgm_read_byte_near(GLYPH_RESET_TIMING + (i - 2)); // Display a line from the RESET TIMING glyph
+			} else if ((ctrl == B00110011) || (ctrl == B00110111)) { // Else, if a LOAD command is held...
+				// Display a line from the LOAD glyph, combined with a line from either the "1" or "2" glyph, based on the held LOAD-command
+				row |= pgm_read_byte_near(GLYPH_LOAD + i) | (pgm_read_byte_near(NUMBER_GLYPHS + i + (6 << (!!(ctrl & 4)))) >> 4);
 			} else { // Else, if a regular PLAY MODE command is held...
 				// If a SCATTER-related command is held, display a row of SCATTER info; else display a row of SEQ info
 				row |= heldsc ? getRowScatterVals(i - 2) : getRowSeqVals(i - 2);
@@ -285,11 +278,9 @@ void updatePlayBottomRows(byte ctrl) {
 void updateBottomRows(byte ctrl) {
 	if (LOADHOLD) { // If a number from a just-loaded savefile is being held on screen...
 		displayLoadNumber(); // Display the number of the newly-loaded savefile
-	} else if (LOADMODE) { // If LOAD MODE is active...
-		updateLoadBottomRows(ctrl); // Update the bottom LED-rows for LOAD-MODE
 	} else if (RECORDMODE) { // If RECORD MODE is active...
 		updateRecBottomRows(ctrl); // Update the bottom-rows for RECORD-MODE
-	} else { // Else, if PLAYING MODE is actve...
+	} else { // Else, if PLAY MODE is actve...
 		updatePlayBottomRows(ctrl); // Update the bottom LED-rows for PLAYING-MODE
 	}
 }
