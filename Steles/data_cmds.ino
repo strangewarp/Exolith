@@ -64,7 +64,7 @@ const byte KEYTAB[] PROGMEM = {
 	0,  // 27, 011011:  0, ignore
 	0,  // 28, 011100:  0, ignore
 	0,  // 29, 011101:  0, ignore
-	0,  // 30, 011110:  0, ignore
+	0,  // 30, 011110:  0, ignore (ERASE-INVERSE-NOTES is handled by other routines)
 	0,  // 31, 011111:  0, ignore
 	1,  // 32, 100000:  1, armCmd
 	19, // 33, 100001: 19, switchCmd
@@ -94,7 +94,7 @@ const byte KEYTAB[] PROGMEM = {
 	0,  // 57, 111001:  0, ignore
 	0,  // 58, 111010:  0, ignore
 	0,  // 59, 111011:  0, ignore
-	0,  // 60, 111100:  0, ignore (ERASE-WHILE-HELD is handled by other routines)
+	0,  // 60, 111100:  0, ignore (ERASE-NOTES is handled by other routines)
 	0,  // 61, 111101:  0, ignore
 	0,  // 62, 111110:  0, ignore
 	0,  // 63, 111111:  0, ignore

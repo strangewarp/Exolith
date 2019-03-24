@@ -10,6 +10,8 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
+	-- removed vestigial shell of updateLoadBottomRow(), which is no longer used
+
 	. when DURAION is in manual (=129), and REPEAT is enabled, no notes can be played in RECORD MODE...
 	. apply fix: toggling REPEAT should bound DURATION to 128, and setting DURATION to 129 should turn off REPEAT
 		-- done
@@ -20,12 +22,26 @@ Software:
 		-- seems feasible
 		. make these changes
 			-- added fully
-		. test regular-ERASE
-			--
-		. test REPEAT-ERASE
-			--
-		. test both types of ERASE with strange QUANTIZE-QRESET-OFFSET settings
-			--
+
+	. add INVERSE-ERASE, to erase any notes that *aren't* on the QUANTIZE-QRESET-OFFSET locations?
+		-- am doing
+		. update the file.sync() calls in unassignKey() so they are also engaged by the INVERSE-ERASE ctrl-chord
+			-- done
+		. add routines to the REPEAT-mechanism that will erase notes in an inverted way while INVERSE-ERASE is held
+			-- done
+		. add GUI glyph, and GUI routine, for ERASE INVERSE
+			-- done
+
+	. test regular-ERASE
+		--
+	. test REPEAT-ERASE
+		--
+	. test both types of ERASE with strange QUANTIZE-QRESET-OFFSET settings
+		--
+	. test regular-ERASE-INVERSE
+		--
+	. test ERASE-INVERSE with strange QUANTIZE-QRESET-OFFSET settings
+		--
 
 	. when two notes on the same channel with the same pitch are in the SUSTAIN queue, the nested NOTE-OFF does not behave as expected with most synths
 	. therefore, a change is necessary:
@@ -91,14 +107,7 @@ Software:
 		. PAGE SCATTER UNSET
 		. double-pressed commands, of the same or different types, to check for unexpected behaviors
 
-	. test LOAD MODE fully:
-		. check toggling into/out of LOAD MODE from both PLAY MODE and RECORD MODE
-			. PLAY MODE:
-				. check toggling LOAD MODE when seqs are playing
-				. check toggling LOAD MODE when seqs have active cued-commands
-			. RECORD MODE:
-				. check toggling LOAD MODE when RECORDNOTES is armed / when REPEAT is active / both
-		. check that all possible edge-case sequences on all pages load correctly
+	. check that all possible edge-case sequences on all pages load correctly, when a new savefile is loaded
 
 	. test MIDI-IN (notes)
 		. are notes recorded correctly in RECORD-MODE?
@@ -107,6 +116,11 @@ Software:
 			. especially after toggling into LOAD MODE from RECORD MODE with RECORDNOTES armed
 
 	. reinsert a simple MIDI-IN (clock) system?
+
+	. take a survey of all commands in button-key.txt:
+		. re-read each command's code, and check the circumstances under which each command works
+		. write a tutorial blurb for each command, explaining its function
+			. remember to say that ERASE-INVERSE-NOTES only works while both REPEAT and RECORDNOTES are armed
 
 	. check whether sequences function correctly with non-multiple-of-2 lengths, under all RECORD MODE and PLAY MODE processes
 	. check that, when a deeper savefile is loaded and is running many complex sequences, there's no extra lag for whatever reason

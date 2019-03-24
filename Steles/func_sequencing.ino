@@ -160,15 +160,29 @@ void parseScatter(byte s, byte didscatter) {
 
 // Process a REPEAT, REPEAT-RECORD, or REPEAT-ERASE command
 void processRepeat(byte ctrl) {
-	if (REPEAT && isInsertionPoint()) { // If REPEAT is toggled, and this is the current insertion-point...
-		if (RECORDNOTES && (ctrl == B00111100)) { // If RECORDNOTES is armed, and ERASE-NOTES is held...
-			eraseQuantTick(); // Erase any notes within the RECORDSEQ's current QUANTIZE-QRESET-OFFSET-tick
-		} else if (ARPPOS && (!ctrl)) { // Else, if any note-buttons and no control-buttons are being held (regardless of whether RECORDNOTES is armed or not)...
-			arpAdvance(); // Advance the arpeggio-position
-			processRecAction(modPitch(ARPPOS & 31)); // Put the current raw repeat-note or arpeggiation-note into the current track
-			RPTVELO = applyChange(RPTVELO, char(int(RPTSWEEP) - 128), 0, 127); // Change the stored REPEAT-VELOCITY by the REPEAT-SWEEP amount
+
+	if (REPEAT) { // If REPEAT is toggled...
+
+		if (isInsertionPoint()) { // If this is the current insertion-point...
+
+			if (RECORDNOTES && (ctrl == B00111100)) { // If RECORDNOTES is armed, and ERASE-NOTES is held...
+				eraseTick(applyOffset(1, applyQuantize(POS[RECORDSEQ]))); // Erase any notes within the RECORDSEQ's current QUANTIZE-QRESET-OFFSET-tick
+			} else if (ARPPOS && (!ctrl)) { // Else, if any note-buttons and no control-buttons are being held (regardless of whether RECORDNOTES is armed or not)...
+				arpAdvance(); // Advance the arpeggio-position
+				processRecAction(modPitch(ARPPOS & 31)); // Put the current raw repeat-note or arpeggiation-note into the current track
+				RPTVELO = applyChange(RPTVELO, char(int(RPTSWEEP) - 128), 0, 127); // Change the stored REPEAT-VELOCITY by the REPEAT-SWEEP amount
+			}
+
+		else { // Else, if this isn't the current insertion point...
+
+			if (RECORDNOTES && (ctrl == B00011110)) { // If RECORDNOTES is armed, and ERASE-INVERSE-NOTES is held...
+				eraseTick(POS[RECORDSEQ]); // Erase any notes that do not occupy QUANTIZE-QRESET-OFFSET ticks
+			}
+
 		}
+
 	}
+
 }
 
 // Get the notes from the current tick in a given seq, and add them to the MIDI-OUT buffer

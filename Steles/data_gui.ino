@@ -227,7 +227,7 @@ const byte NUMBER_GLYPHS[] PROGMEM = {
 
 };
 
-// Standalone glyph: ERASING NOTES
+// Standalone glyph: ERASE NOTES
 const byte GLYPH_ERASE[] PROGMEM = {
 	B00000000,
 	B11101010,
@@ -235,6 +235,16 @@ const byte GLYPH_ERASE[] PROGMEM = {
 	B11101010,
 	B10000000,
 	B11101010
+};
+
+// Standalone glyph: ERASE INVERSE NOTES
+const byte GLYPH_ERASE_INVERSE[] PROGMEM = {
+	B00000000,
+	B10101110,
+	B10101000,
+	B10101110,
+	B00001000,
+	B10101110
 };
 
 // Standalone glyph: LOAD

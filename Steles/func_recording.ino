@@ -60,14 +60,14 @@ void writeCommands(
 
 }
 
-// Erase a tick's worth of notes, in the current TRACK, in the current RECORDSEQ, at the point where QUANTIZE-QRESET-OFFSET currently specifies.
+// Erase a tick's worth of notes, in the current TRACK, in the current RECORDSEQ, at the given position.
 // Note: file.sync() is called elsewhere, for efficiency reasons
-void eraseQuantTick() {
+void eraseTick(word pos) {
 	byte b[5]; // Make a buffer the size of a note...
 	memset(b, 0, 4); // ...And clear it of any junk-data
 	writeCommands( // Write the blank note to the savefile
-		// Write at the RECORDSEQ's current QUANTIZE-QRESET-OFFSET-modified position
-		(FILE_BODY_START + (applyOffset(1, applyQuantize(POS[RECORDSEQ])) * 8)) + (FILE_SEQ_BYTES * RECORDSEQ) + (TRACK * 4),
+		// Write to the RECORDSEQ at the given position
+		(FILE_BODY_START + (pos * 8)) + (FILE_SEQ_BYTES * RECORDSEQ) + (TRACK * 4),
 		4, // Write 4 bytes of data
 		b, // Use the empty buffer that was just created
 		1 // Only overwrite notes that match the global CHAN

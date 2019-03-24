@@ -214,6 +214,9 @@ void updateRecBottomRows(byte ctrl) {
 		} else if (ctrl == B00111100) { // Else, if ERASE NOTES is held...
 			// Read the given row in the ERASE NOTES glyph, with exclamation-points if RECORD NOTES is active
 			row = pgm_read_byte_near(GLYPH_ERASE + i) & (240 | (RECORDNOTES * 15));
+		} else if (ctrl == B00011110) { // Else, if ERASE INVERSE NOTES is held...
+			// Read the given row in the ERASE INVERSE NOTES glyph, with exclamation-points if RECORD NOTES is active
+			row = pgm_read_byte_near(GLYPH_ERASE_INVERSE + i) & (15 | ((RECORDNOTES && REPEAT) * 240));
 		} else if (ctrl) { // Else, if control-buttons are held...
 			row = pgm_read_byte_near(GLYPHS + kt + i); // Read the given row, in the given glyph
 			if (ctrl == B00100000) { // If RECORDNOTES is held...
@@ -233,13 +236,6 @@ void updateRecBottomRows(byte ctrl) {
 		sendRow(i + 2, row); // Set the LED-row based on the current display-row
 
 	}
-
-}
-
-// Update an LED-row for LOAD, displaying a given SONG-PAGE
-void updateLoadBottomRow(byte row, byte page) {
-
-
 
 }
 

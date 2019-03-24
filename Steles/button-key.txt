@@ -73,7 +73,8 @@ Button combinations (RECORD MODE):
 
 	4-keypress:
 	111100: CLEAR NOTES
-	001111: ERASE WHILE HELD
+	011110: ERASE INVERSE NOTES
+	001111: ERASE NOTES
 
 	5-keypress:
 	...
