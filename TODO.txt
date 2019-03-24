@@ -10,27 +10,11 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	-- removed vestigial shell of updateLoadBottomRow(), which is no longer used
-
 	. when DURAION is in manual (=129), and REPEAT is enabled, no notes can be played in RECORD MODE...
 	. apply fix: toggling REPEAT should bound DURATION to 128, and setting DURATION to 129 should turn off REPEAT
 		-- done
 		. test it
 			--
-
-	. check feasibility of: only engaging ERASE WHILE HELD based on QUANTIZE, QRESET, and OFFSET settings
-		-- seems feasible
-		. make these changes
-			-- added fully
-
-	. add INVERSE-ERASE, to erase any notes that *aren't* on the QUANTIZE-QRESET-OFFSET locations?
-		-- am doing
-		. update the file.sync() calls in unassignKey() so they are also engaged by the INVERSE-ERASE ctrl-chord
-			-- done
-		. add routines to the REPEAT-mechanism that will erase notes in an inverted way while INVERSE-ERASE is held
-			-- done
-		. add GUI glyph, and GUI routine, for ERASE INVERSE
-			-- done
 
 	. test regular-ERASE
 		--
@@ -43,13 +27,17 @@ Software:
 	. test ERASE-INVERSE with strange QUANTIZE-QRESET-OFFSET settings
 		--
 
+	. change the "note-name" display in RECORD-MODE:
+		. it should display the most-recent note, either sequenced on the current TRACK or played manually by the user, and return to default-display after a second
+			--
+		. it should also be toggleable to show the CHANNEL of the most-recent note rather than the pitch
+			-- 
+
 	. when two notes on the same channel with the same pitch are in the SUSTAIN queue, the nested NOTE-OFF does not behave as expected with most synths
 	. therefore, a change is necessary:
 		. whenever a note is about to be added to the SUSTAIN queue, check whether that chan/pitch combo is in SUSTAIN already.
 		. if so: send a NOTE-OFF for that note, remove its SUSTAIN entry (and shift other entries accordingly), and then and only then insert the new SUSTAIN entry
 
-	. change the "note-name" display in RECORD-MODE so that it displays the highest held-note when one of the held-notes is released
-		--
 
 	. bug spotted: DUR-HUMANIZE causes hanging sustains sometimes? figure out why
 		--

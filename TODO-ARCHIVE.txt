@@ -1179,6 +1179,22 @@ Software:
 			. remove the LOAD MODE section from gui-key.txt
 				-- done
 
+	-- removed vestigial shell of updateLoadBottomRow(), which is no longer used
+
+	. check feasibility of: only engaging ERASE WHILE HELD based on QUANTIZE, QRESET, and OFFSET settings
+		-- seems feasible
+		. make these changes
+			-- added fully
+
+	. add INVERSE-ERASE, to erase any notes that *aren't* on the QUANTIZE-QRESET-OFFSET locations?
+		-- am doing
+		. update the file.sync() calls in unassignKey() so they are also engaged by the INVERSE-ERASE ctrl-chord
+			-- done
+		. add routines to the REPEAT-mechanism that will erase notes in an inverted way while INVERSE-ERASE is held
+			-- done
+		. add GUI glyph, and GUI routine, for ERASE INVERSE
+			-- done
+
 Hardware:
 
 	. print out the alpha-prototype's schematic for reference while making updates (KiCad can corrupt a project if more than 1 is open)
