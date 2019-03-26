@@ -5,8 +5,9 @@ Tine TODO
 Software:
 
 	!!! DO NOT CHANGE list:
-		-- RECORD TOGGLE's glyph and ERASE WHILE HELD's chord need to conflict, so that the file.sync() on ERASE WHILE HELD's key-up doesn't get skipped when toggling
-			-- if the key-chord for ERASE WHILE HELD is changed, then the file.sync() call in unassignKey() must also be changed
+		-- RECORD TOGGLE's glyph and ERASE-NOTES/ERASE-INVERT-NOTES' chords need to conflict,
+		-- so that the file.sync() on ERASE-key-ups don't get skipped when toggling
+			-- if any ERASE-key-chord is changed, then the file.sync() call in unassignKey() must also be changed
 
 	. prove I'm not a dipshit: actually finish the project
 
@@ -14,16 +15,16 @@ Software:
 	. apply fix: toggling REPEAT should bound DURATION to 128, and setting DURATION to 129 should turn off REPEAT
 		-- done
 		. test it
-			--
+			-- it works
 
 	. test regular-ERASE
-		--
+		-- seems to work
 	. test REPEAT-ERASE
-		--
+		-- seems to work
 	. test both types of ERASE with strange QUANTIZE-QRESET-OFFSET settings
 		--
 	. test regular-ERASE-INVERSE
-		--
+		-- seems to work
 	. test ERASE-INVERSE with strange QUANTIZE-QRESET-OFFSET settings
 		--
 
@@ -31,7 +32,7 @@ Software:
 		. it should display the most-recent note, either sequenced on the current TRACK or played manually by the user, and return to default-display after a second
 			--
 		. it should also be toggleable to show the CHANNEL of the most-recent note rather than the pitch
-			-- 
+			--
 
 	. when two notes on the same channel with the same pitch are in the SUSTAIN queue, the nested NOTE-OFF does not behave as expected with most synths
 	. therefore, a change is necessary:

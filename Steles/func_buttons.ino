@@ -104,7 +104,8 @@ void assignKey(byte col, byte row, byte oldcmds) {
 			toggleRecordMode(); // Toggle into, or out of, RECORD-MODE
 		} else if (RECORDMODE) { // Else, if TOGGLE RECORD-MODE wasn't pressed, and if RECORD-MODE is active...
 			if (ctrl == B00111100) { // If ERASE NOTES is held...
-				eraseQuantTick(); // Erase a tick's worth of notes from the RECORDSEQ at the current QUANTIZE-QRESET-OFFSET position
+				// Erase a tick's worth of notes from the RECORDSEQ at the current QUANTIZE-QRESET-OFFSET position
+				eraseTick(applyOffset(1, applyQuantize(POS[RECORDSEQ])));
 			}
 			TO_UPDATE |= 253; // Flag the top LED-row, and bottom 6 LED-rows, for updating
 		} else { // Else, if this is PLAY MODE...
