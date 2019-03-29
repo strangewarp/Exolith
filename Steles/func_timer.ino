@@ -9,7 +9,7 @@ void updateTickSize() {
 }
 
 // Reduce the given BLINK-counter (left or right), and if it has reached 0, flag an LED-update fro its associated rows
-void blinkReduce(byte &b, word omod) {
+void blinkReduce(word &b, word omod) {
 	if (b) { // If the given BLINK var is active...
 		if (b > omod) { // If the BLINK-counter is greater than the bit-shifted offset value...
 			b -= omod; // Subtract the offset from the BLINK-var
@@ -98,7 +98,7 @@ void updateTimer() {
 	ABSOLUTETIME = micr; // Set the absolute-time to the current time-value
 
 	if (LOADHOLD) { // If a just-loaded file's file-number is currently being held onscreen...
-		LOADHOLD -= max(1, (offset >> 8); // Reduce LOADHOLD by an offset-based value
+		LOADHOLD -= max(1, (offset >> 8)); // Reduce LOADHOLD by an offset-based value
 		if (LOADHOLD <= 0) { // If LOADHOLD has just this moment finished reducing all the way to 0...
 			LOADHOLD = 0; // Set LOADHOLD to 0, so boolean checks will parse it as "false"
 			TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating

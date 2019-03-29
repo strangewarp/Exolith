@@ -122,8 +122,7 @@ byte getRowSeqVals(byte r) {
 // Get the SEQUENCE-ACTIVITY LED-values for a given half-GUI-row
 byte getHalfRowSeqVals(byte r, byte shift) {
 	byte ib = (r << 2) + shift; // Get the row's global-array position, shifted by 24 if this represents PAGE 2
-	return // Return the half-row's PLAYING info, as a shifted nibble of bits
-		(
+	return ( // Return the half-row's PLAYING info, as a shifted nibble of bits
 			getSeqVal(ib)
 			| (getSeqVal(ib + 1) >> 1)
 			| (getSeqVal(ib + 2) >> 2)
@@ -167,7 +166,7 @@ void displayBlink() {
 	byte rcmd = GLYPHR[0] & 240; // ^ This, but right
 	for (byte i = 0; i < 6; i++) { // For each one of the 6 bottom LED-rows...
 		// Send a row made from a composite of the current LEFT-BLINK and RIGHT-BLINK rows, if they are active
-		sendRow(0, i + 2, getBlinkRow(BLINKL, GLYPHL, lcmd, 0, i) | getBlinkRow(BLINKR, GLYPHR, rcmd, 4, i));
+		sendRow(i + 2, getBlinkRow(BLINKL, GLYPHL, lcmd, 0, i) | getBlinkRow(BLINKR, GLYPHR, rcmd, 4, i));
 	}
 }
 
@@ -282,11 +281,6 @@ void updateRecBottomRows(byte ctrl) {
 			} else if (ctrl == B00000001) { // If REPEAT is held...
 				row |= 15 * REPEAT; // Add a blaze to the REPEAT glyph, if REPEAT is ARMED
 			}
-		} else if (RECPRESS && (BUTTONS >> 6)) { // Else, if control-buttons aren't held, but a recently-pressed note-button is held...
-			byte rmod = RECNOTE % 12; // Get a number that corresponds to the keypress's in-octave note-value
-			row =
-				pgm_read_byte_near(GLYPH_PITCHES + (rmod * 6) + i) // Display a pitch-letter that corresponds to the currently-held note-button...
-				| ((i == 5) ? min(9, byte(floor(RECNOTE / 12))) : 0); // ...Combined with the binary value of the note's octave
 		} else { // Else, if no control-buttons or note-buttons are held...
 			row = getRowSeqVals(i); // Get the row's standard SEQ values
 		}
