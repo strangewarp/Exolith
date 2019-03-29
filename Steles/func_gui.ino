@@ -102,7 +102,8 @@ void setBlink(byte trk, byte cmd, byte pitch, byte velo) {
 
 // Get the LED-value for a single seq, adjusted based on whether it's active and whether it has a dormant cue-command
 byte getSeqVal(byte s) {
-	return (CMD[s] && (!(CUR32 % 8))) ? (((CUR32 + (!(STATS[s] & 128))) % 2) * 128) : (STATS[s] & 128);
+	byte active = STATS[s] & 128;
+	return (CMD[s] && (!(CUR32 % 8))) ? (((CUR32 + (!active)) % 2) * 128) : active;
 }
 
 // Get the SEQUENCE-ACTIVITY LED-values for a given GUI row
