@@ -45,9 +45,7 @@ void clearCmd(byte col, byte row) {
 
 	file.sync(); // Sync any still-buffered data to the savefile
 
-	BLINKL = (!TRACK) * 255; // Start a TRACK-linked LED-BLINK that is ~16ms long
-	BLINKR = TRACK * 255; // ^
-	TO_UPDATE |= 252; // Flag the bottom 6 rows for LED updates
+	setBlink(TRACK, 0, 0, 0); // Start a TRACK-linked LED-BLINK
 
 }
 
@@ -84,7 +82,7 @@ void genericCmd(byte col, byte row) {
 			}
 			setKeyNote(col, row); // Set a held-recording-note for the given button-position
 		} else { // Else, if DURATION is in auto-mode...
-			processRecAction(RECNOTE); // Parse the key as a recording-action into the current TRACK, and apply OFFSET (1)
+			processRecAction(RECNOTE); // Parse the key as a recording-action into the current TRACK, and apply OFFSET
 		}
 	}
 

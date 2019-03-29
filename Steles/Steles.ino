@@ -78,8 +78,10 @@
 // UI vars
 unsigned long BUTTONS = 0; // Tracks which of the 30 buttons are currently pressed; each button has an on/off bit
 byte PAGE = 0; // Tracks currently-active page of sequences
-byte BLINKL = 0; // When filled, this will count down to 0, illuminating the left side of the LEDs
-byte BLINKR = 0; // ^ This, but right side
+word BLINKL = 0; // When filled, this will count down to 0, illuminating the left side of the LEDs
+word BLINKR = 0; // ^ This, but right side
+byte GLYPHL[4]; // Holds a TRACK-linked MIDI-command that will be assigned a glyph once the GUI is processed
+byte GLYPHR[4]; // ^ This, but right side
 int LOADHOLD = 0; // Track how long to hold a just-loaded savefile's file-number onscreen
 byte TO_UPDATE = 0; // Tracks which rows of LEDs should be updated at the end of a given tick
 
@@ -195,6 +197,8 @@ void setup() {
 	memset(MOUT, 0, 25);
 	memset(SUST, 0, 25);
 	memset(INBYTES, 0, 4);
+	memset(GLYPHL, 0, 4);
+	memset(GLYPHR, 0, 4);
 
 	// Set all the keypad's row-pins to INPUT_PULLUP mode, and all its column-pins to OUTPUT mode
 	DDRC = 0;

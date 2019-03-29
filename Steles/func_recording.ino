@@ -116,7 +116,7 @@ void processRecAction(byte pitch) {
 	}
 
 	// Flag GUI elements in the middle of the function, as the function may exit early:
-	recBlink(); // Blink the current TRACK's LEDs
+	setBlink(TRACK, 144, pitch, 127); // Blink the current TRACK's LEDs (note-pitch-style)
 
 	// If this was a BPM-CHANGE command, change the local BPM immediately to reflect its contents
 	if (CHAN == 112) {
@@ -149,7 +149,7 @@ void recordHeldNote() {
 
 	if (RECORDNOTES) { // If RECORDNOTES is currently armed (this means notes are being recorded)...
 		recordToSeq(KEYPOS, KEYCOUNT, byte(144 + (CHAN & 15)), KEYNOTE, KEYVELO); // Record the currently-held note
-		recBlink(); // Blink the current TRACK's LEDs
+		setBlink(TRACK, 0, 0, 0); // Blink the current TRACK's LEDs (full-LED-block style)
 	}
 
 	KEYFLAG = 0; // Reset KEYFLAG, to show that a manual-duration note is no longer being held
@@ -197,7 +197,7 @@ void setRawKeyNote(byte pitch, byte velo) {
 	KEYVELO = velo; // ^
 	KEYCOUNT = 0; // Reset the counter that tracks how many ticks the note has been held for
 
-	recBlink(); // Blink the current TRACK's LEDs
+	setBlink(TRACK, 144, pitch, 127); // Blink the current TRACK's LEDs (note-pitch style)
 
 }
 

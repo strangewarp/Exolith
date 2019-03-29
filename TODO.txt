@@ -11,7 +11,9 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	. when DURAION is in manual (=129), and REPEAT is enabled, no notes can be played in RECORD MODE...
+	-- removed outdated "LOAD MODE" sections from buttons-key.txt and from miscellaneous code-comments
+
+	. when DURATION is in manual (=129), and REPEAT is enabled, no notes can be played in RECORD MODE...
 	. apply fix: toggling REPEAT should bound DURATION to 128, and setting DURATION to 129 should turn off REPEAT
 		-- done
 		. test it
@@ -27,6 +29,24 @@ Software:
 		-- seems to work
 	. test ERASE-INVERSE with strange QUANTIZE-QRESET-OFFSET settings
 		--
+
+	. overhaul the BLINK GUI:
+		. full BLINKs should only occur for the current TRACK when RECORDNOTES is armed
+		. otherwise:
+			. BLINKs should be in the form of a glyph that describes which note-pitch is playing on which track
+				. these glyphs:
+					. should be 4 dots wide, and have a way to encode "this note is a sharp" in one row
+						-- done
+					. should persist for 0.75 seconds, or until overwritten by the next note, whichever is quickest
+						-- ok
+					. should combine with each other: TRACK 1 on left side, TRACK 2 on right side
+						-- ok
+					. should also include other types of MIDI commands, with a unique glyph for each, displayed as a stack of 3 binary values
+						-- done
+					. should be overwritten by any notes/commands the user is playing, whose glyphs should then persist like the glyph from a sequenced note
+						-- done
+		. test the overhauled BLINK-GUI
+			--
 
 	. change the "note-name" display in RECORD-MODE:
 		. it should display the most-recent note, either sequenced on the current TRACK or played manually by the user, and return to default-display after a second

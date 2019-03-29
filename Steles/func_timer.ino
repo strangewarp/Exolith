@@ -42,12 +42,8 @@ void activateStepLEDs() {
 			TO_UPDATE |= 2; // Flag the second LED-row for updating
 		}
 
-		if (RECORDNOTES) { // If RECORD-NOTES is currently armed...
-			if (isInsertionPoint()) { // If we are on a QUANTIZE-QRESET-OFFSET-modified insertion-point tick...
-				BLINKR = 255 * TRACK; // Cue a long RIGHT-BLINK, if TRACK 2 is active
-				BLINKL = 255 * (!TRACK); // ^ Same, but for LEFT-BLINK and TRACK 1
-				TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating
-			}
+		if (RECORDNOTES && isInsertionPoint()) { // If RECORD-NOTES is currently armed, and we are on a QUANTIZE-QRESET-OFFSET-modified insertion-point...
+			setBlink(TRACK, 0, 0, 0); // Cue a TRACK-linked LED-blink
 		}
 
 	}
@@ -102,7 +98,7 @@ void updateTimer() {
 	ABSOLUTETIME = micr; // Set the absolute-time to the current time-value
 
 	if (LOADHOLD) { // If a just-loaded file's file-number is currently being held onscreen...
-		LOADHOLD -= max(1, (offset >> 8)); // Reduce LOADHOLD by an offset-based value
+		LOADHOLD -= max(1, (offset >> 8); // Reduce LOADHOLD by an offset-based value
 		if (LOADHOLD <= 0) { // If LOADHOLD has just this moment finished reducing all the way to 0...
 			LOADHOLD = 0; // Set LOADHOLD to 0, so boolean checks will parse it as "false"
 			TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for updating

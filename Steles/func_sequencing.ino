@@ -19,15 +19,19 @@ void resetSeq(byte s) {
 
 // Send a MIDI-CLOCK reset command to MIDI-OUT
 void sendClockReset() {
+
 	byte spos[6] = { // Create a series of commands to stop, adjust, and restart any devices downstream:
 		252, // STOP
 		242, 0, 0, // SONG-POSITION POINTER: beginning of every sequence
 		250, // START
 		0 // (Empty array entry)
 	};
+
 	Serial.write(spos, 5); // Send the series of commands to the MIDI-OUT circuit
-	BLINKL = 255; // Start a relatively-long LED-blink
-	BLINKR = 255; // ^
+
+	setBlink(0, 0, 0, 0); // Blink both sides of the LED-screen
+	setBlink(1, 0, 0, 0); // ^
+
 }
 
 // Reset all timing of all seqs and the global cue-point, and send a SONG-POSITION POINTER
@@ -85,9 +89,9 @@ void parseTickContents(byte s, byte buf[]) {
 
 		// If this is the RECORDSEQ, in RECORD MODE, and RECORDNOTES isn't armed, and a command is present on this tick...
 		if ((RECORDMODE) && (RECORDSEQ == s) && (!RECORDNOTES)) {
-			BLINKL |= (!bn) * 192; // Start or continue a TRACK-activity-linked LED-BLINK that is ~12ms long
-			BLINKR |= bn * 48; // ^
-			TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for an update
+			if (buf[bn]) { // If this note-slot contains a command...
+				setBlink(!!bn, buf[bn], buf[bn + 1], buf[bn + 2]); // Blink the LEDs according to the command-type in each of the TRACKs
+			}
 		}
 
 		if (buf[bn] == 112) { // If this is a BPM-CHANGE command...

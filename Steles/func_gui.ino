@@ -73,10 +73,30 @@ void displayLoadNumber() {
 	}
 }
 
-// Flag the LEDs that correspond to the current TRACK to blink for ~12ms
-void recBlink() {
-	BLINKL |= (!TRACK) * 192; // Start a given-track-linked LED-BLINK that is ~12ms long
-	BLINKR |= TRACK * 192; // ^
+// Fill the BLINK-values that are related to a given TRACK
+void fillBlinkVals(byte glyph[], word &blink, byte cmd, byte pitch, byte velo) {
+	if (cmd) {
+		if (cmd == 144) { // If this represents a NOTE command...
+			glyph[0] = pitch % 12; // Put the note's pitch-value into the given GLYPH-var
+		} else { // Else, if this represents a non-note MIDI-command...
+			glyph[0] = cmd; // Store the MIDI-command for later use in the GUI-display functions
+			glyph[1] = pitch; // ^
+			glyph[2] = velo; // ^
+		}
+		blink = 12000; // Start a track-linked LED-BLINK that is ~750ms long
+	} else { // Else, if this is a "full-blink"...
+		glyph[0] = 1; // Flag the glyph to display a "full-blink"
+		blink = 250; // Start a track-linked LED-BLINK that is ~15ms long
+	}
+}
+
+// Flag the LEDs that correspond to the given TRACK to blink, in various ways depending on whether they represent a NOTE, a special-command, or a "full-blink"
+void setBlink(byte trk, byte cmd, byte pitch, byte velo) {
+	if (trk) { // If TRACK 2 was given...
+		fillBlinkVals(GLYPHR, BLINKR, cmd, pitch, velo); // Fill the BLINK-values that are related to the right-side TRACK
+	} else { // Else, if TRACK 1 was given...
+		fillBlinkVals(GLYPHL, BLINKL, cmd, pitch, velo); // Fill the BLINK-values that are related to the left-side TRACK
+	}
 	TO_UPDATE |= 252; // Flag the bottom 6 LED-rows for an update
 }
 
@@ -109,6 +129,32 @@ byte getRowScatterVals(byte r) {
 		| ((!!(SCATTER[ib + 25] & 15)) << 2)
 		| ((!!(SCATTER[ib + 26] & 15)) << 1)
 		| (!!(SCATTER[ib + 27] & 15));
+}
+
+// Get a row that corresponds to a slice of the given BLINK's data
+byte getBlinkRow(word &b, byte g[], byte isnote, byte shift, byte i) {
+	if (b) { // If the given BLINK is active...
+		if (g[0]) { // If the stored GLYPH represents a MIDI-command or virtual-MIDI-command...
+			if (isnote == 144) { // If the stored GLYPH represents a NOTE-ON or a virtual-NOTE-ON...
+				// Return a slice of a letter-glyph that corresponds to the note's pitch-byte and to the given row
+				return pgm_read_byte_near(GLYPH_BLINK[(g[1] % 12) + i]) >> shift;
+			} else { // Else, if the stored GLYPH represents another type of MIDI-command...
+				return g[i >> 1] >> shift; // Return a slice of the stored command-GLYPH's data that corresponds to the given row
+			}
+		} else { // Else, if the stored GLYPH represents a "full-BLINK"...
+			return B00001111; // Return a value that will fill 4 LED-bits
+		}
+	}
+}
+
+// Display the contents of the GLYPHL/GLYPHR arrays, based on which BLINKs are active
+void displayBlink() {
+	byte lcmd = GLYPHL[0] & 240; // Get the left BLINK-GLYPH's MIDI-command status
+	byte rcmd = GLYPHR[0] & 240; // ^ This, but right
+	for (byte i = 0; i < 6; i++) { // For each one of the 6 bottom LED-rows...
+		// Send a row made from a composite of the current LEFT-BLINK and RIGHT-BLINK rows, if they are active
+		sendRow(0, i + 2, getBlinkRow(BLINKL, GLYPHL, lcmd, 0, i) | getBlinkRow(BLINKR, GLYPHR, rcmd, 4, i));
+	}
 }
 
 // Send a virtual char-value to the top LED-row, for "byte" values whose contents represent a virtual negative-to-positive range
@@ -209,9 +255,7 @@ void updateRecBottomRows(byte ctrl) {
 
 		if (!(TO_UPDATE & (4 << i))) { continue; } // If the row is not flagged for an update, continue to the next row
 
-		if (BLINKL || BLINKR) { // If a BLINK is active...
-			row = (240 * (!!BLINKL)) | (15 * (!!BLINKR)); // Fill in the LED-row based on which BLINK-sides are active
-		} else if (ctrl == B00111100) { // Else, if ERASE NOTES is held...
+		if (ctrl == B00111100) { // If ERASE NOTES is held...
 			// Read the given row in the ERASE NOTES glyph, with exclamation-points if RECORD NOTES is active
 			row = pgm_read_byte_near(GLYPH_ERASE + i) & (240 | (RECORDNOTES * 15));
 		} else if (ctrl == B00011110) { // Else, if ERASE INVERSE NOTES is held...
@@ -246,11 +290,9 @@ void updatePlayBottomRows(byte ctrl) {
 	byte heldsc = ((ctrl & B00010001) == B00010001) && (ctrl != B00111111);
 
 	byte row = 0; // Will hold the binary value to be sent to the row's LEDs
-	byte blnk = (240 * (!!BLINKL)) | (15 * (!!BLINKR)); // If there are any active BLINKs, create a row-template for them
-
 	for (byte i = 2; i < 8; i++) { // For each of the bottom 6 GUI rows...
 		if (TO_UPDATE & (1 << i)) { // If the row is flagged for an update...
-			row = blnk; // If a BLINK is active, add it to the row's contents (also: this line clears the previous loop's row value)
+			row = 0; // Clear the previous loop's row value
 			if (ctrl == B00000101) { // If a BPM command is held...
 				row |= pgm_read_byte_near(GLYPHS + 118 + i); // Display a line from the BPM glyph
 			} else if (ctrl == B00000011) { // Else, if a SHIFT POSITION command is held...
@@ -295,7 +337,11 @@ void updateGUI() {
 	}
 
 	if (TO_UPDATE & 252) { // If any of the bottom 6 rows are flagged for a GUI update...
-		updateBottomRows(ctrl); // Update the 6 bottom rows of LEDs
+		if (BLINKL || BLINKR) { // If any BLINKs are active...
+			displayBlink(); // Display the contents of the GLYPHL/GLYPHR arrays, based on which BLINKs are active
+		} else { // Else, if no BLINKs are active...
+			updateBottomRows(ctrl); // Update the 6 bottom rows of LEDs
+		}
 	}
 
 	TO_UPDATE = 0; // Clear all TO_UPDATE flags
