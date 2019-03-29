@@ -105,7 +105,7 @@ byte getSeqVal(byte s) {
 	return (CMD[s] && (!(CUR32 % 8))) ? (((CUR32 + (!(STATS[s] & 128))) % 2) * 128) : (STATS[s] & 128);
 }
 
-// Get the SEQUENCE-ACTIVITY LED-values for a given GUI row within the lower 6 rows
+// Get the SEQUENCE-ACTIVITY LED-values for a given GUI row
 byte getRowSeqVals(byte r) {
 	byte ib = r << 2; // Get the row's left-side's global-array position
 	return getSeqVal(ib) // Return the row's PLAYING info, from both pages, as a row's worth of bits
@@ -118,7 +118,19 @@ byte getRowSeqVals(byte r) {
 		| (getSeqVal(ib + 27) >> 7);
 }
 
-// Get the SCATTER-ACTIVITY LED-values for a given GUI row within the lower 6 rows
+// Get the SEQUENCE-ACTIVITY LED-values for a given half-GUI-row
+byte getHalfRowSeqVals(byte r, byte shift) {
+	byte ib = (r << 2) + shift; // Get the row's global-array position, shifted by 24 if this represents PAGE 2
+	return // Return the half-row's PLAYING info, as a shifted nibble of bits
+		(
+			getSeqVal(ib)
+			| (getSeqVal(ib + 1) >> 1)
+			| (getSeqVal(ib + 2) >> 2)
+			| (getSeqVal(ib + 3) >> 3)
+		) >> shift;
+}
+
+// Get the SCATTER-ACTIVITY LED-values for a given GUI row
 byte getRowScatterVals(byte r) {
 	byte ib = r << 2; // Get the row's left-side's global-array position
 	return ((!!(SCATTER[ib] & 15)) << 7) // Return the row's SCATTER info, from both pages, as a row's worth of bits
@@ -132,19 +144,20 @@ byte getRowScatterVals(byte r) {
 }
 
 // Get a row that corresponds to a slice of the given BLINK's data
-byte getBlinkRow(word &b, byte g[], byte isnote, byte shift, byte i) {
+byte getBlinkRow(word b, byte g[], byte isnote, byte shift, byte i) {
 	if (b) { // If the given BLINK is active...
 		if (g[0]) { // If the stored GLYPH represents a MIDI-command or virtual-MIDI-command...
 			if (isnote == 144) { // If the stored GLYPH represents a NOTE-ON or a virtual-NOTE-ON...
-				// Return a slice of a letter-glyph that corresponds to the note's pitch-byte and to the given row
+				// Return a slice of a letter-glyph that corresponds to the note's pitch-byte and to the given row and shift-position
 				return pgm_read_byte_near(GLYPH_BLINK[(g[1] % 12) + i]) >> shift;
 			} else { // Else, if the stored GLYPH represents another type of MIDI-command...
-				return g[i >> 1] >> shift; // Return a slice of the stored command-GLYPH's data that corresponds to the given row
+				return g[i >> 1] >> shift; // Return a slice of the stored command-GLYPH's data that corresponds to the given row and shift-position
 			}
 		} else { // Else, if the stored GLYPH represents a "full-BLINK"...
-			return B00001111; // Return a value that will fill 4 LED-bits
+			return B11110000 >> shift; // Return a value that will fill 4 LED-bits in the current shift-position
 		}
 	}
+	return getHalfRowSeqVals(i, shift * 6); // Get the activity-values from a half-row of seqs, on PAGE 1 for left-side or 2 for right-side
 }
 
 // Display the contents of the GLYPHL/GLYPHR arrays, based on which BLINKs are active

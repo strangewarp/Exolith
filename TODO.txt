@@ -45,6 +45,8 @@ Software:
 						-- done
 					. should be overwritten by any notes/commands the user is playing, whose glyphs should then persist like the glyph from a sequenced note
 						-- done
+					. a single side's GLYPH-display should not disturb the seq-activity-display for the other half of the screen
+						-- done
 		. test the overhauled BLINK-GUI
 			--
 
