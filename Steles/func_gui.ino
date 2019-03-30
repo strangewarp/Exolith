@@ -121,7 +121,7 @@ byte getRowSeqVals(byte r) {
 
 // Get the SEQUENCE-ACTIVITY LED-values for a given half-GUI-row
 byte getHalfRowSeqVals(byte r, byte shift) {
-	byte ib = (r << 2) + shift; // Get the row's global-array position, shifted by 24 if this represents PAGE 2
+	byte ib = (r << 2) + (shift * 6); // Get the row's global-array position, shifted by 24 if this represents PAGE 2
 	return ( // Return the half-row's PLAYING info, as a shifted nibble of bits
 			getSeqVal(ib)
 			| (getSeqVal(ib + 1) >> 1)
@@ -157,7 +157,7 @@ byte getBlinkRow(word b, byte g[], byte cmd, byte shift, byte i) {
 			return B11110000 >> shift; // Return a value that will fill 4 LED-bits in the current shift-position
 		}
 	}
-	return getHalfRowSeqVals(i, shift * 6); // Get the activity-values from a half-row of seqs, on PAGE 1 for left-side or 2 for right-side
+	return getHalfRowSeqVals(i, shift); // Get the activity-values from a half-row of seqs, on PAGE 1 for left-side or 2 for right-side
 }
 
 // Display the contents of the GLYPHL/GLYPHR arrays, based on which BLINKs are active
@@ -345,10 +345,10 @@ void updateGUI() {
 	}
 
 	if (TO_UPDATE & 252) { // If any of the bottom 6 rows are flagged for a GUI update...
-		if (BLINKL || BLINKR) { // If any BLINKs are active...
-			displayBlink(); // Display the contents of the GLYPHL/GLYPHR arrays, based on which BLINKs are active
-		} else { // Else, if no BLINKs are active...
+		if (ctrl || (!(BLINKL || BLINKR))) { // If any ctrl-buttons are held, or no BLINKs are active...
 			updateBottomRows(ctrl); // Update the 6 bottom rows of LEDs
+		} else { // Else, if BLINKS are active and no ctrl-buttons are held...
+			displayBlink(); // Display the contents of the GLYPHL/GLYPHR arrays, based on which BLINKs are active
 		}
 	}
 

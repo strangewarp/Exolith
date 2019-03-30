@@ -52,6 +52,8 @@ Software:
 			. jump in and start fixing things
 				-- fixed misuse of pgm_read_byte_near() where an array was addressed instead of its memory-position
 				-- tweaked BLINK length, which was longer than expected
+				-- fixed a misuse of the "shift" var in getHalfRowSeqVals()
+				-- changed updateGUI() so that ctrl-buttons will override the presence of a BLINK for their respective GUIs
 				-- 
 			. once enough bugs have been culled, identify remaining problems
 				--
