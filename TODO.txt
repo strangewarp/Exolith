@@ -48,7 +48,13 @@ Software:
 					. a single side's GLYPH-display should not disturb the seq-activity-display for the other half of the screen
 						-- done
 		. test the overhauled BLINK-GUI
-			--
+			-- many simultaneous bugs
+			. jump in and start fixing things
+				-- fixed misuse of pgm_read_byte_near() where an array was addressed instead of its memory-position
+				-- tweaked BLINK length, which was longer than expected
+				-- 
+			. once enough bugs have been culled, identify remaining problems
+				--
 
 	. change the "note-name" display in RECORD-MODE:
 		. it should display the most-recent note, either sequenced on the current TRACK or played manually by the user, and return to default-display after a second

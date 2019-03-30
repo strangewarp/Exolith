@@ -83,10 +83,10 @@ void fillBlinkVals(byte glyph[], word &blink, byte cmd, byte pitch, byte velo) {
 			glyph[1] = pitch; // ^
 			glyph[2] = velo; // ^
 		}
-		blink = 12000; // Start a track-linked LED-BLINK that is ~750ms long
+		blink = 5000; // Start a track-linked long-LED-BLINK
 	} else { // Else, if this is a "full-blink"...
 		glyph[0] = 1; // Flag the glyph to display a "full-blink"
-		blink = 250; // Start a track-linked LED-BLINK that is ~15ms long
+		blink = 250; // Start a track-linked short-LED-BLINK
 	}
 }
 
@@ -144,12 +144,12 @@ byte getRowScatterVals(byte r) {
 }
 
 // Get a row that corresponds to a slice of the given BLINK's data
-byte getBlinkRow(word b, byte g[], byte isnote, byte shift, byte i) {
+byte getBlinkRow(word b, byte g[], byte cmd, byte shift, byte i) {
 	if (b) { // If the given BLINK is active...
 		if (g[0]) { // If the stored GLYPH represents a MIDI-command or virtual-MIDI-command...
-			if (isnote == 144) { // If the stored GLYPH represents a NOTE-ON or a virtual-NOTE-ON...
+			if (cmd == 144) { // If the stored GLYPH represents a NOTE-ON or a virtual-NOTE-ON...
 				// Return a slice of a letter-glyph that corresponds to the note's pitch-byte and to the given row and shift-position
-				return pgm_read_byte_near(GLYPH_BLINK[(g[1] % 12) + i]) >> shift;
+				return pgm_read_byte_near(GLYPH_BLINK + ((g[1] % 12) * 6) + i) >> shift;
 			} else { // Else, if the stored GLYPH represents another type of MIDI-command...
 				return g[i >> 1] >> shift; // Return a slice of the stored command-GLYPH's data that corresponds to the given row and shift-position
 			}
