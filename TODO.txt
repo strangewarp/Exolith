@@ -62,14 +62,10 @@ Software:
 				. some seqs erroneously display "full-blinks" for notes. figure out why
 					-- seems to have been an epiphenomenon of the bad glyph-encoding that was fixed in the previous bug-entry
 				. glyphs for pressed-notes will override glyphs for sequenced notes correctly, EXCEPT for when REPEAT is enabled. figure out why
-					-- 
+					--
 				. test whether REPEAT-prompted glyphs will also work as expected when RECORDNOTES is armed
 					--
-
-	. change the "note-name" display in RECORD-MODE:
-		. it should display the most-recent note, either sequenced on the current TRACK or played manually by the user, and return to default-display after a second
-			--
-		. it should also be toggleable to show the CHANNEL of the most-recent note rather than the pitch
+		. the BLINK-GLYPH GUI should be user-toggleable to show the CHANNEL of the most-recent note rather than the pitch. insert a command for this
 			--
 
 	. when two notes on the same channel with the same pitch are in the SUSTAIN queue, the nested NOTE-OFF does not behave as expected with most synths
