@@ -76,17 +76,17 @@ void displayLoadNumber() {
 // Fill the BLINK-values that are related to a given TRACK
 void fillBlinkVals(byte glyph[], word &blink, byte cmd, byte pitch, byte velo) {
 	if (cmd) {
+		glyph[0] = cmd; // Store the MIDI-command for later use in the GUI-display functions
 		if (cmd == 144) { // If this represents a NOTE command...
-			glyph[0] = pitch % 12; // Put the note's pitch-value into the given GLYPH-var
+			glyph[1] = pitch % 12; // Put the note's pitch-value into the given GLYPH-var
 		} else { // Else, if this represents a non-note MIDI-command...
-			glyph[0] = cmd; // Store the MIDI-command for later use in the GUI-display functions
-			glyph[1] = pitch; // ^
+			glyph[1] = pitch; // Store the MIDI-cmd's second and third bytes, for later display
 			glyph[2] = velo; // ^
 		}
-		blink = 5000; // Start a track-linked long-LED-BLINK
+		blink = 6000; // Start a track-linked long-LED-BLINK
 	} else { // Else, if this is a "full-blink"...
-		glyph[0] = 1; // Flag the glyph to display a "full-blink"
-		blink = 250; // Start a track-linked short-LED-BLINK
+		glyph[0] = 0; // Flag the glyph to display a "full-blink"
+		blink = 200; // Start a track-linked short-LED-BLINK
 	}
 }
 

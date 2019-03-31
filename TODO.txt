@@ -54,9 +54,17 @@ Software:
 				-- tweaked BLINK length, which was longer than expected
 				-- fixed a misuse of the "shift" var in getHalfRowSeqVals()
 				-- changed updateGUI() so that ctrl-buttons will override the presence of a BLINK for their respective GUIs
-				-- 
 			. once enough bugs have been culled, identify remaining problems
-				--
+				. some seqs don't display glyphs at all. figure out why
+					-- seems to be a bug in how the GLYPH-data is being encoded, rather than the GUI-routines
+					. check all the encoding functions
+						-- it was an encoding function: "glyph" was being assigned wrong, in several ways, in fillBlinkVals()
+				. some seqs erroneously display "full-blinks" for notes. figure out why
+					-- seems to have been an epiphenomenon of the bad glyph-encoding that was fixed in the previous bug-entry
+				. glyphs for pressed-notes will override glyphs for sequenced notes correctly, EXCEPT for when REPEAT is enabled. figure out why
+					-- 
+				. test whether REPEAT-prompted glyphs will also work as expected when RECORDNOTES is armed
+					--
 
 	. change the "note-name" display in RECORD-MODE:
 		. it should display the most-recent note, either sequenced on the current TRACK or played manually by the user, and return to default-display after a second
