@@ -147,7 +147,7 @@ void quantizeCmd(byte col, byte row) {
 // Parse a REPEAT press
 void repeatCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row) {
 	if (DURATION == 129) { // If DURATION is in MANUAL-MODE...
-		DURATION--; // Remove DURATION from MANUAL-MODE, since this would be incompatible with REPEAT
+		DURATION = 1; // Remove DURATION from MANUAL-MODE, since this would be incompatible with REPEAT
 	}
 	REPEAT ^= 1; // Arm or disarm the NOTE-REPEAT flag
 	TO_UPDATE |= 252; // Flag the bottom 6 rows for LED updates

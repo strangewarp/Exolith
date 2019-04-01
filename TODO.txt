@@ -12,6 +12,7 @@ Software:
 	. prove I'm not a dipshit: actually finish the project
 
 	-- removed outdated "LOAD MODE" sections from buttons-key.txt and from miscellaneous code-comments
+	-- changed the DURATION-value that is set when toggling from MANUAL-DURATION into REPEAT (1 now, formerly 128)
 
 	. when DURATION is in manual (=129), and REPEAT is enabled, no notes can be played in RECORD MODE...
 	. apply fix: toggling REPEAT should bound DURATION to 128, and setting DURATION to 129 should turn off REPEAT
