@@ -62,9 +62,12 @@ Software:
 				. some seqs erroneously display "full-blinks" for notes. figure out why
 					-- seems to have been an epiphenomenon of the bad glyph-encoding that was fixed in the previous bug-entry
 				. glyphs for pressed-notes will override glyphs for sequenced notes correctly, EXCEPT for when REPEAT is enabled. figure out why
-					--
+					-- logic-flow issue. fixed by passing a glyph-flag from getTickNotes() to processRepeat() and back, and then into parseTikContents()
 				. test whether REPEAT-prompted glyphs will also work as expected when RECORDNOTES is armed
-					--
+					-- glyphs don't override the "full-blink" when REPEAT is held and RECORDNOTES is armed
+					. fix this
+						-- actually... this UI difference is a good way to distinguish between "RECORDNOTES=armed" and "RECORDNOTES=unarmed"
+						-- so... will hold off on changing it for now, and see how it feels in beta testing
 		. the BLINK-GLYPH GUI should be user-toggleable to show the CHANNEL of the most-recent note rather than the pitch. insert a command for this
 			--
 

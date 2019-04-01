@@ -81,7 +81,7 @@ void readTick(byte s, byte offset, byte buf[]) {
 }
 
 // Parse the contents of a given tick, and add them to the MIDI-OUT buffer and SUSTAIN buffer as appropriate
-void parseTickContents(byte s, byte buf[]) {
+void parseTickContents(byte s, byte buf[], byte dglyph) {
 
 	for (byte bn = 0; bn < 8; bn += 4) { // For both event-slots on this tick...
 
@@ -89,8 +89,9 @@ void parseTickContents(byte s, byte buf[]) {
 
 		// If this is the RECORDSEQ, in RECORD MODE, and RECORDNOTES isn't armed, and a command is present on this tick...
 		if ((RECORDMODE) && (RECORDSEQ == s) && (!RECORDNOTES)) {
-			if (buf[bn]) { // If this note-slot contains a command...
-				setBlink(!!bn, buf[bn], buf[bn + 1], buf[bn + 2]); // Blink the LEDs according to the command-type in each of the TRACKs
+			byte bnbool = !!bn; // Get the boolean version of bn - "0 or 1" instead of "0 or 4"
+			if (buf[bn] && !(dglyph && (bnbool == TRACK))) { // If this note-slot contains a command, and no GLYPH is already stored from a user REPEAT command...
+				setBlink(bnbool, buf[bn], buf[bn + 1], buf[bn + 2]); // Set a BLINK-GLYPH according to the command-type in this TRACK
 			}
 		}
 
@@ -130,9 +131,9 @@ void parseTickContents(byte s, byte buf[]) {
 }
 
 // Parse any active SCATTER values that might be associated with a given seq
-void parseScatter(byte s, byte didscatter) {
+void parseScatter(byte s, byte dscatter) {
 
-	if (didscatter) { // If this tick was a SCATTER-tick...
+	if (dscatter) { // If this tick was a SCATTER-tick...
 		SCATTER[s] &= 15; // Unset the "distance" side of this seq's SCATTER byte
 	} else { // Else, if this wasn't a SCATTER-tick...
 
@@ -163,7 +164,7 @@ void parseScatter(byte s, byte didscatter) {
 }
 
 // Process a REPEAT, REPEAT-RECORD, or REPEAT-ERASE command
-void processRepeat(byte ctrl) {
+void processRepeat(byte ctrl, byte &dglyph) {
 
 	if (REPEAT) { // If REPEAT is toggled...
 
@@ -175,6 +176,7 @@ void processRepeat(byte ctrl) {
 				arpAdvance(); // Advance the arpeggio-position
 				processRecAction(modPitch(ARPPOS & 31)); // Put the current raw repeat-note or arpeggiation-note into the current track
 				RPTVELO = applyChange(RPTVELO, char(int(RPTSWEEP) - 128), 0, 127); // Change the stored REPEAT-VELOCITY by the REPEAT-SWEEP amount
+				dglyph = 1; // Flag that a REPEAT-GLYPH is present, and should not be overridden by other notes on this tick in this TRACK
 			}
 
 		} else { // Else, if this isn't the current insertion point...
@@ -192,11 +194,12 @@ void processRepeat(byte ctrl) {
 // Get the notes from the current tick in a given seq, and add them to the MIDI-OUT buffer
 void getTickNotes(byte ctrl, byte s, byte buf[]) {
 
-	byte didscatter = 0; // Flag that tracks whether this tick has had a SCATTER effect
+	byte didglyph = 0; // Tracks whether this tick has had a user-generated REPEAT-GLYPH
+	byte didscatter = 0; // Tracks whether this tick has had a SCATTER effect
 
 	if (RECORDMODE) { // If RECORD MODE is active...
 		if (RECORDSEQ == s) { // If this is the current RECORDSEQ...
-			processRepeat(ctrl); // Process any REPEAT, REPEAT-RECORD, or REPEAT-ERASE commands that might be occurring
+			processRepeat(ctrl, didglyph); // Process any REPEAT, REPEAT-RECORD, or REPEAT-ERASE commands that might be occurring
 		}
 		readTick(s, 0, buf); // Read the tick with no offset
 	} else { // Else, if RECORD MODE is inactive...
@@ -207,7 +210,7 @@ void getTickNotes(byte ctrl, byte s, byte buf[]) {
 
 	// If the function hasn't exited by this point, then that means this tick contained a note. So...
 
-	parseTickContents(s, buf); // Check the tick's contents, and add them to MIDI-OUT and SUSTAIN where appropriate
+	parseTickContents(s, buf, didglyph); // Check the tick's contents, and add them to MIDI-OUT and SUSTAIN where appropriate
 	parseScatter(s, didscatter); // Parse any active SCATTER values that might be associated with the seq
 
 }

@@ -83,7 +83,7 @@ void fillBlinkVals(byte glyph[], word &blink, byte cmd, byte pitch, byte velo) {
 			glyph[1] = pitch; // Store the MIDI-cmd's second and third bytes, for later display
 			glyph[2] = velo; // ^
 		}
-		blink = 6000; // Start a track-linked long-LED-BLINK
+		blink = 7500; // Start a track-linked long-LED-BLINK
 	} else { // Else, if this is a "full-blink"...
 		glyph[0] = 0; // Flag the glyph to display a "full-blink"
 		blink = 200; // Start a track-linked short-LED-BLINK
