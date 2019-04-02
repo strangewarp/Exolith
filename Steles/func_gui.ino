@@ -149,7 +149,7 @@ byte getBlinkRow(word b, byte g[], byte cmd, byte shift, byte i) {
 		if (g[0]) { // If the stored GLYPH represents a MIDI-command or virtual-MIDI-command...
 			if (cmd == 144) { // If the stored GLYPH represents a NOTE-ON or a virtual-NOTE-ON...
 				// Return a slice of a letter-glyph that corresponds to the note's pitch-byte and to the given row and shift-position
-				return pgm_read_byte_near(GLYPH_BLINK + ((g[1] % 12) * 6) + i) >> shift;
+				return pgm_read_byte_near(GLYPH_BLINK + ((g[1] % 12) * 5) + i) >> shift;
 			} else { // Else, if the stored GLYPH represents another type of MIDI-command...
 				return g[i >> 1] >> shift; // Return a slice of the stored command-GLYPH's data that corresponds to the given row and shift-position
 			}
@@ -164,10 +164,12 @@ byte getBlinkRow(word b, byte g[], byte cmd, byte shift, byte i) {
 void displayBlink() {
 	byte lcmd = GLYPHL[0] & 240; // Get the left BLINK-GLYPH's MIDI-command status
 	byte rcmd = GLYPHR[0] & 240; // ^ This, but right
-	for (byte i = 0; i < 6; i++) { // For each one of the 6 bottom LED-rows...
+	for (byte i = 0; i < 5; i++) { // For each one of the 6 bottom LED-rows...
 		// Send a row made from a composite of the current LEFT-BLINK and RIGHT-BLINK rows, if they are active
 		sendRow(i + 2, getBlinkRow(BLINKL, GLYPHL, lcmd, 0, i) | getBlinkRow(BLINKR, GLYPHR, rcmd, 4, i));
 	}
+	// If either of the GLYPHs is for a MIDI-NOTE, then display its/their CHANNELs as binary values on the bottom-row
+	sendRow(7, ((lcmd == 144) ? ((GLYPHL[0] % 15) << 4) : 0) | ((rcmd == 144) ? (GLYPHR[0] % 15) : 0));
 }
 
 // Send a virtual char-value to the top LED-row, for "byte" values whose contents represent a virtual negative-to-positive range

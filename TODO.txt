@@ -69,8 +69,11 @@ Software:
 					. fix this
 						-- actually... this UI difference is a good way to distinguish between "RECORDNOTES=armed" and "RECORDNOTES=unarmed"
 						-- so... will hold off on changing it for now, and see how it feels in beta testing
-		. the BLINK-GLYPH GUI should be user-toggleable to show the CHANNEL of the most-recent note rather than the pitch. insert a command for this
-			--
+		. every pitch-GLYPH should also show the pitch's channel
+			. restructure pitch-glyphs to be 4 lines tall, with "sharp" as a corner-dot, and CHANNEL as the bottom row
+				-- done
+				. test it
+					--
 
 	. when two notes on the same channel with the same pitch are in the SUSTAIN queue, the nested NOTE-OFF does not behave as expected with most synths
 	. therefore, a change is necessary:
