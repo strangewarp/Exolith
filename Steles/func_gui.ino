@@ -83,7 +83,7 @@ void fillBlinkVals(byte glyph[], word &blink, byte cmd, byte pitch, byte velo) {
 			glyph[1] = pitch; // Store the MIDI-cmd's second and third bytes, for later display
 			glyph[2] = velo; // ^
 		}
-		blink = 7500; // Start a track-linked long-LED-BLINK
+		blink = 5000; // Start a track-linked long-LED-BLINK
 	} else { // Else, if this is a "full-blink"...
 		glyph[0] = 0; // Flag the glyph to display a "full-blink"
 		blink = 200; // Start a track-linked short-LED-BLINK
@@ -169,7 +169,7 @@ void displayBlink() {
 		sendRow(i + 2, getBlinkRow(BLINKL, GLYPHL, lcmd, 0, i) | getBlinkRow(BLINKR, GLYPHR, rcmd, 4, i));
 	}
 	// If either of the GLYPHs is for a MIDI-NOTE, then display its/their CHANNELs as binary values on the bottom-row
-	sendRow(7, ((lcmd == 144) ? ((GLYPHL[0] % 15) << 4) : 0) | ((rcmd == 144) ? (GLYPHR[0] % 15) : 0));
+	sendRow(7, ((BLINKL && (lcmd == 144)) ? ((GLYPHL[0] % 16) << 4) : 0) | ((BLINKR && (rcmd == 144)) ? (GLYPHR[0] % 16) : 0));
 }
 
 // Send a virtual char-value to the top LED-row, for "byte" values whose contents represent a virtual negative-to-positive range

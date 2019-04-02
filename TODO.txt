@@ -20,17 +20,6 @@ Software:
 		. test it
 			-- it works
 
-	. test regular-ERASE
-		-- seems to work
-	. test REPEAT-ERASE
-		-- seems to work
-	. test both types of ERASE with strange QUANTIZE-QRESET-OFFSET settings
-		--
-	. test regular-ERASE-INVERSE
-		-- seems to work
-	. test ERASE-INVERSE with strange QUANTIZE-QRESET-OFFSET settings
-		--
-
 	. overhaul the BLINK GUI:
 		. full BLINKs should only occur for the current TRACK when RECORDNOTES is armed
 		. otherwise:
@@ -73,7 +62,19 @@ Software:
 			. restructure pitch-glyphs to be 4 lines tall, with "sharp" as a corner-dot, and CHANNEL as the bottom row
 				-- done
 				. test it
-					--
+					-- the glyph's CHANNEL display had the wrong modulus - 15 instead of 16 - fixed
+					-- hmm... needed some additional glyph-tweaks to improve their sense of silhouette, but it seems decent now
+
+	. test regular-ERASE
+		-- seems to work
+	. test REPEAT-ERASE
+		-- seems to work
+	. test both types of ERASE with strange QUANTIZE-QRESET-OFFSET settings
+		--
+	. test regular-ERASE-INVERSE
+		-- seems to work
+	. test ERASE-INVERSE with strange QUANTIZE-QRESET-OFFSET settings
+		--
 
 	. when two notes on the same channel with the same pitch are in the SUSTAIN queue, the nested NOTE-OFF does not behave as expected with most synths
 	. therefore, a change is necessary:
