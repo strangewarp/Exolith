@@ -30,16 +30,18 @@
 // These values may need to be changed in the course of programming/debugging,
 // but will always stay the same at runtime.
 
-#define FILE_BYTES 393267UL // Number of bytes in each savefile
+#define FILE_BYTES 393315UL // Number of bytes in each savefile
 
 // Location of bytes in a given savefile's header-block:
 #define FILE_BPM_BYTE 0 // BPM byte
 #define FILE_SQS_START 3 // Start-byte of the seq-size-values block
 #define FILE_SQS_END 50 // End-byte of the seq-size-values block
+#define FILE_CHAIN_START 51 // Start-byte of the seq-chain-directions block
+#define FILE_CHAIN_END 98 // End-byte of the seq-chain-directions block
 
-#define FILE_BODY_START 51UL // Start of the file's body-block (UL because large values get added to this)
+#define FILE_BODY_START 99UL // Start of the file's body-block (UL because large values will get added to this)
 
-#define FILE_SEQ_BYTES 8192UL // Bytes within each sequence (UL because large values get added to this)
+#define FILE_SEQ_BYTES 8192UL // Bytes within each sequence (UL because large values will get added to this)
 
 #define BPM_LIMIT_LOW 32 // Limits to the range of valid BPM values
 #define BPM_LIMIT_HIGH 255 // ^
@@ -55,8 +57,6 @@
 #define GRID_TOTAL 5 // Number of GRIDCONFIG grids within the GRIDS[] array (this value is 0-indexed!!!)
 
 #define SCANRATE 7000 // Amount of time between keystroke-scans, in microseconds
-
-#define GESTDECAY 250000UL // Amount of time between gesture-decay ticks, in microseconds
 
 ///////////////////////////
 // End define statements //
@@ -134,6 +134,19 @@ byte TICKCOUNT = 2; // Current global tick, bounded within the size of a 32nd-no
 byte CUR32 = 255; // Current global 32nd-note (bounded to 256, or 8 whole-notes)
 word GLOBALRAND = 12345; // Global all-purpose semirandom value; gets changed on every tick
 
+// Pattern-chain vars, one per seq.
+// These indicate that another adjacent seq should be activated, and the current seq deactivated, when this seq ends.
+// If multiple bits are present, then one of the seq-positions they represent will be chosen randomly.
+// bit 0: "up-left"
+// bit 1: "up"
+// bit 2: "up-right"
+// bit 3: "left"
+// bit 4: "right"
+// bit 5: "down-left"
+// bit 6: "down"
+// bit 7: "down-right"
+byte CHAIN[49];
+
 // Beat-scattering flags, one per seq.
 // bits 0-3: scatter chance
 // bits 4-7: scatter distance (0=off; 1,2,4 = 8th,4th,half [these can stack with each other])
@@ -190,6 +203,7 @@ SdFile file; // Initialize an SdFile File object, to control default data read/w
 void setup() {
 
 	// Ensure that the global arrays don't contain junk-data
+	memset(CHAIN, 0, 49);
 	memset(SCATTER, 0, 49);
 	memset(CMD, 0, 49);
 	memset(STATS, 0, 49);

@@ -69,7 +69,7 @@ Button combinations (RECORD MODE):
 	000011: SEQ-SIZE
 
 	3-keypress:
-	...
+	000111: CHAIN DIRECTION
 
 	4-keypress:
 	111100: CLEAR NOTES

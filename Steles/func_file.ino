@@ -5,12 +5,12 @@ void createFiles() {
 
 	char name[8]; // Will hold a given filename
 
-	for (byte i = 0; i < 168; i++) { // For every song-slot...
+	for (byte i = 0; i < 48; i++) { // For every song-slot...
 
-		if (!(i % 7)) { // After a certain amount of files, switch to the next logo letter
+		if (!(i % 12)) { // After a certain amount of files, switch to the next logo letter
 			for (byte row = 0; row < 7; row++) { // For each row in the 7-row-tall logo text...
 				// Set the corresponding row to the corresponding letter slice
-				sendRow(row + 1, pgm_read_byte_near(LOGO + (row * 4) + ((i / 7) % 4)));
+				sendRow(row + 1, pgm_read_byte_near(LOGO + (row * 4) + ((i / 12) % 4)));
 			}
 		}
 
@@ -39,7 +39,7 @@ void createFiles() {
 
 // Get the name of a target song-slot's savefile (format: "000.DAT" etc.)
 void getFilename(char source[], byte fnum) {
-	source[0] = char(fnum >= 100) + 48;
+	source[0] = 0;
 	source[1] = (char(floor(fnum / 10)) % 10) + 48;
 	source[2] = char((fnum % 10) + 48);
 	source[3] = 46;
@@ -50,7 +50,7 @@ void getFilename(char source[], byte fnum) {
 }
 
 // Update a given byte within a given song-file.
-// This is used only to update various bytes in the header, so "byte" is acceptable.
+// This is used only to update various bytes in the header, so "byte pos" is acceptable.
 void updateFileByte(byte pos, byte b) {
 	file.seekSet(pos); // Go to the given insert-point
 	file.write(b); // Write the new byte into the file
@@ -58,7 +58,7 @@ void updateFileByte(byte pos, byte b) {
 }
 
 // Check whether a given header-byte is a duplicate, and if not, update it in the savefile.
-// This is used only to update various bytes in the header, so "byte" is acceptable.
+// This is used only to update various bytes in the header, so "byte pos" is acceptable.
 void updateNonMatch(byte pos, byte b) {
 	file.seekSet(pos); // Go to the corresponding byte in the savefile
 	if (file.read() != b) { // Read the header-byte. If it isn't the same as the given byte-value...
@@ -69,6 +69,11 @@ void updateNonMatch(byte pos, byte b) {
 // Update the sequence's size-byte in the savefile, if it has been changed
 void updateSeqSize() {
 	updateNonMatch(FILE_SQS_START + RECORDSEQ, STATS[RECORDSEQ] & 63);
+}
+
+// Update the current seq's CHAIN-byte in the savefile, if it has been changed
+void updateSavedChain() {
+	updateNonMatch(FILE_CHAIN_START + RECORDSEQ, CHAIN[RECORDSEQ]);
 }
 
 // Put the current prefs-related global vars into a given buffer
@@ -216,6 +221,8 @@ void loadSong(byte slot) {
 		POS[i] %= sbuf[i] * 16; // Wrap each seq's previous position by its new length
 		STATS[i] = (STATS[i] & 128) | sbuf[i]; // Combine the new size-value with the seq's current on/off byte
 	}
+	file.seekSet(FILE_CHAIN_START); // Go to the file-header's CHAIN block
+	file.read(CHAIN, 48); // Read every seq's CHAIN-data
 
 	memset(CMD, 0, 48); // Clear every seq's CUED-COMMANDS...
 	memset(SCATTER, 0, 48); // ...And SCATTER-values

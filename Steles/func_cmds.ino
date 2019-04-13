@@ -18,6 +18,16 @@ void arpRefCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte ro
 	TO_UPDATE |= 1; // Flag the topmost row for updating
 }
 
+// Parse a CHAIN DIRECTION press
+void chainCmd(byte col, byte row) {
+	byte cmd = pgm_read_byte_near(CHAIN_MATRIX + (row * 4) + col); // Get the CHAIN command that corresponds to the given button
+	if (cmd == 255) { // If this is a CLEAR command...
+		CHAIN[RECORDSEQ] = 0; // Empty out the seq's CHAIN data
+	} else { // Else, if this is a CHAIN command...
+		CHAIN[RECORDSEQ] ^= 1 << cmd; // Toggle the bit that corresponds to a given CHAIN-direction, in the seq's CHAIN-entry
+	}
+}
+
 // Parse a CHAN press
 void chanCmd(byte col, byte row) {
 	// Modify the CHAN value, keeping it within the range of valid/supported commands
@@ -170,6 +180,7 @@ void sizeCmd(byte col, byte row) {
 // Parse a SWITCH RECORDSEQ press
 void switchCmd(byte col, byte row) {
 	updateSeqSize(); // Update the current seq's size-byte in the savefile, if applicable
+	updateSavedChain(); // Update the current seq's CHAIN-byte in the savefile, if applicable
 	TO_UPDATE |= 3 | (4 >> (RECORDSEQ >> 2)); // Flag the old seq's LED-row for updating, plus the top two rows
 	resetSeq(RECORDSEQ); // Reset the current record-seq, which is about to become inactive
 	RECORDSEQ = (PAGE * 24) + col + (row * 4); // Switch to the seq that corresponds to the key-position on the active page

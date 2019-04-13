@@ -36,6 +36,24 @@ const byte GRIDS[] PROGMEM = {
 
 };
 
+// Matrix of note-buttons that correspond to CHAIN DIRECTION commands:
+// 0 = up-left
+// 1 = up
+// 2 = up-right
+// 3 = left
+// 4 = right
+// 5 = down-left
+// 6 = down
+// 7 = down-right
+// 255 = "clear the chain"
+const byte CHAIN_MATRIX[] PROGMEM = {
+	0,    1,   1,   2,
+	0,  255, 255,   2,
+	3,  255, 255,   4,
+	3,  255, 255,   4,
+	5,  255, 255,   7,
+	5,    6,   6,   7
+};
 
 // Long glyph: logo to display on startup
 const byte LOGO[] PROGMEM = {

@@ -11,60 +11,6 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	-- removed outdated "LOAD MODE" sections from buttons-key.txt and from miscellaneous code-comments
-	-- changed the DURATION-value that is set when toggling from MANUAL-DURATION into REPEAT (1 now, formerly 128)
-
-	. when DURATION is in manual (=129), and REPEAT is enabled, no notes can be played in RECORD MODE...
-	. apply fix: toggling REPEAT should bound DURATION to 128, and setting DURATION to 129 should turn off REPEAT
-		-- done
-		. test it
-			-- it works
-
-	. overhaul the BLINK GUI:
-		. full BLINKs should only occur for the current TRACK when RECORDNOTES is armed
-		. otherwise:
-			. BLINKs should be in the form of a glyph that describes which note-pitch is playing on which track
-				. these glyphs:
-					. should be 4 dots wide, and have a way to encode "this note is a sharp" in one row
-						-- done
-					. should persist for 0.75 seconds, or until overwritten by the next note, whichever is quickest
-						-- ok
-					. should combine with each other: TRACK 1 on left side, TRACK 2 on right side
-						-- ok
-					. should also include other types of MIDI commands, with a unique glyph for each, displayed as a stack of 3 binary values
-						-- done
-					. should be overwritten by any notes/commands the user is playing, whose glyphs should then persist like the glyph from a sequenced note
-						-- done
-					. a single side's GLYPH-display should not disturb the seq-activity-display for the other half of the screen
-						-- done
-		. test the overhauled BLINK-GUI
-			-- many simultaneous bugs
-			. jump in and start fixing things
-				-- fixed misuse of pgm_read_byte_near() where an array was addressed instead of its memory-position
-				-- tweaked BLINK length, which was longer than expected
-				-- fixed a misuse of the "shift" var in getHalfRowSeqVals()
-				-- changed updateGUI() so that ctrl-buttons will override the presence of a BLINK for their respective GUIs
-			. once enough bugs have been culled, identify remaining problems
-				. some seqs don't display glyphs at all. figure out why
-					-- seems to be a bug in how the GLYPH-data is being encoded, rather than the GUI-routines
-					. check all the encoding functions
-						-- it was an encoding function: "glyph" was being assigned wrong, in several ways, in fillBlinkVals()
-				. some seqs erroneously display "full-blinks" for notes. figure out why
-					-- seems to have been an epiphenomenon of the bad glyph-encoding that was fixed in the previous bug-entry
-				. glyphs for pressed-notes will override glyphs for sequenced notes correctly, EXCEPT for when REPEAT is enabled. figure out why
-					-- logic-flow issue. fixed by passing a glyph-flag from getTickNotes() to processRepeat() and back, and then into parseTikContents()
-				. test whether REPEAT-prompted glyphs will also work as expected when RECORDNOTES is armed
-					-- glyphs don't override the "full-blink" when REPEAT is held and RECORDNOTES is armed
-					. fix this
-						-- actually... this UI difference is a good way to distinguish between "RECORDNOTES=armed" and "RECORDNOTES=unarmed"
-						-- so... will hold off on changing it for now, and see how it feels in beta testing
-		. every pitch-GLYPH should also show the pitch's channel
-			. restructure pitch-glyphs to be 4 lines tall, with "sharp" as a corner-dot, and CHANNEL as the bottom row
-				-- done
-				. test it
-					-- the glyph's CHANNEL display had the wrong modulus - 15 instead of 16 - fixed
-					-- hmm... needed some additional glyph-tweaks to improve their sense of silhouette, but it seems decent now
-
 	. test regular-ERASE
 		-- seems to work
 	. test REPEAT-ERASE
@@ -76,11 +22,68 @@ Software:
 	. test ERASE-INVERSE with strange QUANTIZE-QRESET-OFFSET settings
 		--
 
+	. test file-load
+		-- am doing
+		. test sequence-position preservation on load
+			--
+		. test this with oddly-shaped seqs, and seqs that will definitely wrap
+			--
+	. test auto-loading of most recent savefile on startup
+		--
+	. test that the number of the savefile is displayed correctly on startup
+		--
+
+	. add "sequence chain" system:
+		. chain-data for all seqs should be stored in the song's header
+			. change data-format.txt
+				-- done
+			. change #define statements
+				-- done
+			. change all routines that handle header data
+				-- done
+		. each seq's chain-data should be a single byte, with each bit representing a direction (vertical, horizontal, diagonal)
+			. these should be:
+				. stored in the header of every savefile
+					-- ok
+				. saved when toggling from record-mode to play-mode
+					-- ok
+				. kept in local RAM (48 bytes + 1 dummy byte) to prevent lag
+					-- ok
+		. add commands and glyphs for setting a seq's scatter: 000111 for cardinal, 111000 for diagonal
+			. CmdFunc entry
+				-- added
+			. CmdFunc function in func_cmds.ino
+				-- done
+				. command keys:
+					. 0 1 1 2
+					. 0 C C 2
+					. 3 C C 4
+					. 3 C C 4
+					. 5 C C 7
+					. 5 6 6 7
+					. (numbers = "toggle chain for that direction")
+					. (C = "clear this seq's chains")
+					-- implemented
+			. glyph
+				-- needs to be custom-generated in func_gui.ino
+			. routines in func_gui.ino:
+				. top row
+					-- doesn't need it
+				. bottom rows
+					-- done
+		. update sequencing functions:
+			-- am doing
+			. directionality should wrap around the grid, but not be contiguous between pages; each page wraps back onto itself
+				--
+			. if a chain-direction byte contains multiple flipped bits, then this represents a random chance of heading in any of the directions
+				--
+		. wipe SD-card because the data format has been changed
+			--
+
 	. when two notes on the same channel with the same pitch are in the SUSTAIN queue, the nested NOTE-OFF does not behave as expected with most synths
 	. therefore, a change is necessary:
 		. whenever a note is about to be added to the SUSTAIN queue, check whether that chan/pitch combo is in SUSTAIN already.
 		. if so: send a NOTE-OFF for that note, remove its SUSTAIN entry (and shift other entries accordingly), and then and only then insert the new SUSTAIN entry
-
 
 	. bug spotted: DUR-HUMANIZE causes hanging sustains sometimes? figure out why
 		--
@@ -111,20 +114,13 @@ Software:
 		. change KEYTAB array for this
 		. change RECORD-MODE GUI routines for this
 
-	. re-test things
-		. are old notes being knocked out of the sequence by new notes in RECORD-MODE properly?
-		. test manual MIDI-OFF commands:
-			. keystroke-based
-			. recorded
-		. test CC/PC/other advanced MIDI commands
-			. with REPEAT-SWEEP active
-			. with arpeggiation
-		. test file-load
-			. test sequence-position preservation on load
-			. test this with oddly-shaped seqs, and seqs that will definitely wrap
-		. test auto-loading of most recent savefile on startup
-		. test that the number of the savefile is displayed correctly on startup
-			. also for savefiles in file-slots >= 100
+	. are old notes being knocked out of the sequence by new notes in RECORD-MODE properly?
+	. test manual MIDI-OFF commands:
+		. keystroke-based
+		. recorded
+	. test CC/PC/other advanced MIDI commands
+		. with REPEAT-SWEEP active
+		. with arpeggiation
 
 	. re-test all cue-commands
 		. OFF
