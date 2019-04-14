@@ -78,7 +78,15 @@ Software:
 			. if a chain-direction byte contains multiple flipped bits, then this represents a random chance of heading in any of the directions
 				-- implemented
 		. wipe SD-card because the data format has been changed
-			--
+			-- ok
+		. test for basic function
+			-- data corruption bug, somehow
+			. figure out what's going on
+				-- isn't creating any savefiles for some reason
+				. figure out why
+					-- had the first character of a savefile name as "0" instead of "48" (48 is "0" in ASCII)
+					. re-test
+						-- loads up correctly now
 		. test CHAINs
 			--
 		. test whether CUE-OFF-SLICE commands prime a CHAIN-cued seq to start at that SLICE-point, or not

@@ -10,7 +10,7 @@ Steles data-file spec
 	File contents:
 		(393315 total bytes)
 		Header bytes:
-			(98 total bytes)
+			(99 total bytes)
 			0: BPM (32-200)
 			1-2: (reserved)
 			3-50:
