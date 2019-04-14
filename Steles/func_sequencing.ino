@@ -231,6 +231,8 @@ void getTickNotes(byte ctrl, byte s, byte buf[]) {
 // Iterate through all CHAIN-values, before parsing anything else on the tick
 void iterateChains(byte buf[]) {
 
+	if (RECORDMODE) { return; } // If RECORDMODE is active, don't activate the CHAIN system at all
+
 	for (byte i = 0; i < 48; i++) { // For every sequence in the song...
 
 		if (

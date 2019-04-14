@@ -48,10 +48,10 @@ const byte GRIDS[] PROGMEM = {
 // 255 = "clear the chain"
 const byte CHAIN_MATRIX[] PROGMEM = {
 	0,    1,   1,   2,
-	0,  255, 255,   2,
 	3,  255, 255,   4,
 	3,  255, 255,   4,
-	5,  255, 255,   7,
+	3,  255, 255,   4,
+	3,  255, 255,   4,
 	5,    6,   6,   7
 };
 

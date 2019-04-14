@@ -26,6 +26,7 @@ void chainCmd(byte col, byte row) {
 	} else { // Else, if this is a CHAIN command...
 		CHAIN[RECORDSEQ] ^= 1 << cmd; // Toggle the bit that corresponds to a given CHAIN-direction, in the seq's CHAIN-entry
 	}
+	TO_UPDATE |= 252; // Flag the bottom 6 rows for LED updates
 }
 
 // Parse a CHAN press

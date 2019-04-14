@@ -87,7 +87,17 @@ Software:
 					-- had the first character of a savefile name as "0" instead of "48" (48 is "0" in ASCII)
 					. re-test
 						-- loads up correctly now
-		. test CHAINs
+		. test CHAIN GUI
+			-- seems ok
+			-- however... the button UI is awkward
+			. fix the UI-buttonglyph
+				-- fixed: diagonal CHAINs are only toggled by the corner-buttons now
+			-- also realized I'd missed a TO_UPDATE call in chainCmd(). fixed it
+		. test CHAIN functionality
+			-- transfers activity over to another seq even during RECORDMODE. this causes a horrible state-bug
+			. fix it
+				-- fixed afaict
+		. test CHAINs in PLAY MODE
 			--
 		. test whether CUE-OFF-SLICE commands prime a CHAIN-cued seq to start at that SLICE-point, or not
 			--
