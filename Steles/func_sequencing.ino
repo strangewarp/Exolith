@@ -42,17 +42,30 @@ void resetAllTiming() {
 	sendClockReset(); // Send a MIDI-CLOCK reset command to MIDI-OUT
 }
 
+// Flush the MIDI-OUT buffer by sending all of its MIDI commands
+void flushMIDI() {
+	if (MOUT_COUNT) { // If there are any commands in the MIDI-command buffer...
+		byte m3 = MOUT_COUNT * 3; // Get the number of outgoing bytes
+		for (byte i = 0; i < m3; i += 3) { // For every command in the MIDI-OUT queue...
+			Serial.write(MOUT + i, 2 + ((MOUT[i] % 224) <= 191)); // Send that command's number of bytes
+		}
+		memset(MOUT, 0, m3); // Clear the MOUT array of now-obsolete data
+		MOUT_COUNT = 0; // Clear the MIDI buffer's command-counter
+	}
+}
+
 // Compare a seq's CUE-commands to the global CUE-point, and parse them if the timing is correct
 void parseCues(byte s, byte size) {
 
-	if (CMD[s]) { // If the sequence has any cued commands...
+	if (CMD[s]) { // If the seq has any cued commands...
 
 		if (CUR32 == (CMD[s] & B11100000)) { // If the global 32nd-note corresponds to the seq's cue-point...
 
 			// Enable or disable the sequence's playing-bit
 			STATS[s] = (STATS[s] & 63) | ((CMD[s] & 2) << 6);
 
-			// Set the sequence's internal tick to a position based on the incoming SLICE bits
+			// Set the sequence's internal tick to a position based on the incoming SLICE bits.
+			// NOTE: For cued OFF commands, a SLICE value can still be stored, but otherwise the seq's position will be set to 0
 			POS[s] = word(size) * (CMD[s] & B00011100);
 
 			CMD[s] = 0; // Clear the sequence's CUED-COMMANDS byte
@@ -61,7 +74,7 @@ void parseCues(byte s, byte size) {
 			return; // Exit the function without flagging any TO_UPDATE rows
 		}
 
-		TO_UPDATE |= 4 << ((s % 24) >> 2); // Flag the sequence's corresponding LED-row for an update
+		flagSeqRow(s); // Flag the sequence's corresponding LED-row for an update
 
 	}
 
@@ -215,12 +228,53 @@ void getTickNotes(byte ctrl, byte s, byte buf[]) {
 
 }
 
-// Advance global tick, and iterate through all currently-active sequences
-void iterateAll() {
+// Iterate through all CHAIN-values, before parsing anything else on the tick
+void iterateChains(byte buf[]) {
+
+	for (byte i = 0; i < 48; i++) { // For every sequence in the song...
+
+		if (
+			CHAIN[i] // If this seq has any CHAIN DIRECTIONs set...
+			&& (STATS[i] & 128) // And it is currently playing...
+			&& !POS[i] // And it just looped back around to its first tick, on the previous iteration...
+		) {
+
+			// Strip away the seq's "ON" flag.
+			// NOTE: We're leaving its CMD the same, because CHAINs shouldn't override their parent-seqs' cued-commands.
+			STATS[i] &= B01111111;
+
+			byte dircount = 0; // Will count the number of CHAIN-directions the seq has
+			for (byte j = 0; j < 8; j++) { // For every possible CHAIN-direction...
+				if (CHAIN[i] & (1 << j)) { // If that direction is filled in this seq's CHAIN entry...
+					buf[dircount] = j; // Add the CHAIN entry to the buffer
+					dircount++; // Increase the var that tracks the number of CHAIN-directions
+				}
+			}
+
+			// Get a random chain-direction, if the seq has multiple possible directions to choose from
+			byte choice = buf[byte(GLOBALRAND & 255) % dircount];
+
+			// Turn the chain-direction into the key of the sequence that sits in that direction, wrapping around the borders of the given PAGE
+			choice = (pgm_read_byte_near(CHAIN_OFFSET + choice) % 24) + ((i > 23) * 24);
+
+			// Set the ON-flag for the seq with the chosen directional relation.
+			// NOTE: we don't need to change the target-seq's POS, because it will have been set to 0 by the seq's last OFF or CUE-OFF command;
+			//       or it will have been set to the desired slice-value by a CUE-OFF-SLICE.
+			STATS[choice] |= B1000000;
+
+			flagSeqRow(i); // Flag the LED-row of the base seq, and the LED-row of its chain seq, for an update
+			flagSeqRow(choice); // ^
+
+		}
+
+	}
+
+}
+
+// Iterate all seqs, processing their CUEs, and processing any commands within their current ticks
+void iterateSeqs(byte buf[]) {
 
 	byte ctrl = BUTTONS & B00111111; // Get the control-row buttons' activity
-
-	byte buf[9]; // Buffer for reading note-events from the datafile
 
 	for (byte i = 47; i != 255; i--) { // For every sequence in the song, in reverse order...
 
@@ -236,19 +290,22 @@ void iterateAll() {
 		// Get the notes from this tick in a given seq, and add them to the MIDI-OUT buffer
 		getTickNotes(ctrl, i, buf);
 
-		// Increase the seq's 32nd-note position by one increment, wrapping it around its top limit
-		POS[i] = (POS[i] + 1) % (word(size) * 32);
+		POS[i] = (POS[i] + 1) % (word(size) * 32); // Increase the seq's 32nd-note position by one increment, wrapping it around its top limit
 
 	}
 
-	if (MOUT_COUNT) { // If there are any commands in the MIDI-command buffer...
-		byte m3 = MOUT_COUNT * 3; // Get the number of outgoing bytes
-		for (byte i = 0; i < m3; i += 3) { // For every command in the MIDI-OUT queue...
-			Serial.write(MOUT + i, 2 + ((MOUT[i] % 224) <= 191)); // Send that command's number of bytes
-		}
-		memset(MOUT, 0, m3); // Clear the MOUT array of now-obsolete data
-		MOUT_COUNT = 0; // Clear the MIDI buffer's command-counter
-	}
+}
+
+// Advance global tick, and iterate through all currently-active sequences
+void iterateAll() {
+
+	byte buf[9]; // Buffer for: 1. collecting chain-directions, and 2. reading note-events from the datafile. (not at the same time)
+
+	iterateChains(buf); // Iterate through all CHAIN-values, before parsing anything else on the tick
+
+	iterateSeqs(buf); // Iterate all seqs, processing their CUEs, and processing any commands within their current ticks
+
+	flushMIDI(); // Flush the MIDI-OUT buffer by sending all of its MIDI commands
 
 	processSustains(); // Process one 32nd-note's worth of duration for all sustained notes
 

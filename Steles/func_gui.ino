@@ -26,6 +26,11 @@ void maxInitialize() {
 
 }
 
+// Flag the sequence's corresponding LED-row for an update
+void flagSeqRow(byte s) {
+	TO_UPDATE |= 4 << ((s % 24) >> 2);
+}
+
 // Update the LED-data of a given row on the MAX72** chip
 void sendRow(volatile byte row, volatile byte d) {
 	sendMaxCmd(row + 1, d); // Send the row's opcode and data byte

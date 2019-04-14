@@ -72,12 +72,16 @@ Software:
 				. bottom rows
 					-- done
 		. update sequencing functions:
-			-- am doing
+			-- am doing - done
 			. directionality should wrap around the grid, but not be contiguous between pages; each page wraps back onto itself
-				--
+				-- implemented
 			. if a chain-direction byte contains multiple flipped bits, then this represents a random chance of heading in any of the directions
-				--
+				-- implemented
 		. wipe SD-card because the data format has been changed
+			--
+		. test CHAINs
+			--
+		. test whether CUE-OFF-SLICE commands prime a CHAIN-cued seq to start at that SLICE-point, or not
 			--
 
 	. when two notes on the same channel with the same pitch are in the SUSTAIN queue, the nested NOTE-OFF does not behave as expected with most synths

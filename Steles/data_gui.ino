@@ -55,6 +55,19 @@ const byte CHAIN_MATRIX[] PROGMEM = {
 	5,    6,   6,   7
 };
 
+// Seq-position offsets that correspond to each CHAIN-DIRECTION.
+// These will be processed in the form of: ((seq + offset) % 24) + ((seq > 23) * 24)
+const byte CHAIN_OFFSET[] PROGMEM = {
+	19, // Up-left
+	20, // Up
+	21, // Up-right
+	23, // Left
+	1,  // Right
+	3,  // Down-left
+	4,  // Down
+	5   // Down-right
+};
+
 // Long glyph: logo to display on startup
 const byte LOGO[] PROGMEM = {
 	B01111110, B01111110, B01000110, B01111110,
