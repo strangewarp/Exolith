@@ -279,10 +279,15 @@ void iterateChains(byte buf[]) {
 			// and then get the target-seq's numerical key from that chain-direction
 			byte target = chainDirToSeq(buf[byte(GLOBALRAND & 255) % dircount], i);
 
-			// Set the ON flag, and the JUST CHAINED flag, for the target-seq.
-			// NOTE: We don't need to change the target-seq's POS,
-			//       because it will have been set to 0 by the seq's most-recent OFF or CUE-OFF command, or by savefile-loading;
-			//       or it will have been set to the desired slice-value by a CUE-OFF-SLICE command.
+			if (STATS[target] & 128) { // If the target-seq is already playing...
+				POS[target] = 0; // Reset the target-seq's position
+			}
+			// NOTE: We must not change the target-seq's POS in any case where the seq was inactive,
+			//       because it will have either been set to 0 by the seq's most-recent OFF or CUE-OFF command, or by savefile-loading;
+			//       or it will have been set to the desired slice-value by a CUE-OFF-SLICE command,
+			//       and this lattermost case would be wiped out by simply setting the seq's POS to 0 in every case.
+
+			// Set the ON flag, and the JUST CHAINED flag, for the target-seq
 			STATS[target] |= B11000000;
 
 			flagSeqRow(i); // Flag the LED-row of the base seq, and the LED-row of its chain seq, for an update

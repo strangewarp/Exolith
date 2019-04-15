@@ -118,7 +118,9 @@ Software:
 				. DIDTOGGLE is no longer necessary, if every seq's CHAIN IGNORE flag is set on mode-toggle
 					-- made the change
 		. if CHAIN targets a seq that is already playing, then that seq's position should be set to 0
-			-- 
+			-- done
+			. re-test it
+				-- 
 		. test whether CUE-OFF-SLICE commands prime a CHAIN-cued seq to start at that SLICE-point, or not
 			--
 
