@@ -108,13 +108,17 @@ Software:
 				. test it
 					-- still doesn't work
 					. figure out why
-						-- 
+						-- I typed a binary value with 7 bits instead of 8. fixed it
+						. test again
+							-- it works
 			. add a bit to each seq's STATS byte that tracks whether it was just now toggled by the CHAIN system
 				-- am doing
 				. change everything that interacts with the STATS byte so that it compensates for this
 					-- done
 				. DIDTOGGLE is no longer necessary, if every seq's CHAIN IGNORE flag is set on mode-toggle
 					-- made the change
+		. if CHAIN targets a seq that is already playing, then that seq's position should be set to 0
+			-- 
 		. test whether CUE-OFF-SLICE commands prime a CHAIN-cued seq to start at that SLICE-point, or not
 			--
 

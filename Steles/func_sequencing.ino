@@ -262,7 +262,7 @@ void iterateChains(byte buf[]) {
 			&& ((STATS[i] & 192) == 128) // And it is currently playing, but hasn't been flagged by the CHAIN system on this tick...
 		) {
 
-			// Strip away the seq's "ON" flag, and its "CHAIN IGNORE" flag (though its CHAIN IGNORE flag should already be empty).
+			// Strip away this seq's "ON" flag, and its "CHAIN IGNORE" flag (although its CHAIN IGNORE flag should already be empty).
 			// NOTE: We're leaving its CMD the same, because CHAINs shouldn't override their parent-seqs' cued-commands.
 			STATS[i] &= B00111111;
 
@@ -283,7 +283,7 @@ void iterateChains(byte buf[]) {
 			// NOTE: We don't need to change the target-seq's POS,
 			//       because it will have been set to 0 by the seq's most-recent OFF or CUE-OFF command, or by savefile-loading;
 			//       or it will have been set to the desired slice-value by a CUE-OFF-SLICE command.
-			STATS[target] |= B1100000;
+			STATS[target] |= B11000000;
 
 			flagSeqRow(i); // Flag the LED-row of the base seq, and the LED-row of its chain seq, for an update
 			flagSeqRow(target); // ^
