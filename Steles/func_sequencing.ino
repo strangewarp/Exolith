@@ -252,7 +252,7 @@ byte chainDirToSeq(byte dir, byte parent) {
 // Iterate through all CHAIN-values, before parsing anything else on the tick
 void iterateChains(byte buf[]) {
 
-	if (RECORDMODE || DIDTOGGLE) { return; } // If RECORDMODE is active, or PLAY-MODE was just toggled, don't activate the CHAIN system at all
+	if (RECORDMODE) { return; } // If RECORDMODE is active, don't activate the CHAIN system at all
 
 	for (byte i = 0; i < 48; i++) { // For every sequence in the song...
 
