@@ -100,9 +100,13 @@ Software:
 		. test CHAINs in PLAY MODE
 			. when toggling back from RECORDMODE, a seq with a CHAIN will automatically unset itself when the tempo is reset.
 				. fix this with a "just left recordmode" flag or something
-					--
+					-- done
+					. test it
+						--
 			. when a CHAIN occurs, the CHAINed seq doesn't activate properly. figure out why
-				-- 
+				-- was generating the wrong CHAIN-target-value in a ridiculously bad way. applied various fixes
+				. test it
+					--
 		. test whether CUE-OFF-SLICE commands prime a CHAIN-cued seq to start at that SLICE-point, or not
 			--
 

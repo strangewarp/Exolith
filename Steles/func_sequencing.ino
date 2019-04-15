@@ -228,10 +228,31 @@ void getTickNotes(byte ctrl, byte s, byte buf[]) {
 
 }
 
+// Translate a CHAIN-direction into the key for the target-sequence that sits in that direction,
+// also compensating for all vertical and horizontal wrapping, and keeping on the same PAGE as the parent-seq
+byte chainDirToSeq(byte dir, byte parent) {
+
+	// Get the offset that should be applied for a given CHAIN-direction, and add the parent-seq's position to this value
+	dir = parent + pgm_read_byte_near(CHAIN_OFFSET + dir);
+
+	byte pcol = parent % 4; // Get the parent-seq's button-column
+	byte dcol = dir % 4; // ^ Same, for target-seq
+	if ((pcol == 3) && (!dcol)) { // If this would wrap around the right side, compensate so that it remains centered on the same row
+		dir -= 4;
+	} else if ((!pcol) && (dcol == 3)) { // ^ Same, but for left side
+		dir += 4;
+	}
+
+	// Wrap the target-seq's location onto a PAGE-sized numerical space,
+	// and put it onto either the first or second PAGE depending on the parent-seq's PAGE-location
+	return (dir % 24) + ((parent > 23) * 24);
+
+}
+
 // Iterate through all CHAIN-values, before parsing anything else on the tick
 void iterateChains(byte buf[]) {
 
-	if (RECORDMODE) { return; } // If RECORDMODE is active, don't activate the CHAIN system at all
+	if (RECORDMODE || DIDTOGGLE) { return; } // If RECORDMODE is active, or PLAY-MODE was just toggled, don't activate the CHAIN system at all
 
 	for (byte i = 0; i < 48; i++) { // For every sequence in the song...
 
@@ -246,6 +267,7 @@ void iterateChains(byte buf[]) {
 			STATS[i] &= B01111111;
 
 			byte dircount = 0; // Will count the number of CHAIN-directions the seq has
+
 			for (byte j = 0; j < 8; j++) { // For every possible CHAIN-direction...
 				if (CHAIN[i] & (1 << j)) { // If that direction is filled in this seq's CHAIN entry...
 					buf[dircount] = j; // Add the CHAIN entry to the buffer
@@ -253,19 +275,18 @@ void iterateChains(byte buf[]) {
 				}
 			}
 
-			// Get a random chain-direction, if the seq has multiple possible directions to choose from
-			byte choice = buf[byte(GLOBALRAND & 255) % dircount];
+			// Get a random chain-direction, if the seq has multiple possible directions to choose from,
+			// and then get the target-seq's numerical key from that chain-direction
+			byte target = chainDirToSeq(buf[byte(GLOBALRAND & 255) % dircount], i);
 
-			// Turn the chain-direction into the key of the sequence that sits in that direction, wrapping around the borders of the given PAGE
-			choice = (pgm_read_byte_near(CHAIN_OFFSET + choice) % 24) + ((i > 23) * 24);
-
-			// Set the ON-flag for the seq with the chosen directional relation.
-			// NOTE: we don't need to change the target-seq's POS, because it will have been set to 0 by the seq's last OFF or CUE-OFF command;
-			//       or it will have been set to the desired slice-value by a CUE-OFF-SLICE.
-			STATS[choice] |= B1000000;
+			// Set the ON-flag for the target-seq.
+			// NOTE: We don't need to change the target-seq's POS,
+			//       because it will have been set to 0 by the seq's most-recent OFF or CUE-OFF command, or by savefile-loading;
+			//       or it will have been set to the desired slice-value by a CUE-OFF-SLICE command.
+			STATS[target] |= B1000000;
 
 			flagSeqRow(i); // Flag the LED-row of the base seq, and the LED-row of its chain seq, for an update
-			flagSeqRow(choice); // ^
+			flagSeqRow(target); // ^
 
 		}
 
@@ -310,5 +331,9 @@ void iterateAll() {
 	flushMIDI(); // Flush the MIDI-OUT buffer by sending all of its MIDI commands
 
 	processSustains(); // Process one 32nd-note's worth of duration for all sustained notes
+
+	// If PLAY-MODE was toggled before the start of this iteration-step,
+	// then disable DIDTOGGLE only after the iteration is done, so CHAINs won't trigger prematurely
+	DIDTOGGLE = 0;
 
 }

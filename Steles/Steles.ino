@@ -95,6 +95,7 @@ float TICKSIZE = 31250.0; // Current tick-size, in microseconds
 byte RECORDMODE = 0; // Tracks whether RECORD MODE is active
 byte RECORDSEQ = 0; // Sequence currently being recorded into
 byte RECORDNOTES = 0; // Tracks whether notes are currently being recorded into a sequence
+byte DIDTOGGLE = 0; // Tracks whether the sequencer was just toggled into PLAY MODE from RECORD MODE, so that CHAINs will work correctly
 byte TRACK = 0; // Current track within the active sequence to edit with RECORDMODE actions
 byte REPEAT = 0; // Toggles whether held-down note-buttons should repeat a NOTE-ON every QUANTIZE ticks, in RECORD-MODE
 

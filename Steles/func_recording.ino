@@ -14,6 +14,7 @@ void toggleRecordMode() {
 	}
 	RECORDNOTES = 0; // Disarm note-recording, regardless of which way the mode is being toggled
 	RECORDMODE ^= 1; // Toggle or untoggle RECORD-MODE
+	DIDTOGGLE = !RECORDMODE; // If PLAY-MODE has just been toggled, set the DIDTOGGLE flag, so that CHAINs will work correctly
 	TO_UPDATE |= 255; // Flag all LED-rows for updating
 }
 
