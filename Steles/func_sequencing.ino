@@ -6,11 +6,11 @@ void resetAllSeqs() {
 	memset(POS, 0, 96);
 	memset(SCATTER, 0, 48);
 	for (byte i = 0; i < 48; i++) {
-		STATS[i] &= 63; // Reset all seqs' PLAYING flags
+		STATS[i] &= 63; // Reset all seqs' PLAYING and CHAIN IGNORE flags
 	}
 }
 
-// Reset a seq's cued-commands, playing-flag, and tick-position
+// Reset a seq's cued-commands, playing-flag, chain-ignore flag, and tick-position
 void resetSeq(byte s) {
 	CMD[s] = 0;
 	POS[s] = 0;
@@ -62,7 +62,7 @@ void parseCues(byte s, byte size) {
 		if (CUR32 == (CMD[s] & B11100000)) { // If the global 32nd-note corresponds to the seq's cue-point...
 
 			// Enable or disable the sequence's playing-bit
-			STATS[s] = (STATS[s] & 63) | ((CMD[s] & 2) << 6);
+			STATS[s] = (STATS[s] & 127) | ((CMD[s] & 2) << 6);
 
 			// Set the sequence's internal tick to a position based on the incoming SLICE bits.
 			// NOTE: For cued OFF commands, a SLICE value can still be stored, but otherwise the seq's position will be set to 0
@@ -258,13 +258,13 @@ void iterateChains(byte buf[]) {
 
 		if (
 			CHAIN[i] // If this seq has any CHAIN DIRECTIONs set...
-			&& (STATS[i] & 128) // And it is currently playing...
-			&& !POS[i] // And it just looped back around to its first tick, on the previous iteration...
+			&& (!POS[i]) // And it just looped back around to its first tick, on the previous iteration...
+			&& ((STATS[i] & 192) == 128) // And it is currently playing, but hasn't been flagged by the CHAIN system on this tick...
 		) {
 
-			// Strip away the seq's "ON" flag.
+			// Strip away the seq's "ON" flag, and its "CHAIN IGNORE" flag (though its CHAIN IGNORE flag should already be empty).
 			// NOTE: We're leaving its CMD the same, because CHAINs shouldn't override their parent-seqs' cued-commands.
-			STATS[i] &= B01111111;
+			STATS[i] &= B00111111;
 
 			byte dircount = 0; // Will count the number of CHAIN-directions the seq has
 
@@ -279,11 +279,11 @@ void iterateChains(byte buf[]) {
 			// and then get the target-seq's numerical key from that chain-direction
 			byte target = chainDirToSeq(buf[byte(GLOBALRAND & 255) % dircount], i);
 
-			// Set the ON-flag for the target-seq.
+			// Set the ON flag, and the JUST CHAINED flag, for the target-seq.
 			// NOTE: We don't need to change the target-seq's POS,
 			//       because it will have been set to 0 by the seq's most-recent OFF or CUE-OFF command, or by savefile-loading;
 			//       or it will have been set to the desired slice-value by a CUE-OFF-SLICE command.
-			STATS[target] |= B1000000;
+			STATS[target] |= B1100000;
 
 			flagSeqRow(i); // Flag the LED-row of the base seq, and the LED-row of its chain seq, for an update
 			flagSeqRow(target); // ^
@@ -305,8 +305,7 @@ void iterateSeqs(byte buf[]) {
 
 		parseCues(i, size); // Parse a sequence's cued commands, if any
 
-		// If the seq isn't currently playing, go to the next seq's iteration-routine
-		if (!(STATS[i] & 128)) { continue; }
+		if (!(STATS[i] & 128)) { continue; } // If the seq isn't currently playing, go to the next seq's iteration-routine
 
 		memset(buf, 0, 8); // Clear the buffer of junk data
 
@@ -314,6 +313,10 @@ void iterateSeqs(byte buf[]) {
 		getTickNotes(ctrl, i, buf);
 
 		POS[i] = (POS[i] + 1) % (word(size) * 32); // Increase the seq's 32nd-note position by one increment, wrapping it around its top limit
+
+		if (STATS[i] & 64) { // If the seq was flagged as JUST CHAINED...
+			STATS[i] &= B10111111; // Remove that flag, because its position has now been moved forward
+		}
 
 	}
 
@@ -331,9 +334,5 @@ void iterateAll() {
 	flushMIDI(); // Flush the MIDI-OUT buffer by sending all of its MIDI commands
 
 	processSustains(); // Process one 32nd-note's worth of duration for all sustained notes
-
-	// If PLAY-MODE was toggled before the start of this iteration-step,
-	// then disable DIDTOGGLE only after the iteration is done, so CHAINs won't trigger prematurely
-	DIDTOGGLE = 0;
 
 }

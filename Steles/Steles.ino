@@ -95,7 +95,6 @@ float TICKSIZE = 31250.0; // Current tick-size, in microseconds
 byte RECORDMODE = 0; // Tracks whether RECORD MODE is active
 byte RECORDSEQ = 0; // Sequence currently being recorded into
 byte RECORDNOTES = 0; // Tracks whether notes are currently being recorded into a sequence
-byte DIDTOGGLE = 0; // Tracks whether the sequencer was just toggled into PLAY MODE from RECORD MODE, so that CHAINs will work correctly
 byte TRACK = 0; // Current track within the active sequence to edit with RECORDMODE actions
 byte REPEAT = 0; // Toggles whether held-down note-buttons should repeat a NOTE-ON every QUANTIZE ticks, in RECORD-MODE
 
@@ -162,7 +161,7 @@ byte CMD[49];
 
 // Holds 48 seqs' sizes and activity-flags
 // bits 0-5: 1, 2, 4, 8, 16, 32 (= size, in whole-notes, where each quarter-note is a "beat") (range limits: 1 to 32)
-// bit 6: reserved
+// bit 6: "this seq has been toggled by the CHAIN system at the beginning of this tick"
 // bit 7: on/off flag
 byte STATS[49];
 

@@ -2,7 +2,9 @@
 
 // Toggle into, or out of, RECORD-MODE
 void toggleRecordMode() {
+
 	resetAllTiming(); // Reset the timing of all seqs, and the global cue-point
+
 	if (RECORDMODE) { // If RECORDMODE is about to be untoggled...
 		writePrefs(); // Write the current relevant global vars into PRF.DAT
 		updateSeqSize(); // Update the size-data of all sequences in the savefile
@@ -12,10 +14,18 @@ void toggleRecordMode() {
 		SCATTER[RECORDSEQ] = 0; // Unset the most-recently-touched seq's SCATTER values before starting to record
 		STATS[RECORDSEQ] |= 128; // Set the sequence to active, if it isn't already
 	}
+
 	RECORDNOTES = 0; // Disarm note-recording, regardless of which way the mode is being toggled
 	RECORDMODE ^= 1; // Toggle or untoggle RECORD-MODE
-	DIDTOGGLE = !RECORDMODE; // If PLAY-MODE has just been toggled, set the DIDTOGGLE flag, so that CHAINs will work correctly
+
+	if (!RECORDMODE) { // If PLAY-MODE was just toggled...
+		for (byte i = 0; i < 48; i++) { // For every seq...
+			STATS[i] |= 64; // Set the seq's CHAIN IGNORE flag, so that CHAINs won't trigger on the first tick after the mode-toggle
+		}
+	}
+
 	TO_UPDATE |= 255; // Flag all LED-rows for updating
+
 }
 
 // Write a given series of commands into a given point in the savefile,

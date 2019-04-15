@@ -219,7 +219,7 @@ void loadSong(byte slot) {
 	file.read(sbuf, 48); // Read every seq's new size
 	for (byte i = 0; i < 48; i++) { // For each sequence...
 		POS[i] %= sbuf[i] * 16; // Wrap each seq's previous position by its new length
-		STATS[i] = (STATS[i] & 128) | sbuf[i]; // Combine the new size-value with the seq's current on/off byte
+		STATS[i] = (STATS[i] & 192) | sbuf[i]; // Combine the new size-value with the seq's current ON/OFF and CHAIN IGNORE flags
 	}
 	file.seekSet(FILE_CHAIN_START); // Go to the file-header's CHAIN block
 	file.read(CHAIN, 48); // Read every seq's CHAIN-data

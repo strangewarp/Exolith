@@ -173,7 +173,7 @@ void rSweepCmd(byte col, byte row) {
 void sizeCmd(byte col, byte row) {
 	char change = toChange(col, row); // Convert a column and row into a CHANGE value
 	// Get the new value for the currently-recording-seq's size, and modify the seq's stats
-	STATS[RECORDSEQ] = 128 | applyChange(STATS[RECORDSEQ] & 63, change, 1, 32);
+	STATS[RECORDSEQ] = (STATS[RECORDSEQ] & 192) | applyChange(STATS[RECORDSEQ] & 63, change, 1, 32);
 	resetAllTiming(); // Reset the timing of all seqs and the global cue-point
 	TO_UPDATE |= 3; // Flag top two rows for updating
 }

@@ -102,11 +102,19 @@ Software:
 				. fix this with a "just left recordmode" flag or something
 					-- done
 					. test it
-						--
+						-- seems fixed
 			. when a CHAIN occurs, the CHAINed seq doesn't activate properly. figure out why
 				-- was generating the wrong CHAIN-target-value in a ridiculously bad way. applied various fixes
 				. test it
-					--
+					-- still doesn't work
+					. figure out why
+						-- 
+			. add a bit to each seq's STATS byte that tracks whether it was just now toggled by the CHAIN system
+				-- am doing
+				. change everything that interacts with the STATS byte so that it compensates for this
+					-- done
+				. DIDTOGGLE is no longer necessary, if every seq's CHAIN IGNORE flag is set on mode-toggle
+					-- made the change
 		. test whether CUE-OFF-SLICE commands prime a CHAIN-cued seq to start at that SLICE-point, or not
 			--
 
