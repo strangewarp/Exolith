@@ -120,9 +120,9 @@ Software:
 		. if CHAIN targets a seq that is already playing, then that seq's position should be set to 0
 			-- done
 			. re-test it with filled seqs
-				--
+				-- 
 		. CHAINs should be ignored in RECORDMODE, to prevent any of them from cascading into the RECORDSEQ and causing unexpected behavior
-			-- 
+			-- already did this, but forgot I had done it
 		. test whether CUE-OFF-SLICE commands prime a CHAIN-cued seq to start at that SLICE-point, or not
 			--
 
