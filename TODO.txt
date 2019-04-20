@@ -11,6 +11,8 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
+	-- forgot to add a dummy-glyph for CHAIN DIRECTION in data_gui.ino. fixed now
+
 	. test regular-ERASE
 		-- seems to work
 	. test REPEAT-ERASE
@@ -120,11 +122,15 @@ Software:
 		. if CHAIN targets a seq that is already playing, then that seq's position should be set to 0
 			-- done
 			. re-test it with filled seqs
-				-- 
+				--
 		. CHAINs should be ignored in RECORDMODE, to prevent any of them from cascading into the RECORDSEQ and causing unexpected behavior
 			-- already did this, but forgot I had done it
 		. test whether CUE-OFF-SLICE commands prime a CHAIN-cued seq to start at that SLICE-point, or not
 			--
+		. do CHAINs wrap around in every direction correctly?
+			--
+			. on PAGE 2 as well?
+				--
 
 	. when two notes on the same channel with the same pitch are in the SUSTAIN queue, the nested NOTE-OFF does not behave as expected with most synths
 	. therefore, a change is necessary:
@@ -241,6 +247,9 @@ Software:
 Hardware:
 
 	==== HARDWARE BETA THRESHOLD ATTAINED ====
+
+	. slightly widen pin-holes for all buttons, right now they are too tight
+		. NOTE: need to double-check whether I already did this and forgot
 
 	. make sure that you order the ATMEGA chips with the proper bootloader fuse config (along with the firmware), or else they will be 8 times too slow and incapable of sending MIDI
 		. buy a test-batch that are preprogrammed in such a way, and slot one into a Tine beta unit for testing
