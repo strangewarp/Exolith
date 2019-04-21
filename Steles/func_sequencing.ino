@@ -282,13 +282,16 @@ void iterateChains(byte buf[]) {
 			if (STATS[target] & 128) { // If the target-seq is already playing...
 				POS[target] = 0; // Reset the target-seq's position
 			}
-			// NOTE: We must not change the target-seq's POS in any case where the seq was inactive,
-			//       because it will have either been set to 0 by the seq's most-recent OFF or CUE-OFF command, or by savefile-loading;
-			//       or it will have been set to the desired slice-value by a CUE-OFF-SLICE command,
-			//       and this lattermost case would be wiped out by simply setting the seq's POS to 0 in every case.
+			// NOTE: We don't change the target-seq's POS in any case where the seq was inactive,
+			//       because it will have already been set to 0 by the seq's most-recent OFF or CUE-OFF command, or by savefile-loading.
 
 			// Set the ON flag, and the JUST CHAINED flag, for the target-seq
 			STATS[target] |= B11000000;
+
+			if (CMD[i] & 1) { // If the parent-seq has a cued OFF-command of any type...
+				CMD[target] = CMD[i]; // Forward that command into the target-seq
+				CMD[i] = 0; // Remove that command from the parent-seq
+			}
 
 			flagSeqRow(i); // Flag the LED-row of the base seq, and the LED-row of its chain seq, for an update
 			flagSeqRow(target); // ^

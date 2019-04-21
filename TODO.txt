@@ -122,15 +122,21 @@ Software:
 		. if CHAIN targets a seq that is already playing, then that seq's position should be set to 0
 			-- done
 			. re-test it with filled seqs
-				--
+				-- seems to work
+				. UX concern: any CHAIN-parent-seq with an active CUE-OFF should pass that CUE-OFF onto its subsequent CHAIN-target-seq
+					-- made the change. tested and seems to work
 		. CHAINs should be ignored in RECORDMODE, to prevent any of them from cascading into the RECORDSEQ and causing unexpected behavior
 			-- already did this, but forgot I had done it
 		. test whether CUE-OFF-SLICE commands prime a CHAIN-cued seq to start at that SLICE-point, or not
-			--
+			-- no
+			. does this matter?
+				-- not really. except that there's a comment somewhere that claims this would work
+				. fix the comment
+					-- done
 		. do CHAINs wrap around in every direction correctly?
-			--
+			-- yes
 			. on PAGE 2 as well?
-				--
+				-- yes
 
 	. when two notes on the same channel with the same pitch are in the SUSTAIN queue, the nested NOTE-OFF does not behave as expected with most synths
 	. therefore, a change is necessary:
