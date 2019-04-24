@@ -214,11 +214,16 @@ void setup() {
 	memset(GLYPHL, 0, 4);
 	memset(GLYPHR, 0, 4);
 
-	// Set all the keypad's row-pins to INPUT_PULLUP mode, and all its column-pins to OUTPUT mode
-	DDRC = 0;
-	PORTC = 255;
-	DDRD |= B00011100;
-	DDRB |= B00000011;
+	// Set all the keypad's row-pins to INPUT_PULLUP mode, and all its column-pins to OUTPUT mode:
+	// B bits 0, 1 = OUTPUT
+	// C bits 0, 1, 2 = OUTPUT
+	// C bits 3, 4, 5 = INPUT_PULLUP
+	// D bits 2, 3, 4 = INPUT_PULLUP
+	DDRB |= B00000011; // Set B(0, 1) as outputs
+	DDRC = B00000111; // Set C(0, 1, 2) as outputs, and C(3, 4, 5) as inputs. C(6, 7) are unused
+	DDRD &= B11100011; // Set D(2, 3, 4) as inputs
+	PORTC |= B00111000; // Set pullup resistors for input-bits C(3, 4, 5)
+	PORTD |= B00011100; // Set pullup resistors for input-bits D(2, 3, 4)
 
 	maxInitialize(); // Initialize the MAX72** chip's LED system
 

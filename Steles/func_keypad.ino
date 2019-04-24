@@ -1,12 +1,12 @@
 
 
 // Scan all buttons in a given column, checking for changes in state and then reacting to any that are found
-void scanColumn(byte col) {
+void scanColumn(byte col, byte rb[]) {
 
 	for (byte row = 0; row < 6; row++) { // For each keypad row...
 
 		byte bpos = (col * 6) + row; // Get the button's bit-position for the BUTTONS data
-		byte bstate = !(PINC & (32 >> row)); // Get the pin's input-state from bank C (low = ON; high = OFF)
+		byte bstate = !(((row <= 2) ? PIND : PINC) & rb[row]); // Get the pin's input-state (low = ON; high = OFF)
 
 		if (bstate == ((BUTTONS >> bpos) & 1)) { continue; } // If the button's state hasn't changed, skip to the next button
 
@@ -30,24 +30,32 @@ void scanKeypad() {
 
 	KEYELAPSED = 0.0; // Reset the keypad-check timer
 
-	byte cr[6] = {0, 0, 0, 1, 1}; // Temp var: port-registers for column-pins: 2 = 0; 3 = 0; 4 = 0; 8 = 1; 9 = 1
 	byte cb[6] = { // Temp var: port-bit-locations for column-pins:
-		B00000100, // col 0: pin 2 = bit 2
-		B00001000, // col 1: pin 3 = bit 3
-		B00010000, // col 2: pin 4 = bit 4
-		B00000001, // col 3: pin 8 = bit 0
-		B00000010  // col 4: pin 9 = bit 1
+		B00000100, // col 0: pin 25 = bit 2
+		B00000010, // col 1: pin 24 = bit 1
+		B00000001, // col 2: pin 23 = bit 0
+		B00000010, // col 3: pin 15 = bit 1
+		B00000001  // col 4: pin 14 = bit 0
+	};
+
+	byte rb[7] = { // Temp var: raw port-bit-values for row-pins:
+		16, // row 0: pin 6  = bit 4 (16)
+		8,  // row 1: pin 5  = bit 3 (8)
+		4,  // row 2: pin 4  = bit 2 (4)
+		32, // row 3: pin 28 = bit 5 (32)
+		16, // row 4: pin 27 = bit 4 (16)
+		8   // row 3: pin 26 = bit 3 (8)
 	};
 
 	for (byte col = 0; col < 5; col++) { // For each keypad column...
-		if (!cr[col]) { // If this col's register is in PORTD...
-			PORTD &= ~cb[col]; // Pulse the column's pin low, in port-bank D
-			scanColumn(col); // Scan the column for keystrokes
-			PORTD |= cb[col]; // Raise the column's pin high, in port-bank D
-		} else if (cr[col] == 1) { // Else, if this col's register is in PORTB...
+		if (col >= 3) { // If this col's register is in PORTB...
 			PORTB &= ~cb[col]; // Pulse the column's pin low, in port-bank B
-			scanColumn(col); // Scan the column for keystrokes
+			scanColumn(col, rb); // Scan the column for keystrokes
 			PORTB |= cb[col]; // Raise the column's pin high, in port-bank B
+		} else { // Else, if this col's register is in PORTC...
+			PORTC &= ~cb[col]; // Pulse the column's pin low, in port-bank C
+			scanColumn(col, rb); // Scan the column for keystrokes
+			PORTC |= cb[col]; // Raise the column's pin high, in port-bank C
 		}
 	}
 

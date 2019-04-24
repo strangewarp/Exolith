@@ -12,6 +12,11 @@ Software:
 	. prove I'm not a dipshit: actually finish the project
 
 	-- forgot to add a dummy-glyph for CHAIN DIRECTION in data_gui.ino. fixed now
+	-- changed pin assignments, and func_keypad.ino stuff, for the beta-prototype's new pin layout
+
+	. found bug: when starting up with PAGE 2 active, the second LED-row does not light up to indicate that PAGE 2 is indeed active
+		. either fix this outright, or remove PAGE from the PREFS-file, since it seems vaguely useless and counterintuitive
+			--
 
 	. test regular-ERASE
 		-- seems to work
@@ -34,109 +39,6 @@ Software:
 		--
 	. test that the number of the savefile is displayed correctly on startup
 		--
-
-	. add "sequence chain" system:
-		. chain-data for all seqs should be stored in the song's header
-			. change data-format.txt
-				-- done
-			. change #define statements
-				-- done
-			. change all routines that handle header data
-				-- done
-		. each seq's chain-data should be a single byte, with each bit representing a direction (vertical, horizontal, diagonal)
-			. these should be:
-				. stored in the header of every savefile
-					-- ok
-				. saved when toggling from record-mode to play-mode
-					-- ok
-				. kept in local RAM (48 bytes + 1 dummy byte) to prevent lag
-					-- ok
-		. add commands and glyphs for setting a seq's scatter: 000111 for cardinal, 111000 for diagonal
-			. CmdFunc entry
-				-- added
-			. CmdFunc function in func_cmds.ino
-				-- done
-				. command keys:
-					. 0 1 1 2
-					. 0 C C 2
-					. 3 C C 4
-					. 3 C C 4
-					. 5 C C 7
-					. 5 6 6 7
-					. (numbers = "toggle chain for that direction")
-					. (C = "clear this seq's chains")
-					-- implemented
-			. glyph
-				-- needs to be custom-generated in func_gui.ino
-			. routines in func_gui.ino:
-				. top row
-					-- doesn't need it
-				. bottom rows
-					-- done
-		. update sequencing functions:
-			-- am doing - done
-			. directionality should wrap around the grid, but not be contiguous between pages; each page wraps back onto itself
-				-- implemented
-			. if a chain-direction byte contains multiple flipped bits, then this represents a random chance of heading in any of the directions
-				-- implemented
-		. wipe SD-card because the data format has been changed
-			-- ok
-		. test for basic function
-			-- data corruption bug, somehow
-			. figure out what's going on
-				-- isn't creating any savefiles for some reason
-				. figure out why
-					-- had the first character of a savefile name as "0" instead of "48" (48 is "0" in ASCII)
-					. re-test
-						-- loads up correctly now
-		. test CHAIN GUI
-			-- seems ok
-			-- however... the button UI is awkward
-			. fix the UI-buttonglyph
-				-- fixed: diagonal CHAINs are only toggled by the corner-buttons now
-			-- also realized I'd missed a TO_UPDATE call in chainCmd(). fixed it
-		. test CHAIN functionality
-			-- transfers activity over to another seq even during RECORDMODE. this causes a horrible state-bug
-			. fix it
-				-- fixed afaict
-		. test CHAINs in PLAY MODE
-			. when toggling back from RECORDMODE, a seq with a CHAIN will automatically unset itself when the tempo is reset.
-				. fix this with a "just left recordmode" flag or something
-					-- done
-					. test it
-						-- seems fixed
-			. when a CHAIN occurs, the CHAINed seq doesn't activate properly. figure out why
-				-- was generating the wrong CHAIN-target-value in a ridiculously bad way. applied various fixes
-				. test it
-					-- still doesn't work
-					. figure out why
-						-- I typed a binary value with 7 bits instead of 8. fixed it
-						. test again
-							-- it works
-			. add a bit to each seq's STATS byte that tracks whether it was just now toggled by the CHAIN system
-				-- am doing
-				. change everything that interacts with the STATS byte so that it compensates for this
-					-- done
-				. DIDTOGGLE is no longer necessary, if every seq's CHAIN IGNORE flag is set on mode-toggle
-					-- made the change
-		. if CHAIN targets a seq that is already playing, then that seq's position should be set to 0
-			-- done
-			. re-test it with filled seqs
-				-- seems to work
-				. UX concern: any CHAIN-parent-seq with an active CUE-OFF should pass that CUE-OFF onto its subsequent CHAIN-target-seq
-					-- made the change. tested and seems to work
-		. CHAINs should be ignored in RECORDMODE, to prevent any of them from cascading into the RECORDSEQ and causing unexpected behavior
-			-- already did this, but forgot I had done it
-		. test whether CUE-OFF-SLICE commands prime a CHAIN-cued seq to start at that SLICE-point, or not
-			-- no
-			. does this matter?
-				-- not really. except that there's a comment somewhere that claims this would work
-				. fix the comment
-					-- done
-		. do CHAINs wrap around in every direction correctly?
-			-- yes
-			. on PAGE 2 as well?
-				-- yes
 
 	. when two notes on the same channel with the same pitch are in the SUSTAIN queue, the nested NOTE-OFF does not behave as expected with most synths
 	. therefore, a change is necessary:
