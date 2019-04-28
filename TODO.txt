@@ -11,8 +11,16 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	-- forgot to add a dummy-glyph for CHAIN DIRECTION in data_gui.ino. fixed now
-	-- changed pin assignments, and func_keypad.ino stuff, for the beta-prototype's new pin layout
+	-- custom GUI calls for BPM and SHIFT-POSITION glyphs needed to be adjusted again. fixed it
+
+	. found bug: when starting up with both MIDI outputs connected, and one powering a MIDI splitter,
+	.   the loadfile position gets garbled, leading to corrupt-looking behavior.
+	.   but, when unplugged and replugged in, it works fine.
+	.   so: test the hypothesis that adding a delay to the startup time, before the savefile is loaded, will fix it
+		-- made the change, and tested it. seems to work.
+
+	. found bug: at BPMs of 228 and above, the timing system seems to start iterating through the next tick immediately, with no time-gap. figure out why
+		-- 
 
 	. found bug: when starting up with PAGE 2 active, the second LED-row does not light up to indicate that PAGE 2 is indeed active
 		. either fix this outright, or remove PAGE from the PREFS-file, since it seems vaguely useless and counterintuitive

@@ -1352,6 +1352,9 @@ Software:
 			. on PAGE 2 as well?
 				-- yes
 
+	-- forgot to add a dummy-glyph for CHAIN DIRECTION in data_gui.ino. fixed now
+	-- changed pin assignments, and func_keypad.ino stuff, for the beta-prototype's new pin layout
+
 Hardware:
 
 	. print out the alpha-prototype's schematic for reference while making updates (KiCad can corrupt a project if more than 1 is open)
