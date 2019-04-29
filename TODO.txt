@@ -26,14 +26,14 @@ Software:
 		-- figured it out: BPM_LIMIT_LOW is set to 32, but the MCS_TABLE[] array assumes it will be 60.
 		--   therefore, this problem will be solved by implementing the immediate next change.
 	. lower BPM bottom limit to 30, and insert relevant values into its PROGMEM array
-		--
-
-	. re-test timing system for BPM accuracy, by connecting to a Pd testing apparatus
-		--
+		-- fixed. and, fixed previous bug in the process
 
 	. found bug: when starting up with PAGE 2 active, the second LED-row does not light up to indicate that PAGE 2 is indeed active
 		. either fix this outright, or remove PAGE from the PREFS-file, since it seems vaguely useless and counterintuitive
 			--
+
+	. re-test timing system for BPM accuracy, by connecting to a Pd testing apparatus
+		--
 
 	. test regular-ERASE
 		-- seems to work
