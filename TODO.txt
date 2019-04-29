@@ -12,6 +12,7 @@ Software:
 	. prove I'm not a dipshit: actually finish the project
 
 	-- custom GUI calls for BPM and SHIFT-POSITION glyphs needed to be adjusted again. fixed it
+	-- added advanceUntilCaughtUp(): uses a while-loop to reduce the ELAPSED var, in case TICKSIZE is small enough that 2 are contained in an updated ELAPSED value.
 
 	. found bug: when starting up with both MIDI outputs connected, and one powering a MIDI splitter,
 	.   the loadfile position gets garbled, leading to corrupt-looking behavior.
@@ -20,7 +21,15 @@ Software:
 		-- made the change, and tested it. seems to work.
 
 	. found bug: at BPMs of 228 and above, the timing system seems to start iterating through the next tick immediately, with no time-gap. figure out why
-		-- 
+		-- what the hell... why is this doing this
+		-- it seems like a bitwise limit problem with floats, but if that were the case, it would be throwing errors for every value < 228, not every value >= 228
+		-- figured it out: BPM_LIMIT_LOW is set to 32, but the MCS_TABLE[] array assumes it will be 60.
+		--   therefore, this problem will be solved by implementing the immediate next change.
+	. lower BPM bottom limit to 30, and insert relevant values into its PROGMEM array
+		--
+
+	. re-test timing system for BPM accuracy, by connecting to a Pd testing apparatus
+		--
 
 	. found bug: when starting up with PAGE 2 active, the second LED-row does not light up to indicate that PAGE 2 is indeed active
 		. either fix this outright, or remove PAGE from the PREFS-file, since it seems vaguely useless and counterintuitive

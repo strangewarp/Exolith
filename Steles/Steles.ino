@@ -203,7 +203,7 @@ SdFile file; // Initialize an SdFile File object, to control default data read/w
 void setup() {
 
 	// Delay the startup process, in case Tine is connected to a bunch of power-draining MIDI splitters or something,
-	//   which could cause a brownout on powerup, and garble SD comms, etc.
+	//   which could cause a brownout on powerup, and garble SD comms, data-loading, memset calls, etc.
 	delay(1000);
 
 	// Ensure that the global arrays don't contain junk-data
