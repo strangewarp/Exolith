@@ -7,7 +7,7 @@ Steles prefs-file spec
 
 	File contents:
 		(13 total bytes)
-		byte 0:  PAGE
+		byte 0:  (reserved)
 		byte 1:  OCTAVE
 		byte 2:  VELO
 		byte 3:  HUMANIZE

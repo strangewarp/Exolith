@@ -78,7 +78,7 @@ void updateSavedChain() {
 
 // Put the current prefs-related global vars into a given buffer
 void makePrefBuf(byte buf[]) {
-	buf[0] = PAGE;
+	buf[0] = 0; // reserved
 	buf[1] = OCTAVE;
 	buf[2] = VELO;
 	buf[3] = HUMANIZE;
@@ -167,7 +167,7 @@ void loadPrefs() {
 		file.read(buf, PREFS_ITEMS_1); // Read all the prefs-bytes into the buffer
 
 		// Assign the buffer's-worth of pref-bytes to their respective global-vars
-		PAGE = buf[0];
+		// reserved = buf[0];
 		OCTAVE = buf[1];
 		VELO = buf[2];
 		HUMANIZE = buf[3];
@@ -230,6 +230,8 @@ void loadSong(byte slot) {
 	updateTickSize(); // Update the internal tick-size (in microseconds) to match the new BPM value
 
 	SONG = slot; // Set the currently-active SONG-position to the given save-slot
+
+	PAGE = 0; // Reset the PAGE status to PAGE A
 
 	LOADHOLD = 18000; // Give LOADHOLD around a second of decay, so the song-number is displayed for that long
 

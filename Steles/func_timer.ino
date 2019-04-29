@@ -53,6 +53,10 @@ void activateStepLEDs() {
 // Advance the tempo-tick, and all its associated sequencing mechanisms
 void advanceTick() {
 
+	if (ELAPSED < TICKSIZE) { return; } // If the amount of time elapsed does not yet equal a full tick, then don't advance the tick
+
+	ELAPSED -= TICKSIZE; // Subtract the current tick-length from the elapsed-time variable
+
 	Serial.write(248); // Send a MIDI CLOCK pulse
 
 	TICKCOUNT = (TICKCOUNT + 1) % 3; // Increase the value that tracks ticks, bounded to the size of a 32nd-note
@@ -74,14 +78,6 @@ void advanceTick() {
 
 	iterateAll(); // Iterate through a step of each active sequence
 
-}
-
-// Iterate the tick-counter until it's caught up with the ELAPSED value
-void advanceUntilCaughtUp() {
-	while (ELAPSED >= TICKSIZE) { // While the time elapsed since the last tick is larger than the current TICKSIZE...
-		ELAPSED -= TICKSIZE; // Subtract the current tick-length from the elapsed-time variable
-		advanceTick(); // Advance the tempo-tick, and all its associated sequencing mechanisms
-	}
 }
 
 // Update the internal timer system, and trigger various events
@@ -113,6 +109,6 @@ void updateTimer() {
 
 	scanKeypad(); // Scan the keypad for changes in keystroke values
 
-	advanceUntilCaughtUp(); // Iterate the tick-counter until it's caught up with the ELAPSED value
+	advanceTick(); // Advance the tempo-tick, and all its associated sequencing mechanisms
 
 }

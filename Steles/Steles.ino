@@ -83,7 +83,7 @@ word BLINKR = 0; // ^ This, but right side
 byte GLYPHL[4]; // Holds a TRACK-linked MIDI-command that will be assigned a glyph once the GUI is processed
 byte GLYPHR[4]; // ^ This, but right side
 int LOADHOLD = 0; // Track how long to hold a just-loaded savefile's file-number onscreen
-byte TO_UPDATE = 0; // Tracks which rows of LEDs should be updated at the end of a given tick
+byte TO_UPDATE = 255; // Tracks which rows of LEDs should be updated at the end of a given tick (initially set to 255, to make sure the entire screen is refreshed)
 
 // Timing vars
 unsigned long ABSOLUTETIME = 0; // Absolute time elapsed: wraps around after reaching its limit
