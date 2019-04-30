@@ -26,7 +26,7 @@ Software:
 			-- doesn't seem to change anything
 		. bug evidence:
 		. a. when more than one seq is playing, and RECORDNOTES is armed,
-		.    notes immediately cease to be sent, and then the sequencing mechanism freezes after reaching the next global CUE-slice.
+		.    notes immediately cease to be sent, and then the sequencing mechanism and GUI lag EXTREMELY after reaching the next global CUE-slice.
 		. b. the bug only seems to activate when a very small sequence is active (size 7 or lower).
 		. c. after the bug occurs, there is persistent lag on mode-toggle, even when only default-sized seqs are active
 			-- will continue putting more bug behaviors in this part of the TODO as they are found
