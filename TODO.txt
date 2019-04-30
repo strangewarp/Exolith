@@ -24,11 +24,16 @@ Software:
 		-- could this be because of the while-loop that was added into the sequencing mechanism?
 		. try removing the while-loop
 			-- doesn't seem to change anything
-		. behavior identified:
-		.   when more than one seq is playing, and RECORDNOTES is armed,
-		.   notes immediately cease to be sent, and then the sequencing mechanism freezes after reaching the next global CUE-slice.
-		.   this doesn't make sense. figure out what's going on
-			-- 
+		. bug evidence:
+		. a. when more than one seq is playing, and RECORDNOTES is armed,
+		.    notes immediately cease to be sent, and then the sequencing mechanism freezes after reaching the next global CUE-slice.
+		. b. the bug only seems to activate when a very small sequence is active (size 7 or lower).
+		. c. after the bug occurs, there is persistent lag on mode-toggle, even when only default-sized seqs are active
+			-- will continue putting more bug behaviors in this part of the TODO as they are found
+			. figure it out
+				--
+			. could this be being caused by the lack of a file.sync() call on every write?
+				-- doesn't tally with the "small seq" problem
 
 	. test regular-ERASE
 		-- seems to work
