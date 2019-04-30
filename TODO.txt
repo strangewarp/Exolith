@@ -31,7 +31,9 @@ Software:
 		. c. after the bug occurs, there is persistent lag on mode-toggle, even when only default-sized seqs are active
 			-- will continue putting more bug behaviors in this part of the TODO as they are found
 			. figure it out
-				--
+				-- every sequence-size that causes a problem is smaller than the global CUE-amount
+				. what could this signify?
+					--
 			. could this be being caused by the lack of a file.sync() call on every write?
 				-- doesn't tally with the "small seq" problem
 
@@ -45,6 +47,10 @@ Software:
 		-- seems to work
 	. test ERASE-INVERSE with strange QUANTIZE-QRESET-OFFSET settings
 		--
+
+	. problem: erasing notes has annoying UX now.
+		. try only applying the "erase on QUANTIZE-QRESET-OFFSET ticks" mechanism when REPEAT is enabled
+			--
 
 	. test file-load
 		-- am doing
