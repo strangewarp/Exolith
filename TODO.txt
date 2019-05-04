@@ -12,6 +12,8 @@ Software:
 	. prove I'm not a dipshit: actually finish the project
 
 	-- made sure the PAGE will be reset to 0 (PAGE A) on file-load
+	-- added a line to toggleRecordMode() to unset all CUE-commands, so that there is no possibility of unusual CUE behavior when toggling into RECORD-MODE
+	-- changed toggleRecordMode() so its call to writePrefs() will occur both on toggle and untoggle, to save the BPM value regardless of toggle direction
 
 	. found bug: when starting up with PAGE 2 active, the second LED-row does not light up to indicate that PAGE 2 is indeed active
 		. remove PAGE from the PREFS-file, since it seems vaguely useless and counterintuitive,
@@ -28,11 +30,14 @@ Software:
 		. a. when more than one seq is playing, and RECORDNOTES is armed,
 		.    notes immediately cease to be sent, and then the sequencing mechanism and GUI lag EXTREMELY after reaching the next global CUE-slice.
 		. b. the bug only seems to activate when a very small sequence is active (size 7 or lower).
-		. c. after the bug occurs, there is persistent lag on mode-toggle, even when only default-sized seqs are active
+		. c. after the bug occurs, there is persistent lag on mode-toggle, even when only default-sized seqs are active.
 			-- will continue putting more bug behaviors in this part of the TODO as they are found
 			. figure it out
 				-- every sequence-size that causes a problem is smaller than the global CUE-amount
 				. what could this signify?
+					-- feels like a type-conversion error, or some sort of rampant complexity killing the stack,
+					--   but there isn't really anywhere that could plausibly occur?
+				. keep tracking things down
 					--
 			. could this be being caused by the lack of a file.sync() call on every write?
 				-- doesn't tally with the "small seq" problem

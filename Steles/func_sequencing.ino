@@ -65,7 +65,6 @@ void parseCues(byte s, byte size) {
 			STATS[s] = (STATS[s] & 127) | ((CMD[s] & 2) << 6);
 
 			// Set the sequence's internal tick to a position based on the incoming SLICE bits.
-			// NOTE: For cued OFF commands, a SLICE value can still be stored, but otherwise the seq's position will be set to 0
 			POS[s] = word(size) * (CMD[s] & B00011100);
 
 			CMD[s] = 0; // Clear the sequence's CUED-COMMANDS byte
@@ -100,7 +99,7 @@ void parseTickContents(byte s, byte buf[], byte dglyph) {
 
 		if (!buf[bn]) { continue; } // If this slot doesn't contain a command, then check the next slot or exit the loop
 
-		// If this is the RECORDSEQ, in RECORD MODE, and RECORDNOTES isn't armed, and a command is present on this tick...
+		// If this is the RECORDSEQ, in RECORD MODE, and RECORDNOTES isn't armed...
 		if ((RECORDMODE) && (RECORDSEQ == s) && (!RECORDNOTES)) {
 			byte bnbool = !!bn; // Get the boolean version of bn - "0 or 1" instead of "0 or 4"
 			if (buf[bn] && !(dglyph && (bnbool == TRACK))) { // If this note-slot contains a command, and no GLYPH is already stored from a user REPEAT command...

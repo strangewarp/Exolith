@@ -5,11 +5,13 @@ void toggleRecordMode() {
 
 	resetAllTiming(); // Reset the timing of all seqs, and the global cue-point
 
+	writePrefs(); // Write the current relevant global vars into PRF.DAT
+
 	if (RECORDMODE) { // If RECORDMODE is about to be untoggled...
-		writePrefs(); // Write the current relevant global vars into PRF.DAT
 		updateSeqSize(); // Update the size-data of all sequences in the savefile
 		updateSavedChain(); // Update the current seq's CHAIN-byte in the savefile, if applicable
 	} else { // Else, if RECORD-MODE is about to be toggled...
+		memset(CMD, 0, 48); // Clear all sequences' CUE-commands (this prevents weird behavior from occurring when RECORD-MODE is toggled with CUEs active)
 		resetSeq(RECORDSEQ); // If the most-recently-touched seq is already playing, reset it to prepare for timing-wrapping
 		SCATTER[RECORDSEQ] = 0; // Unset the most-recently-touched seq's SCATTER values before starting to record
 		STATS[RECORDSEQ] |= 128; // Set the sequence to active, if it isn't already
