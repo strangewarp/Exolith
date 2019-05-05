@@ -56,6 +56,13 @@ Software:
 					-- at least it doesn't seem to impact the programming process, anyway,
 					--   so this bug is effectively just an unavoidable inconvenience for a developer, but invisible to the end-user.
 
+	. found bug: when many sequences are lit on a given page, and RECORDNOTES is armed, the bottom LED-row seems not to blink correctly
+		-- this feels like I'm butting up against the limitations of the MAX7219 chip itself
+		. fix this by changing the RECORD-MODE GUI so that, when a BLINK is active, the given PAGE's seqs get inverted rather than whited out
+			--
+			. test for both PAGEs and TRACKs
+				--
+
 	. test regular-ERASE
 		-- seems to work
 	. test REPEAT-ERASE
