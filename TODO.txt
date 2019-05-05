@@ -49,7 +49,12 @@ Software:
 				-- LEDs drawing too much power
 				-- 10uF power capacitors are too small - might need 100uF
 				-- the 1M resistor, and 0.1uF capacitor, that sit between +5v and GND
-				--
+				. test whether brownouts still occur when connected to a DC adapter
+					-- they don't!
+					-- this bug has literally been being caused by the fact that the AVR-ISP can't supply enough current for all the components!
+					-- augh!!!!
+					-- at least it doesn't seem to impact the programming process, anyway,
+					--   so this bug is effectively just an unavoidable inconvenience for a developer, but invisible to the end-user.
 
 	. test regular-ERASE
 		-- seems to work
@@ -198,6 +203,8 @@ Hardware:
 
 	. slightly widen pin-holes for all buttons, right now they are too tight
 		. NOTE: need to double-check whether I already did this and forgot
+
+	. consider using 100uF capacitors in the 9v-5v regulator circuit anyway, just to be safe
 
 	. make sure that you order the ATMEGA chips with the proper bootloader fuse config (along with the firmware), or else they will be 8 times too slow and incapable of sending MIDI
 		. buy a test-batch that are preprogrammed in such a way, and slot one into a Tine beta unit for testing
