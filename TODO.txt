@@ -28,8 +28,10 @@ Software:
 			-- doesn't seem to change anything
 		. bug evidence:
 		. a. when more than one seq is playing, and RECORDNOTES is armed,
-		.    notes immediately cease to be sent, and then the sequencing mechanism and GUI lag EXTREMELY after reaching the next global CUE-slice.
-		. b. after the bug occurs, there is persistent lag on mode-toggle, even when only default-sized seqs are active.
+		.    the sequencing mechanism and GUI lag EXTREMELY after reaching the next global CUE-slice.
+		. b. after the bug occurs:
+			. 1. there is persistent lag on mode-toggle from RECORD-MODE to PLAY-MODE, even when only default-sized seqs are active.
+			. 2. no notes are sent. unclear whether this is an SD-read problem or a MIDI-OUT-queue problem
 		. c. this bug doesn't occur on the original alpha prototype, so it must be being caused by a change I made since I started using the beta prototype
 			-- will continue putting more bug behaviors in this part of the TODO as they are found
 			. figure it out
@@ -37,11 +39,17 @@ Software:
 				. what could this signify?
 					-- feels like a type-conversion error, or some sort of rampant complexity killing the stack,
 					--   but there isn't really anywhere that could plausibly occur?
-				. keep tracking things down
-					-- the bug isn't actually specifically being caused by small seqs. it's being caused when any seqs, in a quantity of >1, are active simultaneously
-					--
 			. could this be being caused by the lack of a file.sync() call on every write?
 				-- doesn't tally with the "small seq" problem
+		. keep tracking things down
+			-- the bug isn't actually specifically being caused by small seqs. it's being caused when any seqs, in a quantity of >1, are active simultaneously.
+			-- it definitely seems like file.read() calls are causing abnormal behavior.
+			-- the SD-card might be having brownouts during normal operation?
+			. what could be causing SD-card brownouts?
+				-- LEDs drawing too much power
+				-- 10uF power capacitors are too small - might need 100uF
+				-- the 1M resistor, and 0.1uF capacitor, that sit between +5v and GND
+				--
 
 	. test regular-ERASE
 		-- seems to work
