@@ -11,56 +11,11 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	-- made sure the PAGE will be reset to 0 (PAGE A) on file-load
-	-- added a line to toggleRecordMode() to unset all CUE-commands, so that there is no possibility of unusual CUE behavior when toggling into RECORD-MODE
-	-- changed toggleRecordMode() so its call to writePrefs() will occur both on toggle and untoggle, to save the BPM value regardless of toggle direction
-
-	. found bug: when starting up with PAGE 2 active, the second LED-row does not light up to indicate that PAGE 2 is indeed active
-		. remove PAGE from the PREFS-file, since it seems vaguely useless and counterintuitive,
-		.   and would only be saved when toggling modes anyway, which feels inconsistent
-			-- fixed this, and fixed the initial TO_UPDATE settings as well
-		. update prefs-format.txt
-			-- done
-
-	. found bug: sequencing will get stuck during RECORD MODE some of the time, for unknown reasons
-		-- could this be because of the while-loop that was added into the sequencing mechanism?
-		. try removing the while-loop
-			-- doesn't seem to change anything
-		. bug evidence:
-		. a. when more than one seq is playing, and RECORDNOTES is armed,
-		.    the sequencing mechanism and GUI lag EXTREMELY after reaching the next global CUE-slice.
-		. b. after the bug occurs:
-			. 1. there is persistent lag on mode-toggle from RECORD-MODE to PLAY-MODE, even when only default-sized seqs are active.
-			. 2. no notes are sent. unclear whether this is an SD-read problem or a MIDI-OUT-queue problem
-		. c. this bug doesn't occur on the original alpha prototype, so it must be being caused by a change I made since I started using the beta prototype
-			-- will continue putting more bug behaviors in this part of the TODO as they are found
-			. figure it out
-				-- every sequence-size that causes a problem is smaller than the global CUE-amount
-				. what could this signify?
-					-- feels like a type-conversion error, or some sort of rampant complexity killing the stack,
-					--   but there isn't really anywhere that could plausibly occur?
-			. could this be being caused by the lack of a file.sync() call on every write?
-				-- doesn't tally with the "small seq" problem
-		. keep tracking things down
-			-- the bug isn't actually specifically being caused by small seqs. it's being caused when any seqs, in a quantity of >1, are active simultaneously.
-			-- it definitely seems like file.read() calls are causing abnormal behavior.
-			-- the SD-card might be having brownouts during normal operation?
-			. what could be causing SD-card brownouts?
-				-- LEDs drawing too much power
-				-- 10uF power capacitors are too small - might need 100uF
-				-- the 1M resistor, and 0.1uF capacitor, that sit between +5v and GND
-				. test whether brownouts still occur when connected to a DC adapter
-					-- they don't!
-					-- this bug has literally been being caused by the fact that the AVR-ISP can't supply enough current for all the components!
-					-- augh!!!!
-					-- at least it doesn't seem to impact the programming process, anyway,
-					--   so this bug is effectively just an unavoidable inconvenience for a developer, but invisible to the end-user.
-
 	. found bug: when many sequences are lit on a given page, and RECORDNOTES is armed, the bottom LED-row seems not to blink correctly
 		-- this feels like I'm butting up against the limitations of the MAX7219 chip itself
 		. fix this by changing the RECORD-MODE GUI so that, when a BLINK is active, the given PAGE's seqs get inverted rather than whited out
 			--
-			. test for both PAGEs and TRACKs
+			. test for both PAGEs, and both TRACKs
 				--
 
 	. test regular-ERASE
