@@ -88,14 +88,15 @@ void fillBlinkVals(byte glyph[], word &blink, byte cmd, byte pitch, byte velo) {
 			glyph[1] = pitch; // Store the MIDI-cmd's second and third bytes, for later display
 			glyph[2] = velo; // ^
 		}
-		blink = 5000; // Start a track-linked long-LED-BLINK
+		blink = 7000; // Start a track-linked long-LED-BLINK
 	} else { // Else, if this is a "full-blink"...
 		glyph[0] = 0; // Flag the glyph to display a "full-blink"
 		blink = 200; // Start a track-linked short-LED-BLINK
 	}
 }
 
-// Flag the LEDs that correspond to the given TRACK to blink, in various ways depending on whether they represent a NOTE, a special-command, or a "full-blink"
+// Flag the LEDs that correspond to the given TRACK to blink,
+//   in various ways depending on whether they represent a NOTE, a special-command, or a "full-blink"
 void setBlink(byte trk, byte cmd, byte pitch, byte velo) {
 	if (trk) { // If TRACK 2 was given...
 		fillBlinkVals(GLYPHR, BLINKR, cmd, pitch, velo); // Fill the BLINK-values that are related to the right-side TRACK
@@ -153,15 +154,20 @@ byte getBlinkRow(word b, byte g[], byte cmd, byte shift, byte i) {
 	if (b) { // If the given BLINK is active...
 		if (g[0]) { // If the stored GLYPH represents a MIDI-command or virtual-MIDI-command...
 			if (cmd == 144) { // If the stored GLYPH represents a NOTE-ON or a virtual-NOTE-ON...
-				// Return a slice of a letter-glyph that corresponds to the note's pitch-byte and to the given row and shift-position
-				return pgm_read_byte_near(GLYPH_BLINK + ((g[1] % 12) * 5) + i) >> shift;
-			} else { // Else, if the stored GLYPH represents another type of MIDI-command...
-				return g[i >> 1] >> shift; // Return a slice of the stored command-GLYPH's data that corresponds to the given row and shift-position
+				if (i < 5) { // If this is on any row other than the bottom one (i < 5, since this is tested without vertical offset)...
+					// Return a slice of a letter-glyph that corresponds to the note's pitch-byte and to the given row and shift-position
+					return pgm_read_byte_near(GLYPH_BLINK + ((g[1] % 12) * 5) + i) >> shift;
+				}
+				// Else, this is on the bottom row, so...
+				return (g[0] % 16) << (4 - shift); // Display a binary representation of the MIDI channel for the corresponding NOTE-ON
 			}
-		} else { // Else, if the stored GLYPH represents a "full-BLINK"...
-			return B11110000 >> shift; // Return a value that will fill 4 LED-bits in the current shift-position
+			// Else, the stored GLYPH represents another type of MIDI-command, so...
+			return g[i >> 1] >> shift; // Return a slice of the stored command-GLYPH's data that corresponds to the given row and shift-position
 		}
+		// Else, the stored GLYPH represents a "full-BLINK", so...
+		return B11110000 >> shift; // Return a value that will fill 4 LED-bits in the current shift-position
 	}
+	// Else, the given BLINK is inactive, so...
 	return getHalfRowSeqVals(i, shift); // Get the activity-values from a half-row of seqs, on PAGE 1 for left-side or 2 for right-side
 }
 
@@ -169,12 +175,12 @@ byte getBlinkRow(word b, byte g[], byte cmd, byte shift, byte i) {
 void displayBlink() {
 	byte lcmd = GLYPHL[0] & 240; // Get the left BLINK-GLYPH's MIDI-command status
 	byte rcmd = GLYPHR[0] & 240; // ^ This, but right
-	for (byte i = 0; i < 5; i++) { // For each one of the 6 bottom LED-rows...
+	byte lchn = GLYPHL[0] - lcmd; // Get the right BLINK-GLYPH's MIDI-channel, if applicable
+	byte rchn = GLYPHR[0] - rcmd; // This, but right
+	for (byte i = 0; i < 6; i++) { // For each one of the LED-rows 2 to 6 (0-indexed)...
 		// Send a row made from a composite of the current LEFT-BLINK and RIGHT-BLINK rows, if they are active
 		sendRow(i + 2, getBlinkRow(BLINKL, GLYPHL, lcmd, 0, i) | getBlinkRow(BLINKR, GLYPHR, rcmd, 4, i));
 	}
-	// If either of the GLYPHs is for a MIDI-NOTE, then display its/their CHANNELs as binary values on the bottom-row
-	sendRow(7, ((BLINKL && (lcmd == 144)) ? ((GLYPHL[0] % 16) << 4) : 0) | ((BLINKR && (rcmd == 144)) ? (GLYPHR[0] % 16) : 0));
 }
 
 // Send a virtual char-value to the top LED-row, for "byte" values whose contents represent a virtual negative-to-positive range
