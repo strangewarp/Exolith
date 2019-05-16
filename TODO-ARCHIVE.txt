@@ -1417,6 +1417,19 @@ Software:
 					-- at least it doesn't seem to impact the programming process, anyway,
 					--   so this bug is effectively just an unavoidable inconvenience for a developer, but invisible to the end-user.
 
+	-- changed the "long-LED-blink" value for note-letters in RECORD-MODE. it is now 7000 cycles instead of 5000
+
+	. found bug: when many sequences are lit on a given page, and RECORDNOTES is armed, the bottom LED-row seems not to blink correctly
+		. stupid: thought this was a hardware bug but it's a software bug.
+		.   fix it by changing the full-page-blink system to display the extra row
+			-- not quite fixed: lowest row erroneously blinks for both tracks simultaneously now
+			. fix that
+				-- refactored displayBlink() and getBlinkRow().
+	. re-test the note-BLINK system in RECORD-MODE
+		-- the CHANNEL-row displays wrong now
+		. fix it
+			-- fixed, tested, seems to work
+
 Hardware:
 
 	. print out the alpha-prototype's schematic for reference while making updates (KiCad can corrupt a project if more than 1 is open)

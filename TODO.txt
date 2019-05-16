@@ -11,33 +11,6 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
-	-- changed the "long-LED-blink" value for note-letters in RECORD-MODE. it is now 7000 cycles instead of 5000
-
-	. found bug: when many sequences are lit on a given page, and RECORDNOTES is armed, the bottom LED-row seems not to blink correctly
-		. stupid: thought this was a hardware bug but it's a software bug.
-		.   fix it by changing the full-page-blink system to display the extra row
-			-- not quite fixed: lowest row erroneously blinks for both tracks simultaneously now
-			. fix that
-				-- refactored displayBlink() and getBlinkRow().
-	. re-test the note-BLINK system in RECORD-MODE
-		-- the CHANNEL-row displays wrong now
-		. fix it
-			-- fixed, tested, seems to work
-
-	. problem: erasing notes has annoying UX now.
-		. try only applying the "erase on QUANTIZE-QRESET-OFFSET ticks" mechanism when REPEAT is enabled
-			--
-	. test regular-ERASE
-		-- seems to work
-	. test REPEAT-ERASE
-		-- seems to work
-	. test both types of ERASE with strange QUANTIZE-QRESET-OFFSET settings
-		--
-	. test regular-ERASE-INVERSE
-		-- seems to work
-	. test ERASE-INVERSE with strange QUANTIZE-QRESET-OFFSET settings
-		--
-
 	. test file-load
 		-- am doing
 		. test sequence-position preservation on load
@@ -47,6 +20,23 @@ Software:
 	. test auto-loading of most recent savefile on startup
 		--
 	. test that the number of the savefile is displayed correctly on startup
+		--
+
+	. problem: erasing notes has annoying UX now.
+		. only apply the "erase on QUANTIZE-QRESET-OFFSET ticks" and "INVERSE ERASE" mechanisms when REPEAT is enabled.
+		.   otherwise, ERASE should erase all CHAN-matching notes on each new tick as it's held, and INVERSE-ERASE should have no effect.
+			--
+			. update GUI checks for the ERASE and INVERSE ERASE glyphs
+				--
+	. test regular-ERASE
+		-- seems to work
+	. test REPEAT-ERASE
+		-- seems to work
+	. test both types of ERASE with strange QUANTIZE-QRESET-OFFSET settings
+		--
+	. test regular-ERASE-INVERSE
+		-- seems to work
+	. test ERASE-INVERSE with strange QUANTIZE-QRESET-OFFSET settings
 		--
 
 	. when two notes on the same channel with the same pitch are in the SUSTAIN queue, the nested NOTE-OFF does not behave as expected with most synths
