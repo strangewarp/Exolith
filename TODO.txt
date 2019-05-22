@@ -21,7 +21,9 @@ Software:
 		. test sequence-position preservation on load
 			-- sequences only preserve their position sometimes, and wrap around to their beginning other times
 			. figure out what's going on
-				-- 
+				-- seqs were being wrapped by their size-in-whole-notes times 16, rather than times 32. remnant of old code. fixed.
+					. test the change
+						-- 
 		. test this with oddly-shaped seqs, and seqs that will definitely wrap
 			--
 	. test auto-loading of most recent savefile on startup
