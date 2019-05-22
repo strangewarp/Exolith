@@ -7,12 +7,7 @@ void createFiles() {
 
 	for (byte i = 0; i < 48; i++) { // For every song-slot...
 
-		if (!(i % 12)) { // After a certain amount of files, switch to the next logo letter
-			for (byte row = 0; row < 7; row++) { // For each row in the 7-row-tall logo text...
-				// Set the corresponding row to the corresponding letter slice
-				sendRow(row + 1, pgm_read_byte_near(LOGO + (row * 4) + ((i / 12) % 4)));
-			}
-		}
+		sendRow(0, i); // Send the top LED-row a binary value showing which file is about to be created
 
 		getFilename(name, i); // Get the filename that corresponds to this song-slot
 

@@ -11,10 +11,17 @@ Software:
 
 	. prove I'm not a dipshit: actually finish the project
 
+	-- removed the on-startup logo, since startup is too quick for it to be visible now
+
 	. test file-load
 		-- am doing
+		-- the top row of the page-number for LOAD FROM PAGE 2 is cut off
+			. fix it
+				-- fixed. forgot to correct for an offset "i" value in updatePlayBottomRows()
 		. test sequence-position preservation on load
-			--
+			-- sequences only preserve their position sometimes, and wrap around to their beginning other times
+			. figure out what's going on
+				-- 
 		. test this with oddly-shaped seqs, and seqs that will definitely wrap
 			--
 	. test auto-loading of most recent savefile on startup
@@ -23,11 +30,14 @@ Software:
 		--
 
 	. problem: erasing notes has annoying UX now.
-		. only apply the "erase on QUANTIZE-QRESET-OFFSET ticks" and "INVERSE ERASE" mechanisms when REPEAT is enabled.
-		.   otherwise, ERASE should erase all CHAN-matching notes on each new tick as it's held, and INVERSE-ERASE should have no effect.
+		. well... maybe it doesn't. do more UX testing before performing this block of changes
 			--
-			. update GUI checks for the ERASE and INVERSE ERASE glyphs
+			. only apply the "erase on QUANTIZE-QRESET-OFFSET ticks" and "INVERSE ERASE" mechanisms when REPEAT is enabled.
+			.   otherwise, ERASE should erase all CHAN-matching notes on each new tick as it's held, and INVERSE-ERASE should have no effect.
 				--
+				. update GUI checks for the INVERSE ERASE glyph
+					--
+
 	. test regular-ERASE
 		-- seems to work
 	. test REPEAT-ERASE

@@ -340,7 +340,7 @@ void updatePlayBottomRows(byte ctrl) {
 				row |= pgm_read_byte_near(GLYPH_RESET_TIMING + (i - 2)); // Display a line from the RESET TIMING glyph
 			} else if ((ctrl == B00110011) || (ctrl == B00110111)) { // Else, if a LOAD command is held...
 				// Display a line from the LOAD glyph, combined with a line from either the "1" or "2" glyph, based on the held LOAD-command
-				row |= pgm_read_byte_near(GLYPH_LOAD + i) | (pgm_read_byte_near(NUMBER_GLYPHS + i + (6 << (!!(ctrl & 4)))) >> 4);
+				row |= pgm_read_byte_near(GLYPH_LOAD + (i - 2)) | (pgm_read_byte_near(NUMBER_GLYPHS + (i - 2) + (6 << (!!(ctrl & 4)))) >> 4);
 			} else { // Else, if a regular PLAY MODE command is held...
 				// If a SCATTER-related command is held, display a row of SCATTER info; else display a row of SEQ info
 				row |= heldsc ? getRowScatterVals(i - 2) : getRowSeqVals(i - 2);
