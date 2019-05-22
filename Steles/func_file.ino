@@ -205,7 +205,6 @@ void loadSong(byte slot) {
 	BPM = file.read(); // Read it
 	// If this is an erroneous value that falls outside of the valid BPM range...
 	if ((BPM < BPM_LIMIT_LOW) || (word(BPM) > BPM_LIMIT_HIGH)) {
-		sendInvalidBPMGlyph(); // Send a blinking glyph that signifies an invalid BPM has been loaded
 		BPM = DEFAULT_BPM; // Set the BPM to the default value
 	}
 
@@ -227,6 +226,8 @@ void loadSong(byte slot) {
 	SONG = slot; // Set the currently-active SONG-position to the given save-slot
 
 	PAGE = 0; // Reset the PAGE status to PAGE A
+
+	writePrefs(); // Write the current relevant global vars into PRF.DAT 
 
 	LOADHOLD = 18000; // Give LOADHOLD around a second of decay, so the song-number is displayed for that long
 

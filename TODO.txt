@@ -12,6 +12,7 @@ Software:
 	. prove I'm not a dipshit: actually finish the project
 
 	-- removed the on-startup logo, since startup is too quick for it to be visible now
+	-- removed sendInvalidBPMGlyph(), since it would look janky, and would only compensate for a scenario where a person would expect compensation anyway
 
 	. test file-load
 		-- am doing
@@ -30,7 +31,9 @@ Software:
 		-- doesn't work!
 		-- this is because "most-recent-savefile" data is currently only saved on MODE-toggle.
 		. change the savefile-switch mechanism to also save the current savefile-number into the PREFS-file
-			-- 
+			-- added a writePrefs() call, near the end of loadSong()
+			. test it
+				-- 
 	. test that the number of the savefile is displayed correctly on startup, even for PAGE 2 savefiles
 		--
 
