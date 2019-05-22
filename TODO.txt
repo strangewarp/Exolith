@@ -27,8 +27,11 @@ Software:
 		. test this with oddly-shaped seqs, and seqs that will definitely wrap
 			--
 	. test auto-loading of most recent savefile on startup
-		--
-	. test that the number of the savefile is displayed correctly on startup
+		-- doesn't work!
+		-- this is because "most-recent-savefile" data is currently only saved on MODE-toggle.
+		. change the savefile-switch mechanism to also save the current savefile-number into the PREFS-file
+			-- 
+	. test that the number of the savefile is displayed correctly on startup, even for PAGE 2 savefiles
 		--
 
 	. problem: erasing notes has annoying UX now.
