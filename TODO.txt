@@ -24,18 +24,18 @@ Software:
 			. figure out what's going on
 				-- seqs were being wrapped by their size-in-whole-notes times 16, rather than times 32. remnant of old code. fixed.
 					. test the change
-						-- 
+						-- seems to work
 		. test this with oddly-shaped seqs, and seqs that will definitely wrap
-			--
+			-- seems to work
 	. test auto-loading of most recent savefile on startup
 		-- doesn't work!
 		-- this is because "most-recent-savefile" data is currently only saved on MODE-toggle.
 		. change the savefile-switch mechanism to also save the current savefile-number into the PREFS-file
 			-- added a writePrefs() call, near the end of loadSong()
 			. test it
-				-- 
+				-- seems to work
 	. test that the number of the savefile is displayed correctly on startup, even for PAGE 2 savefiles
-		--
+		-- seems to work right
 
 	. problem: erasing notes has annoying UX now.
 		. well... maybe it doesn't. do more UX testing before performing this block of changes
