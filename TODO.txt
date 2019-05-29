@@ -6,36 +6,42 @@ Software:
 
 	!!! DO NOT CHANGE list:
 		-- RECORD TOGGLE's glyph and ERASE-NOTES/ERASE-INVERT-NOTES' chords need to conflict,
-		-- so that the file.sync() on ERASE-key-ups don't get skipped when toggling
+		-- so that the file.sync() on ERASE-key-ups doesn't get skipped when toggling
 			-- if any ERASE-key-chord is changed, then the file.sync() call in unassignKey() must also be changed
 
 	. prove I'm not a dipshit: actually finish the project
 
-	-- removed the on-startup logo, since startup is too quick for it to be visible now
-	-- removed sendInvalidBPMGlyph(), since it would look janky, and would only compensate for a scenario where a person would expect compensation anyway
+	. are old notes being knocked out of the sequence by new notes in RECORD-MODE properly?
+		-- 
+	. test manually-recorded MIDI-OFF (cmd-byte 128) commands:
+		. keystrokes in RECORD-MODE
+			-- seem to work
+		. recorded as events in the sequence
+			-- seems okay
+	. test CC/PC/other advanced MIDI commands:
+		. with REPEAT-SWEEP active
+			-- 
+		. with arpeggiation
+			--
+		. recorded as events in the sequence
+			-- 
 
-	. test file-load
-		-- am doing
-		-- the top row of the page-number for LOAD FROM PAGE 2 is cut off
-			. fix it
-				-- fixed. forgot to correct for an offset "i" value in updatePlayBottomRows()
-		. test sequence-position preservation on load
-			-- sequences only preserve their position sometimes, and wrap around to their beginning other times
-			. figure out what's going on
-				-- seqs were being wrapped by their size-in-whole-notes times 16, rather than times 32. remnant of old code. fixed.
-					. test the change
-						-- seems to work
-		. test this with oddly-shaped seqs, and seqs that will definitely wrap
-			-- seems to work
-	. test auto-loading of most recent savefile on startup
-		-- doesn't work!
-		-- this is because "most-recent-savefile" data is currently only saved on MODE-toggle.
-		. change the savefile-switch mechanism to also save the current savefile-number into the PREFS-file
-			-- added a writePrefs() call, near the end of loadSong()
-			. test it
-				-- seems to work
-	. test that the number of the savefile is displayed correctly on startup, even for PAGE 2 savefiles
-		-- seems to work right
+	. when two notes on the same channel with the same pitch are in the SUSTAIN queue, the nested NOTE-OFF does not behave as expected with most synths.
+	.   update: this was an older todo entry, so: check to definitively make sure that this is actually happening. (note-entry while a seq is playing, perhaps?)
+		--
+	. if so, then a change is necessary:
+		. whenever a note is about to be added to the SUSTAIN queue, check whether that chan/pitch combo is in SUSTAIN already.
+			-- 
+		. if so: send a NOTE-OFF for that note, remove its SUSTAIN entry (and shift other entries accordingly), and then and only then insert the new SUSTAIN entry
+			-- 
+
+	. bug spotted: DUR-HUMANIZE causes hanging sustains sometimes? figure out how and why
+		--
+
+	. bug spotted: sometimes a note will be missing from a sequence, after recording the note and immediately returning to PLAY-MODE. figure out how to replicate bug
+		-- 
+
+	. add MIDI SONG POSITION POINTER functionality while in CLOCK FOLLOW mode, to orient the global cue-position correctly?
 
 	. problem: erasing notes has annoying UX now.
 		. well... maybe it doesn't. do more UX testing before performing this block of changes
@@ -55,14 +61,6 @@ Software:
 	. test regular-ERASE-INVERSE
 		-- seems to work
 	. test ERASE-INVERSE with strange QUANTIZE-QRESET-OFFSET settings
-		--
-
-	. when two notes on the same channel with the same pitch are in the SUSTAIN queue, the nested NOTE-OFF does not behave as expected with most synths
-	. therefore, a change is necessary:
-		. whenever a note is about to be added to the SUSTAIN queue, check whether that chan/pitch combo is in SUSTAIN already.
-		. if so: send a NOTE-OFF for that note, remove its SUSTAIN entry (and shift other entries accordingly), and then and only then insert the new SUSTAIN entry
-
-	. bug spotted: DUR-HUMANIZE causes hanging sustains sometimes? figure out why
 		--
 
 	. test long-sequence timed cues and beatslicing
@@ -93,14 +91,6 @@ Software:
 			. OCTAVE, VELOCITY, DURATION, HUMANIZE, and QUANTIZE should be conceptually connected
 		. change KEYTAB array for this
 		. change RECORD-MODE GUI routines for this
-
-	. are old notes being knocked out of the sequence by new notes in RECORD-MODE properly?
-	. test manual MIDI-OFF commands:
-		. keystroke-based
-		. recorded
-	. test CC/PC/other advanced MIDI commands
-		. with REPEAT-SWEEP active
-		. with arpeggiation
 
 	. re-test all cue-commands
 		. OFF
@@ -134,7 +124,7 @@ Software:
 	. look at all note-recording routines again, to triple-check for any stupid mistakes that would lead to unnecessary wear
 	. double-check that the BPM rate is actually accurate at various speeds
 	. fill 12 sequences with notes, and check whether lag occurs when connected to a hardware synthesizer
-	. does anything catastrophic happen when the SD-card is removed during regular operation?
+	. does anything catastrophic happen when the SD-card is removed during regular operation? or in RECORD-MODE?
 
 	==== SOFTWARE BETA THRESHOLD ====
 
@@ -153,8 +143,6 @@ Software:
 			. for sequences with a weird tempo/slice offset from the global cue?
 
 	. survey all TO_UPDATE calls, for superfluous flags
-
-	. add MIDI SONG POSITION POINTER functionality while in CLOCK FOLLOW mode, to orient the global cue-position correctly?
 
 	. double-check that there are no remaining "todo" or "test" comments in the codebase
 	. remove "THIS CODE IS UNDER DEVELOPMENT AND DOESN'T DO ANYTHING" from license-statement

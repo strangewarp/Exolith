@@ -1430,6 +1430,32 @@ Software:
 		. fix it
 			-- fixed, tested, seems to work
 
+	-- removed the on-startup logo, since startup is too quick for it to be visible now
+	-- removed sendInvalidBPMGlyph(), since it would look janky, and would only compensate for a scenario where a person would expect compensation anyway
+
+	. test file-load
+		-- am doing
+		-- the top row of the page-number for LOAD FROM PAGE 2 is cut off
+			. fix it
+				-- fixed. forgot to correct for an offset "i" value in updatePlayBottomRows()
+		. test sequence-position preservation on load
+			-- sequences only preserve their position sometimes, and wrap around to their beginning other times
+			. figure out what's going on
+				-- seqs were being wrapped by their size-in-whole-notes times 16, rather than times 32. remnant of old code. fixed.
+					. test the change
+						-- seems to work
+		. test this with oddly-shaped seqs, and seqs that will definitely wrap
+			-- seems to work
+	. test auto-loading of most recent savefile on startup
+		-- doesn't work!
+		-- this is because "most-recent-savefile" data is currently only saved on MODE-toggle.
+		. change the savefile-switch mechanism to also save the current savefile-number into the PREFS-file
+			-- added a writePrefs() call, near the end of loadSong()
+			. test it
+				-- seems to work
+	. test that the number of the savefile is displayed correctly on startup, even for PAGE 2 savefiles
+		-- seems to work right
+
 Hardware:
 
 	. print out the alpha-prototype's schematic for reference while making updates (KiCad can corrupt a project if more than 1 is open)
