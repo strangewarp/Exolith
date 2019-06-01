@@ -180,7 +180,7 @@ void sizeCmd(byte col, byte row) {
 
 // Parse a SWITCH RECORDSEQ press
 void switchCmd(byte col, byte row) {
-	updateSeqSize(); // Update the current seq's size-byte in the savefile, if applicable
+	updateSeqHeader(); // Update the current seq's header-data-byte in the savefile, if applicable
 	updateSavedChain(); // Update the current seq's CHAIN-byte in the savefile, if applicable
 	TO_UPDATE |= 3 | (4 >> (RECORDSEQ >> 2)); // Flag the old seq's LED-row for updating, plus the top two rows
 	resetSeq(RECORDSEQ); // Reset the current record-seq, which is about to become inactive

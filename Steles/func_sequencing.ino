@@ -1,13 +1,11 @@
 
 
-// Reset every sequence, including SCATTER values
-void resetAllSeqs() {
+// Reset the contents of every sequence, including SCATTER values and SIZE values
+void resetAll() {
 	memset(CMD, 0, 48);
 	memset(POS, 0, 96);
 	memset(SCATTER, 0, 48);
-	for (byte i = 0; i < 48; i++) {
-		STATS[i] &= 63; // Reset all seqs' PLAYING and CHAIN IGNORE flags
-	}
+	memset(STATS, 0, 48);
 }
 
 // Reset a seq's cued-commands, playing-flag, chain-ignore flag, and tick-position

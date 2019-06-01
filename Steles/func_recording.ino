@@ -8,7 +8,7 @@ void toggleRecordMode() {
 	writePrefs(); // Write the current relevant global vars into PRF.DAT
 
 	if (RECORDMODE) { // If RECORDMODE is about to be untoggled...
-		updateSeqSize(); // Update the size-data of all sequences in the savefile
+		updateSeqHeader(); // Update the header-data-bytes for all seqs
 		updateSavedChain(); // Update the current seq's CHAIN-byte in the savefile, if applicable
 	} else { // Else, if RECORD-MODE is about to be toggled...
 		memset(CMD, 0, 48); // Clear all sequences' CUE-commands (this prevents weird behavior from occurring when RECORD-MODE is toggled with CUEs active)

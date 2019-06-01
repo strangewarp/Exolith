@@ -32,10 +32,14 @@ Software:
 	. change the activity-persist-on-LOAD system:
 		-- am doing
 		. remove the mechanism that keeps the same seqs playing when a new song is loaded
-			--
+			-- done
 		. add an ACTIVE ON LOAD command, which will trigger whether a seq becomes active on song-load
-			--
-			. put its RECORD-MODE keychord into button-key.txt
+			-- am doing
+			. store its activity in each seq's STATS byte in the file-header
+				-- ok
+				. change the updateSeqHeader() function, so that it saves a composite of the seq's size and its activity-on-load to the savefile
+					-- done
+			. put a RECORD-MODE keychord for ACTIVE ON LOAD into button-key.txt
 				-- 
 			. put its CmdFunc name in the CmdFunc list, adjusting other CmdFuncs around it
 				-- 
@@ -45,6 +49,10 @@ Software:
 				--
 				. remember to refrain from resetting GLOBAL CUE, and to wrap seq activity based on GLOBAL CUE position
 					--
+	. test ACTIVE ON LOAD functionality
+		-- 
+	. double-check that all calls to the STATS variable correctly account for SEQ ON/OFF on bit 7 and SEQ ACTIVE ON LOAD on bit 6
+		-- 
 
 	. each savefile should have a block of ON LOAD and ON EXIT commands - MIDI commands in the header that are all played on file-load and on file-exit
 		-- am doing
@@ -60,6 +68,10 @@ Software:
 				-- 
 			. write their actual CmdFuncs in func_cmd.ino
 				-- 
+				. on any INSERT or DELETE command, insert the data directly into its corresponding header-slot in the savefile
+					--
+				. on any INSERT command, the corresponding message should immediately be sent to MIDI-OUT
+					--
 	. find a non-annoying (to user and to programmer) way to incorporate this feature into Tine's UI
 		-- 
 	. wipe SD-card again, since savefile format has been changed

@@ -61,14 +61,32 @@ void updateNonMatch(byte pos, byte b) {
 	}
 }
 
-// Update the sequence's size-byte in the savefile, if it has been changed
-void updateSeqSize() {
-	updateNonMatch(FILE_SQS_START + RECORDSEQ, STATS[RECORDSEQ] & 63);
+// Update the header-data-byte for the current seq: both SEQ SIZE (bits 0-5) and ACTIVE ON LOAD (bit 6).
+//   (bit 7 is intentionally stripped, for the savefile)
+void updateSeqHeader(byte toggle) {
+	updateNonMatch(FILE_SQS_START + RECORDSEQ, STATS[RECORDSEQ] & 127);
 }
 
 // Update the current seq's CHAIN-byte in the savefile, if it has been changed
 void updateSavedChain() {
 	updateNonMatch(FILE_CHAIN_START + RECORDSEQ, CHAIN[RECORDSEQ]);
+}
+
+// Send a given header-block's special MIDI-commands to the MIDI-OUT apparatus
+void sendHeaderBlock(byte buf[], byte hpos) {
+
+	file.seekSet(hpos); // Navigate to the "SEND ON EXIT" block in the header
+	file.read(buf, 48); // Grab the entire block into the "sbuf" buffer
+
+	byte c = 0; // Will track how many special command slots are filled
+	while ((c < 48) && buf[c]) { // While fewer than 16 slots have been checked, and the current slot is full...
+		c += 3; // Increase the number of filled special command slots, by their number of bytes (3 bytes per slot)
+	}
+
+	if (c) { // If any special command slots are filled...
+		Serial.write(buf, c); // Send the special commands to MIDI-OUT immediately
+	}
+
 }
 
 // Put the current prefs-related global vars into a given buffer
@@ -189,11 +207,19 @@ void loadPrefs() {
 // Load a given song, or create its savefile if it doesn't exist
 void loadSong(byte slot) {
 
+	byte sbuf[49]; // Create a buffer for incoming ACTIVE ON EXIT / ACTIVE ON LOAD bytes
+
 	if (file.isOpen()) { // If a savefile is already open...
-		file.close(); // Close it
+
+		sendHeaderBlock(sbuf, FILE_ONEXIT_START); // Send the SEND ON EXIT header-block's special MIDI-commands to the MIDI-OUT apparatus
+
+		file.close(); // Close the current savefile
+
 	}
 
-	char name[8];
+	resetAll(); // Reset all sequence-data (this leaves the GLOBAL CUE the same)
+
+	char name[8]; // Create a buffer to hold the new savefile's filename
 	getFilename(name, slot); // Get the name of the target song-slot's savefile
 
 	file.open(name, O_RDWR); // Open the new savefile
@@ -208,18 +234,17 @@ void loadSong(byte slot) {
 		BPM = DEFAULT_BPM; // Set the BPM to the default value
 	}
 
-	byte sbuf[49]; // Create a buffer for incoming STATS bytes, to save read-time
 	file.seekSet(FILE_SQS_START); // Go to the file-header's SEQ-SIZE block
-	file.read(sbuf, 48); // Read every seq's new size
-	for (byte i = 0; i < 48; i++) { // For each sequence...
-		POS[i] %= sbuf[i] * 32; // Wrap each seq's previous position by its new length
-		STATS[i] = (STATS[i] & 192) | sbuf[i]; // Combine the new size-value with the seq's current ON/OFF and CHAIN IGNORE flags
-	}
+	file.read(STATS, 48); // Read every seq's new size bits, and ACTIVE ON LOAD bit, directly into each seq's STATS byte
+
 	file.seekSet(FILE_CHAIN_START); // Go to the file-header's CHAIN block
 	file.read(CHAIN, 48); // Read every seq's CHAIN-data
 
-	memset(CMD, 0, 48); // Clear every seq's CUED-COMMANDS...
-	memset(SCATTER, 0, 48); // ...And SCATTER-values
+	for (byte i = 0; i < 48; i++) { // For each sequence...
+		if (STATS[i] & 128) {
+			POS[i] = CUR32 
+		}
+	}
 
 	updateTickSize(); // Update the internal tick-size (in microseconds) to match the new BPM value
 
@@ -227,7 +252,9 @@ void loadSong(byte slot) {
 
 	PAGE = 0; // Reset the PAGE status to PAGE A
 
-	writePrefs(); // Write the current relevant global vars into PRF.DAT 
+	writePrefs(); // Write the current relevant global vars into PRF.DAT. This is near the end of the function so the new SONG value is stored as well 
+
+	sendHeaderBlock(sbuf, FILE_ONLOAD_START); // Send the SEND ON LOAD header-block's special MIDI-commands to the MIDI-OUT apparatus	
 
 	LOADHOLD = 18000; // Give LOADHOLD around a second of decay, so the song-number is displayed for that long
 
