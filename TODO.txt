@@ -58,40 +58,41 @@ Software:
 	. double-check that all calls to the STATS variable correctly account for SEQ ON/OFF on bit 7 and SEQ ACTIVE ON LOAD on bit 6
 		-- 
 
-	. each savefile should have a block of ON LOAD and ON EXIT commands - MIDI commands in the header that are all played on file-load and on file-exit
+	. each savefile should have a block of SEND ON LOAD and SEND ON EXIT commands - MIDI commands in the header that are all played on file-load and on file-exit
 		-- am doing
 		. change data-format.txt and define-statements in Steles.ino
 			-- done
 		. change file-loading system, to send all PLAY ON LOAD commands when the file is loaded
 			--
-		. add commands for LOADCMD-INSERT, LOADCMD-DELETE, EXITCMD-INSERT, EXITCMD-DELETE, and CMD-CURSOR
+		. add commands for CMD-INSERT, CMD-DELETE, and CMD-CURSOR
 			-- am doing
 			. put their RECORD-MODE keychords into button-key.txt
-				-- 
+				-- done
 			. add their CmdFunc names to the CmdFunc list, adjusting other CmdFuncs around them
 				-- 
 			. write their actual CmdFuncs in func_cmd.ino
 				-- 
-				. on any INSERT or DELETE command, insert the data directly into its corresponding header-slot in the savefile
+				. on CMD-INSERT and CMD-DELETE, insert the data directly into its corresponding header-slot in the savefile
 					--
-				. on any INSERT command, the corresponding message should immediately be sent to MIDI-OUT
+				. on CMD-INSERT, the corresponding message should immediately be sent to MIDI-OUT
 					-- 
-			. make GUI-GLYPHs for all INSERT, DELETE, and CURSOR funcs
+			. make GUI-GLYPHs for CMD-INSERT, CMD-DELETE, and CMD-CURSOR funcs
 				-- 
-			. update GUI functions to display all INSERT, DELETE, and CURSOR funcs correctly, and make sure their CmdFuncs all have TO_UPDATE calls
+			. update GUI functions to display all CMD-INSERT, CMD-DELETE, and CMD-CURSOR funcs correctly,
+			.   and make sure their CmdFuncs all have TO_UPDATE calls
 				-- 
+		. note: REPEAT-toggle should have a dual purpose as a LOAD-EXIT toggle
+			-- 
 	. find a non-annoying (to user and to programmer) way to incorporate this feature into Tine's UI
 		-- 
 	. wipe SD-card again, since savefile format has been changed
-		--
-	. test LOADCMD-INSERT, LOADCMD-DELETE, and CMD-CURSOR
-		--
-	. test EXITCMD-INSERT, and EXITCMD-DELETE
-		--
-	. test the SEND ON LOAD function itself
 		-- 
-	. test the SEND ON EXIT function itself
-		--
+	. test CMD-INSERT, CMD-DELETE, and CMD-CURSOR:
+		-- 
+	. test SEND ON LOAD
+		-- 
+	. test SEND ON EXIT
+		-- 
 
 	. when two notes on the same channel with the same pitch are in the SUSTAIN queue, the nested NOTE-OFF does not behave as expected with most synths.
 	.   update: this was an older todo entry, so: check to definitively make sure that this is actually happening. (note-entry while a seq is playing, perhaps?)
