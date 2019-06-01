@@ -240,9 +240,9 @@ void loadSong(byte slot) {
 	file.seekSet(FILE_CHAIN_START); // Go to the file-header's CHAIN block
 	file.read(CHAIN, 48); // Read every seq's CHAIN-data
 
-	for (byte i = 0; i < 48; i++) { // For each sequence...
-		if (STATS[i] & 128) {
-			POS[i] = CUR32 
+	for (byte i = 0; i < 48; i++) { // For each seq...
+		if (STATS[i] & 64) { // If the seq is flagged ACTIVE ON LOAD...
+			POS[i] = CUR32 % ((STATS[i] & 63) * 32); // Set the seq's POSITION to match the GLOBAL CUE POINT, or wrap it if the seq-length is short
 		}
 	}
 

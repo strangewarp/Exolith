@@ -40,11 +40,15 @@ Software:
 				. change the updateSeqHeader() function, so that it saves a composite of the seq's size and its activity-on-load to the savefile
 					-- done
 			. put a RECORD-MODE keychord for ACTIVE ON LOAD into button-key.txt
-				-- 
+				-- done
 			. put its CmdFunc name in the CmdFunc list, adjusting other CmdFuncs around it
 				-- 
 			. write its actual CmdFunc in func_cmd.ino
 				--
+			. make a GUI-GLYPH for ACTIVE ON LOAD
+				-- 
+			. update GUI functions to display ACTIVE ON LOAD correctly, and make sure its CmdFunc has a TO_UPDATE call
+				-- 
 			. add the activate-seqs-on-load mechanism to the FILE LOAD function
 				--
 				. remember to refrain from resetting GLOBAL CUE, and to wrap seq activity based on GLOBAL CUE position
@@ -71,7 +75,11 @@ Software:
 				. on any INSERT or DELETE command, insert the data directly into its corresponding header-slot in the savefile
 					--
 				. on any INSERT command, the corresponding message should immediately be sent to MIDI-OUT
-					--
+					-- 
+			. make GUI-GLYPHs for all INSERT, DELETE, and CURSOR funcs
+				-- 
+			. update GUI functions to display all INSERT, DELETE, and CURSOR funcs correctly, and make sure their CmdFuncs all have TO_UPDATE calls
+				-- 
 	. find a non-annoying (to user and to programmer) way to incorporate this feature into Tine's UI
 		-- 
 	. wipe SD-card again, since savefile format has been changed
