@@ -30,18 +30,24 @@
 // These values may need to be changed in the course of programming/debugging,
 // but will always stay the same at runtime.
 
-#define FILE_BYTES 393315UL // Number of bytes in each savefile
+#define FILE_BYTES 393417UL // Number of bytes in each savefile
 
 // Location of bytes in a given savefile's header-block:
 #define FILE_BPM_BYTE 0 // BPM byte
-#define FILE_SQS_START 3 // Start-byte of the seq-size-values block
-#define FILE_SQS_END 50 // End-byte of the seq-size-values block
-#define FILE_CHAIN_START 51 // Start-byte of the seq-chain-directions block
-#define FILE_CHAIN_END 98 // End-byte of the seq-chain-directions block
+#define FILE_ACTIVE_START 3 // Start-byte of the active-seq-on-load block
+#define FILE_ACTIVE_END 8 // ^ End-byte
+#define FILE_SQS_START 9 // Start-byte of the seq-size-values block
+#define FILE_SQS_END 56 // ^ End-byte
+#define FILE_CHAIN_START 57 // Start-byte of the seq-chain-directions block
+#define FILE_CHAIN_END 104 // ^ End-byte
+#define FILE_ONLOAD_START 105 // Start-byte of the SEND ON LOAD block
+#define FILE_ONLOAD_END 152 // ^ End-byte
+#define FILE_ONEXIT_START 153 // Start-byte of the SEND ON EXIT block
+#define FILE_ONEXIT_END 200 // ^ End-byte
 
-#define FILE_BODY_START 99UL // Start of the file's body-block (UL because large values will get added to this)
+#define FILE_BODY_START 147UL // Start of the file's body-block (UL because large values will be added to this)
 
-#define FILE_SEQ_BYTES 8192UL // Bytes within each sequence (UL because large values will get added to this)
+#define FILE_SEQ_BYTES 8192UL // Bytes within each sequence (UL because large values will be added to this)
 
 #define BPM_LIMIT_LOW 32 // Limits to the range of valid BPM values
 #define BPM_LIMIT_HIGH 255 // ^
