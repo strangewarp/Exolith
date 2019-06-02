@@ -6,76 +6,80 @@ const char PREFS_FILENAME[] PROGMEM = {80, 46, 68, 65, 84, 0}; // Filename of th
 // Store pointers to RECORD-MODE functions in PROGMEM
 const CmdFunc COMMANDS[] PROGMEM = {
 	genericCmd,       //  0: Unused duplicate pointer to genericCmd
-	armCmd,           //  1: TOGGLE RECORDNOTES
-	arpModeCmd,       //  2: ARPEGGIATOR MODE
-	arpRefCmd,        //  3: ARPEGGIATOR REFRESH
-	chainCmd,         //  4: CHAIN DIRECTION
-	chanCmd,          //  5: CHANNEL
-	clearCmd,         //  6: CLEAR NOTES
-	durationCmd,      //  7: DURATION
-	durHumanizeCmd,   //  8: DURATION-HUMANIZE
-	genericCmd,       //  9: (All possible note-entry commands)
-	gridConfigCmd,    // 10: GRID-CONFIG
-	humanizeCmd,      // 11: HUMANIZE
-	octaveCmd,        // 12: OCTAVE
-	offsetCmd,        // 13: OFFSET
-	posCmd,           // 14: SHIFT CURRENT POSITION
-	qrstCmd,          // 15: QUANTIZE-RESET
-	quantizeCmd,      // 16: QUANTIZE
-	repeatCmd,        // 17: TOGGLE REPEAT
-	rSweepCmd,        // 18: REPEAT-SWEEP
-	sizeCmd,          // 19: SEQ-SIZE
-	switchCmd,        // 10: SWITCH RECORDING-SEQUENCE
-	tempoCmd,         // 21: BPM
-	trackCmd,         // 22: TRACK
-	upperBitsCmd,     // 23: UPPER CHAN BITS
-	veloCmd           // 24: VELOCITY
+	acCursorCmd,      //  1: AUTOCMD CURSOR-MOVE
+	acDeleteCmd,      //  2: AUTOCMD DELETE
+	acInsertCmd,      //  3: AUTOCMD INSERT
+	actOnLoadCmd,     //  4: ACTIVE-ON-LOAD TOGGLE
+	armCmd,           //  5: RECORDNOTES TOGGLE
+	arpModeCmd,       //  6: ARPEGGIATOR MODE
+	arpRefCmd,        //  7: ARPEGGIATOR REFRESH
+	chainCmd,         //  8: CHAIN DIRECTION
+	chanCmd,          //  9: CHANNEL
+	clearCmd,         // 10: CLEAR NOTES
+	durationCmd,      // 11: DURATION
+	durHumanizeCmd,   // 12: DURATION-HUMANIZE
+	genericCmd,       // 13: (All possible note-entry commands)
+	gridConfigCmd,    // 14: GRID-CONFIG
+	humanizeCmd,      // 15: HUMANIZE
+	octaveCmd,        // 16: OCTAVE
+	offsetCmd,        // 17: OFFSET
+	posCmd,           // 18: SHIFT CURRENT POSITION
+	qrstCmd,          // 19: QUANTIZE-RESET
+	quantizeCmd,      // 20: QUANTIZE
+	repeatCmd,        // 21: REPEAT TOGGLE
+	rSweepCmd,        // 22: REPEAT-SWEEP
+	sizeCmd,          // 23: SEQ-SIZE
+	switchCmd,        // 24: SWITCH RECORDING-SEQUENCE
+	tempoCmd,         // 25: BEATS PER MINUTE
+	trackCmd,         // 26: TRACK
+	upperBitsCmd,     // 27: UPPER CHAN BITS
+	veloCmd           // 28: VELOCITY
 };
 
 // Matches control-row binary button-values to the decimal values that stand for their corresponding functions in COMMANDS
-// Note: These binary values are flipped versions of what is displayed in button-key.txt
+// Note: These binary values are reversed versions of what is displayed in button-key.txt
 const byte KEYTAB[] PROGMEM = {
-	9,  //  0, 000000:  9, genericCmd (REGULAR NOTE)
-	17, //  1, 000001: 17, repeatCmd
-	22, //  2, 000010: 22, trackCmd
-	14, //  3, 000011: 14, posCmd
-	24, //  4, 000100: 24, veloCmd
-	21, //  5, 000101: 21, tempoCmd
-	8,  //  6, 000110:  8, durHumanizeCmd
-	0,  //  7, 000111:  0, ignore
-	12, //  8, 001000: 12, octaveCmd
-	10, //  9, 001001: 10, gridConfigCmd
-	3,  // 10, 001010:  3, arpRefCmd
+	13, //  0, 000000: 13, genericCmd (REGULAR NOTE)
+	21, //  1, 000001: 21, repeatCmd
+	26, //  2, 000010: 26, trackCmd
+	18, //  3, 000011: 18, posCmd
+	28, //  4, 000100: 28, veloCmd
+	25, //  5, 000101: 25, tempoCmd
+	12, //  6, 000110: 12, durHumanizeCmd
+	4,  //  7, 000111:  4, actOnLoadCmd
+	16, //  8, 001000: 16, octaveCmd
+	14, //  9, 001001: 14, gridConfigCmd
+	7,  // 10, 001010:  7, arpRefCmd
 	0,  // 11, 001011:  0, ignore
-	11, // 12, 001100: 11, humanizeCmd
-	0,  // 13, 001101:  0, ignore
+	15, // 12, 001100: 15, humanizeCmd
+	2,  // 13, 001101:  2, acDeleteCmd
 	0,  // 14, 001110:  0, ignore
-	6,  // 15, 001111:  6, clearCmd
-	16, // 16, 010000: 16, quantizeCmd
-	18, // 17, 010001: 18, rSweepCmd
-	15, // 18, 010010: 15, qrstCmd
+	10, // 15, 001111: 10, clearCmd
+	20, // 16, 010000: 20, quantizeCmd
+	22, // 17, 010001: 22, rSweepCmd
+	19, // 18, 010010: 19, qrstCmd
 	0,  // 19, 010011:  0, ignore
-	2,  // 20, 010100:  2, arpModeCmd
+	6,  // 20, 010100:  6, arpModeCmd
 	0,  // 21, 010101:  0, ignore
 	0,  // 22, 010110:  0, ignore
 	0,  // 23, 010111:  0, ignore
-	7,  // 24, 011000:  7, durationCmd
+	11, // 24, 011000: 11, durationCmd
 	0,  // 25, 011001:  0, ignore
-	0,  // 26, 011010:  0, ignore
+	3,  // 26, 011010:  3, acInsertCmd
 	0,  // 27, 011011:  0, ignore
 	0,  // 28, 011100:  0, ignore
 	0,  // 29, 011101:  0, ignore
 	0,  // 30, 011110:  0, ignore (ERASE-INVERSE-NOTES is handled by other routines)
 	0,  // 31, 011111:  0, ignore
-	1,  // 32, 100000:  1, armCmd
-	20, // 33, 100001: 20, switchCmd
-	13, // 34, 100010: 13, offsetCmd
+	5,  // 32, 100000:  5, armCmd
+	24, // 33, 100001: 24, switchCmd
+	17, // 34, 100010: 17, offsetCmd
 	0,  // 35, 100011:  0, ignore
-	23, // 36, 100100: 23, upperBitsCmd
+	27, // 36, 100100: 27, upperBitsCmd
 	0,  // 37, 100101:  0, ignore
 	0,  // 38, 100110:  0, ignore
 	0,  // 39, 100111:  0, ignore
-	5,  // 40, 101000:  4, chanCmd
+	9,  // 40, 101000:  9, chanCmd
 	0,  // 41, 101001:  0, ignore
 	0,  // 42, 101010:  0, ignore
 	0,  // 43, 101011:  0, ignore
@@ -83,15 +87,15 @@ const byte KEYTAB[] PROGMEM = {
 	0,  // 45, 101101:  0, ignore
 	0,  // 46, 101110:  0, ignore
 	0,  // 47, 101111:  0, ignore
-	19, // 48, 110000: 19, sizeCmd
+	23, // 48, 110000: 23, sizeCmd
 	0,  // 49, 110001:  0, ignore
 	0,  // 50, 110010:  0, ignore
 	0,  // 51, 110011:  0, ignore
-	0,  // 52, 110100:  0, ignore
+	1,  // 52, 110100:  1, acCursorCmd
 	0,  // 53, 110101:  0, ignore
 	0,  // 54, 110110:  0, ignore
 	0,  // 55, 110111:  0, ignore
-	4,  // 56, 111000:  4, chainCmd
+	8,  // 56, 111000:  8, chainCmd
 	0,  // 57, 111001:  0, ignore
 	0,  // 58, 111010:  0, ignore
 	0,  // 59, 111011:  0, ignore

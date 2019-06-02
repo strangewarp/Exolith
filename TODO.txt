@@ -42,52 +42,54 @@ Software:
 			. put a RECORD-MODE keychord for ACTIVE ON LOAD into button-key.txt
 				-- done
 			. put its CmdFunc name in the CmdFunc list, adjusting other CmdFuncs around it
-				-- 
+				-- done
 			. write its actual CmdFunc in func_cmd.ino
-				--
+				-- done
 			. make a GUI-GLYPH for ACTIVE ON LOAD
-				-- 
-			. update GUI functions to display ACTIVE ON LOAD correctly, and make sure its CmdFunc has a TO_UPDATE call
+				-- done
+      . update GUI functions to display ACTIVE ON LOAD correctly, and make sure its CmdFunc has a TO_UPDATE call
 				-- 
 			. add the activate-seqs-on-load mechanism to the FILE LOAD function
 				--
 				. remember to refrain from resetting GLOBAL CUE, and to wrap seq activity based on GLOBAL CUE position
 					--
-	. test ACTIVE ON LOAD functionality
-		-- 
-	. double-check that all calls to the STATS variable correctly account for SEQ ON/OFF on bit 7 and SEQ ACTIVE ON LOAD on bit 6
-		-- 
-
+		. test ACTIVE ON LOAD functionality
+			-- 
+		. double-check that all calls to the STATS variable correctly account for SEQ ON/OFF on bit 7 and SEQ ACTIVE ON LOAD on bit 6
+			-- 
 	. each savefile should have a block of SEND ON LOAD and SEND ON EXIT commands - MIDI commands in the header that are all played on file-load and on file-exit
 		-- am doing
 		. change data-format.txt and define-statements in Steles.ino
 			-- done
 		. change file-loading system, to send all PLAY ON LOAD commands when the file is loaded
-			--
-		. add commands for CMD-INSERT, CMD-DELETE, and CMD-CURSOR
+			-- done
+		. add commands for AUTOCMD-INSERT, AUTOCMD-DELETE, and AUTOCMD-CURSOR
 			-- am doing
 			. put their RECORD-MODE keychords into button-key.txt
 				-- done
 			. add their CmdFunc names to the CmdFunc list, adjusting other CmdFuncs around them
-				-- 
+				-- done
+      . make a special GUI mechanism for AUTOCMD-CURSOR:
+      .   it needs to show the current MIDI command in the current AUTOCMD slot, for either LOAD or EXIT (based on whether REPEAT is active)
+        -- 
+      . update all manual GUI-GLYPH calls in func_gui.ino: set them forward by 4x6 bytes each
+        -- 
 			. write their actual CmdFuncs in func_cmd.ino
 				-- 
-				. on CMD-INSERT and CMD-DELETE, insert the data directly into its corresponding header-slot in the savefile
+				. on AUTOCMD-INSERT and AUTOCMD-DELETE, insert the data directly into its corresponding header-slot in the savefile
 					--
-				. on CMD-INSERT, the corresponding message should immediately be sent to MIDI-OUT
+				. on AUTOCMD-INSERT, the corresponding message should immediately be sent to MIDI-OUT
 					-- 
-			. make GUI-GLYPHs for CMD-INSERT, CMD-DELETE, and CMD-CURSOR funcs
-				-- 
-			. update GUI functions to display all CMD-INSERT, CMD-DELETE, and CMD-CURSOR funcs correctly,
+			. make GUI-GLYPHs for AUTOCMD-INSERT, AUTOCMD-DELETE, and AUTOCMD-CURSOR funcs
+				-- done
+			. update GUI functions to display all AUTOCMD-INSERT, AUTOCMD-DELETE, and AUTOCMD-CURSOR funcs correctly,
 			.   and make sure their CmdFuncs all have TO_UPDATE calls
 				-- 
 		. note: REPEAT-toggle should have a dual purpose as a LOAD-EXIT toggle
 			-- 
-	. find a non-annoying (to user and to programmer) way to incorporate this feature into Tine's UI
-		-- 
 	. wipe SD-card again, since savefile format has been changed
 		-- 
-	. test CMD-INSERT, CMD-DELETE, and CMD-CURSOR:
+	. test AUTOCMD-INSERT, AUTOCMD-DELETE, and AUTOCMD-CURSOR
 		-- 
 	. test SEND ON LOAD
 		-- 

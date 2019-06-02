@@ -271,6 +271,33 @@ const byte GLYPHS[] PROGMEM = {
 	// Glyph: blank
 	0, 0, 0, 0, 0, 0,
 
+  // Glyph: AUTOCMD CURSOR-MOVE (note: this is a dummy-glyph)
+  0, 0, 0, 0, 0, 0,
+  
+  // Glyph: AUTOCMD-LOAD DELETE
+  B00000000,
+  B10001100,
+  B11001010,
+  B11101010,
+  B11001010,
+  B10001100,
+  
+  // Glyph: AUTOCMD-LOAD INSERT
+  B00000000,
+  B10001110,
+  B11000100,
+  B11100100,
+  B11000100,
+  B10001110,
+  
+  // Glyph: ACTIVE ON LOAD
+  B00000000,
+  B10000100,
+  B10000110,
+  B10111111,
+  B10000110,
+  B11100100,
+  
 	// Glyph: ARM RECORDNOTES
 	B00000000,
 	B11100000,
@@ -296,12 +323,7 @@ const byte GLYPHS[] PROGMEM = {
 	B10101001,
 
 	// Glyph: CHAIN DIRECTION (note: this is a dummy-glyph)
-	B00000000,
-	B00000000,
-	B00000000,
-	B00000000,
-	B00000000,
-	B00000000,
+  0, 0, 0, 0, 0, 0,
 
 	// Glyph: CHANNEL
 	B00000000,

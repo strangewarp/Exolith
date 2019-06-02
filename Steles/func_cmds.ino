@@ -1,5 +1,11 @@
 
 
+// Toggle whether a sequence will already be playing on FILE-LOAD
+void actOnLoadCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row) {
+  STATS[RECORDSEQ] ^= 64; // Flip the current RECORDSEQ's "ACTIVE ON LOAD" bit within its STATS byte
+	TO_UPDATE |= 1; // Flag the topmost row for updating
+}
+
 // Arm or disarm RECORDNOTES
 void armCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row) {
 	RECORDNOTES ^= 1; // Arm or disarm the RECORDNOTES flag
