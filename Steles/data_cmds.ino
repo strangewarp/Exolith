@@ -1,6 +1,5 @@
 
 
-
 const char PREFS_FILENAME[] PROGMEM = {80, 46, 68, 65, 84, 0}; // Filename of the preferences-file, in PROGMEM to save RAM
 
 // Store pointers to RECORD-MODE functions in PROGMEM

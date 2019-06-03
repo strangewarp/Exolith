@@ -87,9 +87,9 @@ Software:
 				-- done
 			. update GUI functions to display all AUTOCMD-INSERT, AUTOCMD-DELETE, and AUTOCMD-CURSOR funcs correctly,
 			.   and make sure their CmdFuncs all have TO_UPDATE calls
-				-- 
+				-- done, and done
 		. note: REPEAT-toggle should have a dual purpose as a LOAD-EXIT toggle
-			-- 
+			-- did this along the way
 	. wipe SD-card again, since savefile format has been changed
 		-- 
 	. test AUTOCMD-INSERT, AUTOCMD-DELETE, and AUTOCMD-CURSOR
