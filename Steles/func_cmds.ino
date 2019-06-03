@@ -1,5 +1,53 @@
 
 
+// Move the AUTOCURSOR, which controls the position of all AUTOCMD operations for both ON LOAD and ON EXIT commands
+void acCursorCmd(byte col, byte row) {
+  AUTOCURSOR = (AUTOCURSOR + byte(32 + toChange(col, row))) % 16; // Modify the AUTOCURSOR value, wrapping it within the valid range
+	TO_UPDATE |= 253; // Flag the topmost LED-row, and bottom 6 LED-rows, for updating
+}
+
+// Delete the special-command at the AUTOCURSOR's current position,
+//   in either the ON LOAD or ON EXIT block depending on whether REPEAT is toggled
+void acDeleteCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row) {
+
+  // Get the position of the special-command that currently corresponds to the AUTOCURSOR,
+  //   for either ON LOAD or ON EXIT, depending on whether REPEAT is toggled
+  byte pos = (AUTOCURSOR * 3) + (REPEAT ? FILE_ONEXIT_START : FILE_ONLOAD_START);
+
+  for (byte i = 0; i < 3; i++) { // For every byte in the special-command...
+    updateNonMatch(pos + i, 0); // Clear that command's contents in the savefile
+  }
+
+	TO_UPDATE |= 252; // Flag the bottom 6 rows for LED updates
+  
+}
+
+// Insert a special-command at the AUTOCURSOR's current position,
+//   in either the ON LOAD or ON EXIT block depending on whether REPEAT is toggled,
+//   with the command itself made out of the CHAN byte, the PITCH byte, and then the VELOCITY byte (not modified by any humanize).
+void acInsertCmd(byte col, byte row) {
+
+  if (CHAN < 128) { return; } // If the current CHAN command is a Tine-only internal command, don't put it into the AUTOCMD blocks
+
+  // Get the position of the special-command that currently corresponds to the AUTOCURSOR,
+  //   for either ON LOAD or ON EXIT, depending on whether REPEAT is toggled
+  byte pos = (AUTOCURSOR * 3) + (REPEAT ? FILE_ONEXIT_START : FILE_ONLOAD_START);
+
+  byte pitch = modKeyPitch(col, row); // Get the keystroke's corresponding "pitch-byte" value
+  
+  // Insert a new special-command into the savefile, at the given AUTOCURSOR position, in either the ON LOAD or ON EXIT block
+  updateNonMatch(pos, CHAN);
+  updateNonMatch(pos + 1, pitch);
+  updateNonMatch(pos + 2, VELOCITY);
+
+  // Create and send a MIDI-command that corresponds to what has just been inserted into the AUTOCMD header-block
+  byte buf[4] = {CHAN, pitch, VELOCITY, 0};
+  Serial.write(buf, 2 + ((CHAN % 224) <= 191));
+  
+	TO_UPDATE |= 252; // Flag the bottom 6 rows for LED updates
+  
+}
+
 // Toggle whether a sequence will automatically start playing on FILE-LOAD
 void actOnLoadCmd(__attribute__((unused)) byte col, __attribute__((unused)) byte row) {
   STATS[RECORDSEQ] ^= 64; // Flip the current RECORDSEQ's "ACTIVE ON LOAD" bit within its STATS byte

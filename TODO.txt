@@ -77,12 +77,12 @@ Software:
           -- done
       . update all manual GUI-GLYPH calls in func_gui.ino: set them forward by 4x6 bytes each
         -- done
-			. write their actual CmdFuncs in func_cmd.ino
-				-- 
+			. write the CmdFuncs for AUTOCMD-INSERT, AUTOCMD-DELETE, and AUTOCMD-CURSOR in func_cmd.ino
+				-- done
 				. on AUTOCMD-INSERT and AUTOCMD-DELETE, insert the data directly into its corresponding header-slot in the savefile
-					--
+					-- ok
 				. on AUTOCMD-INSERT, the corresponding message should immediately be sent to MIDI-OUT
-					-- 
+					-- ok
 			. make GUI-GLYPHs for AUTOCMD-INSERT, AUTOCMD-DELETE, and AUTOCMD-CURSOR funcs
 				-- done
 			. update GUI functions to display all AUTOCMD-INSERT, AUTOCMD-DELETE, and AUTOCMD-CURSOR funcs correctly,
