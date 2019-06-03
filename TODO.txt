@@ -48,16 +48,17 @@ Software:
 			. make a GUI-GLYPH for ACTIVE ON LOAD
 				-- done
       . update GUI functions to display ACTIVE ON LOAD correctly, and make sure its CmdFunc has a TO_UPDATE call
-				-- 
+				-- done
 			. add the activate-seqs-on-load mechanism to the FILE LOAD function
-				--
+				-- done
 				. remember to refrain from resetting GLOBAL CUE, and to wrap seq activity based on GLOBAL CUE position
-					--
-		. test ACTIVE ON LOAD functionality
-			-- 
+					-- ok
 		. double-check that all calls to the STATS variable correctly account for SEQ ON/OFF on bit 7 and SEQ ACTIVE ON LOAD on bit 6
 			-- 
-	. each savefile should have a block of SEND ON LOAD and SEND ON EXIT commands - MIDI commands in the header that are all played on file-load and on file-exit
+		. test ACTIVE ON LOAD functionality
+			-- 
+
+  . each savefile should have a block of SEND ON LOAD and SEND ON EXIT commands - MIDI commands in the header that are all played on file-load and on file-exit
 		-- am doing
 		. change data-format.txt and define-statements in Steles.ino
 			-- done
@@ -70,10 +71,12 @@ Software:
 			. add their CmdFunc names to the CmdFunc list, adjusting other CmdFuncs around them
 				-- done
       . make a special GUI mechanism for AUTOCMD-CURSOR:
-      .   it needs to show the current MIDI command in the current AUTOCMD slot, for either LOAD or EXIT (based on whether REPEAT is active)
-        -- 
+        . it needs to show the current MIDI command in the current AUTOCMD slot, for either LOAD or EXIT (based on whether REPEAT is active)
+          -- done
+        . it also must show the current AUTOCURSOR position when held
+          -- done
       . update all manual GUI-GLYPH calls in func_gui.ino: set them forward by 4x6 bytes each
-        -- 
+        -- done
 			. write their actual CmdFuncs in func_cmd.ino
 				-- 
 				. on AUTOCMD-INSERT and AUTOCMD-DELETE, insert the data directly into its corresponding header-slot in the savefile

@@ -101,6 +101,7 @@ byte RECORDSEQ = 0; // Sequence currently being recorded into
 byte RECORDNOTES = 0; // Tracks whether notes are currently being recorded into a sequence
 byte TRACK = 0; // Current track within the active sequence to edit with RECORDMODE actions
 byte REPEAT = 0; // Toggles whether held-down note-buttons should repeat a NOTE-ON every QUANTIZE ticks, in RECORD-MODE
+byte AUTOCURSOR = 0; // Tracks which AUTOCMD position is currently active, for [insertion/deletion] of AUTO ON LOAD or AUTO ON EXIT commands
 
 // Arpeggiation vars
 byte ARPMODE = 0; // Arp system's current mode: 0 = up, 1 = down, 2 = repeating random
