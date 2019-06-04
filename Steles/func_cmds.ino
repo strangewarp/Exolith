@@ -97,7 +97,7 @@ void clearCmd(byte col, byte row) {
 	byte buf[5]; // Create a note-sized data buffer...
 	memset(buf, 0, 4); // ...And clear it of any junk-data
 
-	byte len = STATS[RECORDSEQ] & 63; // Get the RECORDSEQ's length, in whole-notes
+	byte len = (STATS[RECORDSEQ] & 31) + 1; // Get the RECORDSEQ's length, in whole-notes
 	word blen = word(len) * 128; // Get the RECORDSEQ's length, in bytes
 
 	unsigned long rspos = FILE_BODY_START + (FILE_SEQ_BYTES * RECORDSEQ); // Get the RECORDSEQ's absolute data-position
@@ -187,9 +187,8 @@ void posCmd(byte col, byte row) {
 	if (RECORDMODE) { // If RECORDMODE is active... (This check is necessary because posCmd() is called from both RECORD MODE and PLAY MODE)
 		for (byte seq = 0; seq < 48; seq++) { // For each seq...
 			if (STATS[seq] & 128) { // If the seq is playing...
-				word size = (STATS[seq] & 63) * 32; // Get the seq's size, in 32nd-notes
-				// Shift the seq's position, wrapping in either direction
-				POS[seq] = word(((long(POS[seq]) + change) % size) + size) % size;
+				word size = seqLen(seq); // Get the seq's size, in 32nd-notes
+				POS[seq] = word(((long(POS[seq]) + change) % size) + size) % size; // Shift the seq's position, wrapping in either direction
 			}
 		}
 		TO_UPDATE |= 2; // Flag the SEQ row (in RECORD MODE) for LED updates
@@ -226,8 +225,8 @@ void rSweepCmd(byte col, byte row) {
 // Parse a SEQ-SIZE press
 void sizeCmd(byte col, byte row) {
 	char change = toChange(col, row); // Convert a column and row into a CHANGE value
-	// Get the new value for the currently-recording-seq's size, and modify the seq's stats
-	STATS[RECORDSEQ] = (STATS[RECORDSEQ] & 192) | applyChange(STATS[RECORDSEQ] & 63, change, 1, 32);
+	// Get the new value for the currently-recording-seq's size, and modify the seq's STATS byte with it
+	STATS[RECORDSEQ] = (STATS[RECORDSEQ] & 224) | applyChange(STATS[RECORDSEQ] & 31, change, 0, 31);
 	resetAllTiming(); // Reset the timing of all seqs and the global cue-point
 	TO_UPDATE |= 3; // Flag top two rows for updating
 }

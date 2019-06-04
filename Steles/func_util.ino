@@ -9,7 +9,7 @@ byte applyChange(byte n, char change, byte low, byte high) {
 
 // Apply an offset to a given position in the current RECORDSEQ, applying either a negative or positive chirality to the OFFSET value
 word applyOffset(char chiral, word p) {
-	word len = (STATS[RECORDSEQ] & 63) * 32; // Get the RECORDSEQ's length, in 32nd-notes
+	word len = seqLen(RECORDSEQ); // Get the RECORDSEQ's length, in 32nd-notes
 	// Apply the offset to the given position (with positive or negative chirality), and wrap its new value (even if negative)
 	return word((int(p) + (OFFSET * chiral)) + len) % len;
 }
@@ -17,7 +17,7 @@ word applyOffset(char chiral, word p) {
 // Apply QUANTIZE and QRESET to a given point in the current RECORDSEQ
 word applyQuantize(word p) {
 
-	word len = (STATS[RECORDSEQ] & 63) * 32; // Get the RECORDSEQ's length, in 32nd-notes
+	word len = seqLen(RECORDSEQ); // Get the RECORDSEQ's length, in 32nd-notes
 
 	byte down = (POS[RECORDSEQ] % (QRESET ? QRESET : 65535)) % QUANTIZE; // Get the distance from the previous QUANTIZE-point
 	byte up = min(QRESET, QUANTIZE) - down; // Get distance to next QUANTIZE-point, compensating for QRESET
@@ -42,6 +42,11 @@ byte ctrlToButtonIndex(byte ctrl) {
 // Check whether the current point in RECORDSEQ is an insertion-point, when adjusted for QUANTIZE, QRESET, and OFFSET
 byte isInsertionPoint() {
 	return !((applyOffset(-1, POS[RECORDSEQ]) % (QRESET ? QRESET : 65535)) % QUANTIZE);
+}
+
+// Get the a given seq's length, in 32nd-notes
+word seqLen(byte seq) {
+	return word((STATS[RECORDSEQ] & 31) + 1) * 32;
 }
 
 // Get a CHANGE-value from a given keystroke, and apply that change to the given global-var

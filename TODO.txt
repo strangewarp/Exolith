@@ -54,7 +54,12 @@ Software:
 				. remember to refrain from resetting GLOBAL CUE, and to wrap seq activity based on GLOBAL CUE position
 					-- ok
 		. double-check that all calls to the STATS variable correctly account for SEQ ON/OFF on bit 7 and SEQ ACTIVE ON LOAD on bit 6
-			-- 
+			-- found a major problem: forgot that bit 6 in every STATS byte is already being used by the CHAIN system.
+      -- decision: shift the SEQ SIZE range from 1-32 to 0-31, and shunt the CHAIN system's "just chained" flag into STATS byte 5 (from 6)
+      . update all STATS calls: compensate for new bitwise SIZE values, new CHAIN bit location, etc
+        -- done
+      . re-test the CHAIN system
+        -- 
 		. test ACTIVE ON LOAD functionality
 			-- 
 

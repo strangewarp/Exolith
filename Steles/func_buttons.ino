@@ -53,7 +53,7 @@ void parsePlayPress(byte col, byte row) {
 			CMD[seq] = (CMD[seq] & B11100011) | (nums << 2); // Add a slice-position to the cued ON command
 		} else { // Else, if the sequence has no cued ON value, then this is a pure beatslice, so...
 
-			word whole = STATS[seq] & 63; // Get the number of whole-notes in the seq
+			word whole = (STATS[seq] & 31) + 1; // Get the number of whole-notes in the seq
 			byte slice = whole * 4; // Get the number of 32nd-notes in one of the seq's slice-chunks
 
 			// Set the seq's given slice-position to correspond with the start of the curent global beat

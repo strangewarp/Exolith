@@ -61,10 +61,10 @@ void updateNonMatch(byte pos, byte b) {
 	}
 }
 
-// Update the header-data-byte for the current seq: both SEQ SIZE (bits 0-5) and ACTIVE ON LOAD (bit 6).
-//   (bit 7 is intentionally stripped, for the savefile)
+// Update the header-data-byte for the current seq: both SEQ SIZE (bits 0-4) and ACTIVE ON LOAD (bit 6).
+//   (bits 5 and 7 [0-indexed] are intentionally stripped, for the savefile)
 void updateSeqHeader(byte toggle) {
-	updateNonMatch(FILE_SQS_START + RECORDSEQ, STATS[RECORDSEQ] & 127);
+	updateNonMatch(FILE_SQS_START + RECORDSEQ, STATS[RECORDSEQ] & 95);
 }
 
 // Update the current seq's CHAIN-byte in the savefile, if it has been changed
@@ -243,7 +243,7 @@ void loadSong(byte slot) {
   // This block of code will activate any seqs that have been flagged as ACTIVE ON LOAD in the file's header-block.
 	for (byte i = 0; i < 48; i++) { // For each seq...
 		if (STATS[i] & 64) { // If the seq is flagged ACTIVE ON LOAD...
-			POS[i] = CUR32 % (word(STATS[i] & 63) * 32); // Set the seq's POSITION to match the GLOBAL CUE POINT, or wrap it if the seq-length is short
+			POS[i] = CUR32 % seqLen(i); // Set the seq's POSITION to match the GLOBAL CUE POINT, or wrap it if the seq-length is short
       STATS[i] |= 128; // Activate the sequence
 		}
 	}

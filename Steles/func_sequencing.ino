@@ -8,11 +8,11 @@ void resetAll() {
 	memset(STATS, 0, 48);
 }
 
-// Reset a seq's cued-commands, playing-flag, chain-ignore flag, and tick-position
+// Reset a seq's cued-commands, tick-position, playing-flag, and chain-ignore flag
 void resetSeq(byte s) {
 	CMD[s] = 0;
 	POS[s] = 0;
-	STATS[s] &= 63;
+	STATS[s] &= B01011111;
 }
 
 // Send a MIDI-CLOCK reset command to MIDI-OUT
@@ -59,7 +59,7 @@ void parseCues(byte s, byte size) {
 
 		if (CUR32 == (CMD[s] & B11100000)) { // If the global 32nd-note corresponds to the seq's cue-point...
 
-			// Enable or disable the sequence's playing-bit
+			// Enable or disable the seq's playing-bit
 			STATS[s] = (STATS[s] & 127) | ((CMD[s] & 2) << 6);
 
 			// Set the sequence's internal tick to a position based on the incoming SLICE bits.
@@ -81,8 +81,7 @@ void parseCues(byte s, byte size) {
 void readTick(byte s, byte offset, byte buf[]) {
 	word loc = POS[s]; // Get the sequence's current internal tick-location
 	if (offset) { // If an offset was given...
-		// Apply the offset to the tick-location, wrapping around the sequence's size-boundary
-		loc = (loc + offset) % (word(STATS[s] & 63) * 32);
+		loc = (loc + offset) % seqLen(s); // Apply the offset to the tick-location, wrapping around the sequence's size-boundary
 	}
 	// Navigate to the note's absolute position,
 	// and compensate for the fact that each tick contains 8 bytes
@@ -256,12 +255,12 @@ void iterateChains(byte buf[]) {
 		if (
 			CHAIN[i] // If this seq has any CHAIN DIRECTIONs set...
 			&& (!POS[i]) // And it just looped back around to its first tick, on the previous iteration...
-			&& ((STATS[i] & 192) == 128) // And it is currently playing, but hasn't been flagged by the CHAIN system on this tick...
+			&& ((STATS[i] & 160) == 128) // And it is currently playing, but hasn't been flagged by the CHAIN system on this tick...
 		) {
 
-			// Strip away this seq's "ON" flag, and its "CHAIN IGNORE" flag (although its CHAIN IGNORE flag should already be empty).
+			// Strip away this seq's "PLAYING" flag, and its "CHAIN IGNORE" flag (although its CHAIN IGNORE flag should already be empty).
 			// NOTE: We're leaving its CMD the same, because CHAINs shouldn't override their parent-seqs' cued-commands.
-			STATS[i] &= B00111111;
+			STATS[i] &= B01011111;
 
 			byte dircount = 0; // Will count the number of CHAIN-directions the seq has
 
@@ -273,7 +272,7 @@ void iterateChains(byte buf[]) {
 			}
 
 			// Get a random chain-direction, if the seq has multiple possible directions to choose from,
-			// and then get the target-seq's numerical key from that chain-direction
+			// and then get the target-seq's numerical key from that chain-direction.
 			byte target = chainDirToSeq(buf[byte(GLOBALRAND & 255) % dircount], i);
 
 			if (STATS[target] & 128) { // If the target-seq is already playing...
@@ -282,8 +281,8 @@ void iterateChains(byte buf[]) {
 			// NOTE: We don't change the target-seq's POS in any case where the seq was inactive,
 			//       because it will have already been set to 0 by the seq's most-recent OFF or CUE-OFF command, or by savefile-loading.
 
-			// Set the ON flag, and the JUST CHAINED flag, for the target-seq
-			STATS[target] |= B11000000;
+			// Set the PLAYING flag, and the JUST CHAINED flag, for the target-seq
+			STATS[target] |= B10100000;
 
 			if (CMD[i] & 1) { // If the parent-seq has a cued OFF-command of any type...
 				CMD[target] = CMD[i]; // Forward that command into the target-seq
@@ -306,7 +305,7 @@ void iterateSeqs(byte buf[]) {
 
 	for (byte i = 47; i != 255; i--) { // For every sequence in the song, in reverse order...
 
-		byte size = STATS[i] & 63; // Get seq's absolute size, in whole-notes
+		byte size = (STATS[i] & 31) + 1; // Get seq's absolute size, in whole-notes
 
 		parseCues(i, size); // Parse a sequence's cued commands, if any
 
@@ -319,8 +318,8 @@ void iterateSeqs(byte buf[]) {
 
 		POS[i] = (POS[i] + 1) % (word(size) * 32); // Increase the seq's 32nd-note position by one increment, wrapping it around its top limit
 
-		if (STATS[i] & 64) { // If the seq was flagged as JUST CHAINED...
-			STATS[i] &= B10111111; // Remove that flag, because its position has now been moved forward
+		if (STATS[i] & 32) { // If the seq was flagged as JUST CHAINED...
+			STATS[i] &= B11011111; // Remove that flag, because its position has now been moved forward
 		}
 
 	}

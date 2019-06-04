@@ -160,14 +160,15 @@ byte SCATTER[49];
 // Cued-command flags, one per seq.
 // bit 0: TURN OFF
 // bit 1: TURN ON
-// bits 2-4: slice 4, 2, 1;
-// bits 5-7: cue 4, 2, 1;
+// bits 2-4: slice 4, 2, 1
+// bits 5-7: cue 4, 2, 1
 byte CMD[49];
 
 // Holds 48 seqs' sizes and activity-flags
-// bits 0-5: 1, 2, 4, 8, 16, 32 (= size, in whole-notes, where each quarter-note is a "beat") (range limits: 1 to 32)
-// bit 6: "this seq has been toggled by the CHAIN system at the beginning of this tick"
-// bit 7: on/off flag
+// bits 0-4: SEQ SIZE: 0 to 31 (+ 1 = seq size in whole-notes)
+// bit 5: JUST CHAINED: this seq was just the target of a CHAIN operation on the current tick.
+// bit 6: ACTIVE ON LOAD: this seq will start playing when the savefile is loaded.
+// bit 7: ON/OFF: this seq is either playing or not playing.
 byte STATS[49];
 
 // Holds the 48 seqs' internal tick-positions

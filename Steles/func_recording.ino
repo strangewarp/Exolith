@@ -14,7 +14,7 @@ void toggleRecordMode() {
 		memset(CMD, 0, 48); // Clear all sequences' CUE-commands (this prevents weird behavior from occurring when RECORD-MODE is toggled with CUEs active)
 		resetSeq(RECORDSEQ); // If the most-recently-touched seq is already playing, reset it to prepare for timing-wrapping
 		SCATTER[RECORDSEQ] = 0; // Unset the most-recently-touched seq's SCATTER values before starting to record
-		STATS[RECORDSEQ] |= 128; // Set the sequence to active, if it isn't already
+		STATS[RECORDSEQ] |= 128; // Flag the sequence to be PLAYING, if it isn't already
 	}
 
 	RECORDNOTES = 0; // Disarm note-recording, regardless of which way the mode is being toggled
@@ -22,7 +22,7 @@ void toggleRecordMode() {
 
 	if (!RECORDMODE) { // If PLAY-MODE was just toggled...
 		for (byte i = 0; i < 48; i++) { // For every seq...
-			STATS[i] |= 64; // Set the seq's CHAIN IGNORE flag, so that CHAINs won't trigger on the first tick after the mode-toggle
+			STATS[i] |= 32; // Set the seq's CHAIN IGNORE flag, so that CHAINs won't trigger on the first tick after the mode-toggle
 		}
 	}
 
