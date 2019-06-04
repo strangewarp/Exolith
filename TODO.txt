@@ -12,7 +12,8 @@ Software:
 	. prove I'm not a dipshit: actually finish the project
 
 	-- changed the "A"-based note-glyphs, because recognizability feels more important than uniqueness
-
+  -- found bug: default sequence-length hadn't been corrected to reflect 0-indexing, so default seqs had 9 whole-notes instead of 8. fixed.
+    
 	. are old notes being knocked out of the sequence by new notes in RECORD-MODE properly?
 		-- 
 	
@@ -27,40 +28,6 @@ Software:
 		. with arpeggiation
 			--
 		. recorded as events in the sequence
-			-- 
-
-	. change the activity-persist-on-LOAD system:
-		-- am doing
-		. remove the mechanism that keeps the same seqs playing when a new song is loaded
-			-- done
-		. add an ACTIVE ON LOAD command, which will trigger whether a seq becomes active on song-load
-			-- am doing
-			. store its activity in each seq's STATS byte in the file-header
-				-- ok
-				. change the updateSeqHeader() function, so that it saves a composite of the seq's size and its activity-on-load to the savefile
-					-- done
-			. put a RECORD-MODE keychord for ACTIVE ON LOAD into button-key.txt
-				-- done
-			. put its CmdFunc name in the CmdFunc list, adjusting other CmdFuncs around it
-				-- done
-			. write its actual CmdFunc in func_cmd.ino
-				-- done
-			. make a GUI-GLYPH for ACTIVE ON LOAD
-				-- done
-      . update GUI functions to display ACTIVE ON LOAD correctly, and make sure its CmdFunc has a TO_UPDATE call
-				-- done
-			. add the activate-seqs-on-load mechanism to the FILE LOAD function
-				-- done
-				. remember to refrain from resetting GLOBAL CUE, and to wrap seq activity based on GLOBAL CUE position
-					-- ok
-		. double-check that all calls to the STATS variable correctly account for SEQ ON/OFF on bit 7 and SEQ ACTIVE ON LOAD on bit 6
-			-- found a major problem: forgot that bit 6 in every STATS byte is already being used by the CHAIN system.
-      -- decision: shift the SEQ SIZE range from 1-32 to 0-31, and shunt the CHAIN system's "just chained" flag into STATS byte 5 (from 6)
-      . update all STATS calls: compensate for new bitwise SIZE values, new CHAIN bit location, etc
-        -- done
-      . re-test the CHAIN system
-        -- 
-		. test ACTIVE ON LOAD functionality
 			-- 
 
   . each savefile should have a block of SEND ON LOAD and SEND ON EXIT commands - MIDI commands in the header that are all played on file-load and on file-exit
@@ -96,13 +63,58 @@ Software:
 		. note: REPEAT-toggle should have a dual purpose as a LOAD-EXIT toggle
 			-- did this along the way
 	. wipe SD-card again, since savefile format has been changed
-		-- 
-	. test AUTOCMD-INSERT, AUTOCMD-DELETE, and AUTOCMD-CURSOR
-		-- 
+		-- done
+  . finally upload firmware to prototype again
+    -- ok
+	. test:
+    . AUTOCMD-CURSOR
+      -- needs better UI feedback for empty special-command-slots
+        . in the GUI routine for AUTOCMD-CURSOR, if all 3 bytes are empty, show an "EMPTY AUTOCMD" glyph
+          -- done
+      . test more
+        -- 
+    . AUTOCMD-INSERT
+      -- 
+    . AUTOCMD-DELETE
+      -- 
 	. test SEND ON LOAD
 		-- 
 	. test SEND ON EXIT
 		-- 
+
+	. change the activity-persist-on-LOAD system:
+		-- am doing
+		. remove the mechanism that keeps the same seqs playing when a new song is loaded
+			-- done
+		. add an ACTIVE ON LOAD command, which will trigger whether a seq becomes active on song-load
+			-- am doing
+			. store its activity in each seq's STATS byte in the file-header
+				-- ok
+				. change the updateSeqHeader() function, so that it saves a composite of the seq's size and its activity-on-load to the savefile
+					-- done
+			. put a RECORD-MODE keychord for ACTIVE ON LOAD into button-key.txt
+				-- done
+			. put its CmdFunc name in the CmdFunc list, adjusting other CmdFuncs around it
+				-- done
+			. write its actual CmdFunc in func_cmd.ino
+				-- done
+			. make a GUI-GLYPH for ACTIVE ON LOAD
+				-- done
+      . update GUI functions to display ACTIVE ON LOAD correctly, and make sure its CmdFunc has a TO_UPDATE call
+				-- done
+			. add the activate-seqs-on-load mechanism to the FILE LOAD function
+				-- done
+				. remember to refrain from resetting GLOBAL CUE, and to wrap seq activity based on GLOBAL CUE position
+					-- ok
+		. double-check that all calls to the STATS variable correctly account for SEQ ON/OFF on bit 7 and SEQ ACTIVE ON LOAD on bit 6
+			-- found a major problem: forgot that bit 6 in every STATS byte is already being used by the CHAIN system.
+      -- decision: shift the SEQ SIZE range from 1-32 to 0-31, and shunt the CHAIN system's "just chained" flag into STATS byte 5 (from 6)
+      . update all STATS calls: compensate for new bitwise SIZE values, new CHAIN bit location, etc
+        -- done
+      . re-test the CHAIN system
+        -- 
+		. test ACTIVE ON LOAD functionality
+			-- 
 
 	. when two notes on the same channel with the same pitch are in the SUSTAIN queue, the nested NOTE-OFF does not behave as expected with most synths.
 	.   update: this was an older todo entry, so: check to definitively make sure that this is actually happening. (note-entry while a seq is playing, perhaps?)

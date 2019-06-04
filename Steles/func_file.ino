@@ -19,11 +19,11 @@ void createFiles() {
 		file.open(name, O_WRITE); // Open the file explicitly in WRITE mode
 
 		file.seekSet(FILE_BPM_BYTE); // Go to the BPM-byte
-		file.write(byte(80)); // Write a default BPM value of 80
+		file.write(byte(DEFAULT_BPM)); // Write the default BPM value
 
 		for (byte j = FILE_SQS_START; j <= FILE_SQS_END; j++) { // For every seq-size byte in the header...
 			file.seekSet(j); // Go to that byte's position
-			file.write(byte(8)); // Write a default sequence-size value of 8
+			file.write(byte(DEFAULT_SEQ_SIZE)); // Write the default sequence-size value
 		}
 
 		file.close(); // Close the file
@@ -63,7 +63,7 @@ void updateNonMatch(byte pos, byte b) {
 
 // Update the header-data-byte for the current seq: both SEQ SIZE (bits 0-4) and ACTIVE ON LOAD (bit 6).
 //   (bits 5 and 7 [0-indexed] are intentionally stripped, for the savefile)
-void updateSeqHeader(byte toggle) {
+void updateSeqHeader() {
 	updateNonMatch(FILE_SQS_START + RECORDSEQ, STATS[RECORDSEQ] & 95);
 }
 

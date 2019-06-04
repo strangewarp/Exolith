@@ -38,10 +38,10 @@ void acInsertCmd(byte col, byte row) {
   // Insert a new special-command into the savefile, at the given AUTOCURSOR position, in either the ON LOAD or ON EXIT block
   updateNonMatch(pos, CHAN);
   updateNonMatch(pos + 1, pitch);
-  updateNonMatch(pos + 2, VELOCITY);
+  updateNonMatch(pos + 2, VELO);
 
   // Create and send a MIDI-command that corresponds to what has just been inserted into the AUTOCMD header-block
-  byte buf[4] = {CHAN, pitch, VELOCITY, 0};
+  byte buf[4] = {CHAN, pitch, VELO, 0};
   Serial.write(buf, 2 + ((CHAN % 224) <= 191));
   
 	TO_UPDATE |= 252; // Flag the bottom 6 rows for LED updates

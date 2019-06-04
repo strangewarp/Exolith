@@ -267,6 +267,10 @@ void updateRecBottomRows(byte ctrl) {
 	word kt = pgm_read_byte_near(KEYTAB + ctrl) * 6;
 
 	byte row = 0; // Will hold the binary value to be sent to the row's LEDs
+  
+  byte gotbuf = 0; // Flag that tracks whether a buffer of material has been retrieved, for certain row-types
+  byte buf[4]; // Create a buffer for pulling data from the savefile, for certain row-types
+  memset(buf, 0, 4); // Clear the buffer of any junk-data
 
 	for (byte i = 0; i < 6; i++) { // For each of the bottom 6 GUI rows...
 
@@ -297,10 +301,16 @@ void updateRecBottomRows(byte ctrl) {
 			}
 			row = (96 * (!!left)) | (24 * (!!mid)) | (6 * (!!right)); // Make a composite out of the row-chunks
     } else if (ctrl == B00110100) { // Else, if AUTOCMD-CURSOR is held...
-      if (!(i % 2)) { // If this is on row 2 (0), row 4 (2), or row (6)...
-        // Navigate to the savefile-position of the line-corresponding byte from the AUTOCMD in the current AUTOCURSOR position
-        file.seekSet((i >> 1) + (AUTOCURSOR * 3) + (REPEAT ? FILE_ONEXIT_START : FILE_ONLOAD_START));
-        row = file.read(); // Get that byte, and send it to the row var. It will remain unchanged on the immediately-next row
+      if (!gotbuf) { // If a buffer has not yet been retrieved...
+        // Navigate to the savefile-position of the AUTOCMD bytes in the current AUTOCURSOR position
+        file.seekSet((AUTOCURSOR * 3) + (REPEAT ? FILE_ONEXIT_START : FILE_ONLOAD_START));
+        file.read(buf, 3); // Read those bytes into the tiny temp buffer
+        gotbuf = 1; // Set a flag for "the bytes had been retrieved into the buffer"
+      }
+      if (!(buf[0] || buf[1] || buf[2])) { // If there is no special-command in the current AUTOCMD slot...
+        row = pgm_read_byte_near(GLYPH_AUTOCMD + i); // Get a line from the AUTOCMD glyph that corresponds to this row
+      } else { // Else, if there is a special-command in the current AUTOCMD slot...
+        row = buf[i >> 1]; // Send a byte from the special-command to the current row, doubling them up so every two rows show one "thickened" byte
       }
 		} else if (ctrl) { // Else, if other control-buttons are held...
 			row = pgm_read_byte_near(GLYPHS + kt + i); // Read the given row, in the keyhord's corresponding glyph

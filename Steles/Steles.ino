@@ -57,6 +57,7 @@
 #define PREFS_ITEMS_2 18 // ^ (1-indexed + 1, for buffer assembly)
 
 #define DEFAULT_BPM 130 // Default BPM-value, for cases where a coherent BPM value is not available
+#define DEFAULT_SEQ_SIZE 7 // Default seq-size, for constructing the savefile (0-indexed: 7 = 8 whole-notes)
 
 #define GRID_TOTAL 5 // Number of GRIDCONFIG grids within the GRIDS[] array (this value is 0-indexed!!!)
 

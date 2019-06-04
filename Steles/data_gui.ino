@@ -225,6 +225,16 @@ const byte NUMBER_GLYPHS[] PROGMEM = {
 
 };
 
+// Standalone glyph: AUTOCMD
+const byte GLYPH_AUTOCMD[] PROGMEM = {
+	B00000000,
+	B10000100,
+	B11001010,
+	B11101110,
+	B11001010,
+	B10001010
+};
+
 // Standalone glyph: ERASE NOTES
 const byte GLYPH_ERASE[] PROGMEM = {
 	B00000000,
