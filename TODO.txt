@@ -34,11 +34,19 @@ Software:
           . this all seems to indicate a communication problem with the industrial-grade SD card.
             . is this caused by power brownouts? (larger capacitors might fix it)
               -- this definitely seems like a micro-brownout bug
-              . buy 100uF capacitors that fit into the same footprint as the current capacitors
+              . replace the RSET resistor with a more-resistant one. 17.2kohms?
                 -- 
+                . test this change, with both SD-cards
+                  -- 
+                . regardless, this resistor-value is probably a better idea, so put it into the parts-list, replacing the 16.9kohm resistor
+                  -- 
+              . buy 100uF electrolytic capacitors that fit into the same footprint as the current capacitors
+                -- 
+                . replace the electrolytic capacitors
+                  -- 
                 . test them
                   -- 
-                . if they fix the weird behavior, put the 100uF capacitors into the parts-list, and remove the old 10uF capacitors
+                . if this fixes the weird behavior, put the 100uF capacitors into the parts-list
                   -- 
         -- also: the industrial-grade SD-card seems to have very fast reads but very slow writes.
           . figure out whether this is normal
