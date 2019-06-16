@@ -13,7 +13,41 @@ Software:
 
 	-- changed the "A"-based note-glyphs, because recognizability feels more important than uniqueness
   -- found bug: default sequence-length hadn't been corrected to reflect 0-indexing, so default seqs had 9 whole-notes instead of 8. fixed.
-    
+  
+  . bug found: when many seq are active, there is a lot of global lag, which slows down the GLOBAL CUE mechanism until nearly all seqs are deactivated.
+  .   this bug didn't used to happen. this implies that it is due to hardware changes.
+  .   so: test whether it's the LEDs' power-consumption, by changing the LED-matrix code to set brightness to a dimmer value.
+    -- the lag seems to occur even when the LEDs are very dimmed
+    . is this mitigated by using a higher-quality SD-card?
+      -- yes
+  . bug found: on an industrial-grade SD-card, the startup procedure is too slow. figure out how to fix it
+    -- inexplicable. it's only looking for filenames. why is there lag at all...
+      . figure it out
+        -- 1. doesn't seem to be a fault in the microcontroller
+        -- 2. on each startup, only one new savefile is being made, instead of 48 new savefiles.
+        --      this is occurring incrementally: 000.DAT on first startup, 001.DAT on second startup, etc
+        --      when checking these files on subsequent startups, the card goes at regular speed.
+        -- 3. BPM is always set to 255 for some reason.
+        -- 4. trying to write any data in Record Mode causes a small lag spike, and no note-data is saved, regardless of mode-toggle.
+        -- 5. all savefiles are 0 bytes in size.
+        -- hmmm...
+          . this all seems to indicate a communication problem with the industrial-grade SD card.
+            . is this caused by power brownouts? (larger capacitors might fix it)
+              -- this definitely seems like a micro-brownout bug
+              . buy 100uF capacitors that fit into the same footprint as the current capacitors
+                -- 
+                . test them
+                  -- 
+                . if they fix the weird behavior, put the 100uF capacitors into the parts-list, and remove the old 10uF capacitors
+                  -- 
+        -- also: the industrial-grade SD-card seems to have very fast reads but very slow writes.
+          . figure out whether this is normal
+            -- 
+  
+  . if I can't figure out the problem Tine is having with industrial-grade SD-cards, then:
+    . find another suitable type of class-10 SD-card
+    . add it to the parts-list in place of the industrial-grade SD-card
+  
 	. are old notes being knocked out of the sequence by new notes in RECORD-MODE properly?
 		-- 
 	
@@ -216,7 +250,7 @@ Software:
 	. fill 12 sequences with notes, and check whether lag occurs when connected to a hardware synthesizer
 	. does anything catastrophic happen when the SD-card is removed during regular operation? or in RECORD-MODE?
 
-	==== SOFTWARE BETA THRESHOLD ====
+	=== SOFTWARE BETA THRESHOLD ===
 
 	. when the OFF button is used to wipe the cues from a cued seq, does that cued seq refrain from any activity correctly?
 		. if a new cue is set for the same seq, as the seq's first action after such a situation, then does the cue act as expected?
@@ -252,12 +286,13 @@ Software:
 
 Hardware:
 
-	==== HARDWARE BETA THRESHOLD ATTAINED ====
+	=== HARDWARE BETA THRESHOLD ATTAINED ===
+  
+  . use a slightly stronger RSET resistor. 17.2k maybe?
+  .   also note: in maxInitialize(), the dimming amount should be tweaked once the RSET resistor-value is updated
 
 	. slightly widen pin-holes for all buttons, right now they are too tight
 		. NOTE: need to double-check whether I already did this and forgot
-
-	. consider using 100uF capacitors in the 9v-5v regulator circuit anyway, just to be safe
 
 	. make sure that you order the ATMEGA chips with the proper bootloader fuse config (along with the firmware), or else they will be 8 times too slow and incapable of sending MIDI
 		. buy a test-batch that are preprogrammed in such a way, and slot one into a Tine beta unit for testing

@@ -22,7 +22,7 @@ void maxInitialize() {
 
 	sendMaxCmd(12, 0); // Shutown mode: shutdown
 	sendMaxCmd(12, 1); // Shutown mode: startup
-	sendMaxCmd(10, 15); // LED intensity: maximum
+	sendMaxCmd(10, 9); // LED intensity: medium-bright (range is 0 to 15)
 
 }
 
