@@ -41,8 +41,6 @@ Software:
     -- 
     . test this change, with both SD-cards
       -- 
-    . regardless, this resistor-value is probably a better idea, so put it into the parts-list, replacing the 16.9kohm resistor
-      -- 
   . buy 100uF electrolytic capacitors that fit into the same footprint as the current capacitors
     -- 
     . replace the electrolytic capacitors
