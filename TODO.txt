@@ -34,24 +34,26 @@ Software:
           . this all seems to indicate a communication problem with the industrial-grade SD card.
             . is this caused by power brownouts? (larger capacitors might fix it)
               -- this definitely seems like a micro-brownout bug
-              . replace the RSET resistor with a more-resistant one. 17.2kohms?
-                -- 
-                . test this change, with both SD-cards
-                  -- 
-                . regardless, this resistor-value is probably a better idea, so put it into the parts-list, replacing the 16.9kohm resistor
-                  -- 
-              . buy 100uF electrolytic capacitors that fit into the same footprint as the current capacitors
-                -- 
-                . replace the electrolytic capacitors
-                  -- 
-                . test them
-                  -- 
-                . if this fixes the weird behavior, put the 100uF capacitors into the parts-list
-                  -- 
-        -- also: the industrial-grade SD-card seems to have very fast reads but very slow writes.
-          . figure out whether this is normal
-            -- 
-  
+              -- oh shit: the LEDs are definitely consuming way too much current! (also: resetting tabbing for this todo item)
+  . replace the RSET resistor with a more-resistant one that brings the LED-grid's total current consumption down below 500mA!
+    -- 
+  . also, replace the MAX7219 chip, since we've been violating its max recommended current without realizing
+    -- 
+    . test this change, with both SD-cards
+      -- 
+    . regardless, this resistor-value is probably a better idea, so put it into the parts-list, replacing the 16.9kohm resistor
+      -- 
+  . buy 100uF electrolytic capacitors that fit into the same footprint as the current capacitors
+    -- 
+    . replace the electrolytic capacitors
+      -- 
+    . test them
+      -- 
+    . if this fixes the weird behavior, put the 100uF capacitors into the parts-list
+      -- 
+
+  . bug found: the industrial-grade SD-card seems to have very fast reads but very slow writes. figure out what's wrong here
+    -- 
   . if I can't figure out the problem Tine is having with industrial-grade SD-cards, then:
     . find another suitable type of class-10 SD-card
     . add it to the parts-list in place of the industrial-grade SD-card
