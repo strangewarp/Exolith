@@ -47,7 +47,7 @@ Software:
       -- 
     . test them
       -- 
-    . if this fixes the weird behavior, put the 100uF capacitors into the parts-list
+    . if this fixes the weird behavior, put the 100uF capacitors into the parts-list, alongside one remaining 10uF capacitor for the MAX7219's specifications
       -- 
 
   . bug found: the industrial-grade SD-card seems to have very fast reads but very slow writes. figure out what's wrong here
