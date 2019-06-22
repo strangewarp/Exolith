@@ -47,8 +47,14 @@ Software:
       -- 
     . test them
       -- 
-    . if this fixes the weird behavior, put the 100uF capacitors into the parts-list, alongside one remaining 10uF capacitor for the MAX7219's specifications
+    . if this fixes the weird behavior, put the 100uF capacitors into the parts-list textfile, alongside one remaining 10uF capacitor for the MAX7219's specifications
       -- 
+  . change all KiCad schematics to reflect these changes
+    -- 
+  . change all parts-list textfiles to reflect these changes (bill-of-materials.txt and component-placement.txt)
+    -- 
+  . change Tine's official cart on Mouser to reflect these changes
+    -- 
 
   . bug found: the industrial-grade SD-card seems to have very fast reads but very slow writes. figure out what's wrong here
     -- 
